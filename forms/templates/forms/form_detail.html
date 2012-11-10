@@ -6,7 +6,7 @@
         {% for field in form %}
             <div class="fieldWrapper">
                 {{ field.errors }}
-                {% if field.field.show_label %}{{ field.label_tag }}:{% endif %} 
+                {% if field.field.show_label %}{{ field.label_tag }}{% if field.field.required %} *{% endif %} :{% endif %} 
                 {% if field.field.description %}<div class="description">{{field.field.description}}</div>{% endif %}
                 {{ field }}
             </div>

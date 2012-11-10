@@ -8,6 +8,7 @@ from django.template.defaultfilters import slugify
 from django.forms.forms import BoundField
 from widgets import SubmitWidget, LabelWidget, HeaderWidget
 from django.core.validators import URLValidator, validate_email
+from django.utils.datastructures import SortedDict
 from countries import COUNTRIES
 
 class SimpleForm(djForm):
@@ -119,12 +120,14 @@ def get_field(element):
     else: field.show_label=True
     field.description=element.description
     return field
+#def get_keyOrder(form):
+#    keyOrder={}
+    
 def make_form_class(form_instance):
-    fields={}
+    fields=SortedDict()
     hide_labels=[]
-    for element in form_instance.elements.all():
+    for element in form_instance.elements.order_by('order'):
         fields[element.name] = get_field(element)
-#        if element.klass in [Element.HEADER, Element.SUBMIT]: hide_labels.append(fields[element.name].label_tag)
     form = type(str(slugify(form_instance.name)), (BaseForm,), {'base_fields':fields})
     form.hide_labels = hide_labels
     return form
