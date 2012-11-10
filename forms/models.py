@@ -45,7 +45,7 @@ class Element(models.Model):
     required = models.BooleanField(default=False, blank=True)
     unique = models.BooleanField(default=False, blank=True)
     description = models.CharField('Description', max_length=64, default="", blank=True)
-    tooltip = models.CharField('Tooltip', max_length=32, default="", blank=True)
+    tooltip = models.CharField('Tooltip', max_length=64, default="", blank=True)
     order = models.IntegerField(blank=True, default=1)
     details = models.CharField('Choices', max_length=128, blank=True, default="")
     form = models.ForeignKey(Form, related_name='elements')
