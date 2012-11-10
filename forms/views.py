@@ -35,8 +35,6 @@ class FormView(DetailView, FormMixin):
     def get_success_url(self):
         return self.object.success_url
     def form_valid(self, form):
-        # This method is called when valid form data has been POSTed.
-        # It should return an HttpResponse.
         result=Result.objects.create(form=self.object)
         for e in self.object.elements.all():
             c=form.cleaned_data

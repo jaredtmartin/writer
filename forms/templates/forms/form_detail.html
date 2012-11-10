@@ -2,9 +2,15 @@
 {% load tags %}
 {% block content %}
     <form action="{{object.get_absolute_url}}" method="POST">{% csrf_token %}
-    {% for element in object.elements.all %}
-        {{form|formfield:element.name}}
-    {% endfor %}
+        {{form.errors}}
+        {% for field in form %}
+            <div class="fieldWrapper">
+                {{ field.errors }}
+                {% if field.field.show_label %}{{ field.label_tag }}:{% endif %} 
+                {% if field.field.description %}<div class="description">{{field.field.description}}</div>{% endif %}
+                {{ field }}
+            </div>
+        {% endfor %}
     <input type="submit">
     </form>
 {% endblock %}

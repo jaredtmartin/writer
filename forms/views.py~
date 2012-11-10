@@ -8,7 +8,7 @@ class FormList(ListView):
     
 class ThankYou(DetailView):
     model = Form
-    template="forms/thankyou.html"
+    template_name="forms/thankyou.html"
     
 class FormView(DetailView, FormMixin):
     model = Form
