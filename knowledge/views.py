@@ -9,6 +9,7 @@ from knowledge.models import Question, Response, Category, Article
 from knowledge.forms import QuestionForm, ResponseForm
 from knowledge.utils import paginate
 
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
 ALLOWED_MODS = {
     'question': [
@@ -37,7 +38,7 @@ def get_my_questions(request):
 
 
 def knowledge_index(request,
-                    template='django_knowledge/index.html'):
+                    template='knowledge/index.html'):
 
     if settings.LOGIN_REQUIRED and not request.user.is_authenticated():
         return HttpResponseRedirect(settings.LOGIN_URL+"?next=%s" % request.path)
@@ -47,7 +48,7 @@ def knowledge_index(request,
     # this is for get_responses()
     [setattr(q, '_requesting_user', request.user) for q in questions]
     articles = Article.objects.can_view(request.user).filter(question__isnull=True)[0:20]
-
+    print "template" + str(template) 
     return render(request, template, {
         'request': request,
         'questions': questions,
@@ -59,7 +60,7 @@ def knowledge_index(request,
 
 def knowledge_list(request,
                    category_slug=None,
-                   template='django_knowledge/list.html',
+                   template='knowledge/list.html',
                    Form=QuestionForm):
 
     if settings.LOGIN_REQUIRED and not request.user.is_authenticated():
@@ -98,7 +99,7 @@ def knowledge_list(request,
 def knowledge_thread(request,
                      article_id,
                      slug=None,
-                     template='django_knowledge/thread.html',
+                     template='knowledge/thread.html',
                      Form=ResponseForm):
 
     if settings.LOGIN_REQUIRED and not request.user.is_authenticated():
@@ -197,7 +198,7 @@ def knowledge_moderate(
 
 
 def knowledge_ask(request,
-                  template='django_knowledge/ask.html',
+                  template='knowledge/ask.html',
                   Form=QuestionForm):
 
     if settings.LOGIN_REQUIRED and not request.user.is_authenticated():
@@ -220,3 +221,42 @@ def knowledge_ask(request,
         'form': form,
         'categories': Category.objects.all()
     })
+
+#class CreateViewWithResponse(CreateView):
+#    def get_form_kwargs(self):
+#        """
+#        Adds request to the keyword arguments for instanciating the form.
+#        """
+#        kwargs = super(CreateViewWithResponse).get_form_kwargs()
+#        print "kwargs:" + str(kwargs)
+#        kwargs.update({'request': self.request})
+#        print "kwargs:" + str(kwargs)
+#        return kwargs
+        
+class QuestionCreate(CreateView):
+    model = Question
+    form_class = QuestionForm
+
+#    def get_form_class(self):
+#        """
+#        Returns the form class to use in this view
+#        """
+#        print "user:" + str(self.request.user)
+#        if user.is_au
+#        return QuestionFormUnAuth
+        
+#    def get(self, request, *args, **kwargs):
+#        print "Running get"
+#        return super(QuestionCreate, self).get(request, *args, **kwargs)
+
+    def get_form_kwargs(self):
+        """
+        Adds request to the keyword arguments for instanciating the form.
+        """
+        kwargs = super(QuestionCreate, self).get_form_kwargs()
+        print "kwargs:" + str(kwargs)
+        kwargs.update({'request': self.request})
+        print "kwargs:" + str(kwargs)
+        return kwargs
+    
+

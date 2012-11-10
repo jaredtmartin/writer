@@ -17,7 +17,12 @@ STATUSES_EXTENDED = STATUSES + (
     ('inherit', _('Inherit')),
 )
 
-
+class Screenshot(models.Model):
+    image = models.ImageField(upload_to ="screenshots/%Y/%m/")
+    @models.permalink
+    def get_absolute_url(self):
+        return ('question_screenshot', [self.id])
+    
 class Category(models.Model):
     added = models.DateTimeField(auto_now_add=True)
     lastchanged = models.DateTimeField(auto_now=True)
@@ -38,12 +43,22 @@ class KnowledgeBase(models.Model):
 
     added = models.DateTimeField(auto_now_add=True)
     lastchanged = models.DateTimeField(auto_now=True)
-
-    user = models.ForeignKey('auth.User', blank=True, null=True, db_index=True)
     
-    class Meta:
-        abstract = True
+    user = models.ForeignKey('auth.User', blank=True, null=True, db_index=True)
+    # for anonymous posting, if permitted
+    name = models.CharField(max_length=64, blank=True, null=True,
+        verbose_name=_('Name'),
+        help_text=_('Enter your first and last name.'))
+    email = models.EmailField(blank=True, null=True,
+        verbose_name=_('Email'),
+        help_text=_('Enter a valid email address.'))
+
     def save(self, *args, **kwargs):
+        if not self.user and self.name and self.email \
+                and not self.id:
+            # first time because no id
+            self.public(save=False)
+
         if settings.AUTO_PUBLICIZE and not self.id:
             self.public(save=False)
 
@@ -58,13 +73,16 @@ class KnowledgeBase(models.Model):
         Get local name, then self.user's first/last, and finally
         their username if all else fails.
         """
-        name = (u'{0} {1}'.format(
+        name = (self.name or u'{0} {1}'.format(
             self.user.first_name, self.user.last_name))
         return name.strip() or self.user.username
 
-    get_email = lambda s: s.user.email
+    get_email = lambda s: s.email or s.user.email
     get_pair = lambda s: (s.get_name(), s.get_email())
     get_user_or_pair = lambda s: s.user or s.get_pair()
+
+    class Meta:
+        abstract = True
 
     ########################
     #### STATUS METHODS ####
@@ -126,44 +144,6 @@ class MessageBase():
         help_text=_('Check this if you want to be alerted when a new'
                         ' response is added.'))
 
-    # for anonymous posting, if permitted
-    name = models.CharField(max_length=64, blank=True, null=True,
-        verbose_name=_('Name'),
-        help_text=_('Enter your first and last name.'))
-    email = models.EmailField(blank=True, null=True,
-        verbose_name=_('Email'),
-        help_text=_('Enter a valid email address.'))
-
-    class Meta:
-        abstract = True
-
-    def save(self, *args, **kwargs):
-        if not self.user and self.name and self.email \
-                and not self.id:
-            # first time because no id
-            self.public(save=False)
-
-        if settings.AUTO_PUBLICIZE and not self.id:
-            self.public(save=False)
-
-        super(KnowledgeBase, self).save(*args, **kwargs)
-
-    #########################
-    #### GENERIC GETTERS ####
-    #########################
-
-    def get_name(self):
-        """
-        Get local name, then self.user's first/last, and finally
-        their username if all else fails.
-        """
-        name = (self.name or u'{0} {1}'.format(
-            self.user.first_name, self.user.last_name))
-        return name.strip() or self.user.username
-
-    get_email = lambda s: s.email or s.user.email
-
-
 class Article(KnowledgeBase):
     is_article = True
 
@@ -216,7 +196,7 @@ class Question(Article, MessageBase):
     _requesting_user = None
 
     locked = models.BooleanField(default=False)
-
+    screenshot = models.ForeignKey(Screenshot)
     class Meta:
         ordering = ['-added']
         verbose_name = _('Question')
@@ -291,8 +271,7 @@ class Question(Article, MessageBase):
 class Response(KnowledgeBase, MessageBase):
     is_response = True
 
-    question = models.ForeignKey('knowledge.Question',
-        related_name='responses')
+    question = models.ForeignKey('knowledge.Question', related_name='responses')
 
     body = models.TextField(blank=True, null=True,
         verbose_name=_('Response'),

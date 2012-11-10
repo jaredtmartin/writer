@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Forms</h2>
+    <ul>
+        {% for form in object_list %}
+            <li><a href="{{ form.get_absolute_url }}">{{ form.name }}</a></li>
+        {% endfor %}
+    </ul>
+{% endblock %}

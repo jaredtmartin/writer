@@ -1,0 +1,76 @@
+{% extends 'knowledge/inner.html' %}
+
+{% load i18n %}
+{% load markup %}
+{% load knowledge_tags %}
+
+{% block title %}{{ article.title }}{% endblock title %}
+
+{% block knowledge_widgets %}
+
+<div class="dk-widget">
+
+  <div class="dk-dialog">
+    <div class="the-author gravatar"><img src="{% get_gravatar article.get_email %}" alt="{{ article.get_name }} gravatar"></div>
+    <div class="the-content gravatar">
+      <h2>{{ article.title }}</h2>
+      <h5>{{ article.get_name }} <span class="quiet">
+        {% if article.user %}
+          {% if article.user.is_staff %}&nbsp;<span class="dk-label dk-label-success">{% trans "staff" %}</span>
+          {% else %}&nbsp;<span class="dk-label">{% trans "user" %}</span>{% endif %}
+        {% endif %}
+        &nbsp;{{ article.added }}
+      </span></h5>
+
+      {{ article.body|striptags|markdown }}
+
+      {% include "knowledge/mod_bar.html" with allowed_mods=allowed_mods.article type="question" node=question %}
+    </div>
+  </div> <!-- .dk-dialog -->
+
+  {% if article.question %}
+      <hr class="light"/>
+      <br />
+      {% for response in responses %}
+        <div class="dk-dialog">
+          <div class="the-author gravatar smaller"><img src="{% get_gravatar response.get_email 40 %}" alt="{{ response.get_name }} gravatar"></div>
+          <div class="the-content gravatar">
+            <h5>{{ response.get_name }} <span class="quiet">
+              {% if response.accepted %}&nbsp;<span class="dk-label dk-label-warning">{% trans "accepted answer" %}</span>{% endif %}
+              {% if article.user == response.user %}&nbsp;<span class="dk-label dk-label-info">{% trans "poster" %}</span>{% endif %}
+              {% if response.user %}
+                {% if response.user.is_staff %}&nbsp;<span class="dk-label dk-label-success">{% trans "staff" %}</span>
+                {% else %}&nbsp;<span class="dk-label">{% trans "user" %}</span>{% endif %}
+              {% endif %}
+              &nbsp;{{ response.added }}
+            </span></h5>
+
+            {{ response.body|striptags|markdown }}
+
+            {% include "knowledge/mod_bar.html" with allowed_mods=allowed_mods.response type="response" node=response %}
+          </div>
+        </div> <!-- .dk-dialog -->
+      {% empty %}
+        <p class="center"><em>{% trans "No responses yet." %}</em></p>
+      {% endfor %}
+
+
+      <br/> 
+      <hr class="light"/>
+      <br/> 
+
+
+      {% if form %}
+        {% include "knowledge/form.html" with submit_value="Respond to this question" submit_and="and check back often for updates." %}
+      {% else %}
+        {% if question.locked %}
+          <p class="center"><em>{% trans "This question has been closed." %}</em></p>
+        {% else %}
+          <p class="center"><em>{% trans "Please log in to respond." %}</em></p>
+        {% endif %}
+      {% endif %}
+  {% endif %}
+
+</div>
+
+{% endblock knowledge_widgets %}

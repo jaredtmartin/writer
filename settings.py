@@ -110,6 +110,7 @@ TEMPLATE_DIRS = (
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
     os.path.join(DIRNAME, 'feedback/templates/'),
+    os.path.join(DIRNAME, 'templates/'),
 )
 
 INSTALLED_APPS = (
@@ -126,6 +127,8 @@ INSTALLED_APPS = (
     'django.contrib.markup',
     'knowledge',
     'debug_toolbar',
+    'django_extensions',
+    'forms',
 )
 
 # A sample logging configuration. The only tangible logging
