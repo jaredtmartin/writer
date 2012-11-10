@@ -1,4 +1,5 @@
-COUNTRIES=(("United States","United States"),
+COUNTRIES=(("Unknown", "Unknown"),
+("United States","United States"),
 ("United Kingdom","United Kingdom"),
 ("Afghanistan","Afghanistan"),
 ("Albania","Albania"),
