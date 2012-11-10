@@ -2,7 +2,7 @@
 {% load tags %}
 {% block content %}
     <form action="{{object.get_absolute_url}}" method="POST">{% csrf_token %}
-        {{form.errors}}
+        {{ form.non_field_errors }}
         {% for field in form %}
             <div class="fieldWrapper">
                 {{ field.errors }}

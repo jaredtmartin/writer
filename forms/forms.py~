@@ -10,6 +10,7 @@ from widgets import SubmitWidget, LabelWidget, HeaderWidget
 from django.core.validators import URLValidator, validate_email
 from django.utils.datastructures import SortedDict
 from countries import COUNTRIES
+from django.core.exceptions import ValidationError
 
 class SimpleForm(djForm):
     name=CharField(max_length=64)
@@ -27,8 +28,6 @@ def string_to_choices(s):
         c=(slugify(choice), choice)
         choices += (c,)
     return choices
-
-from django.core.exceptions import ValidationError
 
 class UniqueValidatorBase(object):
     def __init__(self, value):
@@ -119,18 +118,28 @@ def get_field(element):
     if element.klass in [Element.HEADER, Element.SUBMIT]: field.show_label=False
     else: field.show_label=True
     field.description=element.description
+    field.required_group=element.required_group
     return field
-#def get_keyOrder(form):
-#    keyOrder={}
     
+class BaseFormWithRequiredGroups(BaseForm):
+    def clean(self):
+        required_groups={}
+        for key, field in self.fields.items():
+            if field.required_group:
+                if not field.required_group in required_groups.keys(): required_groups[field.required_group]=0
+                if key in self.cleaned_data.keys() and self.cleaned_data[key]: required_groups[field.required_group]+=1
+        print "required_groups: " + str(required_groups) 
+        for k,v in required_groups.items():
+            if v==0: raise ValidationError(k)
+        return self.cleaned_data
 def make_form_class(form_instance):
-    fields={}
+    fields=SortedDict()
     hide_labels=[]
     for element in form_instance.elements.order_by('order'):
         fields[element.name] = get_field(element)
-    form = type(str(slugify(form_instance.name)), (BaseForm,), {'base_fields':fields})
-    form.hide_labels = hide_labels
-    return form
+    form_class = type(str(slugify(form_instance.name)), (BaseFormWithRequiredGroups,), {'base_fields':fields})
+    form_class.hide_labels = hide_labels
+    return form_class
     
 def make_form(form_instance, data=None):
     form = make_form_class(form_instance)(data)

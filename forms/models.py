@@ -49,6 +49,7 @@ class Element(models.Model):
     order = models.IntegerField(blank=True, default=1)
     details = models.CharField('Choices', max_length=128, blank=True, default="")
     form = models.ForeignKey(Form, related_name='elements')
+    required_group = models.CharField(blank=True, default=None, null=True, max_length=64)
     class Meta:
         ordering = ('order', '-id', )
     def __unicode__(self): return self.name

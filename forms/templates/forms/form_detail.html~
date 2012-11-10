@@ -2,11 +2,11 @@
 {% load tags %}
 {% block content %}
     <form action="{{object.get_absolute_url}}" method="POST">{% csrf_token %}
-        {{form.errors}}
+        {% for error in form.errors.__all__ %}{{error}}{% endfor %}
         {% for field in form %}
             <div class="fieldWrapper">
                 {{ field.errors }}
-                {% if field.field.show_label %}{{ field.label_tag }}{% if field.field.required %}*{% endif %} :{% endif %} 
+                {% if field.field.show_label %}{{ field.label_tag }}{% if field.field.required %} *{% endif %} :{% endif %} 
                 {% if field.field.description %}<div class="description">{{field.field.description}}</div>{% endif %}
                 {{ field }}
             </div>
