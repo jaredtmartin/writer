@@ -38,7 +38,7 @@ class Element(models.Model):
 #        (SUBMIT, 'Submit'),
         (URL, 'URL'),
         (COUNTRY,'Country'),
-        (EMAIL,'Email')
+        (EMAIL,'Email Address')
     )
     name = models.CharField('name', max_length=32)
     klass = models.CharField('type', max_length=2, choices = ELEMENT_TYPE_CHOICES, default=TEXTBOX)

@@ -3,7 +3,7 @@ from django.template.defaultfilters import slugify
 
 class Form(models.Model):
     name = models.CharField('Name', max_length=32)
-    success_url = models.CharField('Success URL', max_length=64, default='/forms/')
+    success_url = models.CharField('Success URL', max_length=64, default='thankyou/')
     submit_label = models.CharField('Submit Label', max_length=32, default='Submit')
     def __unicode__(self): return self.name
     @models.permalink

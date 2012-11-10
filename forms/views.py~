@@ -5,7 +5,11 @@ from forms import make_form, make_form_class
 
 class FormList(ListView):
     model = Form
-
+    
+class ThankYou(DetailView):
+    model = Form
+    template="forms/thankyou.html"
+    
 class FormView(DetailView, FormMixin):
     model = Form
     success_url = '/forms/'
