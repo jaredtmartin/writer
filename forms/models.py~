@@ -4,7 +4,7 @@ from django.template.defaultfilters import slugify
 class Form(models.Model):
     name = models.CharField('Name', max_length=32)
     success_url = models.CharField('Success URL', max_length=64, default='/forms/')
-    submit_label = models.CharField('Submit Label', max_length=32)
+    submit_label = models.CharField('Submit Label', max_length=32, default='Submit')
     def __unicode__(self): return self.name
     @models.permalink
     def get_absolute_url(self):
@@ -24,6 +24,8 @@ class Element(models.Model):
     FILEUPLOAD = 'FU'
     SUBMIT = 'SB'
     URL = 'UL'
+    COUNTRY ='CT'
+    EMAIL = 'EM'
     ELEMENT_TYPE_CHOICES = (
         (HEADER, 'Header'),
         (TEXTBOX, 'Text Box'),
@@ -35,6 +37,8 @@ class Element(models.Model):
         (FILEUPLOAD, 'File Upload'),
 #        (SUBMIT, 'Submit'),
         (URL, 'URL'),
+        (COUNTRY,'Country'),
+        (EMAIL,'Email')
     )
     name = models.CharField('name', max_length=32)
     klass = models.CharField('type', max_length=2, choices = ELEMENT_TYPE_CHOICES, default=TEXTBOX)

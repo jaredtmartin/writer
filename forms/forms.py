@@ -6,7 +6,8 @@ from models import *
 from django.template.defaultfilters import slugify
 from django.forms.forms import BoundField
 from widgets import SubmitWidget
-from django.core.validators import URLValidator
+from django.core.validators import URLValidator, validate_email
+from countries import COUNTRIES
 
 
 class ElementForm(ModelForm):
@@ -47,11 +48,16 @@ def make_form_class(form_instance):
             )
         elif element.klass == Element.URL: 
             validate_url = URLValidator()
-            validate_url.message='Please enter a valid URL ie:"http://www.mysite.com/"'
             fields[element.name] = CharField(
                 max_length = 128, 
                 required = element.required, 
                 validators=unique_validator+[validate_url]
+            )
+        elif element.klass == Element.EMAIL: 
+            fields[element.name] = CharField(
+                max_length = 128, 
+                required = element.required, 
+                validators=unique_validator+[validate_email]
             )
         elif element.klass == Element.TEXTAREA: 
             fields[element.name] = CharField(
@@ -95,6 +101,12 @@ def make_form_class(form_instance):
             fields[element.name] = CharField(
                 required = False,
                 widget = LabelWidget,
+                validators=unique_validator,
+            )
+        elif element.klass == Element.COUNTRY: 
+            fields[element.name] = ChoiceField(
+                required = element.required, 
+                choices=COUNTRIES,
                 validators=unique_validator,
             )
     return type(str(slugify(form_instance.name)), (BaseForm,), {'base_fields':fields})

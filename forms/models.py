@@ -24,6 +24,8 @@ class Element(models.Model):
     FILEUPLOAD = 'FU'
     SUBMIT = 'SB'
     URL = 'UL'
+    COUNTRY ='CT'
+    EMAIL = 'EM'
     ELEMENT_TYPE_CHOICES = (
         (HEADER, 'Header'),
         (TEXTBOX, 'Text Box'),
@@ -35,6 +37,8 @@ class Element(models.Model):
         (FILEUPLOAD, 'File Upload'),
 #        (SUBMIT, 'Submit'),
         (URL, 'URL'),
+        (COUNTRY,'Country'),
+        (EMAIL,'Email Address')
     )
     name = models.CharField('name', max_length=32)
     klass = models.CharField('type', max_length=2, choices = ELEMENT_TYPE_CHOICES, default=TEXTBOX)
