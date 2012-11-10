@@ -11,7 +11,7 @@ class ValueInline(admin.TabularInline):
     
 class ResultAdmin(admin.ModelAdmin):
     inlines = [ValueInline,]
-    list_display = ('form',)
+    list_display = ('form','created_at')
     list_filter = ('form',)
     
 class FormAdmin(admin.ModelAdmin):

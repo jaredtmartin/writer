@@ -18,6 +18,5 @@ class FormAdmin(admin.ModelAdmin):
     inlines = [ElementInline,]
     list_display = ('name', 'get_absolute_url')
     
-admin.site.register(Element)
 admin.site.register(Form, FormAdmin)
 admin.site.register(Result, ResultAdmin)
