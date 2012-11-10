@@ -6,5 +6,6 @@
     {% for element in object.elements.all %}
         {{form|formfield:element.name}}
     {% endfor %}
+    <input type="submit">
     </form>
 {% endblock %}

@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 {% load tags %}
 {% block content %}
-    <a href="/forms/">Back to list</a><br>
     <form action="{{object.get_absolute_url}}" method="POST">{% csrf_token %}
     {% for element in object.elements.all %}
         {{form|formfield:element.name}}
