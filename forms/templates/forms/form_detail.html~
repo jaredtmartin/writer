@@ -4,7 +4,7 @@
     <link href="/static/css/form.css" rel="stylesheet" type="text/css" />
 {% endblock %}
 {% block content %}
-    <div class="form-display fieldWrapper">
+    <div class="form-display formWrapper">
         {% if user == object.created_by %}<a href="{% url form-edit pk=object.pk slug='adsf' %}">Edit this form</a>{% endif %}
         <form action="{{object.get_absolute_url}}" method="POST">{% csrf_token %}
             {{ form.non_field_errors }}

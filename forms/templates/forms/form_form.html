@@ -1,4 +1,7 @@
 {% extends "base.html" %}
+{% block head %}
+    <script src="{{ STATIC_URL}}js/sortable-inlines.js"></script>
+{% endblock %}
 {% block content %}
 <div class="form-display">
     <form method="POST">{% csrf_token %}
@@ -8,11 +11,11 @@
         </div>
         <div class="inlines">
         {% for inline in inlines %}
-            <div class="inline">
+            <div class="inline sortable">
                 {{inline.errors}}
                 {{ inline.management_form }}
                 {% for inlineform in inline %}
-                    <div class="formWrapper">
+                    <div class="inlineform formWrapper">
                         {{inlineform.errors}}
                         {{inlineform}}
                     </div>

@@ -1,9 +1,9 @@
 from django.views.generic import ListView, DetailView, FormView
 from django.views.generic.edit import FormMixin
 from models import Form, Element, Value, Result
-from forms import make_form, make_form_class, FormModelForm
-from extra_views import CreateWithInlinesView, UpdateWithInlinesView, InlineFormSet
-from extra_views.generic import GenericInlineFormSet
+from forms import make_form, make_form_class, FormModelForm, ElementInline
+from extra_views import CreateWithInlinesView, UpdateWithInlinesView
+
 
 class FormList(ListView):
     model = Form
@@ -43,9 +43,6 @@ class FormView(DetailView, FormMixin):
             Value.objects.create(element=e, value=form.cleaned_data[e.name], result=result)
         return super(FormView, self).form_valid(form)
 
-class ElementInline(InlineFormSet):
-    model = Element
-
 class CreateFormView(CreateWithInlinesView):
     model = Form
     form_class = FormModelForm
@@ -54,9 +51,6 @@ class CreateFormView(CreateWithInlinesView):
         kwargs=super(CreateFormView, self).get_form_kwargs()
         kwargs.update({'request': self.request})
         return kwargs
-
-#class FormGenericInline(GenericInlineFormSet):
-#    model = Form
 
 class UpdateFormView(UpdateWithInlinesView):
     model = Form

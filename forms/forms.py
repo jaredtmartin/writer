@@ -12,6 +12,7 @@ from django.core.validators import URLValidator, validate_email
 from django.utils.datastructures import SortedDict
 from countries import COUNTRIES
 from django.core.exceptions import ValidationError
+from extra_views import InlineFormSet
 
 FormInlineFormSet = inlineformset_factory(Form, Element)
 
@@ -155,4 +156,13 @@ def make_form_class(form_instance):
 def make_form(form_instance, data=None):
     form = make_form_class(form_instance)(data)
     return form
+
+class ElementForm(ModelForm):
+    class Meta:
+        model = Element
+    order = CharField(widget=HiddenInput)
+    
+class ElementInline(InlineFormSet):
+    model = Element
+    form_class=ElementForm
 
