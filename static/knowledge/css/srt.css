@@ -1,0 +1,150 @@
+div.srt-tip {
+    position: fixed;
+    z-index: 1010;
+    top: 50%;
+    left: 50%;
+    margin: -30px 0 0 -200px;
+    width: 400px;
+    height: 60px;
+    font-size: 14px;
+    text-align: center;
+    vertical-align: middle;
+    display: table-cell;
+    border: 2px solid #3C5F87;
+    color: #3C5F87;
+    font-weight: bold;
+    background-color: white;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -moz-box-shadow: 5px 5px 5px #999;
+    -webkit-box-shadow: 5px 5px 5px #999;
+}
+div.srt-tip > div {
+    width: 100%;
+    height: 100%;
+    padding-top: 20px;
+    position: relative;
+}
+div.srt-lock {
+    position: fixed;
+    z-index: 999;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    opacity:0;
+    filter:alpha(opacity:0);
+}
+
+div.srt-marker {
+        position: absolute;
+        width: 6px;
+        height: 6px;
+        background-color: black;
+        z-index: 1002;
+}
+div.srt-rectangle {
+    position: absolute;
+    border: 1px solid black;
+    z-index: 1001;
+}
+
+div.srt-shadow {
+    background-color: #000;
+    opacity:.62;
+    filter:alpha(opacity:62);
+    position: absolute;
+    z-index: 1000;
+}
+div.srt-close {
+    position: absolute;
+    background: url(./close.gif) no-repeat;
+    width: 20px;
+    height: 20px;
+    z-index: 1002;
+    cursor: pointer;
+}
+
+div.srt-tip div.srt-close {
+    right: 5px;
+    top: 5px;
+}
+div.srt-feedback-btn {
+    border-top: 1px solid #3C5F87;
+    border-left: 1px solid #3C5F87;
+    border-right: 1px solid #3C5F87;
+    border-radius: 5px 5px 0 0;
+    -moz-border-radius: 5px 5px 0 0;
+    -webkit-border-radius: 5px 5px 0 0;
+    color: white;
+    background-color: #3C5F87;
+    padding: 5px;
+    width: auto;
+    height: auto;
+    font-size: 12px;
+    position: fixed;
+    right: 0px;
+    bottom: 0px;
+    cursor: pointer;
+    z-index: 1003;
+}
+div.srt-feedback {
+    
+    display: none;
+    padding: 0;
+    width: 200px;
+    
+    font-size: 12px;
+    position: fixed;
+    right: 0px;
+    bottom: 0px;
+    z-index: 1004;
+}
+div.srt-feedback form {
+    padding: 5px;
+    border-left: 1px solid #3C5F87;
+    border-right: 1px solid #3C5F87;
+    color: #3C5F87;
+    background-color: white;
+    height: 200px;
+}
+div.srt-feedback form textarea {
+    border: 1px solid #3C5F87;
+    height: 80px;
+}
+div.srt-feedback form fieldset {
+    border: 0;
+    padding: 0 0 5px 0;
+    margin: 0;
+}
+div.srt-feedback form label {
+    display: block;
+    margin: 5px 0;
+}
+
+div.srt-header {
+    border-radius: 5px 5px 0 0;
+    -moz-border-radius: 5px 5px 0 0;
+    -webkit-border-radius: 5px 5px 0 0;
+    color: white;
+    background-color: #3C5F87;
+    padding: 5px;
+    position: relative;
+}
+div.srt-header a.srt-close {
+    display: block;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+}
+div.srt-header > h2 {
+    font-size: 14px;
+    margin: 0px;
+    padding: 0;
+}
+button.srt-highlight.srt-stop {
+    display: none;
+}

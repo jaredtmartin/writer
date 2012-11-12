@@ -1,16 +1,22 @@
 {% extends "base.html" %}
 {% load tags %}
+{% block head %}
+    <link href="/static/css/form.css" rel="stylesheet" type="text/css" />
+{% endblock %}
 {% block content %}
-    <form action="{{object.get_absolute_url}}" method="POST">{% csrf_token %}
-        {% for error in form.errors.__all__ %}{{error}}{% endfor %}
-        {% for field in form %}
-            <div class="fieldWrapper">
-                {{ field.errors }}
-                {% if field.field.show_label %}{{ field.label_tag }}{% if field.field.required %} *{% endif %} :{% endif %} 
-                {% if field.field.description %}<div class="description">{{field.field.description}}</div>{% endif %}
-                {{ field }}
-            </div>
-        {% endfor %}
-    <input type="submit">
-    </form>
+    <div class="form-display fieldWrapper">
+        {% if user == object.created_by %}<a href="{% url form-edit pk=object.pk slug='adsf' %}">Edit this form</a>{% endif %}
+        <form action="{{object.get_absolute_url}}" method="POST">{% csrf_token %}
+            {{ form.non_field_errors }}
+            {% for field in form %}
+                <div class="fieldWrapper">
+                    {{ field.errors }}
+                    {% if field.field.show_label %}{{ field.label_tag }}{% if field.field.required %} *{% endif %} :{% endif %} 
+                    {% if field.field.description %}<div class="description">{{field.field.description}}</div>{% endif %}
+                    {{ field }}
+                </div>
+            {% endfor %}
+        <input type="submit">
+        </form>
+    </div>
 {% endblock %}

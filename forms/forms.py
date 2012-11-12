@@ -1,4 +1,5 @@
 from django.forms.formsets import formset_factory
+from django.forms.models import inlineformset_factory
 from django.forms import ModelForm, BaseForm
 from django.forms import Form as djForm
 from django.forms.fields import *
@@ -12,14 +13,25 @@ from django.utils.datastructures import SortedDict
 from countries import COUNTRIES
 from django.core.exceptions import ValidationError
 
-class SimpleForm(djForm):
-    name=CharField(max_length=64)
-    
-class ElementForm(ModelForm):
-    class Meta:
-        model = Element
+FormInlineFormSet = inlineformset_factory(Form, Element)
 
-ElementFormSet = formset_factory(ElementForm)
+class FormModelForm(ModelForm):
+    class Meta:
+        model=Form
+        exclude=('created_by',)
+    def save(self, commit=True):
+        obj = super(FormModelForm, self).save(commit=False)
+        if self.request:
+            r=self.request
+            u=self.request.user
+            a=self.request.user.is_anonymous()
+            obj.created_by = self.request.user
+        obj.save()
+        return obj
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request', None)
+        return super(FormModelForm, self).__init__(*args, **kwargs)
+
 
 def string_to_choices(s):
     l=s.split(",")

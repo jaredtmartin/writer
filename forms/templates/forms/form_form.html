@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="form-display">
+    <form method="POST">{% csrf_token %}
+        <div class="formWrapper mainWrapper">
+            {{form.errors}}
+            {{form}}
+        </div>
+        <div class="inlines">
+        {% for inline in inlines %}
+            <div class="inline">
+                {{inline.errors}}
+                {{ inline.management_form }}
+                {% for inlineform in inline %}
+                    <div class="formWrapper">
+                        {{inlineform.errors}}
+                        {{inlineform}}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+        </div>
+        <div class="formWrapper">
+            <input type="submit">
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,17 +1,19 @@
 from django.db import models
 from django.template.defaultfilters import slugify
+from django.contrib.auth.models import User
 
 class Form(models.Model):
     name = models.CharField('Name', max_length=32)
     success_url = models.CharField('Success URL', max_length=64, default='thankyou/')
     submit_label = models.CharField('Submit Label', max_length=32, default='Submit')
+    created_by = models.ForeignKey(User)
     def __unicode__(self): return self.name
     @models.permalink
     def get_absolute_url(self):
         return ('form', [self.id, slugify(self.name)])
     @models.permalink
-    def get_action_url(self):
-        return ('submit', [self.id, slugify(self.name)])
+    def get_edit_url(self):
+        return ('edit', [self.id, slugify(self.name)])
     
 class Element(models.Model):
     HEADER = 'HD'
