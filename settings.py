@@ -49,7 +49,7 @@ USE_TZ = True
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
-MEDIA_ROOT = os.path.join(DIRNAME, 'media/'),
+MEDIA_ROOT = os.path.join(DIRNAME, 'media/')
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
@@ -73,7 +73,7 @@ STATIC_URL = '/static/'
 FACEBOOK_APP_ID = 519129288106424
 FACEBOOK_APP_SECRET = '93c96e8759a2a91bd13336d32e398795'
 AUTH_PROFILE_MODULE = 'django_facebook.FacebookProfile'
-PROFILE_IMAGE_PATH = os.path.join(MEDIA_URL, 'facebook_profiles/'),
+PROFILE_IMAGE_PATH = os.path.join(MEDIA_URL, 'facebook_profiles/%Y/%m/%d'),
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django_facebook.context_processors.facebook',
