@@ -2,82 +2,37 @@ body {
 /*    background: url("/static/img/black-stripe.gif") repeat scroll 0 0 #282828;*/
     background: none repeat scroll 0 0 #FAF0D9;
 }
+
 #container{
 }
-/*.formWrapper {*/
-/*/*    width:800px;*/*/
-/*    margin: 10px 10px 10px 200px;*/
-/*/*    background-color: #FFFFCC;*/*/
-/*/*    -moz-border-radius: 15px;*/*/
-/*/*    border-radius: 15px;*/*/
-/*    padding: 15px;*/
-/*    margin:10px 10px 10px 200px;*/
-/*}*/
-/*.mainWrapper{*/
-/*    width:850px;*/
-/*    margin: 10px 10px 10px 150px;*/
-/*}*/
-/*/*input.hintTextbox { color: #888; } */*/
-/*/*input.hintTextboxActive { color: #000; }*/*/
-/*input {*/
-/*    -moz-border-radius: 5px;*/
-/*    border-radius: 5px;*/
-/*    height:1.5em;*/
-/*    font-size:14pt;*/
-/*}*/
-/*div.preview_area {*/
-/*    float:right;*/
-/*    width:50%;*/
-/*}*/
-/*div.name_area {*/
-/*    float:left;*/
-/*    width:50%;*/
-/*}*/
-/*#clearfloat{*/
-/*    clear:both;*/
-/*}*/
-/*.toggle-text{*/
-/*    cursor:pointer;*/
-/*}*/
-.left-panel{
-    width:100px;
+
+#left-panel{
+    width:200px;
     padding: 15px;
     float:left;
 }
-.formWrapper {
-    
+
+#content{
+    width:800px;
+    float:left;
 }
 
-
-
-/*//========= Stuff from old file============*/
-/*body {*/
-/*/*    background: url("/static/img/shadow_row.png") repeat-y white;*/*/
-/*}*/
-/*#container{*/
-/*}*/
-/*.formWrapper {*/
-/*    width:800px;*/
-/*/*    margin: 10px 10px 10px 40px;*/*/
-/*/*    background-color: #FFFFCC;*/*/
-/*/*    -moz-border-radius: 15px;*/*/
-/*/*    border-radius: 15px;*/*/
-/*    padding: 15px;*/
-/*}*/
-/*/*.mainWrapper{*/*/
-/*/*    width:850px;*/*/
-/*/*    margin: 10px 10px 10px 150px;*/*/
-/*/*}*/*/
-/*#frame{*/
-/*    margin-left:160px;*/
-/*    padding: 10px 40px 10px 40px;*/
-/*/*    padding-left:40px;*/*/
-/*/*    padding-right:40px;*/*/
-/*    background: url("/static/img/shadow_row.png") repeat-y;*/
-/*}*/
-/*#footer{*/
-/*    margin-left:160px;*/
-/*    width:880px;*/
-/*    height:80px;*/
-/*    background: url("/static/img/shadow_bottom.png") no-repeat;*/
-/*}*/
+.formWrapper {
+}
+.name-area{
+    width:50%;
+    float:left;
+}
+.preview-area{
+    width:50%;
+    float:right;
+}
+.toggle-text{
+    cursor:pointer;
+}
+li.toolbar-element{
+    list-style:none
+}
+ul.toolbar-elements{
+    padding:0
+}
