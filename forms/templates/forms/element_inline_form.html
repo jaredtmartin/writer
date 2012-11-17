@@ -1,0 +1,32 @@
+<div class="inlineform formWrapper curved">
+    {{inlineform.errors}}
+    
+    <div class="name-area">
+        {{inlineform.name}}<br>
+            <span toggled-color="red" untoggled-color="grey" 
+                toggled-text="Required" untoggled-text="Not required" class="toggle-text">
+                <a>Not required </a>
+                {{inlineform.required}} 
+            </span>
+            <span toggled-color="red" untoggled-color="grey" 
+                toggled-text="Unique" untoggled-text="Not unique" class="toggle-text">
+                <a>Not unique</a>
+                {{inlineform.unique}} 
+            </span>
+            
+    </div>
+    <div class="preview-area">
+        <input type="text" value="Preview">
+    </div>
+    <span id="clearfloat"></span>
+    <div class="show-hide show-hide-trigger show-hide-shown">Show</div>
+    <div class="show-hide show-hide-trigger show-hide-hidden">Hide</div>
+    <div class="details show-hide show-hide-hidden">
+        Tooltip: {{inlineform.tooltip}}<br>
+        Choices:{{inlineform.details}}<br>
+        {{inlineform.order}}
+        {{inlineform.klass}}
+        {{inlineform.id}}
+        {{inlineform.DELETE}}
+    </div>
+</div>

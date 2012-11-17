@@ -1,18 +1,38 @@
 body {
-    background: url("/static/img/black-stripe.gif") repeat scroll 0 0 #282828;
+/*    background: url("/static/img/black-stripe.gif") repeat scroll 0 0 #282828;*/
+    background: none repeat scroll 0 0 #FAF0D9;
 }
+
 #container{
 }
-.formWrapper {
-    width:800px;
-    margin: 10px 10px 10px 200px;
-    background-color: #FFFFCC;
-    -moz-border-radius: 15px;
-    border-radius: 15px;
+
+#left-panel{
+    width:200px;
     padding: 15px;
-    margin:10px 10px 10px 200px;
+    float:left;
 }
-.mainWrapper{
-    width:850px;
-    margin: 10px 10px 10px 150px;
+
+#content{
+    width:800px;
+    float:left;
+}
+
+.formWrapper {
+}
+.name-area{
+    width:50%;
+    float:left;
+}
+.preview-area{
+    width:50%;
+    float:right;
+}
+.toggle-text{
+    cursor:pointer;
+}
+li.toolbar-element{
+    list-style:none
+}
+ul.toolbar-elements{
+    padding:0
 }

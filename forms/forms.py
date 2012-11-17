@@ -160,9 +160,15 @@ def make_form(form_instance, data=None):
 class ElementForm(ModelForm):
     class Meta:
         model = Element
-    order = CharField(widget=HiddenInput)
+
+        exclude=('description','required_group')
+#    order = CharField(widget=HiddenInput)
+#    klass = ChoiceField(widget=HiddenInput)
+#    required = BooleanField(widget=HiddenInput)
+#    unique = BooleanField(widget=HiddenInput)
+#    name = CharField(widget=TextInput(attrs={'class':'hintTextbox'}))
     
 class ElementInline(InlineFormSet):
     model = Element
     form_class=ElementForm
-
+    extra=0

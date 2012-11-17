@@ -1,0 +1,29 @@
+<li id="textbox-toolbar-element" class="curved toolbar-element">
+    {% if element.instance.klass == "TB" %}<input type="text" value="Text Box">{% endif %}
+    {% if element.instance.klass == "CB" %}<input type="checkbox">Check Box {% endif %}
+    {% if element.instance.klass == "RD" %}<input type="radio"> Radio Button{% endif %}
+    {% if element.instance.klass == "PW" %}<input type="password" value="Password">{% endif %}
+    {% if element.instance.klass == "UL" %}<input type="text" value="URL">{% endif %}
+    {% if element.instance.klass == "EM" %}<input type="text" value="Email">{% endif %}
+    {% if element.instance.klass == "TA" %}<input type="textarea" value="Text Area">{% endif %}
+    {% if element.instance.klass == "DD" %}
+        <select value="Drop-Down Box">
+            <option>Option 1</option>
+            <option>Option 2</option>
+            <option>Option 3</option>
+        </select>
+    {% endif %}
+    {% if element.instance.klass == "CT" %}
+        <select value="Country">
+            <option selected="true">Country</option>
+            <option>United States</option>
+            <option>United Kingdom</option>
+            <option>India</option>
+        </select>
+    {% endif %}
+    <div class="sample-element-form" style="display:none;">
+        {% with element as inlineform %}
+            {% include "forms/element_inline_form.html" %}
+        {% endwith %}
+    </div>    
+</li>

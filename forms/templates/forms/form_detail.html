@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load tags %}
 {% block content %}
-    <div class="form-display formWrapper">
+    <div class="form-display formWrapper curved">
         {% if user == object.created_by %}<a href="{% url form-edit pk=object.pk slug='adsf' %}">Edit this form</a>{% endif %}
         <form action="{{object.get_absolute_url}}" method="POST">{% csrf_token %}
             {{ form.non_field_errors }}

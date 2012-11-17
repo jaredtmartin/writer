@@ -6,13 +6,24 @@
     {% load staticfiles %}
     
     <link href="{% static "css/style.css" %}" rel="stylesheet" type="text/css" />
+    <link href="{% static "css/curved-drop-shadow.css" %}" rel="stylesheet" type="text/css" />
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js"></script>
     {% block head %}{% endblock %}
 </head>
 <body>
     <div id="container">
-    {% block content %}{% endblock %}
+        {% block header %}{% endblock %}
+        <div style="clear:both;">
+        <div id="left-panel">
+            {% block left-panel %}{% endblock %}
+        </div>
+        <div id="content">
+        {% block content %}{% endblock %}
+        </div>
+        <div id="right-panel">
+        {% block right-panel %}{% endblock %}
+        </div>
     </div>
 </body>
 </html>

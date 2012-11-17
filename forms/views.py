@@ -1,10 +1,20 @@
 from django.views.generic import ListView, DetailView, FormView
 from django.views.generic.edit import FormMixin
 from models import Form, Element, Value, Result
-from forms import make_form, make_form_class, FormModelForm, ElementInline
+from forms import make_form, make_form_class, FormModelForm, ElementInline, ElementForm
 from extra_views import CreateWithInlinesView, UpdateWithInlinesView
 
-
+def get_sample_elements():
+    return [
+        ElementForm(instance=Element(klass=Element.TEXTBOX)),
+        ElementForm(instance=Element(klass=Element.PASSWORD)),
+        ElementForm(instance=Element(klass=Element.TEXTAREA)),
+        ElementForm(instance=Element(klass=Element.DROPDOWN)),
+        ElementForm(instance=Element(klass=Element.RADIO)),
+        ElementForm(instance=Element(klass=Element.URL)),
+        ElementForm(instance=Element(klass=Element.COUNTRY)),
+        ElementForm(instance=Element(klass=Element.EMAIL)),
+    ]
 class FormList(ListView):
     model = Form
     
@@ -51,6 +61,10 @@ class CreateFormView(CreateWithInlinesView):
         kwargs=super(CreateFormView, self).get_form_kwargs()
         kwargs.update({'request': self.request})
         return kwargs
+    def get_context_data(self, **kwargs):
+        context = super(CreateFormView, self).get_context_data(**kwargs)
+        context.update({'sample_elements': get_sample_elements()})
+        return context
 
 class UpdateFormView(UpdateWithInlinesView):
     model = Form
@@ -61,4 +75,7 @@ class UpdateFormView(UpdateWithInlinesView):
         kwargs=super(UpdateFormView, self).get_form_kwargs()
         kwargs.update({'request': self.request})
         return kwargs
-
+    def get_context_data(self, **kwargs):
+        context = super(UpdateFormView, self).get_context_data(**kwargs)
+        context.update({'sample_elements': get_sample_elements()})
+        return context

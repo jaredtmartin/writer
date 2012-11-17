@@ -1,31 +1,48 @@
 {% extends "base.html" %}
 {% block head %}
     <script src="{{ STATIC_URL}}js/sortable-inlines.js"></script>
+    <link href="{{ STATIC_URL}}css/sortable-inlines.css" rel="stylesheet" type="text/css" />
+    <script src="{{ STATIC_URL}}js/toggle-text.js"></script>
+    <script>
+        $(function() {
+            $(".show-hide-hidden").hide();
+            $(".show-hide-trigger").click(function () {
+                $(this).parent().find('.show-hide').toggle();
+            });
+        });
+    </script>
+{% endblock %}
+{% block left-panel %}
+    <ul class="toolbar-elements connected-sortable">
+        {% for element in sample_elements %}
+            {% include "forms/toolbar_element.html"%}
+        {% endfor %}
 {% endblock %}
 {% block content %}
 <div class="form-display">
     <form method="POST">{% csrf_token %}
-        <div class="formWrapper mainWrapper">
+        <div class="formWrapper mainWrapper curved">
             {{form.errors}}
             {{form}}
         </div>
         <div class="inlines">
-        {% for inline in inlines %}
-            <div class="inline sortable">
-                {{inline.errors}}
-                {{ inline.management_form }}
-                {% for inlineform in inline %}
-                    <div class="inlineform formWrapper">
-                        {{inlineform.errors}}
-                        {{inlineform}}
+            {% for inline in inlines %}
+                <div class="inline connected-sortable">
+                    {{ inline.management_form }}
+                    {% for inlineform in inline %}
+                        {% include "forms/element_inline_form.html" %}
+                    {% endfor %}  
+                    <div class="place-holder">
+                        <p>Add more elements here</p>
                     </div>
-                {% endfor %}
-            </div>
-        {% endfor %}
+                </div>
+            {% endfor %}
         </div>
         <div class="formWrapper">
             <input type="submit">
         </div>
     </form>
 </div>
-{% endblock %}
+<div id="trash-can"></div>
+{% endblock%}
+
