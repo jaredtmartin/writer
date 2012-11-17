@@ -88,3 +88,4 @@ class Value(models.Model):
     element = models.ForeignKey(Element, related_name="element_values")
     value = models.CharField('value', max_length=128)
     result = models.ForeignKey(Result)
+

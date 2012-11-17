@@ -67,6 +67,29 @@ STATIC_ROOT = os.path.join(DIRNAME, 'static/')
 # Example: "http://media.lawrence.com/static/"
 STATIC_URL = '/static/'
 
+
+
+################### Facebook Integration Settings ################### 
+FACEBOOK_APP_ID = 519129288106424
+FACEBOOK_APP_SECRET = '93c96e8759a2a91bd13336d32e398795'
+AUTH_PROFILE_MODULE = 'django_facebook.FacebookProfile'
+
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django_facebook.context_processors.facebook',
+    'django.contrib.auth.context_processors.auth',
+    'django.core.context_processors.debug',
+    'django.core.context_processors.i18n',
+    'django.core.context_processors.media',
+    'django.core.context_processors.static',
+    'django.core.context_processors.tz',
+    'django.contrib.messages.context_processors.messages',
+)
+
+AUTHENTICATION_BACKENDS = (
+    'django_facebook.auth_backends.FacebookBackend',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
 # Additional locations of static files
 STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
@@ -133,6 +156,7 @@ INSTALLED_APPS = (
     'debug_toolbar',
     'django_extensions',
     'forms',
+    'django_facebook',
 )
 
 # A sample logging configuration. The only tangible logging

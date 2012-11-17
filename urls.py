@@ -20,6 +20,8 @@ urlpatterns = patterns('',
     url(r'^knowledge/', include('knowledge.urls')),
 #    url(r'^feedback/', include('feedback.urls')),
     url(r'^forms/', include('forms.urls')),
+    (r'^facebook/', include('django_facebook.urls')),
+    (r'^accounts/', include('django_facebook.auth_urls')), 
 
 
 
