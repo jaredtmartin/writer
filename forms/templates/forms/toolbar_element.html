@@ -1,8 +1,8 @@
-<li id="textbox-toolbar-element" class="curved toolbar-element">
+<li class="curved toolbar-element">
     {% if element.instance.klass == "TB" %}<input type="text" value="Text Box">{% endif %}
     {% if element.instance.klass == "CB" %}<input type="checkbox">Check Box {% endif %}
     {% if element.instance.klass == "RD" %}<input type="radio"> Radio Button{% endif %}
-    {% if element.instance.klass == "PW" %}<input type="password" value="Password">{% endif %}
+    {% if element.instance.klass == "PB" %}<input type="password" value="Password">{% endif %}
     {% if element.instance.klass == "UL" %}<input type="text" value="URL">{% endif %}
     {% if element.instance.klass == "EM" %}<input type="text" value="Email">{% endif %}
     {% if element.instance.klass == "TA" %}<input type="textarea" value="Text Area">{% endif %}
@@ -23,6 +23,7 @@
     {% endif %}
     <div class="sample-element-form" style="display:none;">
         {% with element as inlineform %}
+            {{element.instance.klass}}
             {% include "forms/element_inline_form.html" %}
         {% endwith %}
     </div>    
