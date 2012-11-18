@@ -10,4 +10,5 @@ urlpatterns = patterns('',
     url(r'^(?P<pk>\d+)-(?P<slug>[-\w]+)/thankyou/$', ThankYou.as_view(), name="thanks"),
     url(r'^new/$', CreateFormView.as_view(),name='new-form'),
     url(r'^(?P<pk>\d+)-(?P<slug>[-\w]+)/edit/$', UpdateFormView.as_view(), name="form-edit"),
+    url(r'^(?P<pk>\d+)-(?P<slug>[-\w]+)/csv/$', ExportCSV.as_view(), name="csv"),
 )

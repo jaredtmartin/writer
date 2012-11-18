@@ -82,6 +82,6 @@ class Result(models.Model):
         return ('result', [self.id, slugify(self.name)])
         
 class Value(models.Model):
-    element = models.ForeignKey(Element, related_name="element_values")
+    element = models.ForeignKey(Element, related_name="values")
     value = models.CharField('value', max_length=128)
-    result = models.ForeignKey(Result)
+    result = models.ForeignKey(Result, related_name="values")

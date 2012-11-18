@@ -3,10 +3,16 @@ from django.views.generic.edit import FormMixin
 from models import Form, Element, Value, Result
 from forms import make_form, make_form_class, FormModelForm, ElementInline, ElementForm
 from extra_views import CreateWithInlinesView, UpdateWithInlinesView
+import csv
+from django.http import HttpResponse
 
 def get_sample_elements():
     return [
         ElementForm(instance=Element(klass=Element.TEXTBOX)),
+        ElementForm(instance=Element(klass=Element.TEXT)),
+        ElementForm(instance=Element(klass=Element.IMAGE)),
+        ElementForm(instance=Element(klass=Element.IMAGELEFT)),
+        ElementForm(instance=Element(klass=Element.IMAGERIGHT)),
         ElementForm(instance=Element(klass=Element.PASSWORD)),
         ElementForm(instance=Element(klass=Element.TEXTAREA)),
         ElementForm(instance=Element(klass=Element.DROPDOWN)),
@@ -14,10 +20,6 @@ def get_sample_elements():
         ElementForm(instance=Element(klass=Element.URL)),
         ElementForm(instance=Element(klass=Element.COUNTRY)),
         ElementForm(instance=Element(klass=Element.EMAIL)),
-        ElementForm(instance=Element(klass=Element.TEXT)),
-        ElementForm(instance=Element(klass=Element.IMAGE)),
-        ElementForm(instance=Element(klass=Element.IMAGELEFT)),
-        ElementForm(instance=Element(klass=Element.IMAGERIGHT)),
     ]
 class FormList(ListView):
     model = Form
@@ -25,6 +27,31 @@ class FormList(ListView):
 class ThankYou(DetailView):
     model = Form
     template_name="forms/thankyou.html"
+
+class ExportCSV(DetailView):
+    model = Form
+    def get_results_headings(self):
+        values=[]
+        results=self.object.results.all()
+        if results: 
+            values=results[0].values.all()
+        return [v.element.name for v in values]
+    def render_to_response(self, context, **response_kwargs):
+        """
+        Returns a response with a template rendered with the given context.
+        """
+        response = HttpResponse(mimetype='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="form_export.csv"'
+
+        results=self.object.results.all()
+        if results: 
+            writer = csv.writer(response)
+            sample_values=results[0].values.all()
+            writer.writerow([v.element.name for v in sample_values])
+            for result in results:
+                writer.writerow([v.value for v in result.values.all()])
+#            writer.writerow(['Second row', 'A', 'B', 'C', '"Testing"', "Here's a quote"])
+        return response
     
 class FormView(DetailView, FormMixin):
     model = Form

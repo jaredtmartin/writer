@@ -48,6 +48,8 @@ def formfield(form, key):
 @register.filter(is_safe=True)   
 def field(form, key):
     return BoundField(form, form.fields[key], key)
-
-
+    
+@register.filter(is_safe=True) 
+def joinby(value, arg):
+    return arg.join(value)
 
