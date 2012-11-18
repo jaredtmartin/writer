@@ -78,8 +78,9 @@ class FormView(DetailView, FormMixin):
     def get_success_url(self):
         return self.object.success_url
     def form_valid(self, form):
-        result=Result.objects.create(form=self.object)
-        for e in self.object.elements.all():
+        result=Result.objects.create(form=self.object)  
+        # Don't include values for elements that don't really return data like images and text
+        for e in self.object.elements.exclude(klass__startswith='I').exclude(klass="TX").exclude(klass="HD"):
             c=form.cleaned_data
             Value.objects.create(element=e, value=form.cleaned_data[e.name], result=result)
         return super(FormView, self).form_valid(form)
