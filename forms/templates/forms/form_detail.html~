@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% load tags %}
 {% block content %}
-    <div class="form-display formWrapper">
-        {% if user == object.created_by %}<a href="{% url form-edit pk=object.pk slug='adsf' %}">Edit this form</a>{% endif %}
+    <div class="form-display formWrapper curved">
+        {% if user.can_edit %}<a href="{% url form-edit pk=object.pk slug='adsf' %}">Edit this form</a> <a href="{% url csv pk=object.pk slug='adsf' %}">{% endif %}
         <form action="{{object.get_absolute_url}}" method="POST">{% csrf_token %}
             {{ form.non_field_errors }}
             {% for field in form %}

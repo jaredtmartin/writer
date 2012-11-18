@@ -62,6 +62,9 @@ class FormView(DetailView, FormMixin):
         if not 'form' in context or context['form'].__class__ is Form: 
             context['form'] = make_form(self.object)
         context['object'] = self.object
+        user=self.request.user
+        user.can_edit=(user==self.object.created_by or user.is_staff)
+        context['user']=user
         return context
         
     def post(self, request, *args, **kwargs):
