@@ -8,11 +8,13 @@ from models import *
 from django.template.defaultfilters import slugify
 from django.forms.forms import BoundField
 from widgets import SubmitWidget, LabelWidget, HeaderWidget, ImageWidget
-from django.core.validators import URLValidator, validate_email
+from django.core import validators
 from django.utils.datastructures import SortedDict
 from countries import COUNTRIES
 from django.core.exceptions import ValidationError
 from extra_views import InlineFormSet
+import re
+from django.utils.translation import ugettext_lazy as _
 
 FormInlineFormSet = inlineformset_factory(Form, Element)
 
@@ -62,11 +64,10 @@ def get_field(element):
             widget = TextInput(attrs={'title':element.tooltip}),
         )
     elif element.klass == Element.URL: 
-        validate_url = URLValidator()
-        field = CharField(
+        field = URLField(
             max_length = 128, 
             required = element.required, 
-            validators=unique_validator+[validate_url],
+            validators=unique_validator, 
             widget = TextInput(attrs={'title':element.tooltip}),
             
         )
@@ -74,7 +75,7 @@ def get_field(element):
         field = CharField(
             max_length = 128, 
             required = element.required, 
-            validators=unique_validator+[validate_email],
+            validators=unique_validator+[validators.validate_email],
             widget = TextInput(attrs={'title':element.tooltip}),
         )
     elif element.klass == Element.TEXTAREA: 
