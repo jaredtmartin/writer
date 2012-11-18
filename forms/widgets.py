@@ -10,5 +10,20 @@ class HeaderWidget(widgets.Widget):
         return mark_safe('<h1>%s</h1>' % name)
 
 class LabelWidget(widgets.Widget):
+    def __init__(self, text, attrs=None):
+        self.text=text
+        super(LabelWidget,self).__init__(attrs)
     def render(self, name, value, attrs=None):
-        return mark_safe('<p>%s</p>' % name)
+        return mark_safe('<p>%s</p>' % self.text)
+        
+class ImageWidget(widgets.Widget):
+    def __init__(self,filename, label_position=None, attrs=None):
+        self.label_position=label_position
+        self.filename=filename
+        super(ImageWidget,self).__init__(attrs)
+        
+    def render(self, name, value, attrs=None):
+        html='<img src="%s" alt="%s">' % (self.filename, name)
+        if self.label_position=='left': html=name+html
+        if self.label_position=='right': html+=name
+        return mark_safe(html)

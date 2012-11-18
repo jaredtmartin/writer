@@ -24,6 +24,7 @@
     <div class="details show-hide show-hide-hidden">
         Tooltip: {{inlineform.tooltip}}<br>
         Choices:{{inlineform.details}}<br>
+        {% if inlineform.instance.uses_image %} Image:{{inlineform.image}}{% endif %}
         {{inlineform.order}}
         {{inlineform.klass}}
         {{inlineform.id}}

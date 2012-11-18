@@ -7,4 +7,5 @@
             <li class="curved" ><a href="{{ form.get_absolute_url }}">{{ form.name }}</a></li>
         {% endfor %}
     </ul>
+    <a href="{% url 'forms/thanks' %}">Add a new form</a>
 {% endblock %}

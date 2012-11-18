@@ -6,6 +6,10 @@
     {% if element.instance.klass == "UL" %}<input type="text" value="URL">{% endif %}
     {% if element.instance.klass == "EM" %}<input type="text" value="Email">{% endif %}
     {% if element.instance.klass == "TA" %}<input type="textarea" value="Text Area">{% endif %}
+    {% if element.instance.klass == "TX" %}Text{% endif %}
+    {% if element.instance.klass == "IM" %}<img src="{{STATIC_URL}}img/image.png">{% endif %}
+    {% if element.instance.klass == "IR" %}Text <img src="{{STATIC_URL}}img/image.png">{% endif %}
+    {% if element.instance.klass == "IL" %}<img src="{{STATIC_URL}}img/image.png"> Text{% endif %}
     {% if element.instance.klass == "DD" %}
         <select value="Drop-Down Box">
             <option>Option 1</option>

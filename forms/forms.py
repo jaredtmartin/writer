@@ -7,7 +7,7 @@ from django.forms.widgets import *
 from models import *
 from django.template.defaultfilters import slugify
 from django.forms.forms import BoundField
-from widgets import SubmitWidget, LabelWidget, HeaderWidget
+from widgets import SubmitWidget, LabelWidget, HeaderWidget, ImageWidget
 from django.core.validators import URLValidator, validate_email
 from django.utils.datastructures import SortedDict
 from countries import COUNTRIES
@@ -127,8 +127,30 @@ def get_field(element):
             choices=COUNTRIES,
             validators=unique_validator,
         )
+    elif element.klass == Element.TEXT: 
+        field = CharField(
+            required = False,
+            widget = LabelWidget(text=element.details),
+        )
+    elif element.klass == Element.IMAGE: 
+        if element.image: filename=element.image.url 
+        else: filename=''
+        field = CharField(
+            required = False,
+            widget = ImageWidget(filename=filename, label_position=''),
+        )
+    elif element.klass == Element.IMAGELEFT: 
+        field = CharField(
+            required = False,
+            widget = ImageWidget(filename=filename, label_position='right'),
+        )
+    elif element.klass == Element.IMAGERIGHT: 
+        field = CharField(
+            required = False,
+            widget = ImageWidget(filename=filename, label_position='left'),
+        )
     field.klass=element.klass
-    if element.klass in [Element.HEADER, Element.SUBMIT]: field.show_label=False
+    if element.klass in [Element.HEADER, Element.SUBMIT, Element.TEXT, Element.IMAGE, Element.IMAGERIGHT, Element.IMAGELEFT]: field.show_label=False
     else: field.show_label=True
     field.description=element.description
     field.required_group=element.required_group
@@ -160,7 +182,6 @@ def make_form(form_instance, data=None):
 class ElementForm(ModelForm):
     class Meta:
         model = Element
-
         exclude=('description','required_group')
 #    order = CharField(widget=HiddenInput)
 #    klass = ChoiceField(widget=HiddenInput)

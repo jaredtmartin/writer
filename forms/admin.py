@@ -20,3 +20,4 @@ class FormAdmin(admin.ModelAdmin):
     
 admin.site.register(Form, FormAdmin)
 admin.site.register(Result, ResultAdmin)
+admin.site.register(Theme)

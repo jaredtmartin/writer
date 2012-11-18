@@ -2,11 +2,17 @@ from django.db import models
 from django.template.defaultfilters import slugify
 from django.contrib.auth.models import User
 
+class Theme(models.Model):
+    name = models.CharField('Name', max_length=32)
+    code = models.TextField()
+    def __unicode__(self): return self.name
+    
 class Form(models.Model):
     name = models.CharField('Name', max_length=32)
     success_url = models.CharField('Success URL', max_length=64, default='thankyou/')
     submit_label = models.CharField('Submit Label', max_length=32, default='Submit')
     created_by = models.ForeignKey(User)
+    theme = models.ForeignKey(Theme)
     def __unicode__(self): return self.name
     @models.permalink
     def get_absolute_url(self):
@@ -17,6 +23,10 @@ class Form(models.Model):
     
 class Element(models.Model):
     HEADER = 'HD'
+    TEXT = 'TX'
+    IMAGE = 'IM'
+    IMAGERIGHT = "IR"
+    IMAGELEFT = "IL"
     TEXTBOX = 'TB'
     PASSWORD = "PB"
     TEXTAREA = 'TA'
@@ -40,7 +50,11 @@ class Element(models.Model):
 #        (SUBMIT, 'Submit'),
         (URL, 'URL'),
         (COUNTRY,'Country'),
-        (EMAIL,'Email Address')
+        (EMAIL,'Email Address'),
+        (TEXT, 'Text'),
+        (IMAGE,'Image'),
+        (IMAGELEFT,'Image on Left with Text on Right'),
+        (IMAGERIGHT,'Image on Right with Text on Left'),
     )
     name = models.CharField('Name', max_length=32)
     klass = models.CharField('Type', max_length=2, choices = ELEMENT_TYPE_CHOICES, default=TEXTBOX)
@@ -49,33 +63,16 @@ class Element(models.Model):
     description = models.CharField('Description', max_length=64, default="", blank=True)
     tooltip = models.CharField('Tooltip', max_length=64, default="", blank=True)
     order = models.IntegerField(blank=True, default=1)
+    image = models.ImageField(upload_to='forms/images/', blank=True)
     details = models.CharField('Choices', max_length=128, blank=True, default="")
     form = models.ForeignKey(Form, related_name='elements')
     required_group = models.CharField(blank=True, default=None, null=True, max_length=64)
     class Meta:
         ordering = ('order', '-id', )
     def __unicode__(self): return self.name
-#    def as_unicode(self):
-#        if self.klass == Element.HEADER:
-#            return u"<h1>%s</h1>" % self.name
-#        elif self.klass == Element.TEXTBOX:
-#            return u'<label for="%s">%s</label>: <input type="text" name="%s"><br>' % (self.name.lower(), self.name, self.name.lower())
-#        elif self.klass == Element.PASSWORD:
-#            return u'<label for="%s">%s</label>: <input type="password" name="%s"><br>' % (self.name.lower(), self.name, self.name.lower())
-#        elif self.klass == Element.TEXTAREA:
-#            return u'<label for="%s">%s</label>:<br><textarea name="%s"></textarea><br>' % (self.name.lower(), self.name, self.name.lower())
-#        elif self.klass == Element.DROPDOWN:
-#            s=u'<label for="%s">%s</label>:<select name="%s">' % (self.name.lower(), self.name, self.name.lower())
-#            for opt in self.details.split(","):
-#                s+=u'<option value="%s">%s</option>' % (opt.lower(), opt)
-#            s+=u'</select><br>'
-#            return s
-#        elif self.klass == Element.CHECKBOX:
-#            return u'<input type="checkbox" name="%s" value="%s"><label for="%s">%s</label><br>' % (self.name.lower(), self.name.lower(), self.name.lower(), self.name)
-#        elif self.klass == Element.SUBMIT:
-#            return u'<input type="submit" value="%s">' % (self.name)
-#        elif self.klass == Element.RADIO:
-#            return u'<input type="radio" name="%s" value="%s"> <label for="%s">%s</label> <br>' % (self.details.lower(), self.name.lower(), self.name.lower(), self.name)
+    @property
+    def uses_image(self):
+        return self.klass[0]=="I"
 
 class Result(models.Model):
     form = models.ForeignKey(Form, related_name='results')
@@ -88,4 +85,3 @@ class Value(models.Model):
     element = models.ForeignKey(Element, related_name="element_values")
     value = models.CharField('value', max_length=128)
     result = models.ForeignKey(Result)
-

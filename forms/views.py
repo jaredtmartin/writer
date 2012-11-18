@@ -14,6 +14,10 @@ def get_sample_elements():
         ElementForm(instance=Element(klass=Element.URL)),
         ElementForm(instance=Element(klass=Element.COUNTRY)),
         ElementForm(instance=Element(klass=Element.EMAIL)),
+        ElementForm(instance=Element(klass=Element.TEXT)),
+        ElementForm(instance=Element(klass=Element.IMAGE)),
+        ElementForm(instance=Element(klass=Element.IMAGELEFT)),
+        ElementForm(instance=Element(klass=Element.IMAGERIGHT)),
     ]
 class FormList(ListView):
     model = Form

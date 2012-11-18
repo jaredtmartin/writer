@@ -1,7 +1,7 @@
 from django.conf.urls import patterns, include, url
 from django.views.generic import TemplateView, ListView, DetailView
 from django.contrib import admin
-
+from django.conf import settings
 
 
 
@@ -22,7 +22,9 @@ urlpatterns = patterns('',
     url(r'^forms/', include('forms.urls')),
     (r'^facebook/', include('django_facebook.urls')),
     (r'^accounts/', include('django_facebook.auth_urls')), 
-
-
-
 )
+
+if settings.DEBUG:
+    urlpatterns += patterns('',
+        (r'^media/(?P<path>.*)$', 'django.views.static.serve', {
+        'document_root': settings.MEDIA_ROOT}))
