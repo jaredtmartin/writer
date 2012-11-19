@@ -7,6 +7,7 @@ import csv
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
+from django.contrib.sites.models import Site
 
 def get_sample_elements():
     return [
@@ -29,6 +30,14 @@ class FormList(ListView):
 class ThankYou(DetailView):
     model = Form
     template_name="forms/thankyou.html"
+
+class FacebookView(DetailView):
+    model = Form
+    template_name="forms/facebook.html"
+    def get_context_data(self, **kwargs):
+        context = super(FacebookView, self).get_context_data(**kwargs)
+        context['site']=Site.objects.get_current()
+        return context
 
 class ExportCSV(DetailView):
     model = Form
