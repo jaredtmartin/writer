@@ -1,6 +1,7 @@
 from django.db import models
 from django.template.defaultfilters import slugify
 from django.contrib.auth.models import User
+import random
 
 class Theme(models.Model):
     name = models.CharField('Name', max_length=32)
@@ -13,6 +14,8 @@ class Form(models.Model):
     submit_label = models.CharField('Submit Label', max_length=32, default='Submit')
     created_by = models.ForeignKey(User)
     theme = models.ForeignKey(Theme)
+    key = models.CharField('Key', max_length=32, null=True, blank=True)
+    is_private = models.BooleanField(default=True)
     def __unicode__(self): return self.name
     @models.permalink
     def get_absolute_url(self):
@@ -20,6 +23,12 @@ class Form(models.Model):
     @models.permalink
     def get_edit_url(self):
         return ('edit', [self.id, slugify(self.name)])
+    def change_key(self):
+        ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        self.key = ''.join(random.choice(ALPHABET) for i in range(32))
+    def save(self, *args, **kwargs):
+        if not self.key: self.change_key()      
+        super(Form, self).save(*args, **kwargs)
     
 class Element(models.Model):
     HEADER = 'HD'

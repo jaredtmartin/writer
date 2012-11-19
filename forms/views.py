@@ -5,6 +5,8 @@ from forms import make_form, make_form_class, FormModelForm, ElementInline, Elem
 from extra_views import CreateWithInlinesView, UpdateWithInlinesView
 import csv
 from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 
 def get_sample_elements():
     return [
@@ -87,7 +89,10 @@ class FormView(DetailView, FormMixin):
             c=form.cleaned_data
             Value.objects.create(element=e, value=form.cleaned_data[e.name], result=result)
         return super(FormView, self).form_valid(form)
-
+    @method_decorator(csrf_exempt)
+    def dispatch(self, *args, **kwargs):
+        return super(FormView, self).dispatch(*args, **kwargs)
+        
 class CreateFormView(CreateWithInlinesView):
     model = Form
     form_class = FormModelForm
