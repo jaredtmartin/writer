@@ -1,7 +1,7 @@
 from django.views.generic import ListView, DetailView, FormView
 from django.views.generic.edit import FormMixin
 from models import Form, Element, Value, Result
-from forms import make_form, make_form_class, FormModelForm, ElementInline, ElementForm
+from forms import make_form, make_form_class, FormModelForm, ElementInline, ElementForm, BareFormModelForm
 from extra_views import CreateWithInlinesView, UpdateWithInlinesView
 import csv
 from django.http import HttpResponse
@@ -9,6 +9,25 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.contrib.sites.models import Site
 
+class KeyMixin(object):
+    def get_queryset(self):
+        from django.db.models import Q
+        qs=super(KeyMixin, self).get_queryset()
+        if not self.request.user.is_staff:
+            user_id=getattr(self.request.user, "pk", None)
+            key=self.request.GET.get('key','xxx')
+            qs=qs.filter(Q(created_by_id=user_id)|Q(key=key))
+        return qs
+
+class OwnerMixin(object):
+    def get_queryset(self):
+        from django.db.models import Q
+        qs=super(OwnerMixin, self).get_queryset()
+        if not self.request.user.is_staff:
+            user_id=getattr(self.request.user, "pk", None)
+            qs=qs.filter(created_by_id=user_id)
+        return qs
+        
 def get_sample_elements():
     return [
         ElementForm(instance=Element(klass=Element.TEXTBOX)),
@@ -27,11 +46,11 @@ def get_sample_elements():
 class FormList(ListView):
     model = Form
     
-class ThankYou(DetailView):
+class ThankYou(KeyMixin, DetailView):
     model = Form
     template_name="forms/thankyou.html"
 
-class FacebookView(DetailView):
+class FacebookView(KeyMixin, DetailView):
     model = Form
     template_name="forms/facebook.html"
     def get_context_data(self, **kwargs):
@@ -39,7 +58,7 @@ class FacebookView(DetailView):
         context['site']=Site.objects.get_current()
         return context
 
-class ExportCSV(DetailView):
+class ExportCSV(OwnerMixin, DetailView):
     model = Form
     def get_results_headings(self):
         values=[]
@@ -61,23 +80,38 @@ class ExportCSV(DetailView):
             writer.writerow([v.element.name for v in sample_values])
             for result in results:
                 writer.writerow([v.value for v in result.values.all()])
-#            writer.writerow(['Second row', 'A', 'B', 'C', '"Testing"', "Here's a quote"])
         return response
-    
-class FormView(DetailView, FormMixin):
+
+class FormGetView(KeyMixin, DetailView, FormMixin):
     model = Form
     success_url = '/forms/'
     context_object_name = 'object'
     def get_context_data(self, **kwargs):
-        context = super(FormView, self).get_context_data(**kwargs)
+        context = super(FormGetView, self).get_context_data(**kwargs)
         if not 'form' in context or context['form'].__class__ is Form: 
             context['form'] = make_form(self.object)
         context['object'] = self.object
         user=self.request.user
         user.can_edit=(user==self.object.created_by or user.is_staff)
         context['user']=user
+        context['site']=Site.objects.get_current()
         return context
-        
+            
+    def get_form_class(self):
+        return make_form_class(self.object)
+    def get_success_url(self):
+        return self.object.success_url
+    def form_valid(self, form):
+        result=Result.objects.create(form=self.object)  
+        for e in self.object.elements.exclude(klass__startswith='I').exclude(klass="TX").exclude(klass="HD"):
+            c=form.cleaned_data
+            Value.objects.create(element=e, value=form.cleaned_data[e.name], result=result)
+        return super(FormGetView, self).form_valid(form)
+    @method_decorator(csrf_exempt)
+    def dispatch(self, *args, **kwargs):
+        return super(FormGetView, self).dispatch(*args, **kwargs)
+
+class FormView(FormGetView):
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         form_class = self.get_form_class()
@@ -86,21 +120,6 @@ class FormView(DetailView, FormMixin):
             return self.form_valid(form)
         else:
             return self.form_invalid(form)
-            
-    def get_form_class(self):
-        return make_form_class(self.object)
-    def get_success_url(self):
-        return self.object.success_url
-    def form_valid(self, form):
-        result=Result.objects.create(form=self.object)  
-        # Don't include values for elements that don't really return data like images and text
-        for e in self.object.elements.exclude(klass__startswith='I').exclude(klass="TX").exclude(klass="HD"):
-            c=form.cleaned_data
-            Value.objects.create(element=e, value=form.cleaned_data[e.name], result=result)
-        return super(FormView, self).form_valid(form)
-    @method_decorator(csrf_exempt)
-    def dispatch(self, *args, **kwargs):
-        return super(FormView, self).dispatch(*args, **kwargs)
         
 class CreateFormView(CreateWithInlinesView):
     model = Form
@@ -115,15 +134,15 @@ class CreateFormView(CreateWithInlinesView):
         context.update({'sample_elements': get_sample_elements()})
         return context
 
-class UpdateFormView(UpdateWithInlinesView):
+class UpdateFormView(OwnerMixin, UpdateWithInlinesView):
     model = Form
-    form_class = FormModelForm
+    form_class = BareFormModelForm
     context_object_name = 'object'
     inlines = [ElementInline]
-    def get_form_kwargs(self):
-        kwargs=super(UpdateFormView, self).get_form_kwargs()
-        kwargs.update({'request': self.request})
-        return kwargs
+#    def get_form_kwargs(self):
+#        kwargs=super(UpdateFormView, self).get_form_kwargs()
+#        kwargs.update({'request': self.request})
+#        return kwargs
     def get_context_data(self, **kwargs):
         context = super(UpdateFormView, self).get_context_data(**kwargs)
         context.update({'sample_elements': get_sample_elements()})

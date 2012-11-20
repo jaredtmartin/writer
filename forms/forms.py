@@ -34,7 +34,11 @@ class FormModelForm(ModelForm):
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request', None)
         return super(FormModelForm, self).__init__(*args, **kwargs)
-
+        
+class BareFormModelForm(ModelForm):
+    class Meta:
+        model=Form
+        fields=('id',)
 
 def string_to_choices(s):
     l=s.split(",")
@@ -141,11 +145,15 @@ def get_field(element):
             widget = ImageWidget(filename=filename, label_position=''),
         )
     elif element.klass == Element.IMAGELEFT: 
+        if element.image: filename=element.image.url 
+        else: filename=''
         field = CharField(
             required = False,
             widget = ImageWidget(filename=filename, label_position='right'),
         )
     elif element.klass == Element.IMAGERIGHT: 
+        if element.image: filename=element.image.url 
+        else: filename=''
         field = CharField(
             required = False,
             widget = ImageWidget(filename=filename, label_position='left'),

@@ -6,7 +6,6 @@ function updateOrder(event, ui){
     });
 }
 function replaceToolbarElement(event, ui){
-//    ui.item.clone().prependTo('.toolbar-elements');
     item=$('.inline .toolbar-element');
     new_id_number=$('#id_elements-TOTAL_FORMS').val();
     item.find('input, select').each(function(){
@@ -22,16 +21,13 @@ function replaceToolbarElement(event, ui){
 $(function() {
     $( ".inline" ).sortable({
         revert: true,
-//        connectWith: $(".connected-trash"),
         update: updateOrder,
         receive:replaceToolbarElement,
     }).draggable({
         connectToSortable: "#trash-can",
-//        snap: true,
         revert: false
     });
     $("#trash-can").droppable({
-//        hoverClass: "droppable-hover",
         drop: function(event, ui) {
             var element = ui.draggable.css('position', '');
             $(this).append(element);
@@ -43,43 +39,7 @@ $(function() {
         connectToSortable: ".inline",
         helper: "clone",
         revert: false,
-//        remove:replaceToolbarElement,
     });
     $("ul, li").disableSelection();
-//    $( ".toolbar-elements" ).sortable({
-//        connectWith: $(".inline"),
-//        remove:replaceToolbarElement,
-//    });
-//    $( ".toolbar-elements" ).disableSelection();
 });
 
-//=====================================================================
-
-//$(function() {
-//    $("#sortable, #sortable2").sortable({
-//        revert: true,
-//        update: function(event, ui) {
-//            var basketItems = $(this).sortable('toArray').toString();
-//            $.jnotify(basketItems, 5000);
-//        }
-//    }).draggable({
-//        connectToSortable: "#trash-can",
-//        snap: true,
-//        revert: false
-//    });
-//    $("#trash-can").droppable({
-//        hoverClass: "droppable-hover",
-//        drop: function(event, ui) {
-//            var element = ui.draggable.css('position', '');
-//            $(this).append(element);
-//            $(ui.draggable).fadeOut(1000);
-//        }
-//    });
-
-//    $(".draggable").draggable({
-//        connectToSortable: "#sortable, #sortable2",
-//        helper: "clone",
-//        revert: false
-//    });
-//    $("ul, li").disableSelection();
-//});

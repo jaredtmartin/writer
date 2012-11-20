@@ -2,7 +2,32 @@ from django.db import models
 from django.template.defaultfilters import slugify
 from django.contrib.auth.models import User
 import random
+from django.utils.decorators import wraps
 
+def permalink_with_key(the_func):
+    """
+    Make another a function more beautiful.
+    """
+    def _decorated(*args, **kwargs):
+        
+        url = the_func(*args, **kwargs)
+        if key: url+="?key="+key
+        return url
+    return _decorated
+
+def permalink(func):
+    from django.core.urlresolvers import reverse
+    @wraps(func)
+    def inner(*args, **kwargs):
+        print "args: " + str(args) 
+        print "kwargs: " + str(kwargs) 
+        key = kwargs.pop('key',None)
+        bits = func(*args, **kwargs)
+        url = reverse(bits[0], None, *bits[1:3])
+        if key: url+="?key="+key
+        return url
+    return inner
+    
 class Theme(models.Model):
     name = models.CharField('Name', max_length=32)
     code = models.TextField()
@@ -17,10 +42,12 @@ class Form(models.Model):
     key = models.CharField('Key', max_length=32, null=True, blank=True)
     is_private = models.BooleanField(default=True)
     def __unicode__(self): return self.name
+#    @permalink
     @models.permalink
     def get_absolute_url(self):
-        return ('form', [self.id, slugify(self.name)])
+        return ('form', [self.id, slugify(self.name)])    
     @models.permalink
+#    @permalink_with_key
     def get_edit_url(self):
         return ('edit', [self.id, slugify(self.name)])
     def change_key(self):
