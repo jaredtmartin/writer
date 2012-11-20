@@ -46,11 +46,11 @@ def get_sample_elements():
 class FormList(ListView):
     model = Form
     
-class ThankYou(KeyMixin, DetailView):
+class ThankYou(DetailView):
     model = Form
     template_name="forms/thankyou.html"
 
-class FacebookView(KeyMixin, DetailView):
+class FacebookView(DetailView):
     model = Form
     template_name="forms/facebook.html"
     def get_context_data(self, **kwargs):
@@ -82,7 +82,7 @@ class ExportCSV(OwnerMixin, DetailView):
                 writer.writerow([v.value for v in result.values.all()])
         return response
 
-class FormGetView(KeyMixin, DetailView, FormMixin):
+class FormGetView(DetailView, FormMixin):
     model = Form
     success_url = '/forms/'
     context_object_name = 'object'
