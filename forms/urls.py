@@ -12,5 +12,5 @@ urlpatterns = patterns('',
     url(r'^(?P<pk>\d+)-(?P<slug>[-\w]+)/edit/$', UpdateFormView.as_view(), name="form-edit"),
     url(r'^(?P<pk>\d+)-(?P<slug>[-\w]+)/csv/$', ExportCSV.as_view(), name="csv"),
     url(r'^(?P<pk>\d+)-(?P<slug>[-\w]+)/facebook/$', FacebookView.as_view(), name="facebook"),
-    url(r'^(?P<pk>\d+)-(?P<slug>[-\w]+)/get/$', FormView.as_view(), name="form-get"),
+    url(r'^(?P<pk>\d+)-(?P<slug>[-\w]+)/get/$', FormGetView.as_view(), name="form-get"),
 )
