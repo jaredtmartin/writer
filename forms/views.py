@@ -12,6 +12,7 @@ from django.conf import settings
 import base64
 import json
 import hmac
+import hashlib
 
 def base64_url_decode(inp):
     inp = inp.replace('-','+').replace('_','/')
