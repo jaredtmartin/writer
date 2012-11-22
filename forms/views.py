@@ -8,7 +8,35 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.contrib.sites.models import Site
+from django.conf import settings
 
+def base64_url_decode(inp):
+    inp = inp.replace('-','+').replace('_','/')
+    padding_factor = (4 - len(inp) % 4) % 4
+    inp += "="*padding_factor
+    return base64.decodestring(inp)
+
+
+def parse_signed_request(signed_request='a.a', secret=settings.FACEBOOK_APP_SECRET):
+    l = signed_request.split('.', 2)
+    encoded_sig = l[0]
+    payload = l[1]
+
+    sig = base64_url_decode(encoded_sig)
+    data = json.loads(base64_url_decode(payload))
+
+    if data.get('algorithm').upper() != 'HMAC-SHA256':
+        print('Unknown algorithm')
+        return None
+    else:
+        expected_sig = hmac.new(secret, msg=payload, digestmod=hashlib.sha256).digest()
+
+    if sig != expected_sig:
+        return None
+    else:
+        print('valid signed request received..')
+        return data
+        
 class KeyMixin(object):
     def get_queryset(self):
         from django.db.models import Q
@@ -109,7 +137,9 @@ class FormGetView(DetailView, FormMixin):
         return super(FormGetView, self).form_valid(form)
     @method_decorator(csrf_exempt)
     def dispatch(self, *args, **kwargs):
-        return super(FormGetView, self).dispatch(*args, **kwargs)
+        response=super(FormGetView, self).dispatch(*args, **kwargs)
+        print "parse_signed_request: " + str(parse_signed_request(self.request)) 
+        return response
 
 class FormView(FormGetView):
     def post(self, request, *args, **kwargs):
