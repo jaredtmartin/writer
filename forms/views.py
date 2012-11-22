@@ -9,6 +9,9 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.contrib.sites.models import Site
 from django.conf import settings
+import base64
+import json
+import hmac
 
 def base64_url_decode(inp):
     inp = inp.replace('-','+').replace('_','/')
@@ -138,7 +141,7 @@ class FormGetView(DetailView, FormMixin):
     @method_decorator(csrf_exempt)
     def dispatch(self, *args, **kwargs):
         response=super(FormGetView, self).dispatch(*args, **kwargs)
-        print "parse_signed_request: " + str(parse_signed_request(self.request)) 
+        print "parse_signed_request: " + str(parse_signed_request(self.request.POST{'signed_request'})) 
         return response
 
 class FormView(FormGetView):
