@@ -21,7 +21,7 @@ FormInlineFormSet = inlineformset_factory(Form, Element)
 class FormModelForm(ModelForm):
     class Meta:
         model=Form
-        exclude=('created_by',)
+        fields=('name', 'theme')
     def save(self, commit=True):
         obj = super(FormModelForm, self).save(commit=False)
         if self.request:
