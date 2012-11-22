@@ -19,26 +19,6 @@
     
 </head>
 <body>
-    <fb:login-button autologoutlink="true" onlogin="OnRequestPermission();">
-</fb:login-button>
-<script language="javascript" type="text/javascript">
-    FB.init({
-        appId: '519129288106424',
-        status: true, 
-        cookie: true, 
-        xfbml: true 
-    });  
-    function ShowMyName() {
-        FB.api("/me",
-                function (response) {
-                    alert('Name is ' + response.name);
-                });
-    }
-  
-</script>
-<button name="my_full_name" onclick="ShowMyName()" value="My Name" />
-
-
     <div id="container">
         {% block header %}{% endblock %}
         <div style="clear:both;">
