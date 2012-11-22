@@ -141,7 +141,7 @@ class FormGetView(DetailView, FormMixin):
     @method_decorator(csrf_exempt)
     def dispatch(self, *args, **kwargs):
         response=super(FormGetView, self).dispatch(*args, **kwargs)
-        print "parse_signed_request: " + str(parse_signed_request(self.request.POST{'signed_request'})) 
+        print "parse_signed_request: " + str(parse_signed_request(self.request.POST['signed_request'])) 
         return response
 
 class FormView(FormGetView):
