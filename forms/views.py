@@ -51,6 +51,7 @@ class FacebookLoginMixin(object):
             return redirect(redirect_url)
     def get(self, request, *args, **kwargs):
         try: 
+            print "request.POST.get('signed_request'): " + str(request.POST.get('signed_request')) 
             if request.facebook: 
                 print "im here"
                 self.object = self.get_object()
