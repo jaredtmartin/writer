@@ -5,7 +5,7 @@ from views import *
 
 
 urlpatterns = patterns('',
-    url(r'^$', FormList.as_view(), name='forms'),
+    url(r'^list/$', FormList.as_view(), name='forms'),
     url(r'^(?P<pk>\d+)-(?P<slug>[-\w]+)/$', FormView.as_view(), name="form"),
     url(r'^(?P<pk>\d+)-(?P<slug>[-\w]+)/$', FormView.as_view(), name="form-theme"),
     url(r'^(?P<pk>\d+)-(?P<slug>[-\w]+)/thankyou/$', ThankYou.as_view(), name="thanks"),
@@ -14,4 +14,5 @@ urlpatterns = patterns('',
     url(r'^(?P<pk>\d+)-(?P<slug>[-\w]+)/csv/$', ExportCSV.as_view(), name="csv"),
     url(r'^(?P<pk>\d+)-(?P<slug>[-\w]+)/facebook/$', FacebookView.as_view(), name="facebook"),
     url(r'^(?P<pk>\d+)-(?P<slug>[-\w]+)/get/$', FormGetView.as_view(), name="form-get"),
+    url(r'^$', TemplateView.as_view(template_name="forms/welcome.html"), name='welcome'),
 )

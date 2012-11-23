@@ -31,8 +31,10 @@ body {
     cursor:pointer;
 }
 li.toolbar-element{
-    list-style:none
+    list-style:none;
+    vertical-align:middle;
 }
 ul.toolbar-elements{
-    padding:0
+    padding:0;
 }
+

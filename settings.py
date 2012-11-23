@@ -67,16 +67,8 @@ STATIC_ROOT = os.path.join(DIRNAME, 'static/')
 # Example: "http://media.lawrence.com/static/"
 STATIC_URL = '/static/'
 
-
-
-################### Facebook Integration Settings ################### 
-FACEBOOK_APP_ID = 519129288106424
-FACEBOOK_APP_SECRET = '93c96e8759a2a91bd13336d32e398795'
-AUTH_PROFILE_MODULE = 'django_facebook.FacebookProfile'
-PROFILE_IMAGE_PATH = os.path.join(MEDIA_URL, 'facebook_profiles/%Y/%m/%d'),
-
 TEMPLATE_CONTEXT_PROCESSORS = (
-    'django_facebook.context_processors.facebook',
+#    'django_facebook.context_processors.facebook',
     'django.contrib.auth.context_processors.auth',
     'django.core.context_processors.debug',
     'django.core.context_processors.i18n',
@@ -87,7 +79,9 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 )
 
 AUTHENTICATION_BACKENDS = (
-    'django_facebook.auth_backends.FacebookBackend',
+    #'django_facebook.auth_backends.FacebookBackend',
+    'django_facebook.auth.FacebookProfileBackend',
+    'django_facebook.auth.FacebookBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
 
@@ -120,12 +114,14 @@ TEMPLATE_LOADERS = (
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    #'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_facebook.middleware.FacebookMiddleware',
+    
 )
 INTERNAL_IPS = ('127.0.0.1','localhost')
 ROOT_URLCONF = 'urls'
@@ -156,8 +152,9 @@ INSTALLED_APPS = (
     'knowledge',
     'debug_toolbar',
     'django_extensions',
-    'forms',
     'django_facebook',
+    'forms',
+
 )
 
 # A sample logging configuration. The only tangible logging
@@ -188,3 +185,11 @@ LOGGING = {
         },
     }
 }
+################### Facebook Integration Settings ################### 
+FACEBOOK_APP_ID = '519129288106424'
+FACEBOOK_APP_SECRET = '93c96e8759a2a91bd13336d32e398795'
+FACEBOOK_SECRET_KEY = '93c96e8759a2a91bd13336d32e398795'
+#AUTH_PROFILE_MODULE = 'django_facebook.FacebookProfile'
+PROFILE_IMAGE_PATH = os.path.join(MEDIA_URL, 'facebook_profiles/%Y/%m/%d')
+FACEBOOK_CANVAS_PAGE = 'https://apps.facebook.com/%s/' % FACEBOOK_APP_ID
+FACEBOOK_SCOPE = ['manage_pages']

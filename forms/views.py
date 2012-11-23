@@ -1,11 +1,12 @@
 from django.views.generic import ListView, DetailView, FormView
 from django.views.generic.edit import FormMixin
+from django.shortcuts import redirect
 from models import Form, Element, Value, Result
 from forms import make_form, make_form_class, FormModelForm, ElementInline, ElementForm, BareFormModelForm
 from extra_views import CreateWithInlinesView, UpdateWithInlinesView
 import csv
 from django.http import HttpResponse
-from django.views.decorators.csrf import csrf_exempt
+#from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.contrib.sites.models import Site
 from django.conf import settings
@@ -13,6 +14,8 @@ import base64
 import json
 import hmac
 import hashlib
+
+from django_facebook.decorators import canvas_only, facebook_required
 
 def base64_url_decode(inp):
     inp = inp.replace('-','+').replace('_','/')
@@ -40,6 +43,26 @@ def parse_signed_request(signed_request='a.a', secret=settings.FACEBOOK_APP_SECR
     else:
         print('valid signed request received..')
         return data
+class FacebookLoginMixin(object):
+    def facebook_login_redirect(self, request):
+            return_url=request.get_host()+request.get_full_path()
+            redirect_url = 'https://www.facebook.com/dialog/oauth?client_id=%s&redirect_uri=%s&state=%s' % (settings.FACEBOOK_APP_ID, return_url, '777')
+            print "are we here?"
+            return redirect(redirect_url)
+    def get(self, request, *args, **kwargs):
+        try: 
+            if request.facebook: 
+                print "im here"
+                self.object = self.get_object()
+                context = self.get_context_data(object=self.object)
+                return self.render_to_response(context)
+            else: 
+                print "im here"
+                print "request.get_host(): " + str(request.get_host()) 
+                print "request.get_full_path(): " + str(request.get_full_path()) 
+                return self.facebook_login_redirect(request)
+        except AttributeError: 
+            return self.facebook_login_redirect(request)
         
 class KeyMixin(object):
     def get_queryset(self):
@@ -114,7 +137,7 @@ class ExportCSV(OwnerMixin, DetailView):
                 writer.writerow([v.value for v in result.values.all()])
         return response
 
-class FormGetView(DetailView, FormMixin):
+class FormGetView(FacebookLoginMixin, DetailView, FormMixin):
     model = Form
     success_url = '/forms/'
     context_object_name = 'object'
@@ -127,6 +150,7 @@ class FormGetView(DetailView, FormMixin):
         user.can_edit=(user==self.object.created_by or user.is_staff)
         context['user']=user
         context['site']=Site.objects.get_current()
+        #context['me'] = self.request.facebook.graph.get_object('me')
         return context
             
     def get_form_class(self):
@@ -139,11 +163,9 @@ class FormGetView(DetailView, FormMixin):
             c=form.cleaned_data
             Value.objects.create(element=e, value=form.cleaned_data[e.name], result=result)
         return super(FormGetView, self).form_valid(form)
-    @method_decorator(csrf_exempt)
-    def dispatch(self, *args, **kwargs):
-        response=super(FormGetView, self).dispatch(*args, **kwargs)
-#        print "parse_signed_request: " + str(parse_signed_request(self.request.POST.get()['signed_request'])) 
-        return response
+#    @method_decorator(facebook_required)
+#    def dispatch(self, *args, **kwargs):
+#        return super(FormGetView, self).dispatch(*args, **kwargs)
 
 class FormView(FormGetView):
     def post(self, request, *args, **kwargs):
