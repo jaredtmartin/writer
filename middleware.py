@@ -108,8 +108,12 @@ class FacebookMiddleware(object):
         if code:
             return_uri = 'http://ec2-23-23-250-102.compute-1.amazonaws.com/forms/1-x/'
 #            return_url="http://"+request.get_host()+request.get_full_path() # This should also allow for https, but I don't have time for that now
-            data = facebook.get_access_token_from_code(code, return_uri, settings.FACEBOOK_APP_ID, settings.FACEBOOK_SECRET_KEY)
-            print "data: " + str(data) 
+            response = facebook.get_access_token_from_code(code, return_uri, settings.FACEBOOK_APP_ID, settings.FACEBOOK_SECRET_KEY)
+            print "response: " + str(response) 
+            access_token = response['access_token']
+            fb_profile = urllib.urlopen('https://graph.facebook.com/me?access_token=%s' % access_token)
+            fb_profile = json.load(fb_profile)
+            print "fb_profile: " + str(fb_profile) 
 #            import urllib2
 #            # We should be verifying the state hash here, to protect against CSRF, but we'll have to do that later
 #            
