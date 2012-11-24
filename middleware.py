@@ -114,21 +114,8 @@ class FacebookMiddleware(object):
             access_token = response['access_token']
             fb_profile = urllib.urlopen('https://graph.facebook.com/me?access_token=%s' % access_token)
             fb_profile = json.load(fb_profile)
-            print "fb_profile: " + str(fb_profile) 
-#            import urllib2
-#            # We should be verifying the state hash here, to protect against CSRF, but we'll have to do that later
-#            
-#            url = 'https://graph.facebook.com/oauth/access_token?client_id=%(id)s&redirect_uri=%(uri)s&client_secret=%(secret)s&code=%(code)s'%{'id':settings.FACEBOOK_APP_ID,'uri':return_url,'secret':settings.FACEBOOK_APP_SECRET,'code':code}
-#            response = urllib2.urlopen(url)
-#            html = response.read()
-#            print "html: " + str(html) 
-#            if data and data.get('user_id'):
-#                fb_user = data['user']
-#                fb_user['method'] = 'canvas'
-#                fb_user['uid'] = data['user_id']
-#                fb_user['access_token'] = data['oauth_token']
-#            fbuser=
-        return None
+            fb_user={'method':'code', 'uid':fb_profile['id'], 'access_token':access_token}
+        return fb_user
         
     def get_fb_user(self, request):
         """
