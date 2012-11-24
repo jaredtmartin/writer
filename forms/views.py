@@ -139,7 +139,7 @@ class ExportCSV(OwnerMixin, DetailView):
                 writer.writerow([v.value for v in result.values.all()])
         return response
 
-class FormGetView( DetailView, FormMixin):
+class FormGetView(FacebookLoginMixin, DetailView, FormMixin):
     model = Form
     success_url = '/forms/'
     context_object_name = 'object'
