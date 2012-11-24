@@ -17,24 +17,55 @@ from django.conf import settings
 
 #from django_facebook.decorators import canvas_only, facebook_required
 
-class RequireFacebookLoginMixin(object):
-    def facebook_login_redirect(self, request):
-            return_uri="http://"+request.get_host()+request.get_full_path()
-            request.session['return_uri']=return_uri
-            redirect_url = 'https://www.facebook.com/dialog/oauth?client_id=%s&redirect_uri=%s&state=%s' % (settings.FACEBOOK_APP_ID, return_uri, '777')
-            return redirect(redirect_url)
-    def get(self, request, *args, **kwargs):
-        print "request: " + str(request) 
-        print "request.facebook: " + str(request.facebook) 
-        if request.facebook: 
-            self.object = self.get_object()
-            context = self.get_context_data(object=self.object)
-            print "got this far"
-            return self.render_to_response(context)
-        else: 
-            print "now im here"
-            return self.facebook_login_redirect(request)
-        
+#class RequireFacebookLoginMixin(object):
+#    def facebook_login_redirect(self, request):
+#            return_uri="http://"+request.get_host()+request.get_full_path()
+#            request.session['return_uri']=return_uri
+#            redirect_url = 'https://www.facebook.com/dialog/oauth?client_id=%s&redirect_uri=%s&state=%s' % (settings.FACEBOOK_APP_ID, return_uri, '777')
+#            return redirect(redirect_url)
+#    def get(self, request, *args, **kwargs):
+#        print "request: " + str(request) 
+#        print "request.facebook: " + str(request.facebook) 
+#        if request.facebook: 
+#            self.object = self.get_object()
+#            context = self.get_context_data(object=self.object)
+#            print "got this far"
+#            return self.render_to_response(context)
+#        else: 
+#            print "now im here"
+#            return self.facebook_login_redirect(request)
+
+def facebook_required(function=None):
+    def _dec(view_func):
+        def _view(request, *args, **kwargs):
+            if not request.facebook:
+                return_uri="http://"+request.get_host()+request.get_full_path()
+                request.session['return_uri']=return_uri
+                redirect_url = 'https://www.facebook.com/dialog/oauth?client_id=%s&redirect_uri=%s&state=%s' % (settings.FACEBOOK_APP_ID, return_uri, '777')
+                return redirect(redirect_url)
+            else:
+                return view_func(request, *args, **kwargs)
+
+        _view.__name__ = view_func.__name__
+        _view.__dict__ = view_func.__dict__
+        _view.__doc__ = view_func.__doc__
+
+        return _view
+
+    if function is None:
+        return _dec
+    else:
+        return _dec(function)
+
+
+
+
+
+
+
+
+    
+    
 class KeyMixin(object):
     def get_queryset(self):
         from django.db.models import Q
@@ -72,11 +103,11 @@ def get_sample_elements():
 class FormList(ListView):
     model = Form
     
-class ThankYou(RequireFacebookLoginMixin, DetailView):
+class ThankYou(DetailView):
     model = Form
     template_name="forms/thankyou.html"
 
-class FacebookView(RequireFacebookLoginMixin, DetailView):
+class FacebookView(DetailView):
     model = Form
     template_name="forms/facebook.html"
     def get_context_data(self, **kwargs):
@@ -84,7 +115,7 @@ class FacebookView(RequireFacebookLoginMixin, DetailView):
         context['site']=Site.objects.get_current()
         return context
 
-class ExportCSV(RequireFacebookLoginMixin, OwnerMixin, DetailView):
+class ExportCSV(OwnerMixin, DetailView):
     model = Form
     def get_results_headings(self):
         values=[]
@@ -108,7 +139,7 @@ class ExportCSV(RequireFacebookLoginMixin, OwnerMixin, DetailView):
                 writer.writerow([v.value for v in result.values.all()])
         return response
 
-class FormGetView(RequireFacebookLoginMixin, DetailView, FormMixin):
+class FormGetView(DetailView, FormMixin):
     model = Form
     template_name = 'forms/form_show.html'
     success_url = '/forms/'
@@ -160,7 +191,7 @@ class FormView(FormGetView):
 #        context.update({'sample_elements': get_sample_elements()})
 #        return context
 
-class UpdateFormView(RequireFacebookLoginMixin, OwnerMixin, UpdateWithInlinesView):
+class UpdateFormView(OwnerMixin, UpdateWithInlinesView):
     model = Form
     form_class = BareFormModelForm
     context_object_name = 'object'
@@ -173,8 +204,11 @@ class UpdateFormView(RequireFacebookLoginMixin, OwnerMixin, UpdateWithInlinesVie
         context = super(UpdateFormView, self).get_context_data(**kwargs)
         context.update({'sample_elements': get_sample_elements()})
         return context
+    @method_decorator(facebook_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super(UpdateFormView, self).dispatch(request, *args, **kwargs)
 
-class CreateFormAndTheme(RequireFacebookLoginMixin, OwnerMixin, CreateView):
+class CreateFormAndTheme(OwnerMixin, CreateView):
     model = Form
     form_class = NameAndThemeForm
     template_name='forms/form_theme.html'
@@ -188,9 +222,14 @@ class CreateFormAndTheme(RequireFacebookLoginMixin, OwnerMixin, CreateView):
         kwargs=super(CreateFormAndTheme, self).get_form_kwargs()
         kwargs.update({'request': self.request})
         return kwargs
+    @method_decorator(facebook_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super(CreateFormAndTheme, self).dispatch(request, *args, **kwargs)
     
-class UpdateFormAndTheme(RequireFacebookLoginMixin, OwnerMixin, UpdateView):
+class UpdateFormAndTheme(OwnerMixin, UpdateView):
     model = Form
     form_class = NameAndThemeForm
     template_name='forms/form_theme.html'
-
+    @method_decorator(facebook_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super(UpdateFormAndTheme, self).dispatch(request, *args, **kwargs)
