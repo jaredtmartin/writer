@@ -25,6 +25,7 @@ class RequireFacebookLoginMixin(object):
             return redirect(redirect_url)
     def get(self, request, *args, **kwargs):
         print "request: " + str(request) 
+        print "request.facebook: " + str(request.facebook) 
         try: 
             if request.facebook: 
                 self.object = self.get_object()
