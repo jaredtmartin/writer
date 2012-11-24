@@ -2,6 +2,7 @@
 {% load tags %}
 {% block content %}
     <div class="form-display formWrapper curved">
+        {% if me %}Hello, {{me.first_name}}!!!{% endif %}
         {% if user.can_edit %}
             <a href="{% url form-edit pk=object.pk slug='adsf' %}"> Edit this form</a> <br>
             Copy this link to share this form: <a href="http://{{site.domain}}{{object.get_absolute_url}}?key={{object.key}}">{{object.name}}</a><br>

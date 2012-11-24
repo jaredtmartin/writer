@@ -151,8 +151,9 @@ class FormGetView(FacebookLoginMixin, DetailView, FormMixin):
         user=self.request.user
         user.can_edit=(user==self.object.created_by or user.is_staff)
         context['user']=user
+#        context['facebook']=self.request.facebook
         context['site']=Site.objects.get_current()
-        #context['me'] = self.request.facebook.graph.get_object('me')
+        context['me'] = self.request.facebook.graph.get_object('me')
         print "self.request: " + str(self.request) 
         return context
             
