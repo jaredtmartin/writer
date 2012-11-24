@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+    <script>
+        function assignValue(val){
+            if (val != $('#id_theme').val()){
+                $('img.theme').removeClass('selected');
+                $('#id_theme').val(val);
+                $('#id_theme_' + val).addClass('selected');
+            }        
+        }
+    </script>
+    <div class="curved">
+        <form action="" method="POST">{% csrf_token %}
+            <label for="id_name">Choose a name for your new form:</label><br>
+            <input id="id_name" type="text" maxlength="32" name="name">
+
+            <div class="horizontalScroll">
+                {% for theme in themes %}
+                    <img id="id_theme_{{theme.pk}}" class="theme" src="{{MEDIA_URL}}forms/{% if theme.image %}theme-images/{{theme.image.url}}{% else %}images/parasol.jpg{% endif %}" onclick="assignValue($(this).attr('value'));" value="{{theme.id}}" alt="" />
+                {% endfor %}
+                <input type="hidden" id="id_theme" name="theme">                
+            </div>
+
+            <input class="blue-pill" type="submit" value="Next Step ->">
+        </form>   
+    </div>
+{% endblock %}
