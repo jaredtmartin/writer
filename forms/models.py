@@ -31,6 +31,7 @@ def permalink(func):
 class Theme(models.Model):
     name = models.CharField('Name', max_length=32)
     code = models.TextField()
+    image = models.ImageField(upload_to='forms/theme-images/', blank=True)
     def __unicode__(self): return self.name
     
 class Form(models.Model):

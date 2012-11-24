@@ -1,8 +1,8 @@
-from django.views.generic import ListView, DetailView, FormView
+from django.views.generic import ListView, DetailView, FormView, CreateView, UpdateView
 from django.views.generic.edit import FormMixin
 from django.shortcuts import redirect
-from models import Form, Element, Value, Result
-from forms import make_form, make_form_class, FormModelForm, ElementInline, ElementForm, BareFormModelForm
+from models import Form, Element, Value, Result, Theme
+from forms import make_form, make_form_class, ElementInline, ElementForm, BareFormModelForm, NameAndThemeForm
 from extra_views import CreateWithInlinesView, UpdateWithInlinesView
 import csv
 from django.http import HttpResponse
@@ -10,61 +10,26 @@ from django.http import HttpResponse
 from django.utils.decorators import method_decorator
 from django.contrib.sites.models import Site
 from django.conf import settings
-import base64
-import json
-import hmac
-import hashlib
+#import base64
+#import json
+#import hmac
+#import hashlib
 
-from django_facebook.decorators import canvas_only, facebook_required
+#from django_facebook.decorators import canvas_only, facebook_required
 
-def base64_url_decode(inp):
-    inp = inp.replace('-','+').replace('_','/')
-    padding_factor = (4 - len(inp) % 4) % 4
-    inp += "="*padding_factor
-    return base64.decodestring(inp)
-
-
-def parse_signed_request(signed_request='a.a', secret=settings.FACEBOOK_APP_SECRET):
-    l = signed_request.split('.', 2)
-    encoded_sig = l[0]
-    payload = l[1]
-
-    sig = base64_url_decode(encoded_sig)
-    data = json.loads(base64_url_decode(payload))
-
-    if data.get('algorithm').upper() != 'HMAC-SHA256':
-        print('Unknown algorithm')
-        return None
-    else:
-        expected_sig = hmac.new(secret, msg=payload, digestmod=hashlib.sha256).digest()
-
-    if sig != expected_sig:
-        return None
-    else:
-        print('valid signed request received..')
-        return data
-class FacebookLoginMixin(object):
+class RequireFacebookLoginMixin(object):
     def facebook_login_redirect(self, request):
             return_uri="http://"+request.get_host()+request.get_full_path()
             request.session['return_uri']=return_uri
-#            return_uri = 'http://ec2-23-23-250-102.compute-1.amazonaws.com/forms/1-x/'
-#                         'http://ec2-23-23-250-102.compute-1.amazonaws.com/forms/1-x/'
             redirect_url = 'https://www.facebook.com/dialog/oauth?client_id=%s&redirect_uri=%s&state=%s' % (settings.FACEBOOK_APP_ID, return_uri, '777')
-#            print "are we here?"
-            print "redirect_url: " + str(redirect_url) 
             return redirect(redirect_url)
     def get(self, request, *args, **kwargs):
         try: 
-            print "request.POST.get('signed_request'): " + str(request.POST.get('signed_request')) 
             if request.facebook: 
-                print "im here"
                 self.object = self.get_object()
                 context = self.get_context_data(object=self.object)
                 return self.render_to_response(context)
             else: 
-                print "im here"
-                print "request.get_host(): " + str(request.get_host()) 
-                print "request.get_full_path(): " + str(request.get_full_path()) 
                 return self.facebook_login_redirect(request)
         except AttributeError: 
             return self.facebook_login_redirect(request)
@@ -106,11 +71,11 @@ def get_sample_elements():
 class FormList(ListView):
     model = Form
     
-class ThankYou(DetailView):
+class ThankYou(RequireFacebookLoginMixin, DetailView):
     model = Form
     template_name="forms/thankyou.html"
 
-class FacebookView(DetailView):
+class FacebookView(RequireFacebookLoginMixin, DetailView):
     model = Form
     template_name="forms/facebook.html"
     def get_context_data(self, **kwargs):
@@ -118,7 +83,7 @@ class FacebookView(DetailView):
         context['site']=Site.objects.get_current()
         return context
 
-class ExportCSV(OwnerMixin, DetailView):
+class ExportCSV(RequireFacebookLoginMixin, OwnerMixin, DetailView):
     model = Form
     def get_results_headings(self):
         values=[]
@@ -142,8 +107,9 @@ class ExportCSV(OwnerMixin, DetailView):
                 writer.writerow([v.value for v in result.values.all()])
         return response
 
-class FormGetView(FacebookLoginMixin, DetailView, FormMixin):
+class FormGetView(RequireFacebookLoginMixin, DetailView, FormMixin):
     model = Form
+    template_name = 'forms/form_show.html'
     success_url = '/forms/'
     context_object_name = 'object'
     def get_context_data(self, **kwargs):
@@ -154,10 +120,9 @@ class FormGetView(FacebookLoginMixin, DetailView, FormMixin):
         user=self.request.user
         user.can_edit=(user==self.object.created_by or user.is_staff)
         context['user']=user
-#        context['facebook']=self.request.facebook
         context['site']=Site.objects.get_current()
-        context['me'] = self.request.facebook.graph.get_object('me')
-        print "self.request: " + str(self.request) 
+        try: context['me'] = self.request.facebook.graph.get_object('me')
+        except AttributeError:pass 
         return context
             
     def get_form_class(self):
@@ -170,9 +135,6 @@ class FormGetView(FacebookLoginMixin, DetailView, FormMixin):
             c=form.cleaned_data
             Value.objects.create(element=e, value=form.cleaned_data[e.name], result=result)
         return super(FormGetView, self).form_valid(form)
-#    @method_decorator(facebook_required)
-#    def dispatch(self, *args, **kwargs):
-#        return super(FormGetView, self).dispatch(*args, **kwargs)
 
 class FormView(FormGetView):
     def post(self, request, *args, **kwargs):
@@ -184,20 +146,20 @@ class FormView(FormGetView):
         else:
             return self.form_invalid(form)
         
-class CreateFormView(CreateWithInlinesView):
-    model = Form
-    form_class = FormModelForm
-    inlines = [ElementInline]
-    def get_form_kwargs(self):
-        kwargs=super(CreateFormView, self).get_form_kwargs()
-        kwargs.update({'request': self.request})
-        return kwargs
-    def get_context_data(self, **kwargs):
-        context = super(CreateFormView, self).get_context_data(**kwargs)
-        context.update({'sample_elements': get_sample_elements()})
-        return context
+#class CreateFormView(CreateWithInlinesView):
+#    model = Form
+#    form_class = FormModelForm
+#    inlines = [ElementInline]
+#    def get_form_kwargs(self):
+#        kwargs=super(CreateFormView, self).get_form_kwargs()
+#        kwargs.update({'request': self.request})
+#        return kwargs
+#    def get_context_data(self, **kwargs):
+#        context = super(CreateFormView, self).get_context_data(**kwargs)
+#        context.update({'sample_elements': get_sample_elements()})
+#        return context
 
-class UpdateFormView(OwnerMixin, UpdateWithInlinesView):
+class UpdateFormView(RequireFacebookLoginMixin, OwnerMixin, UpdateWithInlinesView):
     model = Form
     form_class = BareFormModelForm
     context_object_name = 'object'
@@ -210,3 +172,24 @@ class UpdateFormView(OwnerMixin, UpdateWithInlinesView):
         context = super(UpdateFormView, self).get_context_data(**kwargs)
         context.update({'sample_elements': get_sample_elements()})
         return context
+
+class CreateFormAndTheme(RequireFacebookLoginMixin, OwnerMixin, CreateView):
+    model = Form
+    form_class = NameAndThemeForm
+    template_name='forms/form_theme.html'
+    def get_context_data(self, **kwargs):
+        context = super(CreateFormAndTheme, self).get_context_data(**kwargs)
+        context['themes']=Theme.objects.all()
+        try: context['me'] = self.request.facebook.graph.get_object('me')
+        except AttributeError:pass 
+        return context
+    def get_form_kwargs(self):
+        kwargs=super(CreateFormAndTheme, self).get_form_kwargs()
+        kwargs.update({'request': self.request})
+        return kwargs
+    
+class UpdateFormAndTheme(RequireFacebookLoginMixin, OwnerMixin, UpdateView):
+    model = Form
+    form_class = NameAndThemeForm
+    template_name='forms/form_theme.html'
+

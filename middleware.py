@@ -85,6 +85,7 @@ class FacebookMiddleware(object):
             settings.FACEBOOK_APP_ID, settings.FACEBOOK_SECRET_KEY)
         if fb_user:
             fb_user['method'] = 'cookie'
+            print "Authenticated with Cookie"
         return fb_user
 
     def get_fb_user_canvas(self, request):
@@ -99,22 +100,21 @@ class FacebookMiddleware(object):
                 fb_user['method'] = 'canvas'
                 fb_user['uid'] = data['user_id']
                 fb_user['access_token'] = data['oauth_token']
+                print "Authenticated with signed_request"
         return fb_user
         
     def get_fb_user_code(self, request):
         """ Attempt to find a user using a code (code). """
         fb_user = None
         code=request.GET.get('code')
-        print "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!code: " + str(code) 
         if code:
-            return_uri = request.session['return_uri'] #'http://ec2-23-23-250-102.compute-1.amazonaws.com/forms/1-x/'
-#            return_url="http://"+request.get_host()+request.get_full_path() # This should also allow for https, but I don't have time for that now
+            return_uri = request.session['return_uri']
             response = facebook.get_access_token_from_code(code, return_uri, settings.FACEBOOK_APP_ID, settings.FACEBOOK_SECRET_KEY)
-            print "response: " + str(response) 
             access_token = response['access_token']
             fb_profile = urllib.urlopen('https://graph.facebook.com/me?access_token=%s' % access_token)
             fb_profile = json.load(fb_profile)
             fb_user={'method':'code', 'uid':fb_profile['id'], 'access_token':access_token}
+            print "Authenticated with code"
         return fb_user
         
     def get_fb_user(self, request):

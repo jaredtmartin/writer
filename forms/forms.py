@@ -17,23 +17,6 @@ import re
 from django.utils.translation import ugettext_lazy as _
 
 FormInlineFormSet = inlineformset_factory(Form, Element)
-
-class FormModelForm(ModelForm):
-    class Meta:
-        model=Form
-        fields=('name', 'theme')
-    def save(self, commit=True):
-        obj = super(FormModelForm, self).save(commit=False)
-        if self.request:
-            r=self.request
-            u=self.request.user
-            a=self.request.user.is_anonymous()
-            obj.created_by = self.request.user
-        obj.save()
-        return obj
-    def __init__(self, *args, **kwargs):
-        self.request = kwargs.pop('request', None)
-        return super(FormModelForm, self).__init__(*args, **kwargs)
         
 class BareFormModelForm(ModelForm):
     class Meta:
@@ -202,3 +185,21 @@ class ElementInline(InlineFormSet):
     model = Element
     form_class=ElementForm
     extra=0
+    
+class NameAndThemeForm(ModelForm):
+    class Meta:
+        model=Form
+        fields=('name', 'theme')
+    def save(self, commit=True):
+        obj = super(NameAndThemeForm, self).save(commit=False)
+        if self.request:
+            r=self.request
+            u=self.request.user
+            a=self.request.user.is_anonymous()
+            obj.created_by = self.request.user
+        obj.save()
+        return obj
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request', None)
+        return super(NameAndThemeForm, self).__init__(*args, **kwargs)
+        

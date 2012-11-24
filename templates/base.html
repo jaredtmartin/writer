@@ -3,7 +3,6 @@
 <head>
     {% load facebook %}
     {% facebook_init %}
-        FB.getLoginStatus(getStatus(response));
         {% block facebook_code %}{% endblock %}
     {% endfacebook %}
     <title>{% block sitename %} Web Services {% endblock %}{% block title %}{% endblock %}</title>
@@ -25,6 +24,7 @@
     
 </head>
 <body>
+<!--<fb:login-button show-faces="true" max-rows="9" perms="email" autologoutlink="true" onlogin="window.location = 'http://www.example.com/facebook/facebook_test/'"></fb:login-button>-->
     <div id="container">
         {% block header %}{% endblock %}
         <div style="clear:both;">
@@ -38,6 +38,8 @@
         {% block right-panel %}{% endblock %}
         </div>
     </div>
+    <div id="fb_root"></div>
 </body>
+
 {% facebook_load %}
 </html>

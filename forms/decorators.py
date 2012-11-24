@@ -7,8 +7,7 @@ def facebook_required(function=None, redirect_field_name=REDIRECT_FIELD_NAME):
     def _passes_test(test_func, login_url=None,
                      redirect_field_name=REDIRECT_FIELD_NAME):
         if not login_url:
-            from django.conf import settings
-            login_url = settings.LOGIN_URL
+            login_url = 'https://www.facebook.com/dialog/oauth?client_id=519129288106424&redirect_uri=http://ec2-23-23-250-102.compute-1.amazonaws.com/forms/1-x/&state=USER_ID=777'
 
         def decorator(view_func):
             def _wrapped_view(request, *args, **kwargs):
