@@ -3,6 +3,7 @@ from django.contrib import auth
 import facebook
 import datetime
 import urllib
+import json
 
 class DjangoFacebook(object):
     """ Simple accessor object for the Facebook user. """
