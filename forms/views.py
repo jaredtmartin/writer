@@ -26,17 +26,13 @@ class RequireFacebookLoginMixin(object):
     def get(self, request, *args, **kwargs):
         print "request: " + str(request) 
         print "request.facebook: " + str(request.facebook) 
-        try: 
-            if request.facebook: 
-                self.object = self.get_object()
-                context = self.get_context_data(object=self.object)
-                print "got this far"
-                return self.render_to_response(context)
-            else: 
-                print "now im here"
-                return self.facebook_login_redirect(request)
-        except AttributeError: 
-            print "rose an error"
+        if request.facebook: 
+            self.object = self.get_object()
+            context = self.get_context_data(object=self.object)
+            print "got this far"
+            return self.render_to_response(context)
+        else: 
+            print "now im here"
             return self.facebook_login_redirect(request)
         
 class KeyMixin(object):
@@ -192,10 +188,6 @@ class CreateFormAndTheme(RequireFacebookLoginMixin, OwnerMixin, CreateView):
         kwargs=super(CreateFormAndTheme, self).get_form_kwargs()
         kwargs.update({'request': self.request})
         return kwargs
-    def get(self, request, *args, **kwargs):
-        print "request: " + str(request) 
-        print "request.facebook: " + str(request.facebook) 
-        return None
     
 class UpdateFormAndTheme(RequireFacebookLoginMixin, OwnerMixin, UpdateView):
     model = Form
