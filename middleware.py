@@ -107,7 +107,7 @@ class FacebookMiddleware(object):
         code=request.GET.get('code')
         print "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!code: " + str(code) 
         if code:
-            return_uri = 'http://ec2-23-23-250-102.compute-1.amazonaws.com/forms/1-x/'
+            return_uri = request.session['return_uri'] #'http://ec2-23-23-250-102.compute-1.amazonaws.com/forms/1-x/'
 #            return_url="http://"+request.get_host()+request.get_full_path() # This should also allow for https, but I don't have time for that now
             response = facebook.get_access_token_from_code(code, return_uri, settings.FACEBOOK_APP_ID, settings.FACEBOOK_SECRET_KEY)
             print "response: " + str(response) 
