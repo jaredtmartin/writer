@@ -24,6 +24,7 @@ class RequireFacebookLoginMixin(object):
             redirect_url = 'https://www.facebook.com/dialog/oauth?client_id=%s&redirect_uri=%s&state=%s' % (settings.FACEBOOK_APP_ID, return_uri, '777')
             return redirect(redirect_url)
     def get(self, request, *args, **kwargs):
+        print "request: " + str(request) 
         try: 
             if request.facebook: 
                 self.object = self.get_object()
