@@ -192,6 +192,10 @@ class CreateFormAndTheme(RequireFacebookLoginMixin, OwnerMixin, CreateView):
         kwargs=super(CreateFormAndTheme, self).get_form_kwargs()
         kwargs.update({'request': self.request})
         return kwargs
+    def get(self, request, *args, **kwargs):
+        print "request: " + str(request) 
+        print "request.facebook: " + str(request.facebook) 
+        return None
     
 class UpdateFormAndTheme(RequireFacebookLoginMixin, OwnerMixin, UpdateView):
     model = Form
