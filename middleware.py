@@ -104,6 +104,7 @@ class FacebookMiddleware(object):
         """ Attempt to find a user using a code (code). """
         fb_user = None
         code=request.GET.get('code')
+        print "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!code: " + str(code) 
         if code:
             return_url="http://"+request.get_host()+request.get_full_path() # This should also allow for https, but I don't have time for that now
             data = facebook.get_access_token_from_code(code, return_url, settings.FACEBOOK_APP_ID, settings.FACEBOOK_SECRET_KEY)
