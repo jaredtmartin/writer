@@ -45,8 +45,9 @@ def parse_signed_request(signed_request='a.a', secret=settings.FACEBOOK_APP_SECR
         return data
 class FacebookLoginMixin(object):
     def facebook_login_redirect(self, request):
-            return_url="http://"+request.get_host()+request.get_full_path()
-            redirect_url = 'https://www.facebook.com/dialog/oauth?client_id=%s&redirect_uri=%s&state=%s' % (settings.FACEBOOK_APP_ID, return_url, '777')
+            return_uri="http://"+request.get_host()+request.get_full_path()
+            return_uri = 'http://ec2-23-23-250-102.compute-1.amazonaws.com/forms/1-x/'
+            redirect_url = 'https://www.facebook.com/dialog/oauth?client_id=%s&redirect_uri=%s&state=%s' % (settings.FACEBOOK_APP_ID, return_uri, '777')
             print "are we here?"
             return redirect(redirect_url)
     def get(self, request, *args, **kwargs):
