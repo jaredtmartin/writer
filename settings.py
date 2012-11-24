@@ -120,7 +120,8 @@ MIDDLEWARE_CLASSES = (
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django_facebook.middleware.FacebookMiddleware',
+    #'django_facebook.middleware.FacebookMiddleware',
+    'middleware.FacebookMiddleware',
     
 )
 INTERNAL_IPS = ('127.0.0.1','localhost')
@@ -185,6 +186,8 @@ LOGGING = {
         },
     }
 }
+LOGIN_URL='https://www.facebook.com/dialog/oauth?client_id=YOUR_APP_ID&redirect_uri=YOUR_REDIRECT_URI&state=SOME_ARBITRARY_BUT_UNIQUE_STRING'
+
 ################### Facebook Integration Settings ################### 
 FACEBOOK_APP_ID = '519129288106424'
 FACEBOOK_APP_SECRET = '93c96e8759a2a91bd13336d32e398795'
