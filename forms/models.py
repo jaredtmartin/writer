@@ -50,7 +50,7 @@ class Form(models.Model):
     @models.permalink
 #    @permalink_with_key
     def get_edit_url(self):
-        return ('edit', [self.id, slugify(self.name)])
+        return ('form-edit', [self.id, slugify(self.name)])
     def change_key(self):
         ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
         self.key = ''.join(random.choice(ALPHABET) for i in range(32))

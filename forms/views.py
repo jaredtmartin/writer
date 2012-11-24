@@ -10,6 +10,8 @@ from django.http import HttpResponse
 from django.utils.decorators import method_decorator
 from django.contrib.sites.models import Site
 from django.conf import settings
+from django.core.urlresolvers import reverse
+import facebook
 #import base64
 #import json
 #import hmac
@@ -203,15 +205,19 @@ class UpdateFormView(OwnerMixin, UpdateWithInlinesView):
     def get_context_data(self, **kwargs):
         context = super(UpdateFormView, self).get_context_data(**kwargs)
         context.update({'sample_elements': get_sample_elements()})
+        user = facebook.get_user_from_cookie(self.request.COOKIES,settings.FACEBOOK_APP_ID, settings.FACEBOOK_APP_SECRET)
+        print "user: " + str(user) 
         return context
-    @method_decorator(facebook_required)
+    #@method_decorator(facebook_required)
     def dispatch(self, request, *args, **kwargs):
+        print "request: " + str(request) 
         return super(UpdateFormView, self).dispatch(request, *args, **kwargs)
 
 class CreateFormAndTheme(OwnerMixin, CreateView):
     model = Form
     form_class = NameAndThemeForm
     template_name='forms/form_theme.html'
+    def get_success_url(self):return self.object.get_edit_url()
     def get_context_data(self, **kwargs):
         context = super(CreateFormAndTheme, self).get_context_data(**kwargs)
         context['themes']=Theme.objects.all()
@@ -222,7 +228,7 @@ class CreateFormAndTheme(OwnerMixin, CreateView):
         kwargs=super(CreateFormAndTheme, self).get_form_kwargs()
         kwargs.update({'request': self.request})
         return kwargs
-    @method_decorator(facebook_required)
+   # @method_decorator(facebook_required)
     def dispatch(self, request, *args, **kwargs):
         return super(CreateFormAndTheme, self).dispatch(request, *args, **kwargs)
     
@@ -230,6 +236,7 @@ class UpdateFormAndTheme(OwnerMixin, UpdateView):
     model = Form
     form_class = NameAndThemeForm
     template_name='forms/form_theme.html'
-    @method_decorator(facebook_required)
+    def get_success_url(self):return self.object.get_edit_url()
+    #@method_decorator(facebook_required)
     def dispatch(self, request, *args, **kwargs):
         return super(UpdateFormAndTheme, self).dispatch(request, *args, **kwargs)
