@@ -1,4 +1,4 @@
-from django.views.generic import ListView, DetailView, FormView, CreateView, UpdateView
+from django.views.generic import ListView, DetailView, FormView, CreateView, UpdateView, TemplateView
 from django.views.generic.edit import FormMixin
 from django.shortcuts import redirect
 from models import Form, Element, Value, Result, Theme, LinkedPage
@@ -285,3 +285,9 @@ class ConfirmFacebookAddition(OwnerMixin, DetailView):
         context = super(ConfirmFacebookAddition, self).get_context_data(**kwargs)
         context['pages']=self.catch_pages()
         return context
+
+class WelcomeView(TemplateView):
+    template_name = "forms/welcome.html"
+    def dispatch(self, request, *args, **kwargs):
+        print "request: " + str(request) 
+        return super(WelcomeView, self).dispatch(request, *args, **kwargs)
