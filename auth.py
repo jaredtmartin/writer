@@ -19,6 +19,9 @@ class FacebookProfileBackend(ModelBackend):
         if fb_uid:
             user, created = User.objects.get_or_create(username=fb_uid)
             print "Let me know if you're working'"
+            print "user: " + str(user) 
+            print "created: " + str(created) 
+            print "fb_uid: " + str(fb_uid) 
             if created and fb_graphtoken:
                 try: 
                     profile=user.get_profile()
