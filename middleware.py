@@ -95,6 +95,7 @@ class FacebookMiddleware(object):
             signed_request = request.POST["signed_request"]
             data = facebook.parse_signed_request(signed_request,
                                                  settings.FACEBOOK_SECRET_KEY)
+            print "data: " + str(data) 
             if data and data.get('user_id'):
                 fb_user = data['user']
                 fb_user['method'] = 'canvas'
