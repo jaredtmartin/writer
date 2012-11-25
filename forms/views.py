@@ -261,6 +261,7 @@ class UpdateFormShare(OwnerMixin, UpdateView):
             print "context['me']: " + str(context['me']) 
             context['pages'] = self.get_pages()
             print "context: " + str(context) 
+            context['site']=Site.objects.get_current()
         except AttributeError as e:
             print "there was an error:%s" % str(e)
         return context
