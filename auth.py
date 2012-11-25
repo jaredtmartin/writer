@@ -11,10 +11,11 @@ class FacebookProfileBackend(ModelBackend):
         validated.
 
         """
-        if fb_uid and fb_graphtoken:
+
+        if fb_uid:
             user, created = User.objects.get_or_create(username=fb_uid)
             print "Let me know if you're working'"
-            if created:
+            if created and fb_graphtoken:
                 try: 
                     profile=user.get_profile()
                     print "profile exists"
