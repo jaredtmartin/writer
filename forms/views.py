@@ -273,7 +273,7 @@ class ConfirmFacebookAddition(OwnerMixin, DetailView):
     template_name = 'forms/facebook-confirmed.html'
     def catch_pages(self):
         pages=[]
-        for p in request.GET.keys():
+        for p in self.request.GET.keys():
             if p[0:11]=='tabs_added[': 
                 facebook_id = p[11:-1]
                 info=self.request.facebook.graph.request('/'+facebook_id)
