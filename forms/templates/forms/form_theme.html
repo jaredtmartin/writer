@@ -18,7 +18,7 @@
         {{form.errrors}}
         <form action="" method="POST">{% csrf_token %}
             <label for="id_name">Choose a name for your new form:</label><br>
-            {{form.name}}
+            {{form.name}}<br>
             Choose a theme:
             <div class="horizontalScroll">
                 {% for theme in themes %}
