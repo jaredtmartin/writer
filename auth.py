@@ -1,5 +1,7 @@
 from forms.models import UserProfile
 from django.contrib.auth.backends import ModelBackend
+from django.conf import settings
+from django.contrib.auth.models import User
 class FacebookProfileBackend(ModelBackend):
     """
     Authenticate a facebook user and autopopulate facebook data into the
