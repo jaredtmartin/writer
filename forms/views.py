@@ -199,6 +199,7 @@ class UpdateFormView(OwnerMixin, UpdateWithInlinesView):
     form_class = BareFormModelForm
     context_object_name = 'object'
     inlines = [ElementInline]
+    def get_success_url(self):return self.object.get_share_url()
 #    def get_form_kwargs(self):
 #        kwargs=super(UpdateFormView, self).get_form_kwargs()
 #        kwargs.update({'request': self.request})
@@ -255,6 +256,7 @@ class UpdateFormShare(OwnerMixin, UpdateView):
     form_class = ShareForm
     context_object_name = 'object'
     template_name='forms/form_share.html'
+    def get_success_url(self):return self.object.get_share_url()
     def get_pages(self):
         pages=[]
         graph=self.request.facebook.graph
@@ -265,12 +267,8 @@ class UpdateFormShare(OwnerMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super(UpdateFormShare, self).get_context_data(**kwargs)
         try: 
-            print "I'm here"
-            print "self.request.user: " + str(self.request.user) 
             context['me'] = self.request.facebook.graph.get_object('me')
-            print "context['me']: " + str(context['me']) 
             context['pages'] = self.get_pages()
-            print "context: " + str(context) 
             context['site']=Site.objects.get_current()
         except AttributeError as e:
             print "there was an error:%s" % str(e)
