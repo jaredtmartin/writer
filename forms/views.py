@@ -277,7 +277,7 @@ class ConfirmFacebookAddition(OwnerMixin, DetailView):
             if p[0:11]=='tabs_added[': 
                 facebook_id = p[11:-1]
                 info=self.request.facebook.graph.request('/'+facebook_id)
-                page = LinkedPage.objects.create(form=self.object, facebook_id=facebook_id, name=info['name'], url=info['link'], logo_url=info['logo_url'])
+                page = LinkedPage.objects.create(form=self.object, facebook_id=facebook_id, name=info['name'], url=info['link'])
                 pages.append(page)
         return pages
                 
