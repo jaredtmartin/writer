@@ -249,6 +249,7 @@ class UpdateFormShare(OwnerMixin, UpdateView):
         context = super(UpdateFormShare, self).get_context_data(**kwargs)
         try: 
             print "I'm here"
+            print "request.user: " + str(request.user) 
             context['me'] = self.request.facebook.graph.get_object('me')
             print "context['me']: " + str(context['me']) 
             context['pages'] = self.request.facebook.graph.api_request('/me/acounts')
