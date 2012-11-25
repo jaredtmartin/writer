@@ -250,6 +250,7 @@ class UpdateFormShare(OwnerMixin, UpdateView):
         try: 
             context['me'] = self.request.facebook.graph.get_object('me')
             context['pages'] = self.request.facebook.graph.api_request('/me/acounts')
+            print "context: " + str(context) 
         except AttributeError:pass 
         return context
     #@method_decorator(facebook_required)
