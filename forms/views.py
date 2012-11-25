@@ -209,7 +209,7 @@ class UpdateFormView(OwnerMixin, UpdateWithInlinesView):
         user = facebook.get_user_from_cookie(self.request.COOKIES,settings.FACEBOOK_APP_ID, settings.FACEBOOK_APP_SECRET)
         print "user: " + str(user) 
         return context
-    #@method_decorator(facebook_required)
+    @method_decorator(facebook_required)
     def dispatch(self, request, *args, **kwargs):
         print "request: " + str(request) 
         return super(UpdateFormView, self).dispatch(request, *args, **kwargs)
@@ -230,7 +230,7 @@ class CreateFormAndTheme(OwnerMixin, CreateView):
         kwargs=super(CreateFormAndTheme, self).get_form_kwargs()
         kwargs.update({'request': self.request})
         return kwargs
-   # @method_decorator(facebook_required)
+    @method_decorator(facebook_required)
     def dispatch(self, request, *args, **kwargs):
         return super(CreateFormAndTheme, self).dispatch(request, *args, **kwargs)
     
@@ -246,7 +246,7 @@ class UpdateFormAndTheme(OwnerMixin, UpdateView):
         try: context['me'] = self.request.facebook.graph.get_object('me')
         except AttributeError:pass 
         return context
-    #@method_decorator(facebook_required)
+    @method_decorator(facebook_required)
     def dispatch(self, request, *args, **kwargs):
         return super(UpdateFormAndTheme, self).dispatch(request, *args, **kwargs)
         
@@ -299,5 +299,5 @@ class ConfirmFacebookAddition(OwnerMixin, DetailView):
 class WelcomeView(TemplateView):
     template_name = "forms/welcome.html"
     def dispatch(self, request, *args, **kwargs):
-        print "request: " + str(request) 
+        # Here we have to add code to redirect users coming from facebook to the correct form.
         return super(WelcomeView, self).dispatch(request, *args, **kwargs)

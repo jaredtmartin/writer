@@ -190,7 +190,7 @@ class NameAndThemeForm(ModelForm):
     class Meta:
         model=Form
         fields=('name', 'theme')
-    theme = CharField(widget=HiddenInput)
+#    theme = CharField(widget=HiddenInput)
     def save(self, commit=True):
         obj = super(NameAndThemeForm, self).save(commit=False)
         if self.request:
