@@ -259,7 +259,7 @@ class UpdateFormShare(OwnerMixin, UpdateView):
             print "self.request.user: " + str(self.request.user) 
             context['me'] = self.request.facebook.graph.get_object('me')
             print "context['me']: " + str(context['me']) 
-            context['pages'] = get_pages()
+            context['pages'] = self.get_pages()
             print "context: " + str(context) 
         except AttributeError as e:
             print "there was an error:%s" % str(e)
