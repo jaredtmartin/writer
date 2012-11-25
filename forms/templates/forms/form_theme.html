@@ -19,7 +19,7 @@
         <form action="" method="POST">{% csrf_token %}
             <label for="id_name">Choose a name for your new form:</label><br>
             {{form.name}}
-
+            Choose a theme:
             <div class="horizontalScroll">
                 {% for theme in themes %}
                     <img id="id_theme_{{theme.pk}}" class="theme" src="{{MEDIA_URL}}forms/{% if theme.image %}theme-images/{{theme.image.url}}{% else %}images/parasol.jpg{% endif %}" onclick="assignValue($(this).attr('value'));" value="{{theme.id}}" alt="" />
