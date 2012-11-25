@@ -18,4 +18,5 @@ urlpatterns = patterns('',
     url(r'^new/$', CreateFormAndTheme.as_view(),name='new-form-theme'),
     url(r'^(?P<pk>\d+)-(?P<slug>[-\w]+)/edit-theme/$', UpdateFormAndTheme.as_view(),name='edit-form-theme'),
     url(r'^(?P<pk>\d+)-(?P<slug>[-\w]+)/share/$', UpdateFormShare.as_view(),name='form-share'),
+    url(r'^(?P<pk>\d+)-(?P<slug>[-\w]+)/confirmed/$', ConfirmFacebookAddition.as_view(), name='confirmed'),
 )

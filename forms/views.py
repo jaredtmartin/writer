@@ -268,3 +268,10 @@ class UpdateFormShare(OwnerMixin, UpdateView):
     @method_decorator(facebook_required)
     def dispatch(self, request, *args, **kwargs):
         return super(UpdateFormShare, self).dispatch(request, *args, **kwargs)
+class ConfirmFacebookAddition(DetailView):
+    model = Form
+    template_name = 'forms/facebook-confirmed.html'
+    def get_context_data(self, **kwargs):
+        context = super(UpdateFormShare, self).get_context_data(**kwargs)
+        print "request: " + str(request) 
+        return context
