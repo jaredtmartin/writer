@@ -13,7 +13,7 @@ class FacebookProfileBackend(ModelBackend):
         """
         if fb_uid and fb_graphtoken:
             user, created = User.objects.get_or_create(username=fb_uid)
-            if created or (not user.get_profile()):
+            if created:
                 try: profile=user.get_profile()
                 except: profile=UserProfile.objects.create(user=user)
                 # It would be nice to replace this with an asynchronous request

@@ -4,10 +4,7 @@
     <div class="form-display formWrapper curved">
         {% if me %}Hello, {{me.first_name}}{% endif %}
         {% if user.can_edit %}
-            <a href="{% url form-edit pk=object.pk slug='adsf' %}"> Edit this form</a> <br>
-            Copy this link to share this form: <a href="http://{{site.domain}}{{object.get_absolute_url}}?key={{object.key}}">{{object.name}}</a><br>
-            <a href="{% url csv pk=object.pk slug='adsf' %}">Download Results as CSV</a>
-            <a href="{% url facebook pk=object.pk slug='adsf' %}">Add to Facebook Page</a>
+            <a href="{{object.get_theme_url}}"> Edit this form</a> <br>
         {% endif %}
         <form action="{{object.get_absolute_url}}" method="POST">{% csrf_token %}
             {{ form.non_field_errors }}
