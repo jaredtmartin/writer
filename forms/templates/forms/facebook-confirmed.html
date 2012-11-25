@@ -6,7 +6,12 @@
         <div><a href="{{object.get_share_url}}"><span>3</span>Share!</a></div>
     </div>
     <div class="curved">
-Congratulations!  Your Form has been added as a Facebook Tab on your page.
-Click here to view your new Facebook Tab.
+        Congratulations!  Your Form has been added as a Facebook Tab on your page.
+        Click here to view your new Facebook Tab.
+        {% for page in pages %}
+        <div>
+            <img src="{{page.logo_url}}"> <a href="{{page.url}}">{{page.name}}</a>
+        </div>
+        {% endfor %}
     </div>
 {% endblock %}

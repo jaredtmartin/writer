@@ -1,7 +1,7 @@
 from django.views.generic import ListView, DetailView, FormView, CreateView, UpdateView
 from django.views.generic.edit import FormMixin
 from django.shortcuts import redirect
-from models import Form, Element, Value, Result, Theme
+from models import Form, Element, Value, Result, Theme, LinkedPage
 from forms import make_form, make_form_class, ElementInline, ElementForm, BareFormModelForm, NameAndThemeForm, ShareForm
 from extra_views import CreateWithInlinesView, UpdateWithInlinesView
 import csv
@@ -268,10 +268,20 @@ class UpdateFormShare(OwnerMixin, UpdateView):
     @method_decorator(facebook_required)
     def dispatch(self, request, *args, **kwargs):
         return super(UpdateFormShare, self).dispatch(request, *args, **kwargs)
-class ConfirmFacebookAddition(DetailView):
+class ConfirmFacebookAddition(OwnerMixin, DetailView):
     model = Form
     template_name = 'forms/facebook-confirmed.html'
+    def catch_pages(self):
+        pages=[]
+        for p in request.GET.keys():
+            if p[0:11]=='tabs_added[': 
+                facebook_id = p[11:-1]
+                info=self.request.facebook.graph.request('/'+facebook_id)
+                page = LinkedPage.objects.create(form=self.object, facebook_id=facebook_id, name=info['name'], url=info['link'], logo_url=info['logo_url'])
+                pages.append(page)
+        return pages
+                
     def get_context_data(self, **kwargs):
         context = super(ConfirmFacebookAddition, self).get_context_data(**kwargs)
-        print "self.request: " + str(self.request) 
+        context['pages']=self.catch_pages()
         return context
