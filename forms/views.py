@@ -11,6 +11,9 @@ from django.utils.decorators import method_decorator
 from django.contrib.sites.models import Site
 from django.conf import settings
 from django.core.urlresolvers import reverse
+from django.core.mail import send_mail      
+from django.template.loader import get_template
+from django.template import Context
 import facebook
 #import base64
 #import json
@@ -154,12 +157,19 @@ class FormGetView(DetailView, FormMixin):
         return make_form_class(self.object)
     def get_success_url(self):
         return self.object.success_url
+    def send_email_notification(self, result):
+        template = get_template('forms/email.txt')
+        context = Context({'result': result})
+        subject='Submission of %s form on Form Hoster' % self.object.name
+        content = plaintext.render(context)
+        send_mail(subject, content, settings.EMAIL_FROM, [self.object.email], fail_silently=False)
     def form_valid(self, form):
         result=Result.objects.create(form=self.object)  
         for e in self.object.elements.exclude(klass__startswith='I').exclude(klass="TX").exclude(klass="HD"):
             c=form.cleaned_data
             Value.objects.create(element=e, value=form.cleaned_data[e.name], result=result)
-        return super(FormGetView, self).form_valid(form)
+        if self.object.email: self.send_email_notification(result)
+        return super(FormGetView, self).form_valid(result)
 
 class FormView(FormGetView):
     def post(self, request, *args, **kwargs):

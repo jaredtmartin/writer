@@ -10,8 +10,9 @@
         Click here to view your new Facebook Tab.
         {% for page in pages %}
         <div>
-            <a href="{{page.url}}">{{page.name}}</a>
+            <a href="{{page.tab_url}}">{{page.name}}</a>
         </div>
         {% endfor %}
     </div>
 {% endblock %}
+

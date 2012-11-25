@@ -141,3 +141,6 @@ class LinkedPage(models.Model):
     name = models.CharField(max_length=255, blank=True, null=True)
     logo_url = models.TextField(blank=True, null=True)
     url = models.TextField(blank=True, null=True)
+    @property
+    def tab_url(self):
+        return "%s?sk=app_%s" % (self.url, settings.FACEBOOK_APP_ID)

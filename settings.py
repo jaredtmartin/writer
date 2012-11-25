@@ -25,6 +25,8 @@ DEBUG_TOOLBAR_CONFIG = {
     'INTERCEPT_REDIRECTS': False,
 }
 
+EMAIL_FROM = ""
+
 AUTH_PROFILE_MODULE = 'forms.UserProfile'
 
 # Local time zone for this installation. Choices can be found here:
