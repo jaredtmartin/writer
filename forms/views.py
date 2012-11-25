@@ -43,7 +43,7 @@ def facebook_required(function=None):
             if not request.facebook:
                 return_uri="http://"+request.get_host()+request.get_full_path()
                 request.session['return_uri']=return_uri
-                redirect_url = 'https://www.facebook.com/dialog/oauth?client_id=%s&redirect_uri=%s&state=%s&scope=%s' % (settings.FACEBOOK_APP_ID, return_uri, '777','manage_pages')
+                redirect_url = 'https://www.facebook.com/dialog/oauth?client_id=%s&redirect_uri=%s&state=%s&scope=%s' % (settings.FACEBOOK_APP_ID, return_uri, '777',",".join(settings.FACEBOOK_SCOPE))
                 return redirect(redirect_url)
             else:
                 return view_func(request, *args, **kwargs)
@@ -245,6 +245,13 @@ class UpdateFormShare(OwnerMixin, UpdateView):
     form_class = ShareForm
     context_object_name = 'object'
     template_name='forms/form_share.html'
+    def get_pages(self):
+        pages=[]
+        graph=self.request.facebook.graph
+        for account in graph.request('/me/accounts/')['data']:
+            if not account['category'] == 'Application':
+                pages.append(account['name'])
+        return pages
     def get_context_data(self, **kwargs):
         context = super(UpdateFormShare, self).get_context_data(**kwargs)
         try: 
@@ -252,7 +259,7 @@ class UpdateFormShare(OwnerMixin, UpdateView):
             print "self.request.user: " + str(self.request.user) 
             context['me'] = self.request.facebook.graph.get_object('me')
             print "context['me']: " + str(context['me']) 
-            context['pages'] = [ a['name'] for a in graph.request('/me/accounts/')['data']]
+            context['pages'] = get_pages()
             print "context: " + str(context) 
         except AttributeError as e:
             print "there was an error:%s" % str(e)
