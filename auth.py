@@ -30,6 +30,8 @@ class FacebookProfileBackend(ModelBackend):
                 except: 
                     profile=UserProfile.objects.create(user=user)
                     print "created profile"
+                profile.access_token = fb_graphtoken
+                profile.save()
                 # It would be nice to replace this with an asynchronous request
                 graph = facebook.GraphAPI(fb_graphtoken)
                 me = graph.get_object('me')
@@ -40,9 +42,7 @@ class FacebookProfileBackend(ModelBackend):
                         user.last_name = me['last_name']
                     if me.get('email'):
                         user.email = me['email']
-                    profile.access_token = fb_graphtoken
                     user.save()
-                    profile.save()
                     print "fb_graphtoken: " + str(fb_graphtoken) 
             return user
         return None
