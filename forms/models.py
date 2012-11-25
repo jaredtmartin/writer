@@ -2,6 +2,7 @@ from django.db import models
 from django.template.defaultfilters import slugify
 from django.contrib.auth.models import User
 import random
+from django.conf import settings
 from django.utils.decorators import wraps
 import facebook
 
