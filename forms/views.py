@@ -43,7 +43,7 @@ def facebook_required(function=None):
             if not request.facebook:
                 return_uri="http://"+request.get_host()+request.get_full_path()
                 request.session['return_uri']=return_uri
-                redirect_url = 'https://www.facebook.com/dialog/oauth?client_id=%s&redirect_uri=%s&state=%s' % (settings.FACEBOOK_APP_ID, return_uri, '777')
+                redirect_url = 'https://www.facebook.com/dialog/oauth?client_id=%s&redirect_uri=%s&state=%s&scope=%s' % (settings.FACEBOOK_APP_ID, return_uri, '777',str(settings.FACEBOOK_SCOPE))
                 return redirect(redirect_url)
             else:
                 return view_func(request, *args, **kwargs)
@@ -252,7 +252,7 @@ class UpdateFormShare(OwnerMixin, UpdateView):
             print "self.request.user: " + str(self.request.user) 
             context['me'] = self.request.facebook.graph.get_object('me')
             print "context['me']: " + str(context['me']) 
-            context['pages'] = self.request.facebook.graph.api_request('/me/acounts')
+            context['pages'] = [ a['name'] for a in graph.request('/me/accounts/')['data']]
             print "context: " + str(context) 
         except AttributeError as e:
             print "there was an error:%s" % str(e)
