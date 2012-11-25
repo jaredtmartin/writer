@@ -19,6 +19,11 @@
         {% endfor %}
 {% endblock %}
 {% block content %}
+    <div class="wizard-steps">
+        <div class="completed-step"><a href="{{object.get_theme_url}}"><span>1</span>Name & Theme</a></div>
+        <div class="active-step"><a href="#"><span>2</span>Edit Elements</a></div>
+        <div><a href="{{object.get_share_url}}"><span>3</span>Share!</a></div>
+    </div>
 <div class="form-display">
     <form method="POST">{% csrf_token %}
         <div class="curved">
@@ -40,7 +45,7 @@
             {% endfor %}
         </div>
         <div class="formWrapper">
-            <input class="blue-pill" type="submit" value="Next Step ->">
+            <input class="next" type="submit" value="Next Step ->">
         </div>
     </form>
 </div>

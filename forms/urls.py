@@ -17,4 +17,5 @@ urlpatterns = patterns('',
     url(r'^$', TemplateView.as_view(template_name="forms/welcome.html"), name='welcome'),
     url(r'^new/$', CreateFormAndTheme.as_view(),name='new-form-theme'),
     url(r'^(?P<pk>\d+)-(?P<slug>[-\w]+)/edit-theme/$', UpdateFormAndTheme.as_view(),name='edit-form-theme'),
+    url(r'^(?P<pk>\d+)-(?P<slug>[-\w]+)/share/$', UpdateFormShare.as_view(),name='form-share'),
 )

@@ -190,6 +190,7 @@ class NameAndThemeForm(ModelForm):
     class Meta:
         model=Form
         fields=('name', 'theme')
+    theme = CharField(widget=HiddenInput)
     def save(self, commit=True):
         obj = super(NameAndThemeForm, self).save(commit=False)
         if self.request:
@@ -202,4 +203,7 @@ class NameAndThemeForm(ModelForm):
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request', None)
         return super(NameAndThemeForm, self).__init__(*args, **kwargs)
-        
+class ShareForm(ModelForm):
+    class Meta:
+        model=Form
+        fields=('email',)

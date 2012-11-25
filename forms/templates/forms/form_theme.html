@@ -9,19 +9,23 @@
             }        
         }
     </script>
+    <div class="wizard-steps">
+        <div class="active-step"><a href=""><span>1</span>Name & Theme</a></div>
+        <div><a href="{{object.get_edit_url}}"><span>2</span>Edit Elements</a></div>
+        <div><a href="{{object.get_share_url}}"><span>3</span>Share!</a></div>
+    </div>
     <div class="curved">
         <form action="" method="POST">{% csrf_token %}
             <label for="id_name">Choose a name for your new form:</label><br>
-            <input id="id_name" type="text" maxlength="32" name="name">
+            {{form.name}}
 
             <div class="horizontalScroll">
                 {% for theme in themes %}
                     <img id="id_theme_{{theme.pk}}" class="theme" src="{{MEDIA_URL}}forms/{% if theme.image %}theme-images/{{theme.image.url}}{% else %}images/parasol.jpg{% endif %}" onclick="assignValue($(this).attr('value'));" value="{{theme.id}}" alt="" />
                 {% endfor %}
-                <input type="hidden" id="id_theme" name="theme">                
+                {{form.theme}}              
             </div>
-
-            <input class="blue-pill" type="submit" value="Next Step ->">
+            <input class="next" type="submit" value="Next Step ->">
         </form>   
     </div>
 {% endblock %}

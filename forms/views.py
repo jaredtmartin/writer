@@ -2,7 +2,7 @@ from django.views.generic import ListView, DetailView, FormView, CreateView, Upd
 from django.views.generic.edit import FormMixin
 from django.shortcuts import redirect
 from models import Form, Element, Value, Result, Theme
-from forms import make_form, make_form_class, ElementInline, ElementForm, BareFormModelForm, NameAndThemeForm
+from forms import make_form, make_form_class, ElementInline, ElementForm, BareFormModelForm, NameAndThemeForm, ShareForm
 from extra_views import CreateWithInlinesView, UpdateWithInlinesView
 import csv
 from django.http import HttpResponse
@@ -59,15 +59,6 @@ def facebook_required(function=None):
     else:
         return _dec(function)
 
-
-
-
-
-
-
-
-    
-    
 class KeyMixin(object):
     def get_queryset(self):
         from django.db.models import Q
@@ -216,6 +207,7 @@ class UpdateFormView(OwnerMixin, UpdateWithInlinesView):
 class CreateFormAndTheme(OwnerMixin, CreateView):
     model = Form
     form_class = NameAndThemeForm
+    context_object_name = 'object'
     template_name='forms/form_theme.html'
     def get_success_url(self):return self.object.get_edit_url()
     def get_context_data(self, **kwargs):
@@ -235,8 +227,31 @@ class CreateFormAndTheme(OwnerMixin, CreateView):
 class UpdateFormAndTheme(OwnerMixin, UpdateView):
     model = Form
     form_class = NameAndThemeForm
+    context_object_name = 'object'
     template_name='forms/form_theme.html'
     def get_success_url(self):return self.object.get_edit_url()
+    def get_context_data(self, **kwargs):
+        context = super(UpdateFormAndTheme, self).get_context_data(**kwargs)
+        context['themes']=Theme.objects.all()
+        try: context['me'] = self.request.facebook.graph.get_object('me')
+        except AttributeError:pass 
+        return context
     #@method_decorator(facebook_required)
     def dispatch(self, request, *args, **kwargs):
         return super(UpdateFormAndTheme, self).dispatch(request, *args, **kwargs)
+        
+class UpdateFormShare(OwnerMixin, UpdateView):
+    model = Form
+    form_class = ShareForm
+    context_object_name = 'object'
+    template_name='forms/form_share.html'
+    def get_context_data(self, **kwargs):
+        context = super(UpdateFormShare, self).get_context_data(**kwargs)
+        try: 
+            context['me'] = self.request.facebook.graph.get_object('me')
+            context['pages'] = self.request.facebook.graph.api_request('/me/acounts')
+        except AttributeError:pass 
+        return context
+    #@method_decorator(facebook_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super(UpdateFormShare, self).dispatch(request, *args, **kwargs)

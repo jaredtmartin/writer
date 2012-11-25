@@ -19,8 +19,6 @@ def permalink(func):
     from django.core.urlresolvers import reverse
     @wraps(func)
     def inner(*args, **kwargs):
-        print "args: " + str(args) 
-        print "kwargs: " + str(kwargs) 
         key = kwargs.pop('key',None)
         bits = func(*args, **kwargs)
         url = reverse(bits[0], None, *bits[1:3])
@@ -42,6 +40,7 @@ class Form(models.Model):
     theme = models.ForeignKey(Theme)
     key = models.CharField('Key', max_length=32, null=True, blank=True)
     is_private = models.BooleanField(default=True)
+    email = models.CharField('Email Address', max_length=64, default='', blank=True)
     def __unicode__(self): return self.name
 #    @permalink
     @models.permalink
@@ -50,7 +49,13 @@ class Form(models.Model):
     @models.permalink
 #    @permalink_with_key
     def get_edit_url(self):
-        return ('form-edit', [self.id, slugify(self.name)])
+        return ('form-edit', [self.id, slugify(self.name)])  
+    @models.permalink
+    def get_share_url(self):
+        return ('form-share', [self.id, slugify(self.name)])  
+    @models.permalink
+    def get_theme_url(self):
+        return ('edit-form-theme', [self.id, slugify(self.name)])
     def change_key(self):
         ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
         self.key = ''.join(random.choice(ALPHABET) for i in range(32))
