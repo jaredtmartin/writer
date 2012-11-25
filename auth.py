@@ -22,6 +22,7 @@ class FacebookProfileBackend(ModelBackend):
             print "user: " + str(user) 
             print "created: " + str(created) 
             print "fb_uid: " + str(fb_uid) 
+            print "fb_graphtoken: " + str(fb_graphtoken) 
             if created and fb_graphtoken:
                 try: 
                     profile=user.get_profile()
