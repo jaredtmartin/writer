@@ -248,11 +248,13 @@ class UpdateFormShare(OwnerMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super(UpdateFormShare, self).get_context_data(**kwargs)
         try: 
+            print "I'm here"
             context['me'] = self.request.facebook.graph.get_object('me')
+            print "context['me']: " + str(context['me']) 
             context['pages'] = self.request.facebook.graph.api_request('/me/acounts')
             print "context: " + str(context) 
         except AttributeError:pass 
         return context
-    #@method_decorator(facebook_required)
+    @method_decorator(facebook_required)
     def dispatch(self, request, *args, **kwargs):
         return super(UpdateFormShare, self).dispatch(request, *args, **kwargs)
