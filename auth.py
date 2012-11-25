@@ -13,9 +13,14 @@ class FacebookProfileBackend(ModelBackend):
         """
         if fb_uid and fb_graphtoken:
             user, created = User.objects.get_or_create(username=fb_uid)
+            print "Let me know if you're working'"
             if created:
-                try: profile=user.get_profile()
-                except: profile=UserProfile.objects.create(user=user)
+                try: 
+                    profile=user.get_profile()
+                    print "profile exists"
+                except: 
+                    profile=UserProfile.objects.create(user=user)
+                    print "created profile"
                 # It would be nice to replace this with an asynchronous request
                 graph = facebook.GraphAPI(fb_graphtoken)
                 me = graph.get_object('me')
@@ -29,5 +34,6 @@ class FacebookProfileBackend(ModelBackend):
                     profile.access_token = fb_graphtoken
                     user.save()
                     profile.save()
+                    print "fb_graphtoken: " + str(fb_graphtoken) 
             return user
         return None
