@@ -1,6 +1,14 @@
 {% extends "base.html" %}
 {% block head %}
-    
+    <script>
+        function addPageTab() {
+            var obj = {
+                method: 'pagetab',
+                redirect_uri: "http://{{site.domain}}{% url confirmed pk=object.pk slug='x' %}",
+            };
+            FB.ui(obj);
+        } 
+    </script>
 {% endblock %}
 {% block content %}
     <div class="wizard-steps">
@@ -20,6 +28,7 @@
             <h3>To add your form to facebook, it's just 2 simple steps:</h3> 
             Step 1: <a href="http://www.facebook.com/pages/create.php" target="_blank">Click here to create a Facebook page if you don't already have one.</a><br>
             Step 2: <a href="https://www.facebook.com/dialog/pagetab?app_id=51912928810642&display=popup4&next=http://{{site.domain}}{% url confirmed pk=object.pk slug='x' %}">Click here to add your form to your facebook page</a><br>
+            <a onclick='addPageTab(); return false;'>Add PageTab</a>
             <a href="{% url facebook pk=object.pk slug='adsf' %}">Add to Facebook Page</a>
         </form>   
     </div>
