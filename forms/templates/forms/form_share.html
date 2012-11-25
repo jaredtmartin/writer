@@ -13,7 +13,7 @@
             <h1>Your form is almost ready.</h1>
             Copy this link to share this form: <a href="http://{{site.domain}}{{object.get_absolute_url}}">{{object.name}}</a><br>
             Give us an email address where we can send the results: <br>
-            <input type="text" id="id_email" name="email"> <a href="#" onclick="$('#share_form').submit();">Save</a><br>
+            <input type="text" id="id_email" name="email" value={{object.email}}> <a href="#" onclick="$('#share_form').submit();">Save</a><br>
             Or...<br>
             <a href="{% url csv pk=object.pk slug='x' %}">Download Results as CSV</a>
 
