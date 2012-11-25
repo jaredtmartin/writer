@@ -273,5 +273,5 @@ class ConfirmFacebookAddition(DetailView):
     template_name = 'forms/facebook-confirmed.html'
     def get_context_data(self, **kwargs):
         context = super(ConfirmFacebookAddition, self).get_context_data(**kwargs)
-        print "request: " + str(request) 
+        print "self.request: " + str(self.request) 
         return context
