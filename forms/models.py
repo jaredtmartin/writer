@@ -136,7 +136,7 @@ class UserProfile(models.Model):
     def graph(self): return facebook.GraphAPI(self.access_token)
     
 class LinkedPage(models.Model):
-    facebook_id = models.BigIntegerField(blank=True, unique=True, null=True)
+    facebook_id = models.BigIntegerField(blank=True, null=True)
     form = models.ForeignKey(Form, related_name='pages')
     name = models.CharField(max_length=255, blank=True, null=True)
     logo_url = models.TextField(blank=True, null=True)
