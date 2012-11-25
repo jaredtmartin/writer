@@ -24,6 +24,9 @@ DATABASES = {
 DEBUG_TOOLBAR_CONFIG = {
     'INTERCEPT_REDIRECTS': False,
 }
+
+AUTH_PROFILE_MODULE = 'forms.UserProfile'
+
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
@@ -80,7 +83,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 
 AUTHENTICATION_BACKENDS = (
     #'django_facebook.auth_backends.FacebookBackend',
-    'django_facebook.auth.FacebookProfileBackend',
+    'auth.FacebookProfileBackend',
     'django_facebook.auth.FacebookBackend',
     'django.contrib.auth.backends.ModelBackend',
 )

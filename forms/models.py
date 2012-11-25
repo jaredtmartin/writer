@@ -3,6 +3,7 @@ from django.template.defaultfilters import slugify
 from django.contrib.auth.models import User
 import random
 from django.utils.decorators import wraps
+import facebook
 
 def permalink_with_key(the_func):
     """
@@ -127,3 +128,9 @@ class Value(models.Model):
     element = models.ForeignKey(Element, related_name="values")
     value = models.CharField('value', max_length=128)
     result = models.ForeignKey(Result, related_name="values")
+    
+class UserProfile(models.Model):
+    user = models.OneToOneField(User)
+    access_token = models.TextField(blank=True, help_text='Facebook token for offline access', null=True)
+    @property
+    def graph(self): return facebook.GraphAPI(self.access_token)
