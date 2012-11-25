@@ -43,7 +43,7 @@ def facebook_required(function=None):
             if not request.facebook:
                 return_uri="http://"+request.get_host()+request.get_full_path()
                 request.session['return_uri']=return_uri
-                redirect_url = 'https://www.facebook.com/dialog/oauth?client_id=%s&redirect_uri=%s&state=%s&scope=%s' % (settings.FACEBOOK_APP_ID, return_uri, '777',str(settings.FACEBOOK_SCOPE))
+                redirect_url = 'https://www.facebook.com/dialog/oauth?client_id=%s&redirect_uri=%s&state=%s&scope=%s' % (settings.FACEBOOK_APP_ID, return_uri, '777','manage_pages')
                 return redirect(redirect_url)
             else:
                 return view_func(request, *args, **kwargs)
