@@ -118,6 +118,9 @@ class Element(models.Model):
     @property
     def uses_image(self):
         return self.klass[0]=="I"
+    @property
+    def uses_choices(self):
+        return self.klass in ['RD', 'DD']
 
 class Result(models.Model):
     form = models.ForeignKey(Form, related_name='results')

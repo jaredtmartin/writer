@@ -1,30 +1,22 @@
 <div class="inlineform formWrapper curved">
     {{inlineform.errors}}
-    
     <div class="name-area">
-        {{inlineform.name}}<br>
-            <span toggled-color="red" untoggled-color="grey" 
-                toggled-text="Required" untoggled-text="Not required" class="toggle-text">
-                <a>Not required </a>
-                {{inlineform.required}} 
-            </span>
-            <span toggled-color="red" untoggled-color="grey" 
-                toggled-text="Unique" untoggled-text="Not unique" class="toggle-text">
-                <a>Not unique</a>
-                {{inlineform.unique}} 
-            </span>
-            
+        <div class="element-feature">Title: {{inlineform.name}}</div>
+        {% if inlineform.instance.uses_choices %}<div class="element-feature">Choices: {{inlineform.details}}</div>{% endif %}
+        {% if inlineform.instance.uses_image %}<div class="element-feature">Image: {{inlineform.image}}</div>{% endif %}
     </div>
     <div class="preview-area">
-        <input type="text" value="Preview">
+        {% with element=inlineform %}
+            {% include "forms/element_preview.html" %}
+        {% endwith %}
     </div>
-    <span id="clearfloat"></span>
-    <div class="show-hide show-hide-trigger show-hide-shown">Show</div>
+    <div style="clear:both;"></div>
+    <div class="show-hide show-hide-trigger show-hide-shown">Show More Options</div>
     <div class="show-hide show-hide-trigger show-hide-hidden">Hide</div>
     <div class="details show-hide show-hide-hidden">
-        Tooltip: {{inlineform.tooltip}}<br>
-        Choices:{{inlineform.details}}<br>
-        {% if inlineform.instance.uses_image %} Image:{{inlineform.image}}{% endif %}
+        <div class="element-feature">Tooltip: {{inlineform.tooltip}}</div>
+        <div class="element-feature">Required: {{inlineform.required}}</div>
+        <div class="element-feature">Unique: {{inlineform.unique}}</div>
         {{inlineform.order}}
         {{inlineform.klass}}
         {{inlineform.id}}

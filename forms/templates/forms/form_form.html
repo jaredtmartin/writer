@@ -1,14 +1,17 @@
 {% extends "base.html" %}
 {% block head %}
     <script src="{{ STATIC_URL}}js/sortable-inlines.js"></script>
+    
     <link href="{{ STATIC_URL}}css/sortable-inlines.css" rel="stylesheet" type="text/css" />
-    <script src="{{ STATIC_URL}}js/toggle-text.js"></script>
+    <link href="{{ STATIC_URL}}css/form.css" rel="stylesheet" type="text/css" />
+    <script src="{{ STATIC_URL}}js/jquery.jeditable.js"></script>
     <script>
         $(function() {
             $(".show-hide-hidden").hide();
             $(".show-hide-trigger").click(function () {
                 $(this).parent().find('.show-hide').toggle();
             });
+<!--            $('.jEditable').editable();-->
         });
     </script>
 {% endblock %}

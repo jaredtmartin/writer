@@ -19,7 +19,7 @@ import facebook
 def facebook_required(function=None):
     def _dec(view_func):
         def _view(request, *args, **kwargs):
-            if not request.facebook:
+            if not request.facebook and not settings.DEBUG:
                 return_uri="http://"+request.get_host()+request.get_full_path()
                 request.session['return_uri']=return_uri
                 redirect_url = 'https://www.facebook.com/dialog/oauth?client_id=%s&redirect_uri=%s&state=%s&scope=%s' % (settings.FACEBOOK_APP_ID, return_uri, '777',",".join(settings.FACEBOOK_SCOPE))
@@ -157,23 +157,19 @@ class FormView(FormGetView):
         else:
             return self.form_invalid(form)
 
-class UpdateFormView(OwnerMixin, UpdateWithInlinesView):
+class UpdateFormView( UpdateWithInlinesView):
     model = Form
     form_class = BareFormModelForm
     context_object_name = 'object'
     inlines = [ElementInline]
     def get_success_url(self):return self.object.get_share_url()
-#    def get_form_kwargs(self):
-#        kwargs=super(UpdateFormView, self).get_form_kwargs()
-#        kwargs.update({'request': self.request})
-#        return kwargs
     def get_context_data(self, **kwargs):
         context = super(UpdateFormView, self).get_context_data(**kwargs)
         context.update({'sample_elements': get_sample_elements()})
         user = facebook.get_user_from_cookie(self.request.COOKIES,settings.FACEBOOK_APP_ID, settings.FACEBOOK_APP_SECRET)
         print "user: " + str(user) 
         return context
-    @method_decorator(facebook_required)
+#    @method_decorator(facebook_required)
     def dispatch(self, request, *args, **kwargs):
         print "request: " + str(request) 
         return super(UpdateFormView, self).dispatch(request, *args, **kwargs)

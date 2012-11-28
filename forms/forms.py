@@ -7,7 +7,7 @@ from django.forms.widgets import *
 from models import *
 from django.template.defaultfilters import slugify
 from django.forms.forms import BoundField
-from widgets import SubmitWidget, LabelWidget, HeaderWidget, ImageWidget
+from widgets import SubmitWidget, LabelWidget, HeaderWidget, ImageWidget, jEditableWidget
 from django.core import validators
 from django.utils.datastructures import SortedDict
 from countries import COUNTRIES
@@ -171,15 +171,24 @@ def make_form(form_instance, data=None):
     form = make_form_class(form_instance)(data)
     return form
 
+class TestChoiceField(ChoiceField):
+    def validate(self, value):
+        """
+        Validates that the input is in self.choices.
+        """
+        print "value: " + str(value) 
+        print "type(value): " + str(type(value)) 
+        print "self.choices: " + str(self.choices) 
+        super(TestChoiceField, self).validate(value)
 class ElementForm(ModelForm):
     class Meta:
         model = Element
         exclude=('description','required_group')
-#    order = CharField(widget=HiddenInput)
-#    klass = ChoiceField(widget=HiddenInput)
+    order = CharField(widget=HiddenInput)
+    klass = ChoiceField(choices=Element.ELEMENT_TYPE_CHOICES, widget=HiddenInput)
 #    required = BooleanField(widget=HiddenInput)
 #    unique = BooleanField(widget=HiddenInput)
-#    name = CharField(widget=TextInput(attrs={'class':'hintTextbox'}))
+#    name = CharField(widget=jEditableWidget())
     
 class ElementInline(InlineFormSet):
     model = Element

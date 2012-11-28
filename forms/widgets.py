@@ -27,3 +27,11 @@ class ImageWidget(widgets.Widget):
         if self.label_position=='left': html=name+html
         if self.label_position=='right': html+=name
         return mark_safe(html)
+
+class jEditableWidget(widgets.Widget):
+    def render(self, name, value, attrs=None):
+        element_id=attrs.get('id','XXX')
+        print "attrs: " + str(attrs) 
+        return mark_safe('<div class="jEditable" id="%s">%s</div>' % (element_id, name))
+
+
