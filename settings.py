@@ -160,6 +160,7 @@ INSTALLED_APPS = (
     'django_extensions',
     'django_facebook',
     'forms',
+    'articles',
 
 )
 

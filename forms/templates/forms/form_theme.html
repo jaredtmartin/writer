@@ -22,7 +22,7 @@
             Choose a theme:
             <div class="horizontalScroll">
                 {% for theme in themes %}
-                    <img id="id_theme_{{theme.pk}}" class="theme" src="{{MEDIA_URL}}forms/{% if theme.image %}theme-images/{{theme.image.url}}{% else %}images/parasol.jpg{% endif %}" onclick="assignValue($(this).attr('value'));" value="{{theme.id}}" alt="" />
+                    <img id="id_theme_{{theme.pk}}" class="theme" src="{% if theme.image %}{{theme.image.url}}{% else %}{{MEDIA_URL}}forms/images/parasol.jpg{% endif %}" onclick="assignValue($(this).attr('value'));" value="{{theme.id}}" alt="" />
                 {% endfor %}
                 <input id="id_theme" name="theme" type="hidden" value="{{object.theme_id}}">           
             </div>

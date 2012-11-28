@@ -1,6 +1,7 @@
 from django.db import models
 from django.template.defaultfilters import slugify
 from django.contrib.auth.models import User
+from django.db.models.signals import post_save
 import random
 from django.conf import settings
 from django.utils.decorators import wraps
@@ -135,7 +136,13 @@ class UserProfile(models.Model):
     access_token = models.TextField(blank=True, help_text='Facebook token for offline access', null=True)
     @property
     def graph(self): return facebook.GraphAPI(self.access_token)
-    
+
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        UserProfile.objects.create(user=instance)
+
+post_save.connect(create_user_profile, sender=User)
+
 class LinkedPage(models.Model):
     facebook_id = models.BigIntegerField(blank=True, null=True)
     form = models.ForeignKey(Form, related_name='pages')

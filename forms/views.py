@@ -15,30 +15,6 @@ from django.core.mail import send_mail
 from django.template.loader import get_template
 from django.template import Context
 import facebook
-#import base64
-#import json
-#import hmac
-#import hashlib
-
-#from django_facebook.decorators import canvas_only, facebook_required
-
-#class RequireFacebookLoginMixin(object):
-#    def facebook_login_redirect(self, request):
-#            return_uri="http://"+request.get_host()+request.get_full_path()
-#            request.session['return_uri']=return_uri
-#            redirect_url = 'https://www.facebook.com/dialog/oauth?client_id=%s&redirect_uri=%s&state=%s' % (settings.FACEBOOK_APP_ID, return_uri, '777')
-#            return redirect(redirect_url)
-#    def get(self, request, *args, **kwargs):
-#        print "request: " + str(request) 
-#        print "request.facebook: " + str(request.facebook) 
-#        if request.facebook: 
-#            self.object = self.get_object()
-#            context = self.get_context_data(object=self.object)
-#            print "got this far"
-#            return self.render_to_response(context)
-#        else: 
-#            print "now im here"
-#            return self.facebook_login_redirect(request)
 
 def facebook_required(function=None):
     def _dec(view_func):
@@ -180,19 +156,6 @@ class FormView(FormGetView):
             return self.form_valid(form)
         else:
             return self.form_invalid(form)
-        
-#class CreateFormView(CreateWithInlinesView):
-#    model = Form
-#    form_class = FormModelForm
-#    inlines = [ElementInline]
-#    def get_form_kwargs(self):
-#        kwargs=super(CreateFormView, self).get_form_kwargs()
-#        kwargs.update({'request': self.request})
-#        return kwargs
-#    def get_context_data(self, **kwargs):
-#        context = super(CreateFormView, self).get_context_data(**kwargs)
-#        context.update({'sample_elements': get_sample_elements()})
-#        return context
 
 class UpdateFormView(OwnerMixin, UpdateWithInlinesView):
     model = Form

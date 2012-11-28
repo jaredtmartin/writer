@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <a href="/articles/"}}>Back to list</a>
+    <h2>Article #{{article.pk}}</h2>
+    Keyword: {{ article.keyword }}<br>
+    Minimum {{article.length}} words.<br>
+    <form action="/article/{{ article.id }}/" method="post">
+    {% csrf_token %}
+    {{ form.body }}
+    <input type="submit" value="Submit" />
+{% endblock %}
+
