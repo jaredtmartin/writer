@@ -1,123 +1,21 @@
-{% extends "base.html" %}
-{% block css %}
-    <link rel="stylesheet" type="text/css" href="/static/admin/css/changelists.css">
-{% endblock %}
-{% block js %}
-    <script type="text/javascript">
-    (function($) {
-        $(document).ready(function($) {
-            $("tr input.action-select").actions();
-        });
-    })(django.jQuery); 
-    </script>
+{% extends 'writeaid_base.html' %}
+{% load static %}
+{% block head %}
+<link href="{% static "css/writersaxis.css" %}" rel="stylesheet" type="text/css" />
 {% endblock %}
 {% block content %}
-    <div id="content-main">
-    <form id="changelist-form" action method="post">
-        {% csrf_token %}
-        <h2>Assigned Articles</h2>
-        <div class="actions">
-            <label>Action: 
-                <select name="action">
-                    <option value="" selected="selected">---------</option>
-                    <option value="delete_selected">Delete selected articles</option>
-                    <option value="approve">Approve selected articles</option>
-                    <option value="reject">Reject selected articles</option>
-                    <option value="publish">Publish selected articles</option>
-                    <option value="submit">Submit selected articles</option>
-                    <option value="release">Release selected articles</option>
-                    <option value="claim">Claim selected articles</option>
-                    <option value="reject_and_release">Reject and release selected articles</option>
-                </select>
-            </label>
-            <input type="hidden" class="select-across" value="0" name="select_across">
-            <button type="submit" class="button" title="Run the selected action" name="index" value="0">Go</button>
-    
-        <script type="text/javascript">var _actions_icnt="1";</script>
-        <span class="action-counter" style="display: inline; ">0 of 1 selected</span>
-        
-    
+
+<div id="content-main">
+    {% with block_header='Available' articles=available %}
+    {% include "articles/article_list_block.html" %}
+    {% endwith %}
 </div>
-        <table id="assigned_list">
-            <thead>
-                <tr>
-                    <th scope="col" class="action-checkbox-column">
-                        <div class="text">
-                            <span>
-                                <input type="checkbox" id="action-toggle" style="display: inline-block; ">
-                            </span>
-                        </div>
-                        <div class="clear"></div>
-                    </th>
-                    <th scope="col">
-                        <div class="text">
-                            <span>Name</span>
-                        </div>
-                        <div class="clear"></div>
-                    </th>
-                    <th scope="col">
-                        <div class="text">
-                            <span>Words</span>
-                        </div>
-                        <div class="clear"></div>
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for article in assigned %}
-                    <tr class="row1">
-                        <td class="action-checkbox">
-                            <input type="checkbox" class="action-select" value="3" name="_selected_action">
-                        </td>
-                        <th>
-                            <a href="{{article.pk}}/">{{article.name}}</a>
-                        </th>
-                        <td>{{article.minimum}} {% if article.maximum %} / {{article.maximum}} {% endif %}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        
-        <h2>Available Articles</h2>       
-        <table id="available_list">
-            <thead>
-                <tr>
-                    <th scope="col" class="action-checkbox-column">
-                        <div class="text">
-                            <span>
-                                <input type="checkbox" id="action-toggle" style="display: inline-block; ">
-                            </span>
-                        </div>
-                        <div class="clear"></div>
-                    </th>
-                    <th scope="col">
-                        <div class="text">
-                            <span>Name</span>
-                        </div>
-                        <div class="clear"></div>
-                    </th>
-                    <th scope="col">
-                        <div class="text">
-                            <span>Words</span>
-                        </div>
-                        <div class="clear"></div>
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for article in available %}
-                    <tr class="row1">
-                        <td class="action-checkbox">
-                            <input type="checkbox" class="action-select" value="{{article.pk}}" name="_selected_action">
-                        </td>
-                        <th>
-                            <a href="{{article.pk}}/">{{article.name}}</a>
-                        </th>
-                        <td>{{article.minimum}} {% if article.maximum %} / {{article.maximum}} {% endif %}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </form>
-    </div>
+<div id="searchbar">
+<form method="get" action="" id="filter-form">
+    <label for="searchbar"><img alt="Search" src="/static/admin/img/icon_searchbox.png"></label>
+    <input type="text" id="searchbar" value="{{q}}" name="q" size="40">
+    {{ filter.form.as_p }}
+    <input type="submit" value="Search">
+</form>
+</div>
 {% endblock %}

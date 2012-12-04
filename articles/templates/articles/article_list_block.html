@@ -1,0 +1,47 @@
+<div class="block">
+  <div class="block_head">
+    <div class="bheadl"></div>
+    <div class="bheadr"></div>
+    <h2>{{block_header}}</h2>
+  </div>
+  <!-- .block_head ends -->
+  
+  <div class="block_content">
+    <form method="post" action="">
+      <table width="100%" cellspacing="0" cellpadding="0" id="articles" class="table sortable">
+        <thead> 
+        <tr>
+          <th width="15" class="header">&nbsp;</th>
+          <th width="185" class="header">Type</th>
+          <th class="header">Keywords</th>          
+          <th width="145" class="header">Assigned To</th>     
+          <th width="100" align="right" style="text-align: right;" class="header">Priority/Length</th>
+          <!--<th>&nbsp;</th>--> 
+        </tr>
+        </thead>
+        <tbody>
+            {% for article in articles %}
+                <tr id="row{{article.id}}" class="parent even" style="background-color: rgb(251, 251, 251);">
+                  <td><a class="submit_popup" href="{{article.get_claim_url}}"><img width="16" height="16" class="expand" alt="Claim Article(s)" src="{{STATIC_URL}}/img/arrow-right_16x16.gif"></a></td>
+                  <td style="max-width:200px;"><a class="submit_popup" href="{{article.get_absolute_url}}">{{article.klass}}</a></td>
+                  <td title="{{article.keywords}}" class="q_desc">{{article.keywords}}</td>              
+                  <td>{% if article.assigned %}{{article.assigned}}{% else %}Nobody{% endif %}</td>              
+                  <td align="right" style="text-align: right;">
+                    <ul align="right" class="priority">
+                        <li title="22 hours remaining" class="purple-keyword cur_help">high</li>                  
+                        <li title="100 words" class="gray-keyword">100</li>
+                        <li title="Edit Article Info" class="none">&nbsp;&nbsp;<a class="claim_popup" href="http://www.writeaid.net/functions/edit.php?topic=45523"><img width="16" height="16" alt="Edit Article Info" src="{{STATIC_URL}}/img/edit_16x16.gif"></a></li>                
+                    </ul>
+                  </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+      </table>
+    </form>
+  </div>
+  <!-- .block_content ends -->
+  
+  <div class="bendl"></div>
+  <div class="bendr"></div>
+</div>
+<!-- .block ends -->

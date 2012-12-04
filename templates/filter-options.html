@@ -1,0 +1,14 @@
+{% load common_tags %}
+<div id="filters">
+    {% if filters %}
+        <h2>Filter</h2>
+        {% for filter in filters %}
+        <h3>{{filter.label}}</h3>
+        <ul>
+            {% for option in filter.options %}
+                <li {% if option.selected %} class="selected"{% endif %}><a href="{% addparam filter.name option.name %}">{{option.name}}</a></li>
+            {% endfor %}
+        </ul>  
+        {% endfor %}
+    {% endif %}
+</div>

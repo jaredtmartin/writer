@@ -1,0 +1,15 @@
+#searchbar{
+    float:right;
+    width:250px;
+}
+#filter-form input{
+    width:85%;
+}
+#xxsearchbar img {
+    vertical-align: middle;
+}
+#content-main{
+    width:700px;
+    float:left;
+}
+
