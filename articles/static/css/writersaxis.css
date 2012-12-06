@@ -12,4 +12,14 @@
     width:700px;
     float:left;
 }
-
+#changelist-filter li {
+    list-style-type: none;
+    margin-left: 0;
+    padding-left: 0;
+}
+#changelist-filter a {
+    color: #999999;
+}
+#changelist-filter li.selected a {
+    color: #5B80B2 !important;
+}

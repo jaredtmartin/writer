@@ -14,7 +14,10 @@
 <form method="get" action="" id="filter-form">
     <label for="searchbar"><img alt="Search" src="/static/admin/img/icon_searchbox.png"></label>
     <input type="text" id="searchbar" value="{{q}}" name="q" size="40">
-    {{ filter.form.as_p }}
+    <div id="changelist-filter">
+        <h2>Filter</h2>
+        {% for filter in filters %}{% include "articles/filter.html"%}{% endfor %}
+    </div>
     <input type="submit" value="Search">
 </form>
 </div>

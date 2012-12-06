@@ -8,4 +8,3 @@ class ArticleForm(ModelForm):
 class ArticleEmployerForm(ModelForm):
     class Meta:
         model = Article
-#        fields = ('body',)

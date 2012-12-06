@@ -35,8 +35,8 @@ class ArticleAction(models.Model):
     code = models.CharField(choices=ACTIONS, max_length=1)
     user = models.ForeignKey(User)                              # This is the reviewer/employer/admin
     timestamp = models.DateTimeField(auto_now_add=True)
-    comment = models.CharField(choices=ACTIONS, max_length=64, default="", blank=True)
-    def __unicode__(self): return ACTIONS[self.code]
+    comment = models.CharField(max_length=64, default="", blank=True)
+    def __unicode__(self): return self.code
 
     
 class Article(models.Model):
@@ -58,10 +58,10 @@ class Article(models.Model):
     ATTRIBUTES={'publish':ACT_PUBLISH,'approved':ACT_APPROVE,'submitted':ACT_SUBMIT,'assigned':ACT_ASSIGN,'rejected':ACT_REJECT,'released':ACT_RELEASE}
 
     def change_status(self, attribute='', code=None, user=None, author=None, comment="", save=True, req=True, clear=[], error="Undefined Workflow Error"):
-        if req and attribute in ATTRIBUTES.keys():
+        if req and attribute in Article.ATTRIBUTES.keys():
             if not author: author=self.assigned.author
-            if not code: code=ATTRIBUTES[attribute]
-            settattr(self, attribute, self.articleaction_set.create(
+            if not code: code=Article.ATTRIBUTES[attribute]
+            setattr(self, attribute, self.articleaction_set.create(
                 code=code, 
                 user=user, 
                 author=author, 
@@ -78,6 +78,7 @@ class Article(models.Model):
             comment=comment,
             save=save,
             req=self.submitted,
+            user=user, 
             error="This article cannot be approved until it has been submitted."
         )
     def reject(self, user=None, comment="", save=True):
@@ -86,6 +87,7 @@ class Article(models.Model):
             comment=comment,
             save=save,
             req=self.submitted,
+            user=user, 
             clear=['approved','submitted'],
             error="This article cannot be rejected until it has been submitted."
         )
@@ -94,6 +96,7 @@ class Article(models.Model):
             attribute='published',
             comment=comment,
             save=save,
+            user=user, 
             req=self.approved,
             error="This article cannot be published until it has been approved."
         )
@@ -102,6 +105,7 @@ class Article(models.Model):
             attribute='submitted',
             comment=comment,
             save=save,
+            user=user, 
             req=(not self.submitted),
             author=user,
             clear=['rejected'],
@@ -112,6 +116,7 @@ class Article(models.Model):
             attribute='released',
             comment=comment,
             save=save,
+            user=user, 
             req=self.assigned,
             clear = ['assigned'],
             error="This article has not been assigned or claimed."
@@ -122,6 +127,7 @@ class Article(models.Model):
             author=author,
             comment=comment,
             save=save,
+            user=user, 
             req=(not self.assigned),
             clear = ['assigned'],
             error="This article has already been assigned or claimed."
@@ -131,6 +137,7 @@ class Article(models.Model):
             attribute='assigned',
             comment=comment,
             author=user,
+            user=user, 
             code=ACT_CLAIM,
             save=save,
             req=(not self.assigned),
@@ -156,39 +163,6 @@ class Article(models.Model):
     @models.permalink
     def get_absolute_url(self):
         return ('article_update', [self.id,])  
-#    def last_action(self, group=None):
-#        try:
-#            if group: return self.articleaction_set.filter(action__in = group)[0]
-#            else: return self.articleaction_set.all()[0]
-#        except IndexError: return None
-#        
-#    @property
-#    def is_assigned(self):
-#        assigned = self.last_action(['G','C'])
-#        returned = self.last_action(['U','T'])
-#        if assigned:
-#            if returned():
-#                # the article has been assigned and returned
-#                if assigned.timestamp > returned.timestamp: return True
-#                else: return False
-#            else:
-#                # the article has been assigned but never returned
-#                return True
-#        else:
-#            # the article was never assigned
-#            return False
-
-        
-#    @property
-#    def is_submitted(self):
-#        submitted = last_action('S')
-#        rejected = last_action('R')
-#        if submitted:
-#            if rejected:
-#                if submitted.timestamp > rejected.timestamp: return True
-#                else: return False
-#            else: return True
-#        return False
 
 class Keyword(models.Model):
     article = models.ForeignKey(Article)  

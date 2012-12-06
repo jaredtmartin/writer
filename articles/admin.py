@@ -56,10 +56,13 @@ reject_and_release.short_description = "Reject and release selected articles"
 
 class ArticleAdmin(admin.ModelAdmin):
     list_display = ('name','assigned','submitted','approved','published')
-    list_filter = ('assigned','submitted','approved','published')
+#    list_filter = ('assigned','submitted','approved','published')
+    list_filter=('project','minimum')
+    search_fields = ['project']
     inlines = [KeywordInline]
     actions = [approve, reject, publish, submit, release, claim, reject_and_release]
     
 admin.site.register(Article, ArticleAdmin)
 admin.site.register(ArticleType)
+admin.site.register(ArticleAction)
 admin.site.register(Project)
