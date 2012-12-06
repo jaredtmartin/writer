@@ -1,0 +1,13 @@
+
+{% load addparam %}
+<h3>By {{ filter.title }}</h3>
+<ul>
+    <li{% if choice.selected %} class="selected"{% endif %}>
+        <a href="{% removeurlparameter filter.name %}">All</a>
+    </li>
+    {% for choice in filter.choices %}
+        <li{% if choice.selected %} class="selected"{% endif %}>
+            <a href="{% addurlparameter filter.name choice.display %}">{{ choice.display }}</a>
+        </li>
+    {% endfor %}
+</ul>
