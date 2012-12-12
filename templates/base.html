@@ -5,6 +5,10 @@
     {% facebook_init %}
         {% block facebook_code %}{% endblock %}
     {% endfacebook %}
+    {% block css %}
+    {% endblock %}
+    {% block js %}
+    {% endblock %}
     <title>{% block sitename %} Web Services {% endblock %}{% block title %}{% endblock %}</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     {% load staticfiles %}
@@ -25,6 +29,13 @@
 </head>
 <body>
     <div id="container">
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
         {% block header %}{% endblock %}
         <div style="clear:both;">
         <div id="left-panel">

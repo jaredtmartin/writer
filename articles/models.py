@@ -30,8 +30,9 @@ class Project(models.Model):
     def __unicode__(self): return self.name
 
 class ArticleAction(models.Model):
-    article = models.ForeignKey('Article')
-    author = models.ForeignKey(User, related_name = 'authors')  # This is the writer
+#    article = models.ForeignKey('Article')
+    articles = models.ManyToManyField('Article')
+    author = models.ForeignKey(User, related_name = 'authors', null=True, blank=True)  # This is the writer
     code = models.CharField(choices=ACTIONS, max_length=1)
     user = models.ForeignKey(User)                              # This is the reviewer/employer/admin
     timestamp = models.DateTimeField(auto_now_add=True)

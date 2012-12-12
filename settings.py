@@ -163,6 +163,7 @@ INSTALLED_APPS = (
     'forms',
     'articles',
     'common',
+    'django_actions',
 
 )
 

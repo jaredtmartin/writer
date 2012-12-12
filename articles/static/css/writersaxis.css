@@ -1,15 +1,12 @@
-#searchbar{
+#filterbar{
     float:right;
-    width:250px;
+    width:100px;
 }
 #filter-form input{
     width:85%;
 }
-#xxsearchbar img {
-    vertical-align: middle;
-}
 #content-main{
-    width:700px;
+    width:850px;
     float:left;
 }
 #changelist-filter li {
@@ -22,4 +19,11 @@
 }
 #changelist-filter li.selected a {
     color: #5B80B2 !important;
+}
+.block_content {
+    background: none repeat scroll 0 0 #FFFFFF;
+    border-left: 1px solid #CCCCCC;
+    border-right: 1px solid #CCCCCC;
+    overflow: hidden;
+    padding: 10px 20px;
 }

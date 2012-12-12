@@ -1,24 +1,89 @@
 {% extends 'writeaid_base.html' %}
 {% load static %}
 {% block head %}
-<link href="{% static "css/writersaxis.css" %}" rel="stylesheet" type="text/css" />
+    <link href="{% static "css/writersaxis.css" %}" rel="stylesheet" type="text/css" />
+    <script src="/static/admin/js/jquery.js" type="text/javascript"></script>
+    <script src="/static/admin/js/jquery.init.js" type="text/javascript" ></script>
+    <script src="/static/admin/js/core.js" type="text/javascript"></script>
+    <script type="text/javascript" src="/admin/jsi18n/"></script>
+    <script src="/static/admin/js/actions.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        (function($) {
+            $(document).ready(function($) {
+                $("tr input.action-select").actions();
+            });
+        })(django.jQuery);
+    </script>
 {% endblock %}
 {% block content %}
-
+    {% include 'searchbar.html' %}
+    <form id="changelist-form" action method="post">
+        {% csrf_token %}
+        <div class="actions">
+            <label>Action: {% include 'actions_select.html' %}</label>
+            <script type="text/javascript">var _actions_icnt="1";</script>        
+            <span class="action-counter" style="display: inline; ">0 of 1 selected</span>
+        </div>
 <div id="content-main">
     {% with block_header='Available' articles=available %}
-    {% include "articles/article_list_block.html" %}
+
+    <div class="block">
+    <div class="block_head">
+    <div class="bheadl"></div>
+    <div class="bheadr"></div>
+    <h2>{{block_header}}</h2>
+  </div>
+  <!-- .block_head ends -->
+  
+  <div class="block_content">
+    <form method="post" action="">
+      <table width="100%" cellspacing="0" cellpadding="0" id="articles" class="table sortable">
+        <thead> 
+        <tr>
+          <th scope="col" class="action-checkbox-column">
+            <div class="text">
+                <span><input type="checkbox" id="action-toggle" style="display: inline-block; "></span>
+            </div>
+            <div class="clear"></div>
+          </th>
+          <th width="185" class="header">Type</th>
+          <th class="header">Keywords</th>          
+          <th width="145" class="header">Assigned To</th>     
+          <th width="100" align="right" style="text-align: right;" class="header">Priority/Length</th>
+          <!--<th>&nbsp;</th>--> 
+        </tr>
+        </thead>
+        <tbody>
+            {% for article in articles %}
+                <tr id="row{{article.id}}" class="parent even" style="background-color: rgb(251, 251, 251);">
+                  <td class="action-checkbox"><input type="checkbox" class="action-select" value="{{article.id}}" name="action-select"></td>
+                  <td style="max-width:200px;"><a class="submit_popup" href="{{article.get_absolute_url}}">{{article.klass}}</a></td>
+                  <td title="{{article.keywords}}" class="q_desc">{{article.keywords}}</td>
+                  <td>{% if article.assigned %}{{article.assigned.author}}{% else %}Nobody{% endif %}</td>              
+                  <td align="right" style="text-align: right;">
+                    <ul align="right" class="priority">
+                        <li title="22 hours remaining" class="purple-keyword cur_help">high</li>                  
+                        <li title="100 words" class="gray-keyword">100</li>
+                        <li title="Edit Article Info" class="none">&nbsp;&nbsp;<a class="claim_popup" href="http://www.writeaid.net/functions/edit.php?topic=45523"><img width="16" height="16" alt="Edit Article Info" src="{{STATIC_URL}}/img/edit_16x16.gif"></a></li>                
+                    </ul>
+                  </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+      </table>
+    </form>
+  </div>
+  <!-- .block_content ends -->
+  
+  <div class="bendl"></div>
+  <div class="bendr"></div>
+</div>
+<!-- .block ends -->
     {% endwith %}
 </div>
-<div id="searchbar">
-<form method="get" action="" id="filter-form">
-    <label for="searchbar"><img alt="Search" src="/static/admin/img/icon_searchbox.png"></label>
-    <input type="text" id="searchbar" value="{{q}}" name="q" size="40">
-    <div id="changelist-filter">
-        <h2>Filter</h2>
-        {% for filter in filters %}{% include "articles/filter.html"%}{% endfor %}
-    </div>
-    <input type="submit" value="Search">
-</form>
+<div id="changelist-filter">
+    <h2>Filter</h2>
+    {% for filter in filters %}{% include "articles/filter.html"%}{% endfor %}
 </div>
+
 {% endblock %}
