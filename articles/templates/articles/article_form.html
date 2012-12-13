@@ -18,8 +18,12 @@
                 success: insertKeywordInlineForm
             });
         }
+        function hideRow(){
+            $(this).closest('tr').slideUp();
+        }
         $(document).ready(function($) {
             $("#add_keyword").click(getKeywordInlineForm);
+            $('[name$="DELETE"]').click(hideRow);
             $(".popup").fancybox({
                 transitionIn : 'elastic',
                 transitionOut : 'elastic',
