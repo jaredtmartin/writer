@@ -10,7 +10,16 @@
     <script type="text/javascript">
         (function($) {
             $(document).ready(function($) {
-                $("tr input.action-select").actions();
+                actionCheckboxes=$("tr input.action-select");
+                actionCheckboxes.actions();
+                if ($(actionCheckboxes).filter(":checked").length==0){
+                    $("#action-bar").hide();
+                }
+                actionCheckboxes.click(function() {
+                    if (!$("#action-bar").is(":visible")){
+                        $("#action-bar").slideDown();
+                    }
+                });
             });
         })(django.jQuery);
     </script>
@@ -19,7 +28,7 @@
     {% include 'searchbar.html' %}
     <form id="changelist-form" action method="post">
         {% csrf_token %}
-        <div class="actions">
+        <div class="actions" id="action-bar">
             <label>Action: {% include 'actions_select.html' %}</label>
             <script type="text/javascript">var _actions_icnt="1";</script>        
             <span class="action-counter" style="display: inline; ">0 of 1 selected</span>

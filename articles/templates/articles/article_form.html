@@ -1,13 +1,91 @@
-{% extends "base.html" %}
+{% extends "writeaid_base.html" %}
 
 {% block content %}
-    <a href="/articles/"}}>Back to list</a>
-    <h2>Article #{{article.pk}}</h2>
-    Keyword: {{ article.keyword }}<br>
-    Minimum {{article.length}} words.<br>
-    <form action="/article/{{ article.id }}/" method="post">
-    {% csrf_token %}
-    {{ form.body }}
-    <input type="submit" value="Submit" />
+    <script type="text/javascript">
+        function insertKeywordInlineForm(data, result){
+            $('#keywords-table').append(data);
+            numKeywords=parseInt($('#id_keyword_set-TOTAL_FORMS').val());
+            $('#id_keyword_set-TOTAL_FORMS').val(numKeywords+1);
+        }
+        function getKeywordInlineForm() {
+            jQuery("#last_id").val("None");
+            $.ajax({
+                url: "newkeyword/",
+                type:'POST',
+                data:{
+                    num: $('#id_keyword_set-TOTAL_FORMS').val(),
+                },
+                success: insertKeywordInlineForm
+            });
+        }
+        $(document).ready(function($) {
+            $("#add_keyword").click(getKeywordInlineForm);
+            $(".popup").fancybox({
+                transitionIn : 'elastic',
+                transitionOut : 'elastic',
+                titleShow : false,
+                width : 680,
+                height : 375,
+                autoDimensions : true,
+                /*centerOnScroll : true,*/
+                autoScale : false,
+                /*'scrolling' : 'no',*/
+                'overlayOpacity' : '0.6',
+                'overlayColor' : '#000'
+            }); 
+        });
+    </script>
+    <form action="/articles/{{ article.id }}/" method="post"> {% csrf_token %}
+    <div class="block">
+        <div class="block_head">
+            <div class="bheadl"></div>
+            <div class="bheadr"></div>
+            <h2>Article #{{article.pk}}</h2>
+        </div>
+        <div class="block_content">
+            <table class="block_content" width="100%" cellspacing="0" cellpadding="0" border="0" style="border: none; margin:0;">
+                <tr>
+                    <th><h3>Minimum</h3></th>
+                    <th><h3>Maximum</h3></th>
+                    <th><h3>Type</h3></th>
+                    <th><h3>Project <a class="popup" id="add_project" href="/articles/project/add/" style="vertical-align:middle" ><img width="16" height="16" class="q_tip" title="" style="cursor: pointer;" alt="Add Row" src="/static/img/plus_16x16.gif"></a></h3></th>
+
+                </tr>
+                <tr>
+                    <td>{{ form.minimum }}</td>
+                    <td>{{ form.maximum }}</td>
+                    <td>{{ form.article_type }}</td>
+                    <td>{{ form.project }}</td>
+                </tr>
+            </table>
+            {% with inlines.0 as inline %} 
+            {{ inline.management_form }}
+            {% for field in inline %}
+                {% if field.errors %}
+                <div class="message2 error">{{ field.errors.as_p }}</div>
+                {% endif %}
+            {% endfor %}
+            <table id="keywords-table" class="block_content" width="100%" cellspacing="0" cellpadding="0" border="0" style="border: none; margin:0;">
+                <tr>
+                    <th><h3>Keyword</h3></th>
+                    <th><h3>Url</h3></th>
+                    <th><h3>Times</h3></th>
+                    <th><h3>Remove</h3></th>
+                </tr>
+                {% for form in inline %}
+                    {% include "articles/keyword_inline_form.html" %}
+                {% endfor %}
+            </table>
+            {% endwith %}
+            <table class="block_content" width="100%" cellspacing="0" cellpadding="0" border="0" style="border: none; margin:0;">
+                <tr>
+                    <td colspan="2"><div class="aleft"><input id="add_keyword" type="button" value="Add Keyword" class="submit long"></div></td>
+                    <td colspan="2"><div class="aright"><input type="submit" value="Save Article" class="submit long"></div></td>
+                </tr>
+            </table>
+        </div>
+        <div class="bendl"></div>
+<div class="bendr"></div>
+    </div>
 {% endblock %}
 

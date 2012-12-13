@@ -152,10 +152,7 @@ class Article(models.Model):
     def klass(self):return self.article_type.name
     @property
     def keywords(self):
-        s=''
-        if not s=='':s+=','
-        for kw in self.keyword_set.all(): s+=kw.keyword  
-        return s #str([str(word.keyword) for word in self.keyword_set.all()])
+        return ", ".join([k.keyword for k in self.keyword_set.all()])
     @property
     def name(self):
         if self.maximum > 0: length=u" (" + str(self.minimum) + u" - " + str(self.maximum) + u") words"
@@ -170,6 +167,7 @@ class Keyword(models.Model):
     keyword = models.CharField(max_length=32)
     url = models.CharField(max_length=64)
     times = models.IntegerField(default=1)
+    def __unicode__(self): return self.keyword
     
 
 
