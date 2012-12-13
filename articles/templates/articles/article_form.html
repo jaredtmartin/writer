@@ -35,7 +35,7 @@
             }); 
         });
     </script>
-    <form action="/articles/{{ article.id }}/" method="post"> {% csrf_token %}
+    <form action="{{ article.get_absolute_url }}" method="post"> {% csrf_token %}
     <div class="block">
         <div class="block_head">
             <div class="bheadl"></div>
