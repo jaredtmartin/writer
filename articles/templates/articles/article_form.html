@@ -10,7 +10,7 @@
         function getKeywordInlineForm() {
             jQuery("#last_id").val("None");
             $.ajax({
-                url: "newkeyword/",
+                url: "/articles/keyword/new/",
                 type:'POST',
                 data:{
                     num: $('#id_keyword_set-TOTAL_FORMS').val(),
