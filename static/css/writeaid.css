@@ -709,6 +709,10 @@ input.submit.tiny{width:105px;
 input.submit.mid{width:115px;
     background:url(/static/img/btnm.gif) top center no-repeat}
 .block form input.submit.mid:hover{background:url(/static/img/btnm_.gif) top center no-repeat}
+.blue-button{
+    width:165px;
+    background:url(/static/img/btnb.gif) top center no-repeat};
+}
 .block form
 input.submit.long{width:165px;
     background:url(/static/img/btnb.gif) top center no-repeat}

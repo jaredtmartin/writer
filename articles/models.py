@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-
+from django.db.models.signals import post_save
 from django.db.models import Q
 
 ACT_SUBMIT = "S"  # When author finishes writing
@@ -30,6 +30,8 @@ class Project(models.Model):
     def __unicode__(self): return self.name
 
 class ArticleAction(models.Model):
+    class Meta:
+        ordering = ['-timestamp']
 #    article = models.ForeignKey('Article')
     articles = models.ManyToManyField('Article')
     author = models.ForeignKey(User, related_name = 'authors', null=True, blank=True)  # This is the writer
@@ -37,9 +39,9 @@ class ArticleAction(models.Model):
     user = models.ForeignKey(User)                              # This is the reviewer/employer/admin
     timestamp = models.DateTimeField(auto_now_add=True)
     comment = models.CharField(max_length=64, default="", blank=True)
-    def __unicode__(self): return self.code
+    def __unicode__(self): 
+        return self.get_code_display() + " by " + self.user.get_full_name()
 
-    
 class Article(models.Model):
     def __unicode__(self): return self.name
     minimum = models.IntegerField(default=100)
@@ -48,7 +50,14 @@ class Article(models.Model):
     article_type = models.ForeignKey(ArticleType, related_name='articles')
     project = models.ForeignKey(Project, related_name='articles', null=True, blank=True)
     tags = models.CharField(max_length=128, blank=True, default="")
+    owner = models.ForeignKey(User, related_name='articles')
 
+    @property
+    def status(self): 
+        if self.last_action: return self.last_action.get_code_display()
+        return u""
+    
+    last_action = models.ForeignKey(ArticleAction, null=True, blank=True, related_name='articles_last_action')
     published   = models.ForeignKey(ArticleAction, null=True, blank=True, related_name='published_articles')
     approved    = models.ForeignKey(ArticleAction, null=True, blank=True, related_name='approved_articles')
     submitted   = models.ForeignKey(ArticleAction, null=True, blank=True, related_name='submitted_articles')
@@ -130,7 +139,7 @@ class Article(models.Model):
             save=save,
             user=user, 
             req=(not self.assigned),
-            clear = ['assigned'],
+#            clear = ['assigned'],
             error="This article has already been assigned or claimed."
         )
     def claim(self, user=None, comment="", save=True):
@@ -142,7 +151,7 @@ class Article(models.Model):
             code=ACT_CLAIM,
             save=save,
             req=(not self.assigned),
-            clear = ['assigned'],
+#            clear = ['assigned'],
             error="This article has already been assigned or claimed."
         )
     def reject_and_release(self, user=None, comment="", save=True):

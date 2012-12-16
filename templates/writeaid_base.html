@@ -61,8 +61,12 @@
 				                </ul></li>
                     <li class="nobg"><a href="/reports/">Reports</a></li>
                 </ul>
-
-                <p class="user">Hi <a href="/profile/">Anita</a>! <!--(1589/0)--> &nbsp;|&nbsp; <a href="/logout.php">Logout</a></p>
+                {% if user.is_authenticated %}
+                    <p class="user">Hi <a href="/profile/">{{user.username}}</a>! <!--(1589/0)--> &nbsp;|&nbsp; <a href="{% url logout %}">Logout</a></p>
+                {% else %}
+                    <p class="user">Welcome, guest. <!--(1589/0)--> &nbsp;|&nbsp; <a href="{% url login %}">Log in</a>.</p>
+                {% endif %}
+                
 
             </div>
             <!-- #header ends -->

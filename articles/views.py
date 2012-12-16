@@ -4,7 +4,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.detail import DetailView
 from django.views.generic import TemplateView, FormView
 from articles.models import Article, Keyword, Project
-from articles.forms import ArticleForm, KeywordInlineFormSet, KeywordInlineForm
+from articles.forms import ArticleForm, KeywordInlineFormSet, KeywordInlineForm, ActionUserID
 from django_actions.views import ActionViewMixin
 from datetime import datetime
 from django.db.models import Q
@@ -83,7 +83,17 @@ class SearchableListView(SearchableListMixin, ListView):
         
 class ArticleList(ActionViewMixin, FilterableListView):
     model = Article
-    actions = [publish_articles, claim_articles, submit_articles, release_articles]
+    actions = [
+        claim_articles,
+        assign_articles,
+        release_articles,
+        submit_articles,
+#        tag_articles,
+        approve_articles,
+        reject_articles,
+        publish_articles,
+        reject_and_release_articles,
+    ]
 #    queryset = Article.objects.filter(submitted=None)
     context_object_name = 'available'
     search_fields = ['tags', 'project__name', 'keyword__keyword']
@@ -93,6 +103,19 @@ class ArticleList(ActionViewMixin, FilterableListView):
 #                    Filter(name='published', lookup='isnull', model=Article),
 #                    Filter(name='submitted', lookup='isnull', model=Article)
                 ]
+    def get_action_user_id_form(self):
+        form=ActionUserID()
+#        form.fields["user"].queryset = User.objects.filter(user__factory)
+        return form
+    def get_context_data(self, **kwargs):
+        context = super(ArticleList, self).get_context_data(**kwargs)
+        context['action_user_form']=self.get_action_user_id_form()
+#        context['tag_form']=TagForm()
+        context['note_form']=NoteForm()
+        context['actions_requiring_user_id']=[-2,2] # Because this will be converted to JS, the array must have more than one element.
+#        context['actions_requiring_tag']=[-2,5]
+        context['actions_requiring_note']=[-2,6,8]
+        return context
 class ProjectCreate(CreateView):
     model = Project
     def get(self, request, *args, **kwargs):
