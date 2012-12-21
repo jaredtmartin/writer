@@ -1,0 +1,56 @@
+<script type="text/javascript">
+    function finishAction(url){
+		$.fancybox.close();
+		data=$('#actions-form').serialize();
+		data+="&user="+$('#id_user').val();
+		data['tag']=$('#id_tag').val();
+		data['note']=$('#id_note').val();
+        $.ajax({
+            url: url ,
+            type:'POST',
+            data: data, 
+            success: ajaxUpdateRow,
+        });
+		//$.post(url, success=show_stuff, error=showError, data=data);
+		//get_stuff(url, data);
+    }
+
+    	$(document).ready(function() {
+    	    {% for action in actions %}
+    	        {% if action.1 %}
+		        $("a#{{action.0}}-link").fancybox();
+		      {% else %}
+		        $("a#{{action.0}}-link").click("finishAction('{{action.2}}');")
+		    {% endif %}
+		{% endfor %}
+	});
+    (function($) {
+        $(document).ready(function($) {
+            actionCheckboxes=$("tr input.action-select");
+            actionCheckboxes.actions();
+            if ($(actionCheckboxes).filter(":checked").length==0){
+                $("#action-bar").hide();
+            }
+            actionCheckboxes.click(function() {
+                if (!$("#action-bar").is(":visible")){
+                    $("#action-bar").show();
+                }
+            });
+        });
+    })(django.jQuery);
+</script>
+<div id="action-details-forms" style="display:none">
+    <input type="hidden" value="zzz" name="tester">
+    <input type="hidden" value="{{ all_items_count }}" name="all-items-count" id="all-items-count">
+    <input type="hidden" value="0" name="select-across" id="select-across">
+    {% for action in actions %}
+        {% if action.1 %}
+        <div id="{{action.0}}-box">
+            {{action.1}}
+            <a class="button continue-button" onclick="finishAction('{{action.2}}');">Continue</a>
+        </div>
+        {% endif %}
+    {% endfor %}
+</div>
+
+

@@ -1,0 +1,10 @@
+<ul id="list-items">
+    {% for message in messages %}
+    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+    <li class="message">This is a test of a message.</li>
+</ul>
+<table id="table-rows">
+    <tr id="article-1" class="article"><td>This is a test of a row</td></tr>
+    {% block items %}{% endblock %}
+</table>

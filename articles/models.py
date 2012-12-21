@@ -12,7 +12,7 @@ ACT_RELEASE = "R" # When a user releases an article that was either claimed or a
 ACT_PUBLISH = "P" # When the article has been published
 
 ACTIONS = (
-    (ACT_SUBMIT, 'Submited'),
+    (ACT_SUBMIT, 'Submitted'),
     (ACT_REJECT, 'Rejected'),
     (ACT_APPROVE, 'Approved'),
     (ACT_ASSIGN, 'Assigned'),
@@ -47,6 +47,7 @@ class Article(models.Model):
     minimum = models.IntegerField(default=100)
     maximum = models.IntegerField(default=0) # Use zero for no maximum
     body = models.TextField(blank=True, default="")
+    title = models.CharField(max_length=256, blank=True, default="")
     article_type = models.ForeignKey(ArticleType, related_name='articles')
     project = models.ForeignKey(Project, related_name='articles', null=True, blank=True)
     tags = models.CharField(max_length=128, blank=True, default="")
@@ -67,16 +68,30 @@ class Article(models.Model):
     class ArticleWorkflowException(Exception): pass
     ATTRIBUTES={'publish':ACT_PUBLISH,'approved':ACT_APPROVE,'submitted':ACT_SUBMIT,'assigned':ACT_ASSIGN,'rejected':ACT_REJECT,'released':ACT_RELEASE}
 
+    @property
+    def available_actions(self):
+        status= self.last_action.code
+        print "status: " + str(status) 
+        print "status==ACT_ASSIGN: " + str(status==ACT_ASSIGN) 
+        print "ACT_ASSIGN: " + str(ACT_ASSIGN) 
+        if status == None: return []
+        elif status == ACT_ASSIGN: return ['submit','release']
+        elif status == ACT_SUBMIT: return ['approve','reject']
+        elif status == ACT_APPROVE: return ['publish']
+        elif status == ACT_REJECT: return ['submit','release']
+            
     def change_status(self, attribute='', code=None, user=None, author=None, comment="", save=True, req=True, clear=[], error="Undefined Workflow Error"):
         if req and attribute in Article.ATTRIBUTES.keys():
             if not author: author=self.assigned.author
             if not code: code=Article.ATTRIBUTES[attribute]
-            setattr(self, attribute, self.articleaction_set.create(
+            action = self.articleaction_set.create(
                 code=code, 
                 user=user, 
                 author=author, 
                 comment=comment
-            ))
+            )
+            setattr(self, attribute, action)
+            self.last_action=action
             for attr in clear: setattr(self, attr, None)
             if save: self.save()
         else: raise self.ArticleWorkflowException(error)
@@ -164,8 +179,9 @@ class Article(models.Model):
         return ", ".join([k.keyword for k in self.keyword_set.all()])
     @property
     def name(self):
-        if self.maximum > 0: length=u" (" + str(self.minimum) + u" - " + str(self.maximum) + u") words"
-        else: length = u" (" + str(self.minimum) + u") words"
+        if self.title: return self.title
+        if self.maximum > 0: length=u" (" + str(self.minimum) + u" - " + str(self.maximum) + u" words)"
+        else: length = u" (" + str(self.minimum) + u" words)"
         return self.keywords + length
     @models.permalink
     def get_absolute_url(self):

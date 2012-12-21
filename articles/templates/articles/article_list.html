@@ -23,144 +23,71 @@
 
 <link rel="stylesheet" href="{{STATIC_URL}}js/fancybox/source/helpers/jquery.fancybox-thumbs.css?v=1.0.7" type="text/css" media="screen" />
 <script type="text/javascript" src="{{STATIC_URL}}js/fancybox/source/helpers/jquery.fancybox-thumbs.js?v=1.0.7"></script>
-<script type="text/javascript">
-    function submitAction(){
-        if ($.inArray(parseInt($('#id_action').val()), {{actions_requiring_user_id}})>-1){
-            $("a#UserIDBox-link").click();
-            return false;
-        }
-<!--        if ($.inArray(parseInt($('#id_action').val()), {{actions_requiring_tag}})>-1){-->
-<!--            $("a#TagBox-link").click();-->
-<!--            return false;-->
-<!--        }-->
-        if ($.inArray(parseInt($('#id_action').val()), {{actions_requiring_note}})>-1){
-            $("a#NoteBox-link").click();
-            return false;
-        }
-    }
-    function finish(){
-		$('#action_tag').val($('input#id_tag').val());
-		$('#action_note').val($('input#id_note').val());
-		$('#action_user_id').val($('select#id_user').val());
-        $('#actions-form').submit();
-    }
-	$(document).ready(function() {
-		$("a#UserIDBox-link").fancybox();
-		$("a#TagBox-link").fancybox();
-		$("a#NoteBox-link").fancybox();
-		$("button.btn").click(submitAction);
-		$("#do-action-with-user").click(finish);
-		$("#do-action-with-tag").click(finish);
-		$("#do-action-with-note").click(finish);
-	});
-</script>
 
-    <script type="text/javascript">
-        (function($) {
-            $(document).ready(function($) {
-                actionCheckboxes=$("tr input.action-select");
-                actionCheckboxes.actions();
-                if ($(actionCheckboxes).filter(":checked").length==0){
-                    $("#action-bar").hide();
-                }
-                actionCheckboxes.click(function() {
-                    if (!$("#action-bar").is(":visible")){
-                        $("#action-bar").slideDown();
-                    }
-                });
-            });
-        })(django.jQuery);
-    </script>
 {% endblock %}
-{% block content %}
-    {% include 'searchbar.html' %}
-    <form id="actions-form" action method="post">
-        {% csrf_token %}
-        <div style="display:none">
-            <a href="#UserIDBox" id="UserIDBox-link">This will be activated via JS</a>
-            <div id="UserIDBox">
-                 <span>Choose a user:</span>
-                {{action_user_form.user}}
-                <input id="do-action-with-user" type="button" value="Continue" class="blue-button">
-            </div>
-            <a href="#TagBox" id="TagBox-link">This will be activated via JS</a>
-            <div id="TagBox">
-                 <span>Enter the tags would you like to add:</span>
-                {{tag_form.tag}}
-                <input id="do-action-with-tag" type="button" value="Continue" class="blue-button">
-            </div>
-            <a href="#NoteBox" id="NoteBox-link">This will be activated via JS</a>
-            <div id="NoteBox">
-                 <span>Please enter an explanation:</span>
-                {{note_form.note}}
-                <input id="do-action-with-note" type="button" value="Continue" class="blue-button">
-            </div>
-        </div>
-        <input type="hidden" id="action_tag" name="tag">
-        <input type="hidden" id="action_user_id" name="user">
-        <input type="hidden" id="action_note" name="note">
-        <div class="actions" id="action-bar">
-            <label>Action: {% include 'actions_select.html' %}</label>
-            <script type="text/javascript">var _actions_icnt="1";</script>        
-            <span class="action-counter" style="display: inline; ">0 of 1 selected</span>
-        </div>
-        
+{% block content %}   
 <div id="content-main">
     {% with block_header='Available' articles=available %}
-
     <div class="block">
-    <div class="block_head">
-    <div class="bheadl"></div>
-    <div class="bheadr"></div>
-    <h2>{{block_header}}</h2>
-  </div>
-  <!-- .block_head ends -->
-  
-  <div class="block_content">
-    <form method="post" action="">
-      <table width="100%" cellspacing="0" cellpadding="0" id="articles" class="table sortable">
-        <thead> 
-        <tr>
-          <th scope="col" class="action-checkbox-column">
-            <div class="text">
-                <span><input type="checkbox" id="action-toggle" style="display: inline-block; "></span>
+        <div class="block_head">
+            <div class="bheadl"></div>
+            <div class="bheadr"></div>
+        <!--    <h2>{{block_header}}</h2>-->
+            <div class="table-header" style="width:910px;">
+                {{block_header}}
+                <div style="float:right;">
+                    <form id="search_form" action="" method="GET">
+                        <input type="text" id="searchbar" value="{{q}}" name="q" size="40">
+                        <a href="#" onclick="$('#search_form').submit();"><label for="searchbar"><img alt="Search" src="/static/admin/img/icon_searchbox.png"></label></a>
+                    </form>
+                </div>
             </div>
-            <div class="clear"></div>
-          </th>
-          <th width="185" class="header">Type</th>
-          <th class="header">Keywords</th>          
-          <th width="145" class="header">Assigned To</th>     
-          <th width="100" align="right" style="text-align: right;" class="header">Priority/Length</th>
-          <!--<th>&nbsp;</th>--> 
-        </tr>
-        </thead>
-        <tbody>
-            {% for article in articles %}
-                <tr id="row{{article.id}}" class="parent even" style="background-color: rgb(251, 251, 251);">
-                  <td class="action-checkbox"><input type="checkbox" class="action-select" value="{{article.id}}" name="action-select"></td>
-                  <td style="max-width:200px;"><a class="submit_popup" href="{{article.get_absolute_url}}">{{article.klass}}</a></td>
-                  <td title="{{article.keywords}}" class="q_desc">{{article.keywords}}</td>
-                  <td>{% if article.assigned %}{{article.assigned.author}}{% else %}Nobody{% endif %}</td>              
-                  <td align="right" style="text-align: right;">
-                    <ul align="right" class="priority">
-                        <li class="blue-keyword">{{article.status}}</li>
-                        <li title="22 hours remaining" class="purple-keyword cur_help">high</li>                  
-                        <li title="100 words" class="gray-keyword">100</li>
-                        <li title="Edit Article Info" class="none">&nbsp;&nbsp;<a class="claim_popup" href="http://www.writeaid.net/functions/edit.php?topic=45523"><img width="16" height="16" alt="Edit Article Info" src="{{STATIC_URL}}/img/edit_16x16.gif"></a></li>                
-                    </ul>
-                  </td>
-                </tr>
-            {% endfor %}
-        </tbody>
-      </table>
-    </form>
-  </div>
-  <!-- .block_content ends -->
-  
-  <div class="bendl"></div>
-  <div class="bendr"></div>
-</div>
-<!-- .block ends -->
+        </div>
+        <!-- .block_head ends -->
+        <div class="block_content">
+            <form id="actions-form" method="post" action="">{% csrf_token %}
+                {% include "articles/action_detail_forms.html" %}
+                <table width="100%" cellspacing="0" cellpadding="0" id="articles" class="table sortable">
+                    <thead> 
+                        <tr id="action-bar">
+                            <th colspan="6">
+                                <script type="text/javascript">var _actions_icnt="1";</script>        
+                                <ul align="right" class="priority">
+                                    {% for action in actions %}
+                                        <a id="{{action.0}}-link" href="#{{action.0}}-box" onclick=""><li title="" class="blue-keyword">{{action.0}}</li></a>
+                                    {% endfor %}
+                                    <li class="action-counter"><span class="action-counter" style="display: inline; ">0 of 1 selected</span></li>
+                                </ul>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th scope="col" class="action-checkbox-column">
+                                <div class="text">
+                                    <span><input type="checkbox" id="action-toggle" style="display: inline-block; "></span>
+                                </div>
+                                <div class="clear"></div>
+                            </th>
+                            <th  class="header">Type</th>
+                            <th class="header">Keywords</th>          
+                            <th  class="header">Assigned To</th>      
+                            <th  class="header">Status</th>   
+                            <th  align="right" style="text-align: right;" class="header"> Actions </th>
+                            <!--<th>&nbsp;</th>--> 
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for article in articles %}
+                            {% include "articles/article_list_row.html" %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </form>
+        </div>
+        <!-- .block_content ends -->
+        <div class="bendl"></div>
+        <div class="bendr"></div>
+    </div>
+    <!-- .block ends -->
     {% endwith %}
 </div>
 <div id="changelist-filter">

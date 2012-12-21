@@ -6,7 +6,7 @@
     width:85%;
 }
 #content-main{
-    width:850px;
+    width:950px;
     float:left;
 }
 #changelist-filter li {
@@ -26,4 +26,31 @@
     border-right: 1px solid #CCCCCC;
     overflow: hidden;
     padding: 10px 20px;
+}
+.table-header{font-family:"Titillium999","Trebuchet MS",Arial,sans-serif;
+    font-size:18px;
+    font-weight:normal;
+    text-transform:uppercase;
+    color:#555;
+    text-shadow:1px 1px 0 #fff;
+    float:left}
+form.search_form{
+    vertical-align:middle;
+}
+li.action-counter{
+    color:black !important;
+    background:none !important;
+}
+.button{
+    background: none repeat scroll 0 0 #3399CC;
+    border-radius: 0.3em 0.3em 0.3em 0.3em !important;
+    color: white !important;
+    display: inline-block !important;
+    font-weight: bold !important;
+    margin: 0 0 0 1px !important;
+    padding: 0.2em 0.4em !important;
+    text-transform: uppercase !important;
+    vertical-align: baseline !important;
+    white-space: nowrap !important;
+}
 }

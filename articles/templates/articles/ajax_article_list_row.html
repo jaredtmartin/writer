@@ -1,0 +1,10 @@
+<ul id="list-items">
+    {% for message in messages %}
+    <li{% if message.tags %} id="message-{{message.id}}" class="message {{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+</ul>
+<table id="table-rows">
+    {% for article in object_list %}
+        {% include "articles/article_list_row.html" %}
+    {% endfor %}
+</table>

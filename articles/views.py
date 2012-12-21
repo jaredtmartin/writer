@@ -3,9 +3,11 @@ from extra_views import SearchableListMixin
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.detail import DetailView
 from django.views.generic import TemplateView, FormView
-from articles.models import Article, Keyword, Project
-from articles.forms import ArticleForm, KeywordInlineFormSet, KeywordInlineForm, ActionUserID
-from django_actions.views import ActionViewMixin
+from articles.models import Article, Keyword, Project, ArticleAction
+from django.views.generic.base import View, TemplateResponseMixin
+from articles.forms import ArticleForm, KeywordInlineFormSet, KeywordInlineForm, ActionUserID, AssignToForm
+#from django_actions.views import ActionViewMixin
+import pickle
 from datetime import datetime
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
@@ -70,10 +72,93 @@ class FilterableListView(SearchableListMixin, ListView):
         context['q']=self.request.GET.get('q','')
         context['filters']=self.filter_fields
         return context
+class GetActionsMixin(object):
+    def get_context_data(self, *args, **kwargs):
+        object_list_displayed = kwargs['object_list']
+        kwargs['all_items_count'] = object_list_displayed.count()
+        # Storing serialized queryset using query attribute
+        self.request.session['serialized_qs'] = pickle.dumps(object_list_displayed.query)
+        self.request.session['serialized_model_qs'] = object_list_displayed.model
+        context = super(GetActionsMixin, self).get_context_data(**kwargs)
+        context['actions']=self.get_actions()
+        return context
+    def get_actions(self):
+        return self.actions
+        
+class PostActionsView(TemplateResponseMixin, View):
+    def filter_action_queryset(qs):
+        return qs
+    def get_action_form_class(self):
+        print "HERE"
+        return self.action_form_class
+    def get_requested_objects(self):
+        if 'select-across' in self.request.POST:
+            model_class = self.request.session['serialized_model_qs']
+            if self.request.POST['select-across'] == u'0':
+                # select a specific set of items
+                qs = model_class.objects.filter(pk__in=(self.request.POST.getlist('action-select')))
+            else:
+                # Building a empty queryset to load pickled data
+                qs = model_class.objects.all()[:1]
+                qs.query = pickle.loads(self.request.session['serialized_qs'])
+            return qs
+        else: return []
+    def get_action_queryset(self):
+        try:
+            if self.action_qs: return self.action_qs
+        except AttributeError: pass
+        qs=self.get_requested_objects()
+        self.initial_action_qty=qs.count()
+        if self.initial_action_qty:
+            print "qs A: " + str(qs) 
+            qs=self.filter_action_queryset(qs)
+            print "qs D: " + str(qs) 
+            self.final_action_qty=qs.count()
+            return qs
+        else:
+            self.final_action_qty=0
+            return []
 
-class FilterableActionListView(ActionViewMixin, FilterableListView):
+    def create_action(self):
+        raise NotImplemented
+    def save_action(self):
+        self.action.articles.add(*self.action_qs)
+        self.action_qs.update(last_action=self.action)
+    def get_action_verb(self):
+        return self.action_verb
+    def get_past_tense_action_verb(self):
+        return self.get_action_verb()+'ed'
+    def send_result_messages(self):
+        if self.final_action_qty==0:
+            messages.error(self.request, 'The articles selected were either not available or are not yours to assign.')
+        elif not self.action_form.is_valid():
+            messages.error(self.request, 'You did not select a valid value to complete this action.')
+        elif self.final_action_qty < self.initial_action_qty:
+            messages.warning(self.request, 'Only %i of the articles selected have been %s. Please verify the operation and that you have authority to make this change on the remaining articles.' % (self.final_action_qty, self.get_past_tense_action_verb()))
+        else: messages.info(self.request, 'All %s of the articles have been %s sucessfully' % (self.final_action_qty, self.get_past_tense_action_verb()))
+    def post(self, request, *args, **kwargs):
+        self.action_qs = self.get_action_queryset()
+        # Make sure the articles are available
+        form_class=self.get_action_form_class()
+        if self.action_qs and self.final_action_qty > 0:
+            self.action_form=form_class(self.request.POST)
+            if self.action_form.is_valid():
+                qs=list(self.action_qs)  # Save it as a list so we don't lose track of the ones we change due to the filters
+                self.action=self.create_action()
+                self.save_action()
+                self.action_qs.update(assigned=self.action)
+                self.action_qs=self.get_requested_objects()
+        else: self.action_form=form_class()
+        self.send_result_messages()
+        context = self.get_context_data()
+        return self.render_to_response(context)
+    def get_context_data(self, **kwargs):
+        context = {'object_list': self.action_qs}
+        context.update(kwargs)
+        return context
+    
+class FilterableActionListView(GetActionsMixin, FilterableListView):
     pass
-
             
 class SearchableListView(SearchableListMixin, ListView):
     def get_context_data(self, **kwargs):
@@ -81,7 +166,7 @@ class SearchableListView(SearchableListMixin, ListView):
         context['q']=self.request.GET.get('q','')
         return context
         
-class ArticleList(ActionViewMixin, FilterableListView):
+class ArticleList(GetActionsMixin, FilterableListView):
     model = Article
     actions = [
         claim_articles,
@@ -98,24 +183,22 @@ class ArticleList(ActionViewMixin, FilterableListView):
     context_object_name = 'available'
     search_fields = ['tags', 'project__name', 'keyword__keyword']
     filter_fields = [Filter(title='Project', name='project__name', ref='project_id', model=Article),
-                    Filter(title='Length', name='minimum', model=Article),
+                     Filter(title='Length', name='minimum', model=Article),
 #                    Filter(title='Type', name='article_type', model=Article),
 #                    Filter(name='published', lookup='isnull', model=Article),
 #                    Filter(name='submitted', lookup='isnull', model=Article)
                 ]
-    def get_action_user_id_form(self):
-        form=ActionUserID()
-#        form.fields["user"].queryset = User.objects.filter(user__factory)
-        return form
-    def get_context_data(self, **kwargs):
-        context = super(ArticleList, self).get_context_data(**kwargs)
-        context['action_user_form']=self.get_action_user_id_form()
-#        context['tag_form']=TagForm()
-        context['note_form']=NoteForm()
-        context['actions_requiring_user_id']=[-2,2] # Because this will be converted to JS, the array must have more than one element.
-#        context['actions_requiring_tag']=[-2,5]
-        context['actions_requiring_note']=[-2,6,8]
-        return context
+#    def get_action_user_id_form(self):
+#        form=ActionUserID()
+##        form.fields["user"].queryset = User.objects.filter(user__factory)
+#        return form
+    def get_actions(self):
+        return [
+            ('Assign', ActionUserID(),'/articles/various/assign/'),
+            ('Tag', TagForm(),'/articles/various/tag/'),
+            ('Approve','','/articles/various/approve/'),
+            ('Reject',NoteForm(),'/articles/various/reject/'),
+        ]
 class ProjectCreate(CreateView):
     model = Project
     def get(self, request, *args, **kwargs):
@@ -138,10 +221,54 @@ class AjaxKeywordInlineForm(FormView):
     form_class = KeywordInlineForm
 
     def form_invalid(self, form):
-        return self.render_to_response(self.get_context_data(form))
+        return self.render_to_response(self.get_context_data(form=form))
         
     def form_valid(self, id_form):
         f=KeywordInlineFormSet(Article, self.request, Keyword.objects.all()[0])
         fs=f.get_formset()
         form=fs()._construct_form(id_form.cleaned_data['num'])
         return self.render_to_response(self.get_context_data(form=form))
+
+class ArticleActionView(DetailView):
+    template_name = "articles/article_list_row.html"
+    model = Article
+    def do_action(self): raise NotImplemented
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        self.do_action()
+        context = self.get_context_data(object=self.object)
+        return self.render_to_response(context)
+        
+class ArticleSubmit(ArticleActionView):
+    def do_action(self):
+        if self.request.user == self.object.assigned.author or self.request.user.is_staff:
+            self.object.submit(self.request.user)
+        
+class ArticleApprove(ArticleActionView):
+    def do_action(self):
+        if not self.object.submitted:
+            messages.error(self.request, 'This article has not been submitted.')
+        elif self.request.user == self.object.owner or self.request.user.is_staff:
+            self.object.approve(self.request.user)
+            messages.info(self.request, 'The article has been submitted successfully.')
+        else:
+            messages.error(self.request, 'You do not have permission to approve this article.')
+
+class AssignVariousArticles(PostActionsView):
+    def filter_action_queryset(self, qs):
+        # Make sure user has permission to assign articles
+        qs=qs.filter(assigned__isnull=True)
+        if not self.request.user.is_staff: return qs.filter(owner=self.request.user)
+        else: return qs
+    template_name = "articles/ajax_article_list_row.html"
+    model = Article
+    action_verb="assign"
+    action_form_class = ActionUserID
+    def create_action(self):
+        action = ArticleAction.objects.create(user=self.request.user, 
+                    code=ACT_ASSIGN, 
+                    author=self.action_form.cleaned_data['user'],
+                )
+        self.action_qs.update(assigned=action)
+        return action
+                

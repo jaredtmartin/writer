@@ -1,0 +1,64 @@
+Todo:
+    Article Form:
+        Show Title and Body fields when appropriate.
+        Try out tinyMCE
+        Make sure HTML saved correctly
+        Add button to download article
+        fix adding keywords to a new article
+
+        add action buttons
+        Hide keyword row when deleted
+        Add expiration dates
+        Add tags
+        Use fancybox to create new project
+        
+        
+    Article List:
+        Make assigned To link to writer's page
+        Make Keywords link to keywords page
+        Add a link to create a new article
+        Add missing filters (Assigned, Available, Submitted, Approved, etc. )
+
+
+Add a way to assign Reviewers
+Change tags to foreignkey
+
+
+Color code error, warnings and info messages
+have a way to associate writers with their requesters so that a requester can only assign writers that are willing to work for them
+allow two types of validation plugins, those that reject and those that save the errors for later
+Import files from Excel
+Paypal
+Moneybookers
+Bank Transfer
+Facebook
+WP    http://www.zoundryraven.com/devblog/2009/02/zoundry-raven-open-source.html
+Packages
+Export
+Paging
+Payment Status'
+Chat
+Support Chat
+Reports
+keep track of values
+non site payments and confirmation
+
+
+
+User options
+    Which payment methods does he accept?
+    
+
+
+Payments Page
+list of credits and debits
+list of unconfirmed payments
+
+
+Done:
+move assign to to its own dropdown Sun Dec 16 23:11:31 2012 
+Get AJAX working on action buttonsThu Dec 20 21:33:29 2012 
+Add action buttons for remaining actions Thu Dec 20 21:51:33 2012 
+Add a "new article view" Thu Dec 20 21:51:33 2012 
+Fix title of page to say new if its new Thu Dec 20 21:51:33 2012 
+Change Article model so it uses the articles title if it exists. Thu Dec 20 21:51:33 2012 
