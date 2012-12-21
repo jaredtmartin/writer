@@ -14,7 +14,20 @@
 		//$.post(url, success=show_stuff, error=showError, data=data);
 		//get_stuff(url, data);
     }
-
+    function updateSelectedCounter(actionCheckboxes){
+        var sel = $(actionCheckboxes).filter(":checked").length;
+		$('#action_counter').html(sel+" of "+ _actions_icnt+" selected");
+    }
+    function activateCheckboxCounter(){
+        var actionCheckboxes=$("tr input.action-select");
+        actionCheckboxes.click(function() {
+            updateSelectedCounter(actionCheckboxes);
+            if (!$("#action-bar").is(":visible")){
+                $("#action-bar").show();
+            }
+        });
+    }
+    
     	$(document).ready(function() {
     	    {% for action in actions %}
     	        {% if action.1 %}
@@ -23,21 +36,12 @@
 		        $("a#{{action.0}}-link").click("finishAction('{{action.2}}');")
 		    {% endif %}
 		{% endfor %}
+        if ($("tr input.action-select").filter(":checked").length==0){
+            $("#action-bar").hide();
+        }
+        activateCheckboxCounter();
+        window.codeForRows.push(activateCheckboxCounter);
 	});
-    (function($) {
-        $(document).ready(function($) {
-            actionCheckboxes=$("tr input.action-select");
-            actionCheckboxes.actions();
-            if ($(actionCheckboxes).filter(":checked").length==0){
-                $("#action-bar").hide();
-            }
-            actionCheckboxes.click(function() {
-                if (!$("#action-bar").is(":visible")){
-                    $("#action-bar").show();
-                }
-            });
-        });
-    })(django.jQuery);
 </script>
 <div id="action-details-forms" style="display:none">
     <input type="hidden" value="zzz" name="tester">
