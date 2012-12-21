@@ -1,0 +1,12 @@
+[submodule "src/django-actions"]
+path = src/django-actions
+url = 
+ignore = dirty
+[submodule "src/django-extra-views"]
+path = src/django-extra-views
+url = 
+ignore = dirty
+[submodule "src/django-filter"]
+path = src/django-filter
+url = 
+ignore = dirty

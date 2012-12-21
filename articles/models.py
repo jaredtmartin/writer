@@ -56,7 +56,7 @@ class Article(models.Model):
     @property
     def status(self): 
         if self.last_action: return self.last_action.get_code_display()
-        return u""
+        return u"New"
     
     last_action = models.ForeignKey(ArticleAction, null=True, blank=True, related_name='articles_last_action')
     published   = models.ForeignKey(ArticleAction, null=True, blank=True, related_name='published_articles')
