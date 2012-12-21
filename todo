@@ -11,6 +11,7 @@ Todo:
         Add expiration dates
         Add tags
         Use fancybox to create new project
+        Add user modes
         
         
     Article List:
@@ -23,7 +24,9 @@ Todo:
 Add a way to assign Reviewers
 Change tags to foreignkey
 
-
+a requester can block a writer accessing his content
+ok, so on the writers page, the requester can choose which users can review for him and which (or all) can write for him (or blacklist)
+requester should be able to create an account for a new writer (and the writer should automaticly be whitelisted).
 Color code error, warnings and info messages
 have a way to associate writers with their requesters so that a requester can only assign writers that are willing to work for them
 allow two types of validation plugins, those that reject and those that save the errors for later

@@ -9,6 +9,7 @@ urlpatterns = patterns('',
     url(r'^article/(?P<pk>\d+)/delete/$', ArticleDelete.as_view(), name='article_delete'),
     url(r'^keyword/new/$', AjaxKeywordInlineForm.as_view(), name='new_keyword'),
     url(r'^article/(?P<pk>\d+)/submit/$', ArticleSubmit.as_view(), name='article_submit'),
+    url(r'^article/(?P<pk>\d+)/release/$', ArticleRelease.as_view(), name='article_release'),
     url(r'^article/(?P<pk>\d+)/approve/$', ArticleApprove.as_view(), name='article_approve'),
     url(r'^various/assign/$', AssignVariousArticles.as_view(), name='assign_various_articles'),
     
