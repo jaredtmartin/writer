@@ -121,9 +121,9 @@ class PostActionsView(TemplateResponseMixin, View):
 
     def create_action(self):
         raise NotImplemented
-    def save_action(self):
-        self.action.articles.add(*self.action_qs)
-        self.action_qs.update(last_action=self.action)
+    def update_articles(self, qs, action):
+        action.articles.add(*qs)
+        qs.update(last_action=action)
     def get_action_verb(self):
         return self.action_verb
     def get_past_tense_action_verb(self):
@@ -144,10 +144,15 @@ class PostActionsView(TemplateResponseMixin, View):
             self.action_form=form_class(self.request.POST)
             if self.action_form.is_valid():
                 qs=list(self.action_qs)  # Save it as a list so we don't lose track of the ones we change due to the filters
+                print "self.action_qs: " + str(self.action_qs) 
                 self.action=self.create_action()
-                self.save_action()
+                print "self.action_qs: " + str(self.action_qs) 
+                self.update_articles(self.action_qs, self.action)
+                print "self.action_qs: " + str(self.action_qs) 
                 self.action_qs.update(assigned=self.action)
+                print "self.action_qs: " + str(self.action_qs) 
                 self.action_qs=self.get_requested_objects()
+                print "self.action_qs: " + str(self.action_qs) 
         else: self.action_form=form_class()
         self.send_result_messages()
         context = self.get_context_data()
@@ -243,6 +248,16 @@ class ArticleSubmit(ArticleActionView):
     def do_action(self):
         if self.request.user == self.object.assigned.author or self.request.user.is_staff:
             self.object.submit(self.request.user)
+
+class ArticleRelease(ArticleActionView):
+    def do_action(self):
+        if not self.object.assigned:
+            messages.error(self.request, 'This article has not been assigned.')
+        elif self.request.user == self.object.owner or self.request.user.is_staff or self.request.user==self.object.assigned.author:
+            self.object.release(self.request.user)
+            messages.info(self.request, 'The article has been released successfully.')
+        else:
+            messages.error(self.request, 'You must be the owner or author to release this article.')
         
 class ArticleApprove(ArticleActionView):
     def do_action(self):
@@ -269,6 +284,8 @@ class AssignVariousArticles(PostActionsView):
                     code=ACT_ASSIGN, 
                     author=self.action_form.cleaned_data['user'],
                 )
-        self.action_qs.update(assigned=action)
         return action
+    def update_articles(self, qs, action):
+        super(AssignVariousArticles, self).update_articles(qs, action)
+        qs.update(assigned=action)
                 

@@ -9,8 +9,9 @@
         {% for action in article.available_actions %}
             <a href="#" onclick="jQuery.post('{{article.get_absolute_url}}{{action}}/', success=ajaxUpdateRow);return false;"><li title="" class="blue-keyword">{{action}}</li></a>
         {% endfor %}
+        <li title="Edit this article" class="purple-keyword cur_help"><a href="{{ article.get_absolute_url}}"> Edit</li>
         <li title="" class="purple-keyword cur_help">Delete</li>   
-        <li title="Edit Article Info" class="none">&nbsp;&nbsp;<a class="claim_popup" href="http://www.writeaid.net/functions/edit.php?topic=45523"><img width="16" height="16" alt="Edit Article Info" src="{{STATIC_URL}}/img/edit_16x16.gif"></a></li>                
+        
     </ul>
   </td>
 </tr>
