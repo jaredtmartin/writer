@@ -12,4 +12,7 @@ function ajaxUpdateRow(data){
             $('#'+$(this).attr('id').split('-')+'s').prepend(this);                     // Otherwise add it to the top of the list
         }
     });
+    for (x in window.codeForRows){
+        codeForRows[x]();
+    }
 }

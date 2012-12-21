@@ -4,9 +4,9 @@
 
     <link href="{% static "css/writersaxis.css" %}" rel="stylesheet" type="text/css" />
     
-    <script src="/static/admin/js/core.js" type="text/javascript"></script>
-    <script src="{{STATIC_URL}}js/jsi18n.js" type="text/javascript"></script>
-    <script src="/static/admin/js/actions.js" type="text/javascript"></script>
+<!--    <script src="/static/admin/js/core.js" type="text/javascript"></script>-->
+<!--    <script src="{{STATIC_URL}}js/jsi18n.js" type="text/javascript"></script>-->
+<!--    <script src="/static/admin/js/actions.js" type="text/javascript"></script>-->
     
 
 <!-- Add mousewheel plugin (this is optional) -->
@@ -51,12 +51,12 @@
                     <thead> 
                         <tr id="action-bar">
                             <th colspan="6">
-                                <script type="text/javascript">var _actions_icnt="1";</script>        
+                                <script type="text/javascript">var _actions_icnt="{{articles.count}}"; window.codeForRows=[]</script>        
                                 <ul align="right" class="priority">
                                     {% for action in actions %}
                                         <a id="{{action.0}}-link" href="#{{action.0}}-box" onclick=""><li title="" class="blue-keyword">{{action.0}}</li></a>
                                     {% endfor %}
-                                    <li class="action-counter"><span class="action-counter" style="display: inline; ">0 of 1 selected</span></li>
+                                    <li id="action_counter" class="action-counter"><span class="action-counter" style="display: inline; ">0 of 1 selected</span></li>
                                 </ul>
                             </th>
                         </tr>
