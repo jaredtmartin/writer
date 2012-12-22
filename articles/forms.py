@@ -8,11 +8,8 @@ from django.utils.encoding import smart_unicode
 class ArticleForm(ModelForm):
     class Meta:
         model = Article
-        fields = ('body',)
-        
-class ArticleEmployerForm(ModelForm):
-    class Meta:
-        model = Article
+        fields = ('minimum','maximum','article_type','project','title','body', 'owner')
+#        ['minimum', 'maximum', 'body', 'title', 'article_type', 'project', 'tags', 'owner', 'last_action', 'published', 'approved', 'submitted', 'assigned', 'rejected', 'released']
         
 class KeywordInlineFormSet(InlineFormSet):
     model = Keyword
@@ -45,7 +42,7 @@ class ModelChoiceFieldWithFlexibleChoiceLabels(ModelChoiceField):
 class ModelChoiceFieldTitleLabels(ModelChoiceField):
     def label_from_instance(self, obj):
         return smart_unicode(obj).title()
-        
+    
 class AssignToForm(Form):
 #    assign_to_user = ModelChoiceFieldWithFlexibleChoiceLabels(queryset=User.objects.all(), pre_label="Assign to ")
     assign_to_user = ModelChoiceFieldTitleLabels(queryset=User.objects.all(), empty_label="Assign select articles to:")

@@ -1,7 +1,15 @@
 {% extends "writeaid_base.html" %}
 
+{% block head %}
+    <script type="text/javascript" src="{{ STATIC_URL}}js/tiny_mce/jquery.tinymce.js"></script>
+    <link href="{{ STATIC_URL}}css/writersaxis.css" rel="stylesheet" type="text/css" />
+{% endblock %}
+
 {% block content %}
+    {{form.errors}}
     <form action="{{ article.get_absolute_url }}" method="post"> {% csrf_token %}
+    {{form.ID}}
+    <input type="hidden" name="owner" value="{% if article.owner %}{{article.owner.pk}}{% else %}{{user.pk}}{% endif %}">
     <div class="block">
         <div class="block_head">
             <div class="bheadl"></div>
@@ -9,19 +17,25 @@
             <h2>{% if article.pk %} Article: {{article.name}} {% else %} New Article {% endif %}</h2>
         </div>
         <div class="block_content">
-            {% include "articles/edit_article_properties_form.html"%}
-            {% with inlines.0 as inline %}
-                {% include "articles/edit_article_keywords_form.html" %}
-            {% endwith %}
+            {% if user == article.owner %}
+                {% include "articles/edit_article_properties_form.html"%}
+                {% with inlines.0 as inline %}
+                    {% include "articles/edit_article_keywords_form.html" %}
+                {% endwith %}
+            {% else %}
+                {% include "articles/show_article_properties.html"%}
+            {% endif %}
+            {% if article.assigned %}
+                {% include "articles/article_body.html" %}
+            {% endif %}
             <table class="block_content" width="100%" cellspacing="0" cellpadding="0" border="0" style="border: none; margin:0;">
                 <tr>
-                    <td colspan="2"><div class="aleft"><input id="add_keyword" type="button" value="Add Keyword" class="submit long"></div></td>
                     <td colspan="2"><div class="aright"><input type="submit" value="Save Article" class="submit long"></div></td>
                 </tr>
             </table>
         </div>
         <div class="bendl"></div>
-<div class="bendr"></div>
+        <div class="bendr"></div>
     </div>
 {% endblock %}
 

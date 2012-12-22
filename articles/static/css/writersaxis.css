@@ -53,4 +53,6 @@ li.action-counter{
     vertical-align: baseline !important;
     white-space: nowrap !important;
 }
+ul.errorlist li{
+    color:red !important;
 }

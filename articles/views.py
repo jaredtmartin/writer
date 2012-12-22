@@ -215,6 +215,7 @@ class ArticleCreate(CreateView):
 
 class ArticleUpdate(UpdateWithInlinesView):
     model = Article
+    form_class=ArticleForm
     inlines = [KeywordInlineFormSet]
 
 class ArticleDelete(DeleteView):

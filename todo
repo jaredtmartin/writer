@@ -1,8 +1,5 @@
 Todo:
     Article Form:
-        Show Title and Body fields when appropriate.
-        Try out tinyMCE
-        Make sure HTML saved correctly
         Add button to download article
         fix adding keywords to a new article
 
@@ -20,16 +17,28 @@ Todo:
         Add a link to create a new article
         Add missing filters (Assigned, Available, Submitted, Approved, etc. )
 
-
 Add a way to assign Reviewers
 Change tags to foreignkey
 
-a requester can block a writer accessing his content
-ok, so on the writers page, the requester can choose which users can review for him and which (or all) can write for him (or blacklist)
+
 requester should be able to create an account for a new writer (and the writer should automaticly be whitelisted).
 Color code error, warnings and info messages
-have a way to associate writers with their requesters so that a requester can only assign writers that are willing to work for them
 allow two types of validation plugins, those that reject and those that save the errors for later
+
+
+
+
+
+
+    
+
+
+
+
+
+================================================================================================================
+                                                 Deferred:
+================================================================================================================
 Import files from Excel
 Paypal
 Moneybookers
@@ -37,6 +46,11 @@ Bank Transfer
 Facebook
 WP    http://www.zoundryraven.com/devblog/2009/02/zoundry-raven-open-source.html
 Packages
+Payments Page
+list of credits and debits
+list of unconfirmed payments
+User options
+    Which payment methods does he accept?
 Export
 Paging
 Payment Status'
@@ -45,23 +59,23 @@ Support Chat
 Reports
 keep track of values
 non site payments and confirmation
+a requester can block a writer accessing his content
+ok, so on the writers page, the requester can choose which users can review for him and which (or all) can write for him (or blacklist)
+have a way to associate writers with their requesters so that a requester can only assign writers that are willing to work for them
 
-
-
-User options
-    Which payment methods does he accept?
-    
-
-
-Payments Page
-list of credits and debits
-list of unconfirmed payments
-
-
-Done:
-move assign to to its own dropdown Sun Dec 16 23:11:31 2012 
-Get AJAX working on action buttonsThu Dec 20 21:33:29 2012 
-Add action buttons for remaining actions Thu Dec 20 21:51:33 2012 
-Add a "new article view" Thu Dec 20 21:51:33 2012 
-Fix title of page to say new if its new Thu Dec 20 21:51:33 2012 
-Change Article model so it uses the articles title if it exists. Thu Dec 20 21:51:33 2012 
+================================================================================================================
+                                                 Done:
+================================================================================================================
+Sun Dec 16 23:11:31 2012 
+    move assign to to its own dropdown 
+Thu Dec 20 21:33:29 2012 
+    Get AJAX working on action buttons
+Thu Dec 20 21:51:33 2012 
+    Add action buttons for remaining actions 
+    Add a "new article view"
+    Fix title of page to say new if its new
+    Change Article model so it uses the articles title if it exists.
+Fri Dec 21 23:38:32 2012 
+    Show Title and Body fields when appropriate.
+    Try out tinyMCE
+    Make sure HTML saved correctly
