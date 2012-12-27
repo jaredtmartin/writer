@@ -3,8 +3,8 @@
 		$.fancybox.close();
 		data=$('#actions-form').serialize();
 		data+="&user="+$('#id_user').val();
-		data['tag']=$('#id_tag').val();
-		data['note']=$('#id_note').val();
+		data+="&tags="+$('#id_tags').val();
+		data+="&note="+$('#id_note').val();
         $.ajax({
             url: url ,
             type:'POST',
@@ -27,13 +27,14 @@
             }
         });
     }
-    
     	$(document).ready(function() {
     	    {% for action in actions %}
     	        {% if action.1 %}
 		        $("a#{{action.0}}-link").fancybox();
 		      {% else %}
-		        $("a#{{action.0}}-link").click("finishAction('{{action.2}}');")
+		        $("a#{{action.0}}-link").click(function() {
+                  finishAction('{{action.2}}');
+                });
 		    {% endif %}
 		{% endfor %}
         if ($("tr input.action-select").filter(":checked").length==0){
@@ -44,7 +45,6 @@
 	});
 </script>
 <div id="action-details-forms" style="display:none">
-    <input type="hidden" value="zzz" name="tester">
     <input type="hidden" value="{{ all_items_count }}" name="all-items-count" id="all-items-count">
     <input type="hidden" value="0" name="select-across" id="select-across">
     {% for action in actions %}

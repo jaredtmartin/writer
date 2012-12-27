@@ -52,6 +52,7 @@ li.action-counter{
     text-transform: uppercase !important;
     vertical-align: baseline !important;
     white-space: nowrap !important;
+    cursor:pointer;
 }
 ul.errorlist li{
     color:red !important;

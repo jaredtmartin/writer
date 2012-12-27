@@ -1,5 +1,5 @@
 from articles.models import *
-from django.forms import ModelForm, DateField, IntegerField, Form, ModelChoiceField, CharField
+from django.forms import ModelForm, DateField, IntegerField, Form, ModelChoiceField, CharField, ModelMultipleChoiceField
 from extra_views import InlineFormSet
 from articles.widgets import SelectWithFlexibleOptionLabels
 from django.utils.encoding import smart_unicode
@@ -22,7 +22,7 @@ class ActionUserID(Form):
     user = ModelChoiceField(queryset=User.objects.all())
 
 class TagForm(Form):
-    tag = CharField(max_length=128)
+    tags = ModelMultipleChoiceField(queryset=Tag.objects.all())
 
 class NoteForm(Form):
     note = CharField(max_length=128)

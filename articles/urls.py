@@ -12,5 +12,10 @@ urlpatterns = patterns('',
     url(r'^article/(?P<pk>\d+)/release/$', ArticleRelease.as_view(), name='article_release'),
     url(r'^article/(?P<pk>\d+)/approve/$', ArticleApprove.as_view(), name='article_approve'),
     url(r'^various/assign/$', AssignVariousArticles.as_view(), name='assign_various_articles'),
+    url(r'^various/reject/$', RejectVariousArticles.as_view(), name='reject_various_articles'),
+    url(r'^various/approve/$', ApproveVariousArticles.as_view(), name='approve_various_articles'),
+    url(r'^various/tag/$', TagVariousArticles.as_view(), name='tag_various_articles'),
+
+    
     
 )

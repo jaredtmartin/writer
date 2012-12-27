@@ -89,7 +89,6 @@ class PostActionsView(TemplateResponseMixin, View):
     def filter_action_queryset(qs):
         return qs
     def get_action_form_class(self):
-        print "HERE"
         return self.action_form_class
     def get_requested_objects(self):
         if 'select-across' in self.request.POST:
@@ -130,8 +129,8 @@ class PostActionsView(TemplateResponseMixin, View):
         return self.get_action_verb()+'ed'
     def send_result_messages(self):
         if self.final_action_qty==0:
-            messages.error(self.request, 'The articles selected were either not available or are not yours to assign.')
-        elif not self.action_form.is_valid():
+            messages.error(self.request, 'The articles selected are not ready to be %s or are not yours to %s.' % (self.get_past_tense_action_verb(), self.get_action_verb()))
+        elif self.action_form and not self.action_form.is_valid():
             messages.error(self.request, 'You did not select a valid value to complete this action.')
         elif self.final_action_qty < self.initial_action_qty:
             messages.warning(self.request, 'Only %i of the articles selected have been %s. Please verify the operation and that you have authority to make this change on the remaining articles.' % (self.final_action_qty, self.get_past_tense_action_verb()))
@@ -141,15 +140,15 @@ class PostActionsView(TemplateResponseMixin, View):
         # Make sure the articles are available
         form_class=self.get_action_form_class()
         if self.action_qs and self.final_action_qty > 0:
-            self.action_form=form_class(self.request.POST)
-            if self.action_form.is_valid():
+            if form_class: self.action_form=form_class(self.request.POST)
+            else: self.action_form=None
+            if (not self.action_form) or self.action_form.is_valid():
                 qs=list(self.action_qs)  # Save it as a list so we don't lose track of the ones we change due to the filters
                 print "self.action_qs: " + str(self.action_qs) 
                 self.action=self.create_action()
                 print "self.action_qs: " + str(self.action_qs) 
                 self.update_articles(self.action_qs, self.action)
                 print "self.action_qs: " + str(self.action_qs) 
-                self.action_qs.update(assigned=self.action)
                 print "self.action_qs: " + str(self.action_qs) 
                 self.action_qs=self.get_requested_objects()
                 print "self.action_qs: " + str(self.action_qs) 
@@ -289,4 +288,61 @@ class AssignVariousArticles(PostActionsView):
     def update_articles(self, qs, action):
         super(AssignVariousArticles, self).update_articles(qs, action)
         qs.update(assigned=action)
-                
+
+class RejectVariousArticles(PostActionsView):
+    def filter_action_queryset(self, qs):
+        # Make sure user has permission to assign articles
+        qs=qs.filter(submitted__isnull=False)
+        if not self.request.user.is_staff: return qs.filter(owner=self.request.user)
+        else: return qs
+    template_name = "articles/ajax_article_list_row.html"
+    model = Article
+    action_verb="reject"
+    action_form_class = NoteForm
+    def create_action(self):
+        action = ArticleAction.objects.create(user=self.request.user, 
+                    code=ACT_REJECT, 
+                    comment=self.action_form.cleaned_data['note'],
+                )
+        return action
+    def update_articles(self, qs, action):
+        super(RejectVariousArticles, self).update_articles(qs, action)
+        qs.update(rejected=action)
+        qs.update(submitted=None)
+        qs.update(approved=None)
+
+class ApproveVariousArticles(PostActionsView):
+    def filter_action_queryset(self, qs):
+        # Make sure user has permission to assign articles
+        qs=qs.filter(submitted__isnull=False)
+        if not self.request.user.is_staff: return qs.filter(owner=self.request.user)
+        else: return qs
+    template_name = "articles/ajax_article_list_row.html"
+    model = Article
+    action_verb="approve"
+    action_form_class = None
+    def create_action(self):
+        action = ArticleAction.objects.create(user=self.request.user, 
+                    code=ACT_APPROVE, 
+                )
+        return action
+    def update_articles(self, qs, action):
+        super(ApproveVariousArticles, self).update_articles(qs, action)
+        qs.update(approved=action)
+        
+class TagVariousArticles(PostActionsView):
+    def filter_action_queryset(self, qs):
+        # Make sure user has permission to tag articles
+        if not self.request.user.is_staff: return qs.filter(owner=self.request.user)
+        else: return qs
+    template_name = "articles/ajax_article_list_row.html"
+    model = Article
+    action_verb="tag"
+    action_form_class = TagForm
+    def create_action(self):
+        return self.action_form.cleaned_data['tags']
+    def update_articles(self, qs, action):
+        for article in qs:
+            article.tags.add(*[x.pk for x in action]) # action actual is an array of tags, this will add them all at once.
+    def get_past_tense_action_verb(self):
+        return 'tagged'
