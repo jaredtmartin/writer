@@ -3,7 +3,7 @@ from extra_views import SearchableListMixin
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.detail import DetailView
 from django.views.generic import TemplateView, FormView
-from articles.models import Article, Keyword, Project, ArticleAction
+from articles.models import Article, Keyword, Project, ArticleAction, ACTIONS
 from django.views.generic.base import View, TemplateResponseMixin
 from articles.forms import ArticleForm, KeywordInlineFormSet, KeywordInlineForm, ActionUserID, AssignToForm
 #from django_actions.views import ActionViewMixin
@@ -44,10 +44,6 @@ class LoginRequiredMixin(object):
 """
 class Choice(object):
     def __init__(self, **kwargs):
-#        label #Activated    
-#        value #1
-#        base  #last_action
-#        lookup #__code
         self.label = kwargs.pop('label')
         self.base = kwargs.pop('base')
         self.value = kwargs.pop('value', self.label)
@@ -82,7 +78,6 @@ class FilterWithChoicesFromModel(Filter):
 class RelatedFilter(FilterWithChoicesFromModel):
     def __init__(self, **kwargs):
         self.display_attr = kwargs.pop('display_attr','')
-        self.related_model = kwargs.pop('related_model')
         super(RelatedFilter, self).__init__(**kwargs)
     def build_choice(self, choice):
     	    return Choice(label=unicode(choice), base=self.name, lookup=self.display_attr)
@@ -95,6 +90,16 @@ class RelatedFilter(FilterWithChoicesFromModel):
         choices = super(RelatedFilter, self).build_choices()
         if 'None' in choices.keys(): choices['None'].lookup = 'isnull'
         return choices
+
+class StatusFilter(RelatedFilter):
+    def __init__(self, **kwargs):
+    
+        self.codes={}
+        for code, name in ACTIONS: self.codes[code]=name
+        super(StatusFilter, self).__init__(**kwargs)
+        self.name="Status"
+    def build_choice(self, choice):
+    	    return Choice(label=unicode(self.codes[choice]), base=self.name, lookup=self.display_attr, value=choice)
 
         
 #class ChoiceContext(object):
@@ -318,7 +323,8 @@ class ArticleList(GetActionsMixin, FilterableListView):
 #    }
     filter_fields={
         'minimum':FilterWithChoicesFromModel(name='minimum', model=Article),
-        'project':RelatedFilter(name='project', model=Article, display_attr='name',related_model=Project),
+        'project':RelatedFilter(name='project', model=Article, display_attr='name'),
+        'last_action':StatusFilter(name='last_action', model=Article, display_attr='code'),
     }
 #    def get_action_user_id_form(self):
 #        form=ActionUserID()
