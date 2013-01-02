@@ -49,12 +49,15 @@ class Choice(object):
         self.value = kwargs.pop('value', self.label)
         self.lookup = kwargs.pop('lookup', 'icontains')
     def filter(self, qs):
+        print "%s__%s % (self.base, self.lookup): " + str("%s__%s" % (self.base, self.lookup)) 
+        print "self.value: " + str(self.value) 
         return qs.filter(**{"%s__%s" % (self.base, self.lookup):self.value}) 
         
 class Filter(object):
     def __init__(self, **kwargs):
         self.name = kwargs.pop('name')
-        self.lookup=kwargs.get('lookup', 'icontains')
+        self.display_name=kwargs.pop('display_name', self.name)
+        self.lookup=kwargs.pop('lookup', 'icontains')
         self.choices=kwargs.pop('choices',self.build_choices())
     def filter(self, qs, selection):
         return self.choices[selection].filter(qs)
@@ -93,11 +96,10 @@ class RelatedFilter(FilterWithChoicesFromModel):
 
 class StatusFilter(RelatedFilter):
     def __init__(self, **kwargs):
-    
         self.codes={}
         for code, name in ACTIONS: self.codes[code]=name
         super(StatusFilter, self).__init__(**kwargs)
-        self.name="Status"
+        self.display_name="Status"
     def build_choice(self, choice):
     	    return Choice(label=unicode(self.codes[choice]), base=self.name, lookup=self.display_attr, value=choice)
 
