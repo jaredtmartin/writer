@@ -239,6 +239,13 @@ class ProjectCreate(CreateView):
         print "I am here!!!!"
         return super(ProjectCreate, self).get(request, *args, **kwargs)
 
+class ProjectList(FilterableListView):
+    model = Project
+    search_fields = ['name']
+    filter_fields={
+        'owner':RelatedFilter(name='owner', model=Project, display_attr='username'),
+    }
+    
 class ArticleCreate(CreateView):
     model = Article
 
@@ -250,6 +257,10 @@ class ArticleUpdate(UpdateWithInlinesView):
 class ArticleDelete(DeleteView):
     model = Article
     success_url = reverse_lazy('article_list')
+
+class ProjectDelete(DeleteView):
+    model = Project
+    success_url = reverse_lazy('list_projects')
 
 class AjaxKeywordInlineForm(FormView):
     template_name = "articles/keyword_inline_form.html"

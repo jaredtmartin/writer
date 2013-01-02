@@ -31,7 +31,13 @@ class Tag(models.Model):
     
 class Project(models.Model):
     name = models.CharField(max_length=64)
+    owner = models.ForeignKey(User, related_name='projects')
     def __unicode__(self): return self.name
+    @property
+    def keywords(self):
+        results=[]
+        [results.append(a.keywords) for a in self.articles.all()]
+        return ", ".join(results)
 
 class ArticleAction(models.Model):
     class Meta:
