@@ -6,8 +6,12 @@
     width:85%;
 }
 #content-main{
-    width:950px;
+    width:850px;
     float:left;
+}
+#changelist-filter {
+    width:100px;
+    float:right;
 }
 #changelist-filter li {
     list-style-type: none;

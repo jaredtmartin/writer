@@ -34,39 +34,84 @@ class LoginRequiredMixin(object):
 #    assigned
 #    rejected
 #    released
+
 class ChoiceContext(object):
-    def __init__(self, display, qs, selected=False):
+    def __init__(self, display, value=None, selected=False):
         self.display=display
-        self.qs=qs
+        self.value=value or display
+#        self.qs=qs
         self.selected=selected
+        
 class Filter(object):
-    def __init__(self, name, model, **kwargs):
-        self.name=name
-        self.model=model
-        self.title=kwargs.get('title', name.title())
+    def __init__(self, **kwargs):
+        self.name=kwargs.pop('name')
+        self.model=kwargs.pop('model',None)
+        self.title=kwargs.get('title', self.name.title())
         self.lookup=kwargs.get('lookup', 'icontains')
-        self.ref=kwargs.get('ref', name)
-        self.choices=self.get_choices()
+        self.ref=kwargs.get('ref', self.name)
+#        self.related=kwargs.get('related',self.name)
+        self.choices=kwargs.pop('choices',self.get_choices())
+    def filter(self, qs, selection):
+        if not selection: return qs 
+        if selection=='None': return qs.filter(**{self.query:selection})
+        else: return qs.filter(**{self.query:selection})
     @property
     def query(self):
         return "%s__%s" % (self.name, self.lookup)
     def get_choices(self):
+        if not self.model: return [] # We must have a model to build the choices based on a Foreign Key
         choices=[]
         for choice in self.model.objects.all().distinct().order_by(self.name).values_list(self.name, flat=True):
-            choices.append(ChoiceContext(display=unicode(choice), qs="&%s=%s" % (self.query, choice)))
+            choices.append(ChoiceContext(display=unicode(choice)))
         return choices
+class IsNullFilter(Filter):
+    def __init__(self, **kwargs):
+        super(IsNullFilter, self).__init__(**kwargs)
+        self.lookup = 'isnull'
+    def get_choices(self):
+        return [
+            ChoiceContext(display=u'Yes'),
+            ChoiceContext(display=u'No'),
+        ]
+    def filter(self, qs, selection):
+        if selection=='Yes':  return qs.filter(**{self.query:True})
+        elif selection=='No': return qs.filter(**{self.query:False})
+        else: return qs
         
+class OtherFilter(Filter):
+#    def __init__(self, **kwargs):
+#        super(IsNullFilter, self).__init__(**kwargs)
+#        self.lookup = 'isnull'
+    def get_choices(self):
+        return [
+            ChoiceContext(display=u'Available'),
+            ChoiceContext(display=u'Assigned'),
+            ChoiceContext(display=u'Submitted'),
+            ChoiceContext(display=u'Accepted'),
+            ChoiceContext(display=u'Rejected'),
+            ChoiceContext(display=u'Published'),
+        ]
+    def filter(self, qs, selection):
+        if selection=='Yes':  return qs.filter(**{self.query:True})
+        elif selection=='No': return qs.filter(**{self.query:False})
+        else: return qs
+
 class FilterableListView(SearchableListMixin, ListView):
     def get_queryset(self):
         qs=super(FilterableListView, self).get_queryset()
+        print "self.filter_fields.keys(): " + str(self.filter_fields.keys()) 
         for arg, val in self.request.GET.items():
-            if arg in self.get_filter_names(): qs=qs.filter(Q(**{arg: val}))
+            print "arg: " + str(arg) 
+            print "arg in self.filter_fields.keys(): " + str(arg in self.filter_fields.keys()) 
+            if arg in self.filter_fields.keys(): 
+                qs=self.filter_fields[arg].filter(qs, val)
+#            if arg in self.get_filter_names(): qs=qs.filter(Q(**{arg: val}))
         return qs
     def get_field_from_class(self, cls, fieldname):
         for field in cls._meta.local_fields:
             if field.attname==fieldname: return field
-    def get_filter_names(self):
-        return [f.name for f in self.filter_fields]
+#    def get_filter_names(self):
+#        return [f.name for f in self.filter_fields]
     def get_context_data(self, **kwargs):
         context = super(FilterableListView, self).get_context_data(**kwargs)
         context['q']=self.request.GET.get('q','')
@@ -80,7 +125,7 @@ class GetActionsMixin(object):
         self.request.session['serialized_qs'] = pickle.dumps(object_list_displayed.query)
         self.request.session['serialized_model_qs'] = object_list_displayed.model
         context = super(GetActionsMixin, self).get_context_data(**kwargs)
-        context['actions']=self.get_actions()
+        context['actions']=self.get_actions() 
         return context
     def get_actions(self):
         return self.actions
@@ -186,12 +231,23 @@ class ArticleList(GetActionsMixin, FilterableListView):
 #    queryset = Article.objects.filter(submitted=None)
     context_object_name = 'available'
     search_fields = ['tags', 'project__name', 'keyword__keyword']
-    filter_fields = [Filter(title='Project', name='project__name', ref='project_id', model=Article),
-                     Filter(title='Length', name='minimum', model=Article),
-#                    Filter(title='Type', name='article_type', model=Article),
-#                    Filter(name='published', lookup='isnull', model=Article),
-#                    Filter(name='submitted', lookup='isnull', model=Article)
-                ]
+#    filter_fields = [Filter(title='Project', name='project__name', ref='project_id', model=Article),
+#                     Filter(title='Length', name='minimum', model=Article),
+#                     IsNullFilter(title='Assigned/Claimed', name='assigned')
+##                    Filter(title='Type', name='article_type', model=Article),
+##                    Filter(name='published', lookup='isnull', model=Article),
+##                    Filter(name='submitted', lookup='isnull', model=Article)
+#                ]
+    filter_fields = {
+        'project__name':Filter(name='project__name', ref='project_id', model=Article, title='Project'),
+        'minimum':Filter(name='minimum', model=Article),
+#        'status':Filter(name='last_action__code', title='Status'),
+        'assigned':IsNullFilter(title='Assigned/Claimed', name='assigned'),
+        'submitted':IsNullFilter(title='Submitted', name='submitted'),
+        'approved':IsNullFilter(title='Approved', name='approved'),
+#        'rejected':IsNullFilter(title='Rejected', name='rejected'),
+#        'published':IsNullFilter(title='Published', name='published'),
+    }
 #    def get_action_user_id_form(self):
 #        form=ActionUserID()
 ##        form.fields["user"].queryset = User.objects.filter(user__factory)

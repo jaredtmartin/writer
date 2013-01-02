@@ -21,6 +21,14 @@ Todo:
         Add a link to create a new article
         Add missing filters (Assigned, Available, Submitted, Approved, etc. )
 
+Change "Release" to "Unassign"
+change top buttons to dropdowns
+Add other filters
+make checkboxes disappear
+UNDO button
+COPY TO CLIP BOARD Button
+remove maximum words
+
 Add a way to assign Reviewers
 Change tags to foreignkey
 

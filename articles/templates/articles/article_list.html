@@ -94,7 +94,9 @@
 </div>
 <div id="changelist-filter">
     <h2>Filter</h2>
-    {% for filter in filters %}{% include "articles/filter.html"%}{% endfor %}
+    {% for key, filter in filters.items %}
+        {% include "articles/filter.html"%}
+    {% endfor %}
 </div>
 
 {% endblock %}
