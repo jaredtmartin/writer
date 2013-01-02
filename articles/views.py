@@ -35,66 +35,134 @@ class LoginRequiredMixin(object):
 #    rejected
 #    released
 
-class ChoiceContext(object):
-    def __init__(self, display, value=None, selected=False):
-        self.display=display
-        self.value=value or display
-#        self.qs=qs
-        self.selected=selected
+
+"""
+    filter_fields={
+        'minimum':SimpleFilter(name='minimum', model=Article),
+        'project':SimpleFilter(name='project', model=Article, lookup='name__icontains'),
+    }
+"""
+class Choice(object):
+    def __init__(self, **kwargs):
+#        label #Activated    
+#        value #1
+#        base  #last_action
+#        lookup #__code
+        self.label = kwargs.pop('label')
+        self.base = kwargs.pop('base')
+        self.value = kwargs.pop('value', self.label)
+        self.lookup = kwargs.pop('lookup', 'icontains')
+    def filter(self, qs):
+        return qs.filter(**{"%s__%s" % (self.base, self.lookup):self.value}) 
         
 class Filter(object):
     def __init__(self, **kwargs):
-        self.name=kwargs.pop('name')
-        self.model=kwargs.pop('model',None)
-        self.title=kwargs.get('title', self.name.title())
+        self.name = kwargs.pop('name')
         self.lookup=kwargs.get('lookup', 'icontains')
-        self.ref=kwargs.get('ref', self.name)
-#        self.related=kwargs.get('related',self.name)
-        self.choices=kwargs.pop('choices',self.get_choices())
+        self.choices=kwargs.pop('choices',self.build_choices())
     def filter(self, qs, selection):
-        if not selection: return qs 
-        if selection=='None': return qs.filter(**{self.query:selection})
-        else: return qs.filter(**{self.query:selection})
-    @property
-    def query(self):
-        return "%s__%s" % (self.name, self.lookup)
-    def get_choices(self):
-        if not self.model: return [] # We must have a model to build the choices based on a Foreign Key
-        choices=[]
-        for choice in self.model.objects.all().distinct().order_by(self.name).values_list(self.name, flat=True):
-            choices.append(ChoiceContext(display=unicode(choice)))
+        return self.choices[selection].filter(qs)
+    def get_choice_key(self, choice):
+    	    return unicode(choice)
+    def build_choice(self, choice):
+    	    return Choice(label=unicode(choice), base=self.name)
+    def build_choices(self):
+        choices={}
+        for choice in self.get_choice_list():
+            choices[self.get_choice_key(choice)] = self.build_choice(choice)
         return choices
-class IsNullFilter(Filter):
-    def __init__(self, **kwargs):
-        super(IsNullFilter, self).__init__(**kwargs)
-        self.lookup = 'isnull'
-    def get_choices(self):
-        return [
-            ChoiceContext(display=u'Yes'),
-            ChoiceContext(display=u'No'),
-        ]
-    def filter(self, qs, selection):
-        if selection=='Yes':  return qs.filter(**{self.query:True})
-        elif selection=='No': return qs.filter(**{self.query:False})
-        else: return qs
         
-class OtherFilter(Filter):
+class FilterWithChoicesFromModel(Filter):
+    def __init__(self, **kwargs):
+        self.model=kwargs.pop('model')
+        super(FilterWithChoicesFromModel, self).__init__(**kwargs)
+    def get_choice_list(self):
+    	    return self.model.objects.all().distinct().order_by(self.name).values_list(self.name, flat=True)
+
+class RelatedFilter(FilterWithChoicesFromModel):
+    def __init__(self, **kwargs):
+        self.display_attr = kwargs.pop('display_attr','')
+        self.related_model = kwargs.pop('related_model')
+        super(RelatedFilter, self).__init__(**kwargs)
+    def build_choice(self, choice):
+    	    return Choice(label=unicode(choice), base=self.name, lookup=self.display_attr)
+    def get_choice_list(self):
+        attr="%s__%s" % (self.name,self.display_attr)
+        return self.model.objects.all().distinct().order_by(attr).values_list(attr, flat=True)
+    def filter(self, qs, selection):
+        return self.choices[selection].filter(qs)
+    def build_choices(self):
+        choices = super(RelatedFilter, self).build_choices()
+        if 'None' in choices.keys(): choices['None'].lookup = 'isnull'
+        return choices
+
+        
+#class ChoiceContext(object):
+#    def __init__(self, **kwargs):
+#        self.display=kwargs.pop('display')
+#        self.value=kwargs.pop('value', self.display)
+#        self.base=kwargs.pop('value', self.display)
+#        self.lookup=kwargs.pop('lookup')
+#        self.selected=kwargs.pop('selected', False)
+#        
+#    def filter(self, qs):
+#        return qs.filter(**{lookup:self.value}) 
+
+
+#        
+#class Filter(object):
+#    def __init__(self, **kwargs):
+#        self.name=kwargs.pop('name')
+#        self.model=kwargs.pop('model',None)
+#        self.title=kwargs.get('title', self.name.title())
+#        self.lookup=kwargs.get('lookup', 'icontains')
+#        self.ref=kwargs.get('ref', self.name)
+##        self.related=kwargs.get('related',self.name)
+#        self.choices=kwargs.pop('choices',self.build_choices())
+#    def filter(self, qs, selection):
+#        if not selection: return qs
+#        if selection=='None': return qs.filter(**{self.query:selection})
+#        else: return qs.filter(**{self.query:selection})
+#    @property
+#    def query(self):
+#        return "%s__%s" % (self.name, self.lookup)
+#    def build_choices(self):
+#        if not self.model: return [] # We must have a model to build the choices based on a Foreign Key
+#        choices=[]
+#        for choice in self.model.objects.all().distinct().order_by(self.name).values_list(self.name, flat=True):
+#            choices.append(ChoiceContext(display=unicode(choice), lookup=self.query))
+#        return choices
+#class IsNullFilter(Filter):
 #    def __init__(self, **kwargs):
 #        super(IsNullFilter, self).__init__(**kwargs)
 #        self.lookup = 'isnull'
-    def get_choices(self):
-        return [
-            ChoiceContext(display=u'Available'),
-            ChoiceContext(display=u'Assigned'),
-            ChoiceContext(display=u'Submitted'),
-            ChoiceContext(display=u'Accepted'),
-            ChoiceContext(display=u'Rejected'),
-            ChoiceContext(display=u'Published'),
-        ]
-    def filter(self, qs, selection):
-        if selection=='Yes':  return qs.filter(**{self.query:True})
-        elif selection=='No': return qs.filter(**{self.query:False})
-        else: return qs
+#    def get_choices(self):
+#        return [
+#            ChoiceContext(display=u'Yes', lookup=self.query),
+#            ChoiceContext(display=u'No', lookup=self.query),
+#        ]
+#    def filter(self, qs, selection):
+#        if selection=='Yes':  return qs.filter(**{self.query:True})
+#        elif selection=='No': return qs.filter(**{self.query:False})
+#        else: return qs
+#        
+#class OtherFilter(Filter):
+##    def __init__(self, **kwargs):
+##        super(IsNullFilter, self).__init__(**kwargs)
+##        self.lookup = 'isnull'
+#    def get_choices(self):
+#        return [
+#            ChoiceContext(display=u'Available'),
+#            ChoiceContext(display=u'Assigned'),
+#            ChoiceContext(display=u'Submitted'),
+#            ChoiceContext(display=u'Accepted'),
+#            ChoiceContext(display=u'Rejected'),
+#            ChoiceContext(display=u'Published'),
+#        ]
+#    def filter(self, qs, selection):
+#        if selection=='Yes':  return qs.filter(**{self.query:True})
+#        elif selection=='No': return qs.filter(**{self.query:False})
+#        else: return qs
 
 class FilterableListView(SearchableListMixin, ListView):
     def get_queryset(self):
@@ -238,15 +306,19 @@ class ArticleList(GetActionsMixin, FilterableListView):
 ##                    Filter(name='published', lookup='isnull', model=Article),
 ##                    Filter(name='submitted', lookup='isnull', model=Article)
 #                ]
-    filter_fields = {
-        'project__name':Filter(name='project__name', ref='project_id', model=Article, title='Project'),
-        'minimum':Filter(name='minimum', model=Article),
-#        'status':Filter(name='last_action__code', title='Status'),
-        'assigned':IsNullFilter(title='Assigned/Claimed', name='assigned'),
-        'submitted':IsNullFilter(title='Submitted', name='submitted'),
-        'approved':IsNullFilter(title='Approved', name='approved'),
-#        'rejected':IsNullFilter(title='Rejected', name='rejected'),
-#        'published':IsNullFilter(title='Published', name='published'),
+#    filter_fields = {
+#        'project__name':Filter(name='project__name', ref='project_id', model=Article, title='Project'),
+#        'minimum':Filter(name='minimum', model=Article),
+##        'status':Filter(name='last_action__code', title='Status'),
+#        'assigned':IsNullFilter(title='Assigned/Claimed', name='assigned'),
+#        'submitted':IsNullFilter(title='Submitted', name='submitted'),
+#        'approved':IsNullFilter(title='Approved', name='approved'),
+##        'rejected':IsNullFilter(title='Rejected', name='rejected'),
+##        'published':IsNullFilter(title='Published', name='published'),
+#    }
+    filter_fields={
+        'minimum':FilterWithChoicesFromModel(name='minimum', model=Article),
+        'project':RelatedFilter(name='project', model=Article, display_attr='name',related_model=Project),
     }
 #    def get_action_user_id_form(self):
 #        form=ActionUserID()
