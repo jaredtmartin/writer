@@ -1,0 +1,44 @@
+{% extends 'writeaid_base.html' %}
+{% block head %}
+    <link href="{{STATIC_URL}}css/writersaxis.css" rel="stylesheet" type="text/css" />
+{% endblock %}
+{% block content %}   
+<div id="content-main">
+    <div class="block">
+        <div class="block_head">
+            <div class="bheadl"></div>
+            <div class="bheadr"></div>
+            <h2>Projects</h2>
+            
+        </div>
+        <!-- .block_head ends -->
+        <div class="block_content">
+            <table width="100%" cellspacing="0" cellpadding="0" id="articles" class="table sortable">
+                <thead> 
+                    <tr>
+                        <th  class="header">Name</th>
+                        <th  class="header">Owner</th>
+                        <th  class="header">Keywords</th>
+                        <th  align="right" style="text-align: right;" class="header"> Actions </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for project in object_list %}
+                        <tr>
+                            <td><a href="{% url article_list %}?project={{project.name}}"> {{project.name}}</a></td>
+                            <td>{{project.owner.username}}</td>
+                            <td>{{project.keywords}}</td>
+                            <td align="right" style="text-align: right;">
+                                <ul align="right" class="priority">
+                                    <li title="" class="purple-keyword"><a href="{% url project_delete project.pk %}">Delete</a></li>   
+                                </ul>
+                            </td>
+                            
+                        </tr> 
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
