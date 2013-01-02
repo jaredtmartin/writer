@@ -1,7 +1,7 @@
 <tr id="article-{{article.id}}" class="article parent even" style="background-color: rgb(251, 251, 251);">
   <td class="action-checkbox"><input type="checkbox" class="action-select" value="{{article.id}}" name="action-select"></td>
   <td style="max-width:200px;"><a class="submit_popup" href="{{article.get_absolute_url}}">{{article.klass}}</a></td>
-  <td title="{{article.project.title}}" class="q_desc">{% if article.project %}{{article.project.title}}{% else %}None{% endif %}</td>
+  <td title="{{article.project.name.title}}" class="q_desc">{% if article.project %}{{article.project.name.title}}{% else %}None{% endif %}</td>
   <td title="{{article.keywords}}" class="q_desc">{{article.keywords}}</td>
   <td align="right" style="text-align: right;">
     <ul align="right" class="priority">

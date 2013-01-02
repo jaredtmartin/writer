@@ -305,7 +305,7 @@ class ArticleList(GetActionsMixin, FilterableListView):
     ]
 #    queryset = Article.objects.filter(submitted=None)
     context_object_name = 'available'
-    search_fields = ['tags', 'project__name', 'keyword__keyword']
+    search_fields = ['tags__name', 'project__name', 'keyword__keyword']
 #    filter_fields = [Filter(title='Project', name='project__name', ref='project_id', model=Article),
 #                     Filter(title='Length', name='minimum', model=Article),
 #                     IsNullFilter(title='Assigned/Claimed', name='assigned')

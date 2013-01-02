@@ -16,15 +16,20 @@
     }
     function updateSelectedCounter(actionCheckboxes){
         var sel = $(actionCheckboxes).filter(":checked").length;
+        if (sel==0 && $("#action-bar").is(":visible")){
+            $("#action-bar").hide();
+        } else if (sel>0 && !$("#action-bar").is(":visible")){
+            $("#action-bar").show();
+        }
 		$('#action_counter').html(sel+" of "+ _actions_icnt+" selected");
     }
     function activateCheckboxCounter(){
         var actionCheckboxes=$("tr input.action-select");
         actionCheckboxes.click(function() {
             updateSelectedCounter(actionCheckboxes);
-            if (!$("#action-bar").is(":visible")){
-                $("#action-bar").show();
-            }
+            //if (!$("#action-bar").is(":visible")){
+            //    $("#action-bar").show();
+            //}
         });
     }
     	$(document).ready(function() {
