@@ -23,25 +23,6 @@ class LoginRequiredMixin(object):
     def dispatch(self, *args, **kwargs):
         return super(LoginRequiredMixin, self).dispatch(*args, **kwargs)
 
-#class ArticleFilter(django_filters.FilterSet):
-#    class Meta:
-#        model = Article
-#        fields = ['project','minimum','article_type']
-        
-#    published
-#    approved
-#    submitted
-#    assigned
-#    rejected
-#    released
-
-
-"""
-    filter_fields={
-        'minimum':SimpleFilter(name='minimum', model=Article),
-        'project':SimpleFilter(name='project', model=Article, lookup='name__icontains'),
-    }
-"""
 class Choice(object):
     def __init__(self, **kwargs):
         self.label = kwargs.pop('label')
@@ -102,74 +83,6 @@ class StatusFilter(RelatedFilter):
         self.display_name="Status"
     def build_choice(self, choice):
     	    return Choice(label=unicode(self.codes[choice]), base=self.name, lookup=self.display_attr, value=choice)
-
-        
-#class ChoiceContext(object):
-#    def __init__(self, **kwargs):
-#        self.display=kwargs.pop('display')
-#        self.value=kwargs.pop('value', self.display)
-#        self.base=kwargs.pop('value', self.display)
-#        self.lookup=kwargs.pop('lookup')
-#        self.selected=kwargs.pop('selected', False)
-#        
-#    def filter(self, qs):
-#        return qs.filter(**{lookup:self.value}) 
-
-
-#        
-#class Filter(object):
-#    def __init__(self, **kwargs):
-#        self.name=kwargs.pop('name')
-#        self.model=kwargs.pop('model',None)
-#        self.title=kwargs.get('title', self.name.title())
-#        self.lookup=kwargs.get('lookup', 'icontains')
-#        self.ref=kwargs.get('ref', self.name)
-##        self.related=kwargs.get('related',self.name)
-#        self.choices=kwargs.pop('choices',self.build_choices())
-#    def filter(self, qs, selection):
-#        if not selection: return qs
-#        if selection=='None': return qs.filter(**{self.query:selection})
-#        else: return qs.filter(**{self.query:selection})
-#    @property
-#    def query(self):
-#        return "%s__%s" % (self.name, self.lookup)
-#    def build_choices(self):
-#        if not self.model: return [] # We must have a model to build the choices based on a Foreign Key
-#        choices=[]
-#        for choice in self.model.objects.all().distinct().order_by(self.name).values_list(self.name, flat=True):
-#            choices.append(ChoiceContext(display=unicode(choice), lookup=self.query))
-#        return choices
-#class IsNullFilter(Filter):
-#    def __init__(self, **kwargs):
-#        super(IsNullFilter, self).__init__(**kwargs)
-#        self.lookup = 'isnull'
-#    def get_choices(self):
-#        return [
-#            ChoiceContext(display=u'Yes', lookup=self.query),
-#            ChoiceContext(display=u'No', lookup=self.query),
-#        ]
-#    def filter(self, qs, selection):
-#        if selection=='Yes':  return qs.filter(**{self.query:True})
-#        elif selection=='No': return qs.filter(**{self.query:False})
-#        else: return qs
-#        
-#class OtherFilter(Filter):
-##    def __init__(self, **kwargs):
-##        super(IsNullFilter, self).__init__(**kwargs)
-##        self.lookup = 'isnull'
-#    def get_choices(self):
-#        return [
-#            ChoiceContext(display=u'Available'),
-#            ChoiceContext(display=u'Assigned'),
-#            ChoiceContext(display=u'Submitted'),
-#            ChoiceContext(display=u'Accepted'),
-#            ChoiceContext(display=u'Rejected'),
-#            ChoiceContext(display=u'Published'),
-#        ]
-#    def filter(self, qs, selection):
-#        if selection=='Yes':  return qs.filter(**{self.query:True})
-#        elif selection=='No': return qs.filter(**{self.query:False})
-#        else: return qs
 
 class FilterableListView(SearchableListMixin, ListView):
     def get_queryset(self):
@@ -306,32 +219,12 @@ class ArticleList(GetActionsMixin, FilterableListView):
 #    queryset = Article.objects.filter(submitted=None)
     context_object_name = 'available'
     search_fields = ['tags__name', 'project__name', 'keyword__keyword']
-#    filter_fields = [Filter(title='Project', name='project__name', ref='project_id', model=Article),
-#                     Filter(title='Length', name='minimum', model=Article),
-#                     IsNullFilter(title='Assigned/Claimed', name='assigned')
-##                    Filter(title='Type', name='article_type', model=Article),
-##                    Filter(name='published', lookup='isnull', model=Article),
-##                    Filter(name='submitted', lookup='isnull', model=Article)
-#                ]
-#    filter_fields = {
-#        'project__name':Filter(name='project__name', ref='project_id', model=Article, title='Project'),
-#        'minimum':Filter(name='minimum', model=Article),
-##        'status':Filter(name='last_action__code', title='Status'),
-#        'assigned':IsNullFilter(title='Assigned/Claimed', name='assigned'),
-#        'submitted':IsNullFilter(title='Submitted', name='submitted'),
-#        'approved':IsNullFilter(title='Approved', name='approved'),
-##        'rejected':IsNullFilter(title='Rejected', name='rejected'),
-##        'published':IsNullFilter(title='Published', name='published'),
-#    }
     filter_fields={
         'minimum':FilterWithChoicesFromModel(name='minimum', model=Article),
         'project':RelatedFilter(name='project', model=Article, display_attr='name'),
         'last_action':StatusFilter(name='last_action', model=Article, display_attr='code'),
     }
-#    def get_action_user_id_form(self):
-#        form=ActionUserID()
-##        form.fields["user"].queryset = User.objects.filter(user__factory)
-#        return form
+
     def get_actions(self):
         return [
             ('Assign', ActionUserID(),'/articles/various/assign/'),
