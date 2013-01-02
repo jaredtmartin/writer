@@ -9,10 +9,19 @@ Todo:
         Add tags
         Use fancybox to create new project
         Add user modes
-        
+        Check Keyword density at Client side as well as Writer side
+        add clone action
+        Show Article ID
+        After Writer submits an Article, next available articles appears on the post submit window with a left and right arrow to navigate or previous and next button to navigate.
+
+        Add Review Mode: 
+            editor goes to articles submitted and then opens the article. To speed things up it should open at a panel where the edit can instantly take place, not at the html of the file
+
+    Project List:
+        Create it
         
     Article List:
-        hide top buttons when no checkboxes are checked
+
         hide top buttons when action is done on checked items
         Submit and release messages arent being shown
         Fix the select all checkbox 
@@ -20,7 +29,15 @@ Todo:
         Make Keywords link to keywords page
         Add a link to create a new article
         Add missing filters (Assigned, Available, Submitted, Approved, etc. )
+        Add an action to download articles
+        Show actual word count if article is submitted
+        Show Actual number of submitted posts for the day, under the date
+        
+    Dashboard:
+        Add Charts
+        Dashboard to give the number of posts and actual word count rather than just charts
 
+    Add Reports
 Change "Release" to "Unassign"
 change top buttons to dropdowns
 Add other filters
@@ -91,3 +108,5 @@ Fri Dec 21 23:38:32 2012
     Show Title and Body fields when appropriate.
     Try out tinyMCE
     Make sure HTML saved correctly
+Wed Jan  2 14:12:28 2013 
+        hide top buttons when no checkboxes are checked

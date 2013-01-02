@@ -69,7 +69,8 @@ class RelatedFilter(FilterWithChoicesFromModel):
         attr="%s__%s" % (self.name,self.display_attr)
         return self.model.objects.all().distinct().order_by(attr).values_list(attr, flat=True)
     def filter(self, qs, selection):
-        return self.choices[selection].filter(qs)
+        try: return self.choices[selection].filter(qs)
+        except KeyError: return qs.none()
     def build_choices(self):
         choices = super(RelatedFilter, self).build_choices()
         if 'None' in choices.keys(): choices['None'].lookup = 'isnull'

@@ -31,23 +31,21 @@
                 
                 <ul id="nav">
                     <li class=" "><a href="/dashboard/">Dashboard</a></li>
+                    <li class=" "><a href="/projects/">Projects</a></li>
                     <li class="active"><a href="/articles/list/">Articles</a>
 		                <ul> 
-			                <li><a href="/articles/">Available</a></li> 
-			                <li><a href="/submitted/">Submitted</a>
-				                <ul> 
-					                <li><a href="/approved/">Approved</a></li> 
-                                    <li><a href="/published/">Published</a></li>
-					                <li><a href="/rejected/">Rejected</a></li> 
-				                </ul></li>  
-			                <li><a href="/search/">Search</a></li> 
+			                <li><a href="/articles/list/">Available</a></li> 
+		                    <li><a href="/articles/list/">Assigned to Me</a></li> 
+		                    <li><a href="/articles/list/?last_action=G">Assigned</a></li> 
+		                    <li><a href="/articles/list/?last_action=C">Claimed</a></li> 
+			                <li><a href="/articles/list/?last_action=S">Submitted</a></li> 
+			                <li><a href="/articles/list/?last_action=A">Approved</a></li> 
+			                <li><a href="/articles/list/?last_action=X">Rejected</a></li> 
+                            <li><a href="/articles/list/?last_action=P">Published</a></li>
 		                </ul>
                     </li>
                     <li class=" "><a href="/keywords/">Keywords</a></li>
-                    <li><a href="/writers/">Writers</a>
-				                <ul> 
-					                <li><a href="/writers/contact/">Contact</a></li> 
-				                </ul></li>
+                    <li><a href="/writers/">Writers</a></li>
                     <li class="nobg"><a href="/reports/">Reports</a></li>
                 </ul>
                 {% if user.is_authenticated %}
