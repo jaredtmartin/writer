@@ -61,3 +61,15 @@ li.action-counter{
 ul.errorlist li{
     color:red !important;
 }
+.non-header{
+    font-family: "Lucida Grande",Verdana,sans-serif;
+    font-size: 12px;
+}
+.message.warning,.message2.warning{border:1px
+solid red;
+    background:#EF9C9C url(/static/img/warning.gif) 20px 18px no-repeat;
+    color:#666}
+.message3.error{border:1px
+solid red;
+    background:#EF9C9C url(/static/img/warning.gif) 12px 10px no-repeat;
+    color:#666}

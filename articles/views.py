@@ -5,7 +5,7 @@ from django.views.generic.detail import DetailView
 from django.views.generic import TemplateView, FormView
 from articles.models import Article, Keyword, Project, ArticleAction, ACTIONS
 from django.views.generic.base import View, TemplateResponseMixin
-from articles.forms import ArticleForm, KeywordInlineFormSet, KeywordInlineForm, ActionUserID, AssignToForm
+from articles.forms import ArticleForm, KeywordInlineFormSet, KeywordInlineForm, ActionUserID, AssignToForm, UserForm, UserProfileForm
 #from django_actions.views import ActionViewMixin
 import pickle
 from datetime import datetime
@@ -173,6 +173,7 @@ class PostActionsView(TemplateResponseMixin, View):
         self.action_qs = self.get_action_queryset()
         # Make sure the articles are available
         form_class=self.get_action_form_class()
+        print "form_class: " + str(form_class) 
         if self.action_qs and self.final_action_qty > 0:
             if form_class: self.action_form=form_class(self.request.POST)
             else: self.action_form=None
@@ -186,14 +187,13 @@ class PostActionsView(TemplateResponseMixin, View):
                 print "self.action_qs: " + str(self.action_qs) 
                 self.action_qs=self.get_requested_objects()
                 print "self.action_qs: " + str(self.action_qs) 
-        else: self.action_form=form_class()
+        elif form_class: self.action_form=form_class()
         self.send_result_messages()
         context = self.get_context_data()
         return self.render_to_response(context)
     def get_context_data(self, **kwargs):
-        context = {'object_list': self.action_qs}
-        context.update(kwargs)
-        return context
+        kwargs.update({'as_row':True,'object_list':self.action_qs})
+        return kwargs
     
 class FilterableActionListView(GetActionsMixin, FilterableListView):
     pass
@@ -203,7 +203,7 @@ class SearchableListView(SearchableListMixin, ListView):
         context = super(SearchableListView, self).get_context_data(**kwargs)
         context['q']=self.request.GET.get('q','')
         return context
-        
+
 class ArticleList(GetActionsMixin, FilterableListView):
     model = Article
     actions = [
@@ -247,9 +247,11 @@ class ProjectList(FilterableListView):
     }
     
 class ArticleCreate(CreateView):
+    template_name = 'articles/article_edit.html'
     model = Article
 
 class ArticleUpdate(UpdateWithInlinesView):
+    template_name = 'articles/article_edit.html'
     model = Article
     form_class=ArticleForm
     inlines = [KeywordInlineFormSet]
@@ -274,11 +276,17 @@ class AjaxKeywordInlineForm(FormView):
         fs=f.get_formset()
         form=fs()._construct_form(id_form.cleaned_data['num'])
         return self.render_to_response(self.get_context_data(form=form))
-
+            
 class ArticleActionView(DetailView):
-    template_name = "articles/article_list_row.html"
+    template_name = "articles/ajax_article_list_row.html"
     model = Article
     def do_action(self): raise NotImplemented
+    def get_context_data(self, **kwargs):
+        if 'as_row' in self.request.POST: 
+            kwargs.update({'as_row':True, 'as_form':False})
+        elif 'as_form' in self.request.POST: 
+            kwargs.update({'as_row':False, 'as_form':True, 'form':ArticleForm(instance=self.object.get_profile())})
+        return super(ArticleActionView, self).get_context_data(**kwargs)
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         self.do_action()
@@ -387,3 +395,18 @@ class TagVariousArticles(PostActionsView):
             article.tags.add(*[x.pk for x in action]) # action actual is an array of tags, this will add them all at once.
     def get_past_tense_action_verb(self):
         return 'tagged'
+
+class UserUpdateView(UpdateView):
+    model=User
+    form_class = UserForm
+    def get_context_data(self, **kwargs):
+        kwargs['user_profile_form']=UserProfileForm(instance=self.object.get_profile())
+        return super(UserUpdateView, self).get_context_data(**kwargs)
+    def form_valid(self, form):
+        user_profile_form = UserProfileForm(self.request.POST, instance=self.object.get_profile())
+        if user_profile_form.is_valid():
+            user_profile_form.save()
+            messages.info(self.request, 'The changes to your profile have been made successfully.')
+            return super(UserUpdateView, self).form_valid(form)
+        else:
+            return self.render_to_response(self.get_context_data(form=form, user_profile_form=user_profile_form))

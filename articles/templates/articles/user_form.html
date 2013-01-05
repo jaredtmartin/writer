@@ -1,0 +1,34 @@
+{% extends "writeaid_base.html" %}
+
+{% block head %}
+    <link href="{{ STATIC_URL}}css/writersaxis.css" rel="stylesheet" type="text/css" />
+{% endblock %}
+
+{% block content %}
+    {{form.errors}}
+    <form action="{{ object.get_absolute_url }}" method="post"> {% csrf_token %}
+    {{form.ID}}
+    <div class="block">
+        <div class="block_head">
+            <div class="bheadl"></div>
+            <div class="bheadr"></div>
+            <h2>{% if object.pk %} User: {{object.username}} {% else %} New User {% endif %}</h2>
+        </div>
+        <div class="block_content">
+            {% if user == object %}
+                {{form.as_p}}
+
+                <a href="/admin/auth/user/1/password/">Click here to change your password.</a>
+                {{user_profile_form.as_p}}
+            <table class="block_content" width="100%" cellspacing="0" cellpadding="0" border="0" style="border: none; margin:0;">
+                <tr>
+                    <td colspan="2"><div class="aright"><input type="submit" value="Save Profile" class="submit long"></div></td>
+                </tr>
+            </table>
+            {% endif %}
+        </div>
+        <div class="bendl"></div>
+        <div class="bendr"></div>
+    </div>
+{% endblock %}
+

@@ -24,10 +24,12 @@ DATABASES = {
 DEBUG_TOOLBAR_CONFIG = {
     'INTERCEPT_REDIRECTS': False,
 }
-
+ABSOLUTE_URL_OVERRIDES = {
+    'auth.user': lambda u: "/users/%s/%s/" % (u.username,u.pk),
+}
 EMAIL_FROM = ""
 
-AUTH_PROFILE_MODULE = 'forms.UserProfile'
+AUTH_PROFILE_MODULE = 'articles.UserProfile' # Forms relys on this to be set to the following: forms.UserProfile
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -160,7 +162,7 @@ INSTALLED_APPS = (
     'debug_toolbar',
     'django_extensions',
     'django_facebook',
-    'forms',
+    #'forms',
     'articles',
     'common',
     'django_actions',

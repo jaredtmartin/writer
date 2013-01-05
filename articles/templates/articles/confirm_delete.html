@@ -1,0 +1,12 @@
+{% load verbose_name %}
+<div id="delete-popup" style="display:none">
+    <div id="confirm_delete-box">
+        Are you sure you want to delete this {{object|verbose_name}}?
+        <a class="button continue-button" onclick="{{object.get_delete_url}}">Delete</a>
+    </div>
+</div>
+<script>
+    $(document).ready(function() {
+        $("a#delete-button").fancybox();
+    });
+</script>

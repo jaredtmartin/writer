@@ -5,6 +5,7 @@
 		data+="&user="+$('#id_user').val();
 		data+="&tags="+$('#id_tags').val();
 		data+="&note="+$('#id_note').val();
+		data+="&as_row=True";
         $.ajax({
             url: url ,
             type:'POST',

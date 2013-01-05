@@ -1,9 +1,16 @@
 Todo:
+    Teams:
+        Add teams
+        My Teams Page
+        Edit Team Page
+            Add users
+            Create users
+            
     Article Form:
         Add button to download article
         fix adding keywords to a new article
 
-        add action buttons
+        !!!!!!! Add action buttons
         Hide keyword row when deleted
         Add expiration dates
         Add tags

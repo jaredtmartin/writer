@@ -2,7 +2,7 @@
   <td class="action-checkbox"><input type="checkbox" class="action-select" value="{{article.id}}" name="action-select"></td>
   <td style="max-width:200px;"><a class="submit_popup" href="{{article.get_absolute_url}}">{{article.klass}}</a></td>
   <td title="{{article.project.name.title}}" class="q_desc">{% if article.project %} <a href="{% url article_list %}?project={{article.project.name}}"> {{article.project.name.title}} </a>{% else %}None{% endif %}</td>
-  <td title="{{article.keywords}}" class="q_desc">{{article.keywords}}</td>
+  <td title="{{article.keywords}}" class="q_desc"><a href="{{article.get_absolute_url}}">{{article.keywords}}</a> </td>
   <td align="right" style="text-align: right;">
     <ul align="right" class="priority">
         {% for tag in article.tags.all %}
@@ -10,7 +10,7 @@
         {% endfor %}
     </ul>
   </td>
-  <td>{% if article.assigned %}{{article.assigned.author.username.title}}{% else %}Nobody{% endif %}</td>              
+  <td>{% if article.assigned %}<a href="{{article.assigned.author.get_absolute_url}}">{{article.assigned.author.username.title}}</a>{% else %}Nobody{% endif %}</td>              
   <td title="{{article.status}}" class="q_desc">{{article.status}}</td>
   <td align="right" style="text-align: right;">
     <ul align="right" class="priority">
@@ -19,7 +19,6 @@
         {% endfor %}
         <li title="Edit this article" class="purple-keyword cur_help"><a href="{{ article.get_absolute_url}}"> Edit</li>
         <li title="" class="purple-keyword"><a href="{% url article_delete article.pk %}">Delete</a></li>   
-        
     </ul>
   </td>
 </tr>

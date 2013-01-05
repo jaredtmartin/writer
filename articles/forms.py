@@ -47,4 +47,12 @@ class AssignToForm(Form):
 #    assign_to_user = ModelChoiceFieldWithFlexibleChoiceLabels(queryset=User.objects.all(), pre_label="Assign to ")
     assign_to_user = ModelChoiceFieldTitleLabels(queryset=User.objects.all(), empty_label="Assign select articles to:")
 
+class UserForm(ModelForm):
+    class Meta:
+        model = User
+        fields = ('username','first_name','last_name','email')
+class UserProfileForm(ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ('preferred_mode',)
     

@@ -3,6 +3,10 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.db.models import Q
 
+def CamelToWords(name):
+    s1 = re.sub('(.)([A-Z][a-z]+)', r'\1 \2', name)
+    return re.sub('([a-z0-9])([A-Z])', r'\1 \2', s1)
+    
 ACT_SUBMIT = "S"  # When author finishes writing
 ACT_REJECT = "X"  # When the user does not accept the article
 ACT_APPROVE = "A" # When the user accepts the article
@@ -19,6 +23,16 @@ ACTIONS = (
     (ACT_CLAIM, 'Claimed'),
     (ACT_RELEASE, 'Released'),
     (ACT_PUBLISH, 'Published'),
+)
+
+WRITER_MODE = 1
+REQUESTER_MODE = 2 
+DUAL_MODE = 3
+
+USER_MODES = (
+    (WRITER_MODE, 'Writer'),
+    (REQUESTER_MODE, 'Requester'),
+    (DUAL_MODE, 'Both'),
 )
 
 class ArticleType(models.Model):
@@ -205,6 +219,17 @@ class Keyword(models.Model):
     times = models.IntegerField(default=1)
     def __unicode__(self): return self.keyword
     
+class UserProfile(models.Model):
+    user = models.OneToOneField(User)
+    access_token = models.TextField(blank=True, help_text='Facebook token for offline access', null=True)
+    preferred_mode = models.IntegerField(choices=USER_MODES)
+    @property
+    def graph(self): return facebook.GraphAPI(self.access_token)
 
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        UserProfile.objects.create(user=instance)
+
+post_save.connect(create_user_profile, sender=User)
 
 

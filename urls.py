@@ -3,6 +3,7 @@ from django.views.generic import TemplateView, ListView, DetailView
 from django.contrib import admin
 from django.conf import settings
 from django.contrib.auth.views import login
+
 admin.autodiscover()
 
 urlpatterns = patterns('',
@@ -25,6 +26,7 @@ urlpatterns = patterns('',
     url(r'^accounts/login/$', 'django.contrib.auth.views.login', {'template_name': 'login.html'}, name='login'),
     url(r'^accounts/logout/$', 'django.contrib.auth.views.logout_then_login', {'login_url': '/accounts/login/'}, name='logout'),
 #    url(r'^accounts/login/$', login(template_name="login.html"), name='login'),
+    url(r'^users/', include('articles.user_urls')),
 )
 
 if settings.DEBUG:
