@@ -1,6 +1,6 @@
 <script type="text/javascript">
     function insertKeywordInlineForm(data, result){
-        $('#keywords-table').append(data);
+        $('#keywords-title-row').after(data);
         numKeywords=parseInt($('#id_keyword_set-TOTAL_FORMS').val());
         $('#id_keyword_set-TOTAL_FORMS').val(numKeywords+1);
     }
@@ -38,7 +38,7 @@
 </script>
 {{ inline.management_form }}
 <table id="keywords-table" class="block_content" width="100%" cellspacing="0" cellpadding="0" border="0" style="border: none; margin:0;">
-    <tr>
+    <tr id="keywords-title-row">
         <th><h3>Keyword</h3></th>
         <th><h3>Url</h3></th>
         <th><h3>Times</h3></th>
