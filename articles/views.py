@@ -5,7 +5,7 @@ from django.views.generic.detail import DetailView
 from django.views.generic import TemplateView, FormView
 from articles.models import Article, Keyword, Project, ArticleAction, ACTIONS
 from django.views.generic.base import View, TemplateResponseMixin
-from articles.forms import ArticleForm, KeywordInlineFormSet, KeywordInlineForm, ActionUserID, AssignToForm, UserForm, UserProfileForm
+from articles.forms import ArticleForm, KeywordInlineFormSet, KeywordInlineForm, TagArticleForm, ActionUserID, AssignToForm, UserForm, UserProfileForm, NoteForm, TagForm
 #from django_actions.views import ActionViewMixin
 import pickle
 from datetime import datetime
@@ -88,10 +88,7 @@ class StatusFilter(RelatedFilter):
 class FilterableListView(SearchableListMixin, ListView):
     def get_queryset(self):
         qs=super(FilterableListView, self).get_queryset()
-        print "self.filter_fields.keys(): " + str(self.filter_fields.keys()) 
         for arg, val in self.request.GET.items():
-            print "arg: " + str(arg) 
-            print "arg in self.filter_fields.keys(): " + str(arg in self.filter_fields.keys()) 
             if arg in self.filter_fields.keys(): 
                 qs=self.filter_fields[arg].filter(qs, val)
 #            if arg in self.get_filter_names(): qs=qs.filter(Q(**{arg: val}))
@@ -219,7 +216,7 @@ class ArticleList(GetActionsMixin, FilterableListView):
     ]
 #    queryset = Article.objects.filter(submitted=None)
     context_object_name = 'available'
-    search_fields = ['tags__name', 'project__name', 'keyword__keyword']
+    search_fields = ['_tags', 'project__name', 'keyword__keyword']
     filter_fields={
         'minimum':FilterWithChoicesFromModel(name='minimum', model=Article),
         'project':RelatedFilter(name='project', model=Article, display_attr='name'),
@@ -234,9 +231,9 @@ class ArticleList(GetActionsMixin, FilterableListView):
             ('Reject',NoteForm(),'/articles/various/reject/'),
         ]
 class ProjectCreate(CreateView):
+    template_name = 'articles/project_select_option.html'
     model = Project
     def get(self, request, *args, **kwargs):
-        print "I am here!!!!"
         return super(ProjectCreate, self).get(request, *args, **kwargs)
 
 class ProjectList(FilterableListView):
@@ -392,7 +389,9 @@ class TagVariousArticles(PostActionsView):
         return self.action_form.cleaned_data['tags']
     def update_articles(self, qs, action):
         for article in qs:
-            article.tags.add(*[x.pk for x in action]) # action actual is an array of tags, this will add them all at once.
+            if article.tags: article._tags+=", "+action
+            article.save()
+            #.add(*[x.pk for x in action]) # action actual is a list of tags, this will add them all at once.
     def get_past_tense_action_verb(self):
         return 'tagged'
 
@@ -410,3 +409,15 @@ class UserUpdateView(UpdateView):
             return super(UserUpdateView, self).form_valid(form)
         else:
             return self.render_to_response(self.get_context_data(form=form, user_profile_form=user_profile_form))
+class TagArticle(UpdateView):
+    model=Article
+    template_name = "articles/ajax_article_tag_rows.html"
+    form_class = TagArticleForm
+    def get_context_data(self, **kwargs):
+        kwargs['object']=self.object
+        return super(TagArticle, self).get_context_data(**kwargs)
+    def form_valid(self, form):
+        self.object = form.save()
+        messages.info(self.request, 'The article has been tagged successfully.')
+        print "self.get_template_names(): " + str(self.get_template_names()) 
+        return self.render_to_response(self.get_context_data(form=form))

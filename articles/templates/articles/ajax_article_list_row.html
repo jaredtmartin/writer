@@ -1,8 +1,4 @@
-<ul id="list-items">
-    {% for message in messages %}
-    <li{% if message.tags %} id="message-{{message.id}}" class="message {{ message.tags }}"{% endif %}>{{ message }}</li>
-    {% endfor %}
-</ul>
+{% include "articles/messages.html" %}
 {% if as_row %}
 <table id="table-rows">
     {% for article in object_list %}

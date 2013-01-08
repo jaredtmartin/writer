@@ -17,6 +17,7 @@
         <div class="block_content">
             {% if user == article.owner %}
                 {% include "articles/edit_article_properties_form.html"%}
+                {% include "articles/article_tags.html" %}
                 {% with inlines.0 as inline %}
                     {% include "articles/edit_article_keywords_form.html" %}
                 {% endwith %}

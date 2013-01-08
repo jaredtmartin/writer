@@ -38,10 +38,6 @@ USER_MODES = (
 class ArticleType(models.Model):
     name = models.CharField(max_length=16)
     def __unicode__(self): return self.name
-
-class Tag(models.Model):
-    name = models.CharField(max_length=64)
-    def __unicode__(self): return self.name
     
 class Project(models.Model):
     name = models.CharField(max_length=64)
@@ -68,16 +64,24 @@ class ArticleAction(models.Model):
 
 class Article(models.Model):
     def __unicode__(self): return self.name
-    tags = models.ManyToManyField(Tag)
     minimum = models.IntegerField(default=100)
     maximum = models.IntegerField(default=0) # Use zero for no maximum
     body = models.TextField(blank=True, default="")
     title = models.CharField(max_length=256, blank=True, default="")
     article_type = models.ForeignKey(ArticleType, related_name='articles')
     project = models.ForeignKey(Project, related_name='articles', null=True, blank=True)
-#    tags = models.CharField(max_length=128, blank=True, default="")
+    _tags = models.CharField(max_length=128, blank=True, default="")
     owner = models.ForeignKey(User, related_name='articles')
-
+    
+    def get_tags(self):
+        return self._tags.split(',')
+    def set_tags(self, value):
+        if type(value)==list:
+            self._tags=",".join(value)
+        else: self._tags=value
+    def tags_as_str(self):
+        return self._tags
+    tags=property(get_tags, set_tags)
     @property
     def status(self): 
         if self.last_action: return self.last_action.get_code_display()

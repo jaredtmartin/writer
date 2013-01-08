@@ -5,8 +5,8 @@
   <td title="{{article.keywords}}" class="q_desc"><a href="{{article.get_absolute_url}}">{{article.keywords}}</a> </td>
   <td align="right" style="text-align: right;">
     <ul align="right" class="priority">
-        {% for tag in article.tags.all %}
-            <a href="{{tag.get_absolute_url}}"><li title="" class="blue-keyword">{{tag}}</li></a>
+        {% for tag in article.tags %}
+            {% if tag %}<a href="{% url article_list %}?q={{tag}}"><li title="" class="blue-keyword">{{tag}}</li></a>{%endif %}
         {% endfor %}
     </ul>
   </td>

@@ -10,10 +10,15 @@
             url: url ,
             type:'POST',
             data: data, 
-            success: ajaxUpdateRow,
+            success: updateRowAndResetForms,
         });
 		//$.post(url, success=show_stuff, error=showError, data=data);
 		//get_stuff(url, data);
+    }
+    function updateRowAndResetForms(data){
+        ajaxUpdateRow(data);
+        $('#id_tags').val('');
+        $('#id_note').val('');
     }
     function updateSelectedCounter(actionCheckboxes){
         var sel = $(actionCheckboxes).filter(":checked").length;

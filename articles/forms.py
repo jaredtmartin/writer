@@ -22,7 +22,7 @@ class ActionUserID(Form):
     user = ModelChoiceField(queryset=User.objects.all())
 
 class TagForm(Form):
-    tags = ModelMultipleChoiceField(queryset=Tag.objects.all())
+    tags = CharField(max_length=128)
 
 class NoteForm(Form):
     note = CharField(max_length=128)
@@ -55,4 +55,8 @@ class UserProfileForm(ModelForm):
     class Meta:
         model = UserProfile
         fields = ('preferred_mode',)
+class TagArticleForm(ModelForm):
+    class Meta:
+        model = Article
+        fields = ('_tags',)
     

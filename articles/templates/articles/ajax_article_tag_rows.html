@@ -1,0 +1,7 @@
+{% include "articles/messages.html" %}
+<table id="table-rows">
+    {% for tag in object.tags %}
+        {% include "articles/article_tag_row.html" %}
+    {% endfor %}
+</table>
+

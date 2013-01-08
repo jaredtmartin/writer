@@ -17,7 +17,5 @@ urlpatterns = patterns('',
     url(r'^various/reject/$', RejectVariousArticles.as_view(), name='reject_various_articles'),
     url(r'^various/approve/$', ApproveVariousArticles.as_view(), name='approve_various_articles'),
     url(r'^various/tag/$', TagVariousArticles.as_view(), name='tag_various_articles'),
-
-    
-    
+    url(r'^article/(?P<pk>\d+)/tag/$', TagArticle.as_view(), name='tag_article'),
 )

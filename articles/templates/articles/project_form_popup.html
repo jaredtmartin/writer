@@ -1,0 +1,28 @@
+{% load verbose_name %}
+<div id="project-popup" style="display:none">
+    <div id="project-box">
+        Please enter a name for your new {{object|verbose_name}}:<br>
+        <input id="project_name">
+        <a class="button continue-button" onclick="createProject();">Create</a>
+    </div>
+</div>
+<script>
+    $(document).ready(function() {
+        $("a#new-project-button").fancybox();
+    });
+    function createProject(){
+        parent.$.fancybox.close();
+        $.ajax({
+            url: "articles/project/add/",
+            type:'POST',
+            data:{
+                name: $('#project_name').val(),
+            },
+            success: updateArticle
+        });
+    }
+    function updateArticle(data){
+        $('#id_project').append(data);
+    }
+</script>
+
