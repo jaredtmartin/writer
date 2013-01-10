@@ -1,8 +1,9 @@
 from articles.models import *
-from django.forms import ModelForm, DateField, IntegerField, Form, ModelChoiceField, CharField, ModelMultipleChoiceField
+from django.forms import ModelForm, DateField, ChoiceField, IntegerField, Form, ModelChoiceField, CharField, ModelMultipleChoiceField
 from extra_views import InlineFormSet
 from articles.widgets import SelectWithFlexibleOptionLabels
 from django.utils.encoding import smart_unicode
+import pytz
 
 
 class ArticleForm(ModelForm):
@@ -46,7 +47,8 @@ class ModelChoiceFieldTitleLabels(ModelChoiceField):
 class AssignToForm(Form):
 #    assign_to_user = ModelChoiceFieldWithFlexibleChoiceLabels(queryset=User.objects.all(), pre_label="Assign to ")
     assign_to_user = ModelChoiceFieldTitleLabels(queryset=User.objects.all(), empty_label="Assign select articles to:")
-
+def get_timezone_choices():
+        return [(t,t) for t in pytz.common_timezones]
 class UserForm(ModelForm):
     class Meta:
         model = User
@@ -54,7 +56,8 @@ class UserForm(ModelForm):
 class UserProfileForm(ModelForm):
     class Meta:
         model = UserProfile
-        fields = ('preferred_mode',)
+        fields = ('preferred_mode','timezone')
+    timezone = ChoiceField(choices=get_timezone_choices())
 class TagArticleForm(ModelForm):
     class Meta:
         model = Article

@@ -14,6 +14,7 @@ ACT_ASSIGN = "G"  # When the user assigns the article to a writer
 ACT_CLAIM = "C"   # When a writer claims an article
 ACT_RELEASE = "R" # When a user releases an article that was either claimed or assigned
 ACT_PUBLISH = "P" # When the article has been published
+ACT_COMMENT = "M" # When reviewing and a comment should be added
 
 ACTIONS = (
     (ACT_SUBMIT, 'Submitted'),
@@ -23,6 +24,7 @@ ACTIONS = (
     (ACT_CLAIM, 'Claimed'),
     (ACT_RELEASE, 'Released'),
     (ACT_PUBLISH, 'Published'),
+    (ACT_COMMENT, 'Commented On'),
 )
 
 WRITER_MODE = 1
@@ -52,12 +54,12 @@ class Project(models.Model):
 class ArticleAction(models.Model):
     class Meta:
         ordering = ['-timestamp']
-#    article = models.ForeignKey('Article')
     articles = models.ManyToManyField('Article')
     author = models.ForeignKey(User, related_name = 'authors', null=True, blank=True)  # This is the writer
     code = models.CharField(choices=ACTIONS, max_length=1)
     user = models.ForeignKey(User)                              # This is the reviewer/employer/admin
     timestamp = models.DateTimeField(auto_now_add=True)
+    timezone = models.CharField(max_length=32)
     comment = models.CharField(max_length=64, default="", blank=True)
     def __unicode__(self): 
         return self.get_code_display() + " by " + self.user.get_full_name()
@@ -72,6 +74,7 @@ class Article(models.Model):
     project = models.ForeignKey(Project, related_name='articles', null=True, blank=True)
     _tags = models.CharField(max_length=128, blank=True, default="")
     owner = models.ForeignKey(User, related_name='articles')
+    expires = models.DateTimeField(blank=True, null=True)
     
     def get_tags(self):
         return self._tags.split(',')
@@ -117,7 +120,8 @@ class Article(models.Model):
                 code=code, 
                 user=user, 
                 author=author, 
-                comment=comment
+                comment=comment,
+                timezone=user.get_profile().timezone,
             )
             setattr(self, attribute, action)
             self.last_action=action
@@ -225,6 +229,7 @@ class Keyword(models.Model):
     
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
+    timezone = models.CharField(max_length=32, default='America/Chicago')
     access_token = models.TextField(blank=True, help_text='Facebook token for offline access', null=True)
     preferred_mode = models.IntegerField(choices=USER_MODES)
     @property

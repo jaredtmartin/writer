@@ -4,10 +4,11 @@
     <link href="{{ STATIC_URL}}css/writersaxis.css" rel="stylesheet" type="text/css" />
 {% endblock %}
 
-{% block content %}
+{% block messages %}
     {{form.errors}}
-    <form action="{{ object.get_absolute_url }}" method="post"> {% csrf_token %}
-    {{form.ID}}
+{% endblock %}
+
+{% block content %}
     <div class="block">
         <div class="block_head">
             <div class="bheadl"></div>
@@ -16,15 +17,15 @@
         </div>
         <div class="block_content">
             {% if user == object %}
-                {{form.as_p}}
-
-                <a href="/admin/auth/user/1/password/">Click here to change your password.</a>
-                {{user_profile_form.as_p}}
-            <table class="block_content" width="100%" cellspacing="0" cellpadding="0" border="0" style="border: none; margin:0;">
-                <tr>
-                    <td colspan="2"><div class="aright"><input type="submit" value="Save Profile" class="submit long"></div></td>
-                </tr>
-            </table>
+                <form action="{{ object.get_absolute_url }}" method="post"> {% csrf_token %}
+                    {{form.ID}}
+                    {{form.as_p}}
+                    <a href="/admin/auth/user/1/password/">Click here to change your password.</a>
+                    {{user_profile_form.as_p}}
+                    <div class="aright"><input type="submit" value="Save Profile" class="submit long"></div>
+                </form>
+            {% else %}
+                You don't have permission to change this user's profile
             {% endif %}
         </div>
         <div class="bendl"></div>

@@ -47,17 +47,5 @@
     </div>
 </div>
 <table class="block_content tags" width="100%" cellspacing="0" cellpadding="0" border="0" style="border: none; margin:0;">
-    <thead>
-        <tr><th colspan="2">Tags:</th></tr>
-    </thead>
-    <tbody id="tags">
-        {% for tag in article.tags %}
-            {% include "articles/article_tag_row.html" %}
-        {% endfor %}
-    </tbody>
-    <tr><td colspan="2">
-        <div class="aright">
-            <a id="tag-button" class="popup" href="#tag-form"><input type="button" value="Add or Edit Tags" class="submit long"></a>
-        </div>
-    </td></tr>
+    {% include "articles/article_tags_row.html" %}
 </table>

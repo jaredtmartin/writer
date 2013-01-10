@@ -1,6 +1,6 @@
 from django.views.generic import ListView
 from extra_views import SearchableListMixin
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView, ModelFormMixin
 from django.views.generic.detail import DetailView
 from django.views.generic import TemplateView, FormView
 from articles.models import Article, Keyword, Project, ArticleAction, ACTIONS
@@ -16,6 +16,7 @@ from django.core.urlresolvers import reverse_lazy
 from extra_views import CreateWithInlinesView, UpdateWithInlinesView
 import django_filters
 from actions import *
+
 VALID_STRING_LOOKUPS = ('exact','isnull','iexact', 'contains', 'icontains', 'startswith', 'istartswith', 'endswith', 'iendswith', 'search', 'regex', 'iregex')
 class LoginRequiredMixin(object):
     u"""Ensures that user must be authenticated in order to access view."""
@@ -222,7 +223,6 @@ class ArticleList(GetActionsMixin, FilterableListView):
         'project':RelatedFilter(name='project', model=Article, display_attr='name'),
         'last_action':StatusFilter(name='last_action', model=Article, display_attr='code'),
     }
-
     def get_actions(self):
         return [
             ('Assign', ActionUserID(),'/articles/various/assign/'),
@@ -230,11 +230,39 @@ class ArticleList(GetActionsMixin, FilterableListView):
             ('Approve','','/articles/various/approve/'),
             ('Reject',NoteForm(),'/articles/various/reject/'),
         ]
-class ProjectCreate(CreateView):
-    template_name = 'articles/project_select_option.html'
+class AjaxUpdateMixin(object):
+    def form_valid(self, form):
+        self.object = form.save()
+        messages.info(self.request, 'The '+ self.object._meta.verbose_name+' has been created successfully.')
+        return self.render_to_response(self.get_context_data(form=form))
+class ProjectCreate(AjaxUpdateMixin, CreateView):
+    # Takes name, owner, and article_id
+    # Creates Project with given name and owner and assignes it to article
+    # Returns message and article project field with new item selected
+    template_name = 'articles/ajax_project_form.html'
     model = Project
-    def get(self, request, *args, **kwargs):
-        return super(ProjectCreate, self).get(request, *args, **kwargs)
+    def form_valid(self, form):
+        self.object = form.save()
+        self.article=None
+        self.article_form=None
+        if 'article' in self.request.POST:
+            try: 
+                pk=self.request.POST['article']
+                self.article = Article.objects.get(pk=self.request.POST['article'])
+                self.article.project=self.object
+                self.article.save()
+                self.article_form = ArticleForm(instance=self.article)
+            except: 
+                messages.error(self.request, 'We were unable to find the specified article.')
+        if not self.article_form:
+            print "theres no article form"
+            self.article_form = ArticleForm()
+        messages.info(self.request, 'The '+ self.object._meta.verbose_name+' has been created successfully.')
+        return self.render_to_response(self.get_context_data(form=form))
+    def get_context_data(self, **kwargs):
+        kwargs['article_form']=self.article_form
+        kwargs['article']=self.article
+        return super(ProjectCreate, self).get_context_data(**kwargs)
 
 class ProjectList(FilterableListView):
     model = Project
@@ -280,9 +308,10 @@ class ArticleActionView(DetailView):
     def do_action(self): raise NotImplemented
     def get_context_data(self, **kwargs):
         if 'as_row' in self.request.POST: 
-            kwargs.update({'as_row':True, 'as_form':False})
+            kwargs.update({'as_row':True, 'as_form':False,'object_list':[self.object]})
         elif 'as_form' in self.request.POST: 
-            kwargs.update({'as_row':False, 'as_form':True, 'form':ArticleForm(instance=self.object.get_profile())})
+            kwargs.update({'as_row':False, 'as_form':True, 'form':ArticleForm(instance=self.object.get_profile()),'object_list':[self.object]})
+        print "kwargs: " + str(kwargs)
         return super(ArticleActionView, self).get_context_data(**kwargs)
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -392,32 +421,37 @@ class TagVariousArticles(PostActionsView):
             if article.tags: article._tags+=", "+action
             article.save()
             #.add(*[x.pk for x in action]) # action actual is a list of tags, this will add them all at once.
-    def get_past_tense_action_verb(self):
-        return 'tagged'
+    def get_past_tense_action_verb(self): return 'tagged'
 
 class UserUpdateView(UpdateView):
     model=User
     form_class = UserForm
     def get_context_data(self, **kwargs):
-        kwargs['user_profile_form']=UserProfileForm(instance=self.object.get_profile())
+        kwargs.update({
+            'user_profile_form':UserProfileForm(instance=self.object.get_profile()),
+        })
         return super(UserUpdateView, self).get_context_data(**kwargs)
     def form_valid(self, form):
         user_profile_form = UserProfileForm(self.request.POST, instance=self.object.get_profile())
         if user_profile_form.is_valid():
             user_profile_form.save()
+            self.request.session['tz'] = user_profile_form.cleaned_data['timezone']
             messages.info(self.request, 'The changes to your profile have been made successfully.')
             return super(UserUpdateView, self).form_valid(form)
         else:
             return self.render_to_response(self.get_context_data(form=form, user_profile_form=user_profile_form))
+            
 class TagArticle(UpdateView):
     model=Article
-    template_name = "articles/ajax_article_tag_rows.html"
+    template_name = "articles/ajax_article_tags_row.html"
     form_class = TagArticleForm
     def get_context_data(self, **kwargs):
+        print "IM HERE"
         kwargs['object']=self.object
         return super(TagArticle, self).get_context_data(**kwargs)
+    def get_template_names(self):
+        return [self.template_name]
     def form_valid(self, form):
         self.object = form.save()
         messages.info(self.request, 'The article has been tagged successfully.')
-        print "self.get_template_names(): " + str(self.get_template_names()) 
         return self.render_to_response(self.get_context_data(form=form))

@@ -1,0 +1,13 @@
+<tr id="tag-alltags">
+    <th colspan="2">Tags:</th>
+    <td>
+        <div class="aleft">
+            <ul id="tag-list" class="priority">
+                {% for tag in article.tags %}
+                    <a href="{% url article_list %}?q={{tag}}"><li title="Click here to see all articles with this tag" class="blue-keyword">{{tag}}</li></a>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="aright"><a id="tag-button" class="popup" href="#tag-form"><input type="button" value="Add or Edit Tags" class="submit long"></a></div>
+    </td>
+</tr>    

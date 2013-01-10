@@ -130,6 +130,7 @@ MIDDLEWARE_CLASSES = (
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
     #'django_facebook.middleware.FacebookMiddleware',
     'middleware.FacebookMiddleware',
+    'middleware.TimezoneMiddleware',
     
 )
 INTERNAL_IPS = ('127.0.0.1','localhost')

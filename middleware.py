@@ -5,6 +5,14 @@ import datetime
 import urllib
 import json
 
+from django.utils import timezone
+
+class TimezoneMiddleware(object):
+    def process_request(self, request):
+        tz = request.session.get('tz')
+        if tz:
+            timezone.activate(tz)
+
 class DjangoFacebook(object):
     """ Simple accessor object for the Facebook user. """
     def __init__(self, user):

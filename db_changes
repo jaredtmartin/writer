@@ -1,0 +1,3 @@
+alter table articles_userprofile add column `timezone` varchar(32) NOT NULL;
+alter table articles_article add column `expires` datetime;
+alter table articles_articleaction add column `timezone` varchar(32) NOT NULL;
