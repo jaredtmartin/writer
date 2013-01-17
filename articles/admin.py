@@ -7,7 +7,6 @@ class KeywordInline(admin.TabularInline):
     model = Keyword
     extra=1
 
-
 def approve(modeladmin, request, queryset):
     for obj in queryset:
         try: obj.approve(user=request.user)
@@ -53,7 +52,6 @@ def reject_and_release(modeladmin, request, queryset):
         except Article.ArticleWorkflowException, err: messages.add_message(request, messages.ERROR, err)
 reject_and_release.short_description = "Reject and release selected articles"
 
-
 class ArticleAdmin(admin.ModelAdmin):
     list_display = ('name','assigned','submitted','approved','published')
 #    list_filter = ('assigned','submitted','approved','published')
@@ -66,5 +64,5 @@ admin.site.register(Article, ArticleAdmin)
 admin.site.register(ArticleType)
 admin.site.register(ArticleAction)
 admin.site.register(Project)
-#admin.site.register(Tag)
+admin.site.register(Relationship)
 admin.site.register(UserProfile)

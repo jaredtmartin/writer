@@ -1,0 +1,11 @@
+<tr id="action-bar">
+    <th colspan="8">
+        <script type="text/javascript">var _actions_icnt="{{articles.count}}"; window.codeForRows=[]</script>        
+        <ul align="right" class="priority">
+            {% for action in actions %}
+                <a id="{{action.0}}-link" href="#{{action.0}}-box" onclick=""><li title="" class="blue-keyword">{{action.0}}</li></a>
+            {% endfor %}
+            <li id="action_counter" class="action-counter"><span class="action-counter" style="display: inline; ">0 of 1 selected</span></li>
+        </ul>
+    </th>
+</tr>

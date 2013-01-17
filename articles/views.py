@@ -1,11 +1,12 @@
 from django.views.generic import ListView
 from extra_views import SearchableListMixin
+from django.http import HttpResponse
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, ModelFormMixin
 from django.views.generic.detail import DetailView
 from django.views.generic import TemplateView, FormView
-from articles.models import Article, Keyword, Project, ArticleAction, ACTIONS
+from articles.models import Article, Keyword, Project, ArticleAction, ACTIONS, Relationship
 from django.views.generic.base import View, TemplateResponseMixin
-from articles.forms import ArticleForm, KeywordInlineFormSet, KeywordInlineForm, TagArticleForm, ActionUserID, AssignToForm, UserForm, UserProfileForm, NoteForm, TagForm
+from articles.forms import ArticleForm, KeywordInlineFormSet, KeywordInlineForm, TagArticleForm, ActionUserID, AssignToForm, UserForm, UserProfileForm, NoteForm, TagForm, RelationshipForm
 #from django_actions.views import ActionViewMixin
 import pickle
 from datetime import datetime
@@ -16,6 +17,7 @@ from django.core.urlresolvers import reverse_lazy
 from extra_views import CreateWithInlinesView, UpdateWithInlinesView
 import django_filters
 from actions import *
+from django import template
 
 VALID_STRING_LOOKUPS = ('exact','isnull','iexact', 'contains', 'icontains', 'startswith', 'istartswith', 'endswith', 'iendswith', 'search', 'regex', 'iregex')
 class LoginRequiredMixin(object):
@@ -230,16 +232,37 @@ class ArticleList(GetActionsMixin, FilterableListView):
             ('Approve','','/articles/various/approve/'),
             ('Reject',NoteForm(),'/articles/various/reject/'),
         ]
+    def get_context_data(self, **kwargs):
+        kwargs['selected_tab']='articles'
+        return super(ArticleList, self).get_context_data(**kwargs)
+class AjaxDeleteRowView(DeleteView):
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        self.object.delete()
+        messages.info(self.request, 'The '+ self.object._meta.verbose_name+' has been created successfully.')
+        return self.render_to_response(self.get_context_data())
+class AjaxRowTemplateResponseMixin(object):
+    template_name = 'articles/ajax_row.html'
+    def get_context_data(self, **kwargs):
+        kwargs['row_template']=self.row_template
+        kwargs['row_id']=self.row_id
+        kwargs['object']=self.object
+        return super(AjaxRowTemplateResponseMixin, self).get_context_data(**kwargs)
+    def form_valid(self, form):
+        self.object = form.save()
+        messages.info(self.request, 'The '+ self.object._meta.verbose_name+' has been created successfully.')
+        return self.render_to_response(self.get_context_data(form=form))
+    
 class AjaxUpdateMixin(object):
     def form_valid(self, form):
         self.object = form.save()
         messages.info(self.request, 'The '+ self.object._meta.verbose_name+' has been created successfully.')
         return self.render_to_response(self.get_context_data(form=form))
+
 class ProjectCreate(AjaxUpdateMixin, CreateView):
     # Takes name, owner, and article_id
     # Creates Project with given name and owner and assignes it to article
     # Returns message and article project field with new item selected
-    template_name = 'articles/ajax_project_form.html'
     model = Project
     def form_valid(self, form):
         self.object = form.save()
@@ -270,6 +293,9 @@ class ProjectList(FilterableListView):
     filter_fields={
         'owner':RelatedFilter(name='owner', model=Project, display_attr='username'),
     }
+    def get_context_data(self, **kwargs):
+        kwargs['selected_tab']='projects'
+        return super(ProjectList, self).get_context_data(**kwargs)
     
 class ArticleCreate(CreateView):
     template_name = 'articles/article_edit.html'
@@ -446,7 +472,6 @@ class TagArticle(UpdateView):
     template_name = "articles/ajax_article_tags_row.html"
     form_class = TagArticleForm
     def get_context_data(self, **kwargs):
-        print "IM HERE"
         kwargs['object']=self.object
         return super(TagArticle, self).get_context_data(**kwargs)
     def get_template_names(self):
@@ -455,3 +480,56 @@ class TagArticle(UpdateView):
         self.object = form.save()
         messages.info(self.request, 'The article has been tagged successfully.')
         return self.render_to_response(self.get_context_data(form=form))
+
+class AddRelationship(AjaxRowTemplateResponseMixin, CreateView):
+    model=Relationship
+    form_class = RelationshipForm
+    row_template="articles/relationship_list_row.html"
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        self.object.created_by = self.request.user
+        return super(AddRelationship, self).form_valid(form)
+    def get_context_data(self, **kwargs):
+        user=self.get_user_to_display()
+        user.relationship=self.object
+        kwargs['object']=user
+        kwargs['user_group'] = self.user_group
+        return super(AddRelationship, self).get_context_data(**kwargs)
+    
+class AddRequester(AddRelationship):
+    row_id='requester'
+    user_group = "Requesters"
+    def get_user_to_display(self):
+        return self.object.requester
+    
+class AddWriter(AddRelationship):
+    row_id='writer'
+    user_group = "Writers"
+    def get_user_to_display(self):
+        return self.object.writer
+
+class UserList(SearchableListView):
+    model=User
+    search_fields = ['username','first_name','last_name']
+    template_name = "articles/user_list.html"
+    def get_context_data(self, **kwargs):
+        if 'q' in self.request.GET and self.request.GET['q']: 
+            kwargs['title'] = "%s called '%s'" % (self.user_group, self.request.GET['q'] )
+        else:
+            kwargs['title'] = 'Available %s' % self.user_group
+        kwargs['user_group'] = self.user_group
+        return super(UserList, self).get_context_data(**kwargs)
+    
+class WriterList(UserList):
+    def get_queryset(self):
+        return User.objects.filter(Q(userprofile__preferred_mode=3)|Q(userprofile__preferred_mode=1)).exclude(requester_relationships__requester=self.request.user).exclude(pk=self.request.user.pk)
+    user_group='Writers'
+    
+class RequesterList(UserList):
+    def get_queryset(self):
+        return User.objects.filter(userprofile__preferred_mode__gte=2).exclude(requester_relationships__requester=self.request.user).exclude(pk=self.request.user.pk)
+    user_group='Requesters'
+
+class DeleteRelationship(AjaxDeleteRowView):
+    model=Relationship
+

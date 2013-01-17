@@ -62,4 +62,8 @@ class TagArticleForm(ModelForm):
     class Meta:
         model = Article
         fields = ('_tags',)
+class RelationshipForm(ModelForm):
+    class Meta:
+        model = Relationship
+        fields = ('requester','writer')
     

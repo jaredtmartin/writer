@@ -2,7 +2,9 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.db.models import Q
-
+from validation_plugins import *
+from plugin_manager import PluginManager
+from django.conf import settings
 def CamelToWords(name):
     s1 = re.sub('(.)([A-Z][a-z]+)', r'\1 \2', name)
     return re.sub('([a-z0-9])([A-Z])', r'\1 \2', s1)
@@ -37,6 +39,19 @@ USER_MODES = (
     (DUAL_MODE, 'Both'),
 )
 
+class PluginMount(type):
+    name="generic"
+    def __init__(cls, name, bases, attrs):
+        if not hasattr(cls, 'plugins'):
+            cls.plugins = {}
+        else:
+            cls.plugins[cls.name]=cls
+            
+class ValidationProvider(object):
+    __metaclass__ = PluginMount
+    def is_valid(self, article):
+        raise NotImplemented
+
 class ArticleType(models.Model):
     name = models.CharField(max_length=16)
     def __unicode__(self): return self.name
@@ -50,7 +65,26 @@ class Project(models.Model):
         results=[]
         [results.append(a.keywords) for a in self.articles.all()]
         return ", ".join(results)
-
+class ValidationModelMixin(object):
+    _validators = models.CharField(max_length=128, blank=True, default="")
+    plugin_loader=PluginManager(settings.DIRNAME+'/articles/validation_plugins/')
+    available_validators=ValidationProvider.plugins
+    
+    def validate(self):
+        return all(validator.is_valid(self) for validator in self.validators)
+    @property
+    def validators(self):
+        l=[]
+        for v in self._validators.split(", "):
+            if v in self.available_validators:
+                l.append(self.available_validators[v]()) 
+        return l           
+    def get_validators_as_Str(self):
+        return self._validators
+    def set_validators_as_Str(self, s):
+        self._validators = s
+    validators_as_Str = property(get_validators_as_Str, set_validators_as_Str)
+    
 class ArticleAction(models.Model):
     class Meta:
         ordering = ['-timestamp']
@@ -63,8 +97,65 @@ class ArticleAction(models.Model):
     comment = models.CharField(max_length=64, default="", blank=True)
     def __unicode__(self): 
         return self.get_code_display() + " by " + self.user.get_full_name()
+        
+class ConfirmedRelationshipManager(models.Manager):
+    def get_query_set(self):
+        return super(ConfirmedRelationshipManager, self).get_query_set().filter(confirmed=True)
+        
+class UnconfirmedRelationshipManager(models.Manager):
+    def get_query_set(self):
+        return super(UnconfirmedRelationshipManager, self).get_query_set().filter(confirmed=False)
+def full_name(self):
+    return "%s %s" % (self.first_name,self.last_name)
+User.full_name=property(full_name)
+def writers(self):
+    l=[]
+    for r in self.writer_relationships.all():
+        writer = r.writer
+        writer.is_confirmed = r.confirmed
+        writer.is_confirmable = not r.confirmed and not self == r.created_by
+        writer.relationship = r
+        l.append(writer)
+    return l
+    return [r.writer for r in self.writer_relationships.all()]
+User.writers=property(writers)
+def requesters(self):
+    l=[]
+    for r in self.requester_relationships.all():
+        requester = r.requester
+        requester.is_confirmed = r.confirmed
+        requester.is_confirmable = not r.confirmed and not self == r.created_by
+        requester.relationship = r
+        l.append(requester)
+    return l
+    return [r.requester for r in self.requester_relationships.all()]
+User.requesters=property(requesters)
+def is_requester(self): return self.get_profile().is_requester
+def is_writer(self): return self.get_profile().is_writer
+User.is_requester=property(is_requester)
+User.is_writer=property(is_writer)
 
-class Article(models.Model):
+class Relationship(ValidationModelMixin, models.Model):
+    requester = models.ForeignKey(User, related_name='writer_relationships')
+    writer = models.ForeignKey(User, related_name='requester_relationships')
+    created_by = models.ForeignKey(User, related_name='friend_requests')
+    confirmed = models.BooleanField(default=False, blank=True)
+    objects = models.Manager()
+    pending_objects = UnconfirmedRelationshipManager()
+    confirmed_objects = ConfirmedRelationshipManager()
+    def __unicode__(self): 
+        if self.confirmed:
+            return "%s writes for %s" % (self.writer.full_name, self.requester.full_name)
+        else:
+            if self.created_by==self.requester: 
+                return "%s requested %s to write for him" % (self.created_by.full_name, self.writer.full_name)
+            else:
+                return "%s requested to write for %s" % (self.created_by.full_name, self.requester.full_name)
+    @models.permalink
+    def get_delete_url(self):
+        return ('relationship_delete', [self.id,])  
+
+class Article(ValidationModelMixin, models.Model):
     def __unicode__(self): return self.name
     minimum = models.IntegerField(default=100)
     maximum = models.IntegerField(default=0) # Use zero for no maximum
@@ -232,12 +323,20 @@ class UserProfile(models.Model):
     timezone = models.CharField(max_length=32, default='America/Chicago')
     access_token = models.TextField(blank=True, help_text='Facebook token for offline access', null=True)
     preferred_mode = models.IntegerField(choices=USER_MODES)
+    def __unicode__(self): return self.user.username+"'s profile"
+#    requesters = 
+    @property
+    def is_requester(self):
+        return self.preferred_mode >= REQUESTER_MODE
+    @property
+    def is_writer(self):
+        return self.preferred_mode in [WRITER_MODE, DUAL_MODE]
     @property
     def graph(self): return facebook.GraphAPI(self.access_token)
 
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
-        UserProfile.objects.create(user=instance)
+        UserProfile.objects.create(user=instance, preferred_mode=WRITER_MODE)
 
 post_save.connect(create_user_profile, sender=User)
 

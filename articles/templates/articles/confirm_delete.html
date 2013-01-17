@@ -1,7 +1,7 @@
 {% load verbose_name %}
 <div id="delete-popup" style="display:none">
     <div id="confirm_delete-box">
-        Are you sure you want to delete this {{object|verbose_name}}?
+        Are you sure you want to delete this {% if object_type %}{{object_type}}{% else %}{{object|verbose_name}}{% endif %}?
         <a class="button continue-button" onclick="{{object.get_delete_url}}">Delete</a>
     </div>
 </div>

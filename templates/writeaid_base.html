@@ -30,9 +30,9 @@
                 <h1><a href="/">Writer Axis</a></h1>
                 
                 <ul id="nav">
-                    <li class=" "><a href="/articles/dashboard/">Dashboard</a></li>
-                    <li class=" "><a href="/articles/projects/">Projects</a></li>
-                    <li class="active"><a href="/articles/list/">Articles</a>
+                    <li class="{% if selected_tab == 'dashboard' %}active{% endif%}"><a href="{% url dashboard %}">Dashboard</a></li>
+                    <li class="{% if selected_tab == 'projects' %}active{% endif%}"><a href="{% url project_list %}">Projects</a></li>
+                    <li class="{% if selected_tab == 'articles' %}active{% endif%}"><a href="{% url article_list %}">Articles</a>
 		                <ul> 
 			                <li><a href="/articles/list/">Available</a></li> 
 		                    <li><a href="/articles/list/">Assigned to Me</a></li> 
@@ -44,7 +44,13 @@
                             <li><a href="/articles/list/?last_action=P">Published</a></li>
 		                </ul>
                     </li>
-                    <li><a href="/writers/">Writers</a></li>
+                    {% if user.get_profile.is_requester %}
+                        <li class="{% if selected_tab == 'writers' %}active{% endif%}"><a href="{% url writer_list %}">Writers</a></li>
+                    {% endif %}
+                    {% if user.get_profile.is_writer %}
+                        <li class="{% if selected_tab == 'requesters' %}active{% endif%}"><a href="{% url requester_list %}">Requesters</a></li>
+                    {% endif %}
+                    
                     <li class="nobg"><a href="/reports/">Reports</a></li>
                 </ul>
                 {% if user.is_authenticated %}

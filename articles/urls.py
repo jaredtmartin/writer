@@ -1,12 +1,13 @@
 from django.conf.urls import patterns, url, include
 from articles.views import *
+from django.views.generic.simple import direct_to_template
 
 urlpatterns = patterns('',
-    url(r'^list/$', ArticleList.as_view(), name='article_list'),
+    url(r'^articles/$', ArticleList.as_view(), name='article_list'),
     url(r'^article/add/$', ArticleCreate.as_view(), name='article_add'),
     url(r'^project/add/$', ProjectCreate.as_view(), name='new_project'),
     url(r'^article/(?P<pk>\d+)/tag/$', TagArticle.as_view(), name='tag_article'),
-    url(r'^projects/$', ProjectList.as_view(), name='list_projects'),
+    url(r'^projects/$', ProjectList.as_view(), name='project_list'),
     url(r'^project/(?P<pk>\d+)/delete/$', ProjectDelete.as_view(), name='project_delete'),
     url(r'^article/(?P<pk>\d+)/$', ArticleUpdate.as_view(), name='article_update'),
     url(r'^article/(?P<pk>\d+)/delete/$', ArticleDelete.as_view(), name='article_delete'),
@@ -18,4 +19,14 @@ urlpatterns = patterns('',
     url(r'^various/reject/$', RejectVariousArticles.as_view(), name='reject_various_articles'),
     url(r'^various/approve/$', ApproveVariousArticles.as_view(), name='approve_various_articles'),
     url(r'^various/tag/$', TagVariousArticles.as_view(), name='tag_various_articles'),
+    
+    url(r'^requester/add/$', AddRequester.as_view(), name='requester_add'),
+    url(r'^writer/add/$', AddWriter.as_view(), name='writer_add'),
+    url(r'^writers/$', WriterList.as_view(), name='writer_list'),
+    url(r'^requesters/$', RequesterList.as_view(), name='requester_list'),
+    url(r'^relationship/(?P<pk>\d+)/delete/$', DeleteRelationship.as_view(), name='relationship_delete'),
+
+    url(r'^dashboard/$', direct_to_template, {'template': 'dashboard.html'}, name='dashboard'),
+    
+
 )
