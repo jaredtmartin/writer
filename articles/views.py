@@ -6,7 +6,7 @@ from django.views.generic.detail import DetailView
 from django.views.generic import TemplateView, FormView
 from articles.models import Article, Keyword, Project, ArticleAction, ACTIONS, Relationship
 from django.views.generic.base import View, TemplateResponseMixin
-from articles.forms import ArticleForm, KeywordInlineFormSet, KeywordInlineForm, TagArticleForm, ActionUserID, AssignToForm, UserForm, UserProfileForm, NoteForm, TagForm, RelationshipForm
+from articles.forms import ArticleForm, KeywordInlineFormSet, KeywordInlineForm, ConfirmRelationshipForm, TagArticleForm, ActionUserID, AssignToForm, UserForm, UserProfileForm, NoteForm, TagForm, RelationshipForm
 #from django_actions.views import ActionViewMixin
 import pickle
 from datetime import datetime
@@ -244,19 +244,27 @@ class AjaxDeleteRowView(DeleteView):
 class AjaxRowTemplateResponseMixin(object):
     template_name = 'articles/ajax_row.html'
     def get_context_data(self, **kwargs):
-        kwargs['row_template']=self.row_template
-        kwargs['row_id']=self.row_id
+        kwargs['row_template']=self.get_row_template()
+        kwargs['row_id']=self.get_row_id()
         kwargs['object']=self.object
         return super(AjaxRowTemplateResponseMixin, self).get_context_data(**kwargs)
+    def get_row_id(self): return self.row_id
+    def get_row_template(self): return self.row_template
+    def get_success_message(self): return "The %s has been updated successfully." % (self.object._meta.verbose_name,)
+    def get_failure_message(self): return "We were unable to update the %s." % (self.object._meta.verbose_name,)
     def form_valid(self, form):
         self.object = form.save()
-        messages.info(self.request, 'The '+ self.object._meta.verbose_name+' has been created successfully.')
+        print "self.object: " + str(self.object) 
+        messages.info(self.request, self.get_success_message())
         return self.render_to_response(self.get_context_data(form=form))
+    def form_invalid(self, form):
+        messages.error(self.request, self.get_failure_message())
+        return super(AjaxRowTemplateResponseMixin, self).form_invalid(form)
     
 class AjaxUpdateMixin(object):
     def form_valid(self, form):
         self.object = form.save()
-        messages.info(self.request, 'The '+ self.object._meta.verbose_name+' has been created successfully.')
+        messages.info(self.request, 'The '+ self.object._meta.verbose_name+' has been updated successfully.')
         return self.render_to_response(self.get_context_data(form=form))
 
 class ProjectCreate(AjaxUpdateMixin, CreateView):
@@ -492,9 +500,10 @@ class AddRelationship(AjaxRowTemplateResponseMixin, CreateView):
     def get_context_data(self, **kwargs):
         user=self.get_user_to_display()
         user.relationship=self.object
-        kwargs['object']=user
-        kwargs['user_group'] = self.user_group
-        return super(AddRelationship, self).get_context_data(**kwargs)
+        c= super(AddRelationship, self).get_context_data(**kwargs)
+        c['object']=user
+        c['user_group'] = self.user_group
+        return c
     
 class AddRequester(AddRelationship):
     row_id='requester'
@@ -532,4 +541,30 @@ class RequesterList(UserList):
 
 class DeleteRelationship(AjaxDeleteRowView):
     model=Relationship
-
+    
+class ConfirmRelationship(AjaxRowTemplateResponseMixin, UpdateView):
+    model=Relationship
+    row_template="articles/relationship_list_row.html"
+    form_class = ConfirmRelationshipForm
+    def get_row_id(self): 
+        if self.object.requester == self.request.user: return "writer"
+        else: return "requester"
+    def get_user_to_display(self):
+        return self.object.writer
+        if self.object.requester == self.request.user: return self.object.writer
+        else: return self.object.requester
+    def get_context_data(self, **kwargs):
+        user=self.get_user_to_display()
+        user.relationship=Relationship.objects.get(pk=self.object.pk)
+        user.is_confirmed= user.relationship.confirmed
+        user.is_confirmable = not user.relationship.confirmed and not self.request.user == user.relationship.created_by
+        c=super(ConfirmRelationship, self).get_context_data(**kwargs)
+        c['object']=user
+        return c
+    def post(self, request, *args, **kwargs):
+        # Make sure we can only confirm if we are the reciever of the invitation.
+        self.object = self.get_object()
+        if not (self.request.user in [self.object.requester, self.object.writer]) or self.object.created_by == self.request.user:
+            messages.error(self.request, 'You are not the recipient of this invitation.')
+            return self.form_invalid(self.get_form(self.get_form_class()))
+        return super(ConfirmRelationship, self).post(request, *args, **kwargs)

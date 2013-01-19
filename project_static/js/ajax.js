@@ -28,4 +28,6 @@ function ajaxUpdateRow(data){                                               // G
     addRows(d);
     runCode();
 }
-
+function sendAjaxPost(url, data){
+    jQuery.post(url, data, success=ajaxUpdateRow);
+}

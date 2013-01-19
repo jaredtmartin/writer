@@ -25,6 +25,7 @@ urlpatterns = patterns('',
     url(r'^writers/$', WriterList.as_view(), name='writer_list'),
     url(r'^requesters/$', RequesterList.as_view(), name='requester_list'),
     url(r'^relationship/(?P<pk>\d+)/delete/$', DeleteRelationship.as_view(), name='relationship_delete'),
+    url(r'^relationship/(?P<pk>\d+)/confirm/$', ConfirmRelationship.as_view(), name='relationship_confirm'),
 
     url(r'^dashboard/$', direct_to_template, {'template': 'dashboard.html'}, name='dashboard'),
     

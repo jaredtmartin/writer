@@ -5,7 +5,13 @@
     <link href="{% static "css/writersaxis.css" %}" rel="stylesheet" type="text/css" />
 {% endblock %}   
 {% block content %}   
-
+<script>
+    function confirmDelete(li,url){
+        window.id_of_row_to_remove = li;
+        window.delete_url = url;
+        $('#delete-link').click();
+    }
+</script>
 <div id="content-main">
     {% if not q %}
         {% if user.writers %}

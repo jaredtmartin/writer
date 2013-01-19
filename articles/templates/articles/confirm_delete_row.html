@@ -2,12 +2,16 @@
 <div id="delete-popup" style="display:none;">
     <div id="confirm_delete-box">
         Are you sure you want to delete this {% if object_type %}{{object_type}}{% else %}{{object|verbose_name}}{% endif %}?
-        <a class="button continue-button" onclick="jQuery.post($('#delete_url').val(), {confirm:'True'}, success=ajaxUpdateRow);return false;">Delete</a>
+        <a class="button continue-button" onclick="doDeletion(window.id_of_row_to_remove, window.delete_url);return false;">Delete</a>
     </div>
     <a style="display:none;" id="delete-link" href="#delete-popup">
-    <input type="hidden" id="delete_url">
 </div>
 <script>
+    function doDeletion(li, url){
+        $(li).remove();
+        $.post(url, {confirm:'True'}, success=ajaxUpdateRow);
+        $.fancybox.close();
+    }
     $(document).ready(function() {
         $("a#delete-link").fancybox();
     });

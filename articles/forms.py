@@ -66,4 +66,12 @@ class RelationshipForm(ModelForm):
     class Meta:
         model = Relationship
         fields = ('requester','writer')
-    
+class ConfirmRelationshipForm(ModelForm):
+    class Meta:
+        model = Relationship
+        fields = ('confirmed',)
+    def save(self, commit=True):
+        super(ConfirmRelationshipForm, self).save(commit=False)
+        self.instance.confirmed=True
+        return super(ConfirmRelationshipForm, self).save(commit=True)
+

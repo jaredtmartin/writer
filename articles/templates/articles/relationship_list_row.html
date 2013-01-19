@@ -4,8 +4,8 @@
   <td>{% if object.is_confirmed %}Confirmed{% else %}Unconfirmed{% endif%}</td>
   <td align="right" style="text-align: right;">
     <ul align="right" class="priority">
-        {% if object.is_confirmable %}<li title="" class="blue-keyword"><a href="">Confirm</a></li> {% endif %}
-        <li onclick="$('#delete_url').val('{{object.relationship.get_delete_url}}');$('#delete-link').click();return false;" class="purple-keyword"><a href="">Remove</a></li>   
+        {% if object.is_confirmable %}<li title="" class="blue-keyword"><a onclick="sendAjaxPost('{% url relationship_confirm  object.relationship.pk %}')">Confirm</a></li> {% endif %}
+        <li onclick="confirmDelete('#{{row_id}}-{{object.id}}','{{object.relationship.get_delete_url}}');return false;" class="purple-keyword"><a href="">Remove</a></li>   
     </ul>
   </td>
 </tr>
