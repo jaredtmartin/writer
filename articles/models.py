@@ -153,7 +153,11 @@ class Relationship(ValidationModelMixin, models.Model):
                 return "%s requested to write for %s" % (self.created_by.full_name, self.requester.full_name)
     @models.permalink
     def get_delete_url(self):
-        return ('relationship_delete', [self.id,])  
+        return ('relationship_delete', [self.id,])
+class PostingOutlet(models.Model):
+    name = models.CharField(max_length=256)
+    
+    
 
 class Article(ValidationModelMixin, models.Model):
     def __unicode__(self): return self.name
@@ -324,7 +328,7 @@ class UserProfile(models.Model):
     access_token = models.TextField(blank=True, help_text='Facebook token for offline access', null=True)
     preferred_mode = models.IntegerField(choices=USER_MODES)
     def __unicode__(self): return self.user.username+"'s profile"
-#    requesters = 
+
     @property
     def is_requester(self):
         return self.preferred_mode >= REQUESTER_MODE
