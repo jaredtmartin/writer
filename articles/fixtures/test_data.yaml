@@ -1,0 +1,49 @@
+- fields: {ref: articles.publishing_outlets.test_outlet.TestOutlet, title: Test Outlet}
+  model: articles.publishingoutlet
+  pk: 1
+- fields: {name: Small Project, owner: 1}
+  model: articles.project
+  pk: 1
+- fields: {name: Large Project, owner: 1}
+  model: articles.project
+  pk: 2
+- fields: {_tags: 'World, Ride, John', approved: 227, article_type: 1, assigned: 225,
+    body: "<p>Can <span style=\"background-color: #ffff00;\">you</span> hear the words\
+      \ <strong>coming</strong> out of my <span style=\"color: #ff0000;\">mouth</span>?&nbsp;\
+      \ I really <span style=\"text-decoration: underline;\"><strong>hope</strong></span>\
+      \ this works!s</p>\r\n<ul>\r\n<li>Dog</li>\r\n<li>Cat</li>\r\n<li>Bird</li>\r\
+      \n</ul>\r\n<p>Some <span style=\"font-size: large;\">more</span> stuff down\
+      \ here.</p>", expires: null, last_action: null, maximum: 0, minimum: 150, owner: 1,
+    project: 1, published: null, rejected: null, released: null, submitted: null, title: Jumper}
+  model: articles.article
+  pk: 1
+- fields: {_tags: 'Red, Green, Yellow', approved: null, article_type: 1, assigned: null,
+    body: '', expires: null, last_action: null, maximum: 0, minimum: 100, owner: 1,
+    project: 2, published: null, rejected: null, released: null, submitted: null, title: ''}
+  model: articles.article
+  pk: 2
+- fields:
+    date_joined: 2012-11-17 16:07:33+00:00
+    email: fred@gmail.com
+    first_name: Fred
+    groups: []
+    is_active: true
+    is_staff: false
+    is_superuser: false
+    last_login: 2012-12-21 23:56:24+00:00
+    last_name: Flintstone
+    password: pbkdf2_sha256$10000$S6xpGLC0fIMQ$lSv+fV3BWJVQrw53zvKf6BjNdEPN4PN/ENkXChpJJ5g=
+    user_permissions: []
+    username: fred
+  model: auth.user
+  pk: 2
+- fields: {article: 1, keyword: Chicago Plumber, times: 1, url: www.google.com}
+  model: articles.keyword
+  pk: 1
+- fields: {article: 2, keyword: Dutch Sailor, times: 1, url: www.google.com}
+  model: articles.keyword
+  pk: 2
+- fields: {access_token: '', preferred_mode: 1, timezone: '', user: 2}
+  model: articles.userprofile
+  pk: 2
+

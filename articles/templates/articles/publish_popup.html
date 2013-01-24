@@ -1,0 +1,36 @@
+{% load verbose_name %}
+<div id="publish-popup" style="display:none">
+    <div id="publish-box">
+        Where would you like to publish your article?<br>
+        <a class="btn small primary share-twitter" target="_blank" href="http://twitter.com/home?status={{ article.get_absolute_url|urlencode }}%20{{ article.name|urlencode }}">Share on Twitter</a>
+        <a class="btn small primary share-facebook" target="_blank" href="http://facebook.com/sharer.php?u={{ request.build_absolute_uri }}&amp;t={{ article.name|urlencode }}">Share on Facebook</a>
+        <input id="publish_name">
+        <a class="button continue-button" onclick="createProject();">Create</a>
+    </div>
+</div>
+<script>
+    $(document).ready(function() {
+        $("a#new-project-button").fancybox();
+    });
+    function createProject(){
+        parent.$.fancybox.close();
+        $.ajax({
+            url: "/articles/project/add/",
+            type:'POST',
+            data:{
+                name: $('#project_name').val(),
+                owner:{{user.pk}},
+                article:{{article.pk}},
+            },
+            success: updateArticle
+        });
+    }
+    function updateArticle(data){
+        d=saveDataInCache(data);
+        updateMessages(d);  
+        $('#project_field').html($('#ajax-project-form').html());
+    }
+</script>
+
+
+

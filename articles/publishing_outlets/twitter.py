@@ -1,0 +1,2 @@
+class TwitterOutlet(PublishingPluginBase):
+    pass

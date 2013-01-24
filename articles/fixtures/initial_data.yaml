@@ -1,0 +1,31 @@
+- fields: {name: Blog}
+  model: articles.articletype
+  pk: 1
+- fields:
+    date_joined: 2012-11-03 18:54:59+00:00
+    email: jared@home.com
+    first_name: Jared
+    groups: []
+    is_active: true
+    is_staff: true
+    is_superuser: true
+    last_login: 2013-01-01 22:21:11+00:00
+    last_name: Martin
+    password: pbkdf2_sha256$10000$waRyWWRqkZjE$R6VzYLP0tHcrK1eCIRPlRFwCkEYIhramDQEXh2EVaOQ=
+    user_permissions: []
+    username: jared
+  model: auth.user
+  pk: 1
+- fields: {access_token: '', preferred_mode: 2, timezone: Africa/Tunis, user: 1}
+  model: articles.userprofile
+  pk: 1
+- fields: {ref: articles.publishing_outlets.facebook.FacebookOutlet, title: Post on Facebook}
+  model: articles.publishingoutlet
+  pk: 2
+- fields: {ref: articles.publishing_outlets.twitter.TwitterOutlet, title: Twitter}
+  model: articles.publishingoutlet
+  pk: 3
+- fields: {ref: articles.publishing_outlets.wordpress.WordPressOutlet, title: Post on WordPress}
+  model: articles.publishingoutlet
+  pk: 4
+  

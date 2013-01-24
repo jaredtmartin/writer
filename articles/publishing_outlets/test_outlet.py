@@ -1,0 +1,2 @@
+class TestOutlet(object):
+    pass
