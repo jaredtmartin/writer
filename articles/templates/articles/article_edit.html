@@ -6,19 +6,5 @@
 {% endblock %}
 
 {% block content %}
-    {% include "facebook-sdk.html" %}
     {% include "articles/article_form.html" %}
-    <script>
-        function post_on_facebook(title,body){
-            FB.api('/me/feed', 'post', {message:body,name:title},
-                function(response) {
-                    if (!response || response.error) {
-                        alert('Error occured');
-                    } else {
-                        alert('Post ID: ' + response.id);
-                    }
-            });
-        }
-    </script>
-    <a onclick="post_on_facebook('Testing', 'A whole bunch of stuff.');return false;">Post to Facebook</a>
 {% endblock %}
