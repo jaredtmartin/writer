@@ -5,6 +5,8 @@ from django.db.models import Q
 from validation_plugins import *
 from plugin_manager import PluginManager
 from django.conf import settings
+from plugins import PluginModel
+#from publishing_outlets import *
 def CamelToWords(name):
     s1 = re.sub('(.)([A-Z][a-z]+)', r'\1 \2', name)
     return re.sub('([a-z0-9])([A-Z])', r'\1 \2', s1)
@@ -38,6 +40,29 @@ USER_MODES = (
     (REQUESTER_MODE, 'Requester'),
     (DUAL_MODE, 'Both'),
 )
+        
+class TestOutlet(PluginModel):
+    package_name="articles.pkg"
+
+class PublishingOutlet(PluginModel):
+    package_name = "articles.publishing_outlets"
+    title = models.CharField(max_length=256)
+    def do_action(self):
+        return self.plugin.do_action()
+    def get_button_url(*args, **kwargs):
+        return self.plugin.get_button_url(*args, **kwargs)
+    def __unicode__(self): return self.title
+    
+class PublishingOutletConfiguration(models.Model):
+    user = models.ForeignKey(User, related_name='publishing_outlets')
+    outlet = models.ForeignKey(PublishingOutlet, related_name='users')
+    username = models.CharField(max_length=128)
+    password = models.CharField(max_length=128)
+    def publish(article):
+        pass
+    def get_button_url(*args, **kwargs):
+        pass
+    def __unicode__(self): return "%s for %s" % (outlet.title, user.username)
 
 class PluginMount(type):
     name="generic"
@@ -65,6 +90,7 @@ class Project(models.Model):
         results=[]
         [results.append(a.keywords) for a in self.articles.all()]
         return ", ".join(results)
+    
 class ValidationModelMixin(object):
     _validators = models.CharField(max_length=128, blank=True, default="")
     plugin_loader=PluginManager(settings.DIRNAME+'/articles/validation_plugins/')
@@ -154,10 +180,6 @@ class Relationship(ValidationModelMixin, models.Model):
     @models.permalink
     def get_delete_url(self):
         return ('relationship_delete', [self.id,])
-class PostingOutlet(models.Model):
-    name = models.CharField(max_length=256)
-    
-    
 
 class Article(ValidationModelMixin, models.Model):
     def __unicode__(self): return self.name

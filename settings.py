@@ -10,7 +10,6 @@ ADMINS = (
 )
 
 MANAGERS = ADMINS
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
@@ -160,7 +159,6 @@ INSTALLED_APPS = (
     # 'django.contrib.admindocs',
     'django.contrib.markup',
     'knowledge',
-    'debug_toolbar',
     'django_extensions',
     'django_facebook',
     #'forms',
@@ -208,3 +206,15 @@ FACEBOOK_SECRET_KEY = '93c96e8759a2a91bd13336d32e398795'
 PROFILE_IMAGE_PATH = os.path.join(MEDIA_URL, 'facebook_profiles/%Y/%m/%d')
 FACEBOOK_CANVAS_PAGE = 'https://apps.facebook.com/%s/' % FACEBOOK_APP_ID
 FACEBOOK_SCOPE = ['manage_pages']
+
+# If manage.py test was called, use SQLite
+import sys
+if 'test' in sys.argv:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': ('test_sqlite.db')
+        }
+    }
+else:
+    INSTALLED_APPS=INSTALLED_APPS+('debug_toolbar',)

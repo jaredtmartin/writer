@@ -41,15 +41,17 @@ class PluginManager:
             name = module [:-3]
         else:
             name = module
-        
+        print "name: " + str(name) 
         # Do the actual import
         __import__(name)
         definition = sys.modules[name]
- 
-#        # Add the definition only if the class is available
-#        if hasattr(definition, definition.info["class"]):
-#            self.definitions[definition.info["name"]] = definition
-#            logging.info("Loaded %s" % name)
+        print "definition: " + str(definition) 
+        try:
+            # Add the definition only if the class is available
+            if hasattr(definition, definition.info["class"]):
+                self.definitions[definition.info["name"]] = definition
+                logging.info("Loaded %s" % name)
+        except:pass
         
  
     def new_instance(self, name, *args, **kwargs):

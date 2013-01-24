@@ -4,8 +4,6 @@ from django.contrib import admin
 from django.conf import settings
 from django.contrib.auth.views import login
 
-admin.autodiscover()
-
 urlpatterns = patterns('',
     # Examples:
     # url(r'^$', 'webservices.views.home', name='home'),
