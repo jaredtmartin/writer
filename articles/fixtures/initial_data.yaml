@@ -19,13 +19,12 @@
 - fields: {access_token: '', preferred_mode: 2, timezone: Africa/Tunis, user: 1}
   model: articles.userprofile
   pk: 1
-- fields: {ref: articles.publishing_outlets.facebook.FacebookOutlet, title: Post on Facebook}
+- fields: {class_name: FacebookOutlet, module_name: facebook, title: 'Post on Facebook'}
+  model: articles.publishingoutlet
+  pk: 1
+- fields: {class_name: WordPressOutlet, module_name: wordpress, title: 'Post on Wordpress'}
   model: articles.publishingoutlet
   pk: 2
-- fields: {ref: articles.publishing_outlets.twitter.TwitterOutlet, title: Twitter}
+- fields: {class_name: TwitterOutlet, module_name: twitter, title: 'Twitter'}
   model: articles.publishingoutlet
   pk: 3
-- fields: {ref: articles.publishing_outlets.wordpress.WordPressOutlet, title: Post on WordPress}
-  model: articles.publishingoutlet
-  pk: 4
-  
