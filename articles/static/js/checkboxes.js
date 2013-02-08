@@ -27,18 +27,3 @@ function toggleMaster(){
     if($('#checkall').prop("checked")) {selectRows($(window.row_selector))}
     else {deselectRows($(window.row_selector))}
 }
-
-
-//	function showsact(str3)
-//	{
-//		var newrow="action_" + str3;
-//		document.getElementById(str3).style.display = "block";
-//		document.getElementById(newrow).style.display = "block";
-//	}
-//	
-//	function hidesact(str2)
-//	{
-//		var newrow="action_" + str2;
-//		document.getElementById(str2).style.display = "none";
-//		document.getElementById(newrow).style.display = "none";
-//	}

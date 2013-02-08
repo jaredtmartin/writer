@@ -8,9 +8,9 @@
 			    <div class="block-fluid" style="border:none; height:100%;">
 				    <ul class="sList" style="border:none; height:355px;">
 					    <li>
-					        <form class="form-search" action="" method="post">
-						        <input type="text" class="search-query" value="Search"  onFocus="if(this.value=='Search'){this.value='';}this.style.color='#666666';" onBlur="if(this.value==''){this.value='Search';}">
-                                <i class="icon-search"></i>
+					        <form class="search_form" action="" method="GET">
+						        <input type="text" class="search-query" value="{{q}}" name="q">
+                                <a href="#" onclick="$('#search_form').submit();"><i class="icon-search"></i></a>
 					        </form>
 					    </li>
 					    <li>All Articles</li>
