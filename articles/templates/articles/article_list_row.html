@@ -1,24 +1,27 @@
-<tr id="article-{{article.id}}" class="article parent even" style="background-color: rgb(251, 251, 251);">
-  <td class="action-checkbox"><input type="checkbox" class="action-select" value="{{article.id}}" name="action-select"></td>
-  <td style="max-width:200px;"><a class="submit_popup" href="{{article.get_absolute_url}}">{{article.klass}}</a></td>
-  <td title="{{article.project.name.title}}" class="q_desc">{% if article.project %} <a href="{% url article_list %}?project={{article.project.name}}"> {{article.project.name.title}} </a>{% else %}None{% endif %}</td>
-  <td title="{{article.keywords}}" class="q_desc"><a href="{{article.get_absolute_url}}">{{article.keywords}}</a> </td>
-  <td align="right" style="text-align: right;">
-    <ul align="right" class="priority">
-        {% for tag in article.tags %}
-            {% if tag %}<a href="{% url article_list %}?q={{tag}}"><li title="" class="blue-keyword">{{tag}}</li></a>{%endif %}
-        {% endfor %}
-    </ul>
-  </td>
-  <td>{% if article.assigned %}<a href="{{article.assigned.author.get_absolute_url}}">{{article.assigned.author.username.title}}</a>{% else %}Nobody{% endif %}</td>              
-  <td title="{{article.status}}" class="q_desc">{{article.status}}</td>
-  <td align="right" style="text-align: right;">
-    <ul align="right" class="priority">
-        {% for action in article.available_actions %}
-            <a href="#" onclick="jQuery.post('{{article.get_absolute_url}}{{action}}/', {as_row:'True'}, success=ajaxUpdateRow);return false;"><li title="" class="blue-keyword">{{action}}</li></a>
-        {% endfor %}
-        <li title="Edit this article" class="purple-keyword cur_help"><a href="{{ article.get_absolute_url}}"> Edit</li>
-        <li title="" class="purple-keyword"><a href="{% url article_delete article.pk %}">Delete</a></li>   
-    </ul>
-  </td>
+<tr id="article-{{article.id}}" class="article" onMouseOver="$('#article-{{article.id}}-actions').show();" onMouseOut="$('#article-{{article.id}}-actions').hide();">
+	<td><input type="checkbox" onClick="toggleRows($('#article-{{article.id}}'));"/></td>
+	<td>{% if article.project %} <a href="{% url article_list %}?project={{article.project.name}}"> {{article.project.name.title}} </a>{% else %}None{% endif %}</td>
+	<td><a href="{{article.get_absolute_url}}">{{article.keywords}}</a></td>
+	<td>
+        <ul align="right" class="tags">
+            {% for tag in article.tags %}
+                {% if tag %}<a href="{% url article_list %}?q={{tag}}"><li title="" class="blue-keyword">{{tag}}</li></a>{%endif %}
+            {% endfor %}
+        </ul>
+	</td>
+	<td>{{article.status}}</td>
+	<td class="action_cell">
+		<div class="actionrow" id="article-{{article.id}}-actions">
+			<div class="btn-group">
+			    <button data-toggle="dropdown" class="btn btn-link dropdown-toggle"><img src="{{STATIC_URL}}img/dropdownactions.png"></button>
+				<ul class="dropdown-menu cssmalldropdown">
+				    <div><span class="isw-leftarrow"></span></div>
+					<li><a style="padding-left:10px;" href="#">Action 1</a></li>
+					<li><a style="padding-left:10px;" href="#">Action 2</a></li>
+					<li><a style="padding-left:10px;" href="#">Action 3</a></li>
+					<li><a style="padding-left:10px;" href="#">Action 4</a></li>
+				</ul>
+			</div>
+		</div>									
+	</td>                                
 </tr>
