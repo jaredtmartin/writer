@@ -1,6 +1,3 @@
-- fields: {ref: articles.publishing_outlets.test_outlet.TestOutlet, title: Test Outlet}
-  model: articles.publishingoutlet
-  pk: 1
 - fields: {name: Small Project, owner: 1}
   model: articles.project
   pk: 1

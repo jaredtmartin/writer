@@ -1,6 +1,18 @@
-- fields: {ref: articles.publishing_outlets.test_outlet.TestOutlet, title: Test Outlet}
+- fields: {class_name: class1, module_name: mod}
+  model: articles.testoutlet
+  pk: 1
+- fields: {class_name: FacebookOutlet, module_name: facebook, title: Post on Facebook}
   model: articles.publishingoutlet
   pk: 1
+- fields: {class_name: WordPressOutlet, module_name: wordpress, title: Post on Wordpress}
+  model: articles.publishingoutlet
+  pk: 2
+- fields: {class_name: TwitterOutlet, module_name: twitter, title: Twitter}
+  model: articles.publishingoutlet
+  pk: 3
+- fields: {outlet: 1, password: '', server: '', user: 1, username: ''}
+  model: articles.publishingoutletconfiguration
+  pk: 3
 - fields: {name: Blog}
   model: articles.articletype
   pk: 1

@@ -5,6 +5,7 @@ from django.db.models import Q
 from validation_plugins import *
 from plugin_manager import PluginManager
 from django.conf import settings
+from django.template import Context
 from plugins import PluginModel
 #from publishing_outlets import *
 def CamelToWords(name):
@@ -49,20 +50,29 @@ class PublishingOutlet(PluginModel):
     title = models.CharField(max_length=256)
     def do_action(self):
         return self.plugin.do_action()
-    def get_button_url(*args, **kwargs):
-        return self.plugin.get_button_url(*args, **kwargs)
+    def get_button_url(self, context=Context()):
+        context.update({'title':self.title})
+        return self.plugin.get_button_url(context)
     def __unicode__(self): return self.title
     
 class PublishingOutletConfiguration(models.Model):
     user = models.ForeignKey(User, related_name='publishing_outlets')
     outlet = models.ForeignKey(PublishingOutlet, related_name='users')
-    username = models.CharField(max_length=128)
-    password = models.CharField(max_length=128)
-    def publish(article):
+    username = models.CharField(max_length=128, default="", blank=True)
+    password = models.CharField(max_length=128, default="", blank=True)
+    server = models.CharField(max_length=128, default="", blank=True)
+    def publish(self, article):
         pass
-    def get_button_url(*args, **kwargs):
-        pass
-    def __unicode__(self): return "%s for %s" % (outlet.title, user.username)
+    def get_button_url(self, context=Context()):
+        context.update({
+            'username':self.username,
+            'password':self.password,
+            'user':self.user,
+            'server':self.server,
+        })
+        return self.outlet.get_button_url(context=context)
+    
+    def __unicode__(self): return "%s for %s" % (self.outlet.title, self.user.username)
 
 class PluginMount(type):
     name="generic"
@@ -93,8 +103,8 @@ class Project(models.Model):
     
 class ValidationModelMixin(object):
     _validators = models.CharField(max_length=128, blank=True, default="")
-    plugin_loader=PluginManager(settings.DIRNAME+'/articles/validation_plugins/')
-    available_validators=ValidationProvider.plugins
+#    plugin_loader=PluginManager(settings.DIRNAME+'/articles/validation_plugins/')
+#    available_validators=ValidationProvider.plugins
     
     def validate(self):
         return all(validator.is_valid(self) for validator in self.validators)

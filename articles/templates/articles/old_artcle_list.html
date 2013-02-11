@@ -1,0 +1,101 @@
+{% extends 'writeaid_base.html' %}
+{% load static %}
+{% block head %}
+
+    <link href="{% static "css/writersaxis.css" %}" rel="stylesheet" type="text/css" />
+    
+<!--    <script src="/static/admin/js/core.js" type="text/javascript"></script>-->
+<!--    <script src="{{STATIC_URL}}js/jsi18n.js" type="text/javascript"></script>-->
+<!--    <script src="/static/admin/js/actions.js" type="text/javascript"></script>-->
+    
+
+<!-- Add mousewheel plugin (this is optional) -->
+<script type="text/javascript" src="{{STATIC_URL}}js/fancybox/lib/jquery.mousewheel-3.0.6.pack.js"></script>
+
+<!-- Add fancyBox -->
+<link rel="stylesheet" href="{{STATIC_URL}}js/fancybox/source/jquery.fancybox.css?v=2.1.3" type="text/css" media="screen" />
+<script type="text/javascript" src="{{STATIC_URL}}js/fancybox/source/jquery.fancybox.pack.js?v=2.1.3"></script>
+
+<!-- Optionally add helpers - button, thumbnail and/or media -->
+<link rel="stylesheet" href="{{STATIC_URL}}js/fancybox/source/helpers/jquery.fancybox-buttons.css?v=1.0.5" type="text/css" media="screen" />
+<script type="text/javascript" src="{{STATIC_URL}}js/fancybox/source/helpers/jquery.fancybox-buttons.js?v=1.0.5"></script>
+<script type="text/javascript" src="{{STATIC_URL}}js/fancybox/source/helpers/jquery.fancybox-media.js?v=1.0.5"></script>
+
+<link rel="stylesheet" href="{{STATIC_URL}}js/fancybox/source/helpers/jquery.fancybox-thumbs.css?v=1.0.7" type="text/css" media="screen" />
+<script type="text/javascript" src="{{STATIC_URL}}js/fancybox/source/helpers/jquery.fancybox-thumbs.js?v=1.0.7"></script>
+
+{% endblock %}
+{% block content %}   
+<div id="content-main">
+    {% with block_header='Available' articles=available %}
+    <div class="block">
+        <div class="block_head">
+            <div class="bheadl"></div>
+            <div class="bheadr"></div>
+        <!--    <h2>{{block_header}}</h2>-->
+            <div class="table-header" style="width:90%;">
+                {{block_header}}
+                <div style="float:right;">
+                    <form id="search_form" action="" method="GET">
+                        <input type="text" id="searchbar" value="{{q}}" name="q" size="40">
+                        <a href="#" onclick="$('#search_form').submit();"><label for="searchbar"><img alt="Search" src="/static/admin/img/icon_searchbox.png"></label></a>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- .block_head ends -->
+        <div class="block_content">
+            <form id="actions-form" method="post" action="">{% csrf_token %}
+                {% include "articles/action_detail_forms.html" %}
+                <table width="100%" cellspacing="0" cellpadding="0" id="articles" class="table sortable">
+                    <thead> 
+                        <tr id="action-bar">
+                            <th colspan="8">
+                                <script type="text/javascript">var _actions_icnt="{{articles.count}}"; window.codeForRows=[]</script>        
+                                <ul align="right" class="priority">
+                                    {% for action in actions %}
+                                        <a id="{{action.0}}-link" href="#{{action.0}}-box" onclick=""><li title="" class="blue-keyword">{{action.0}}</li></a>
+                                    {% endfor %}
+                                    <li id="action_counter" class="action-counter"><span class="action-counter" style="display: inline; ">0 of 1 selected</span></li>
+                                </ul>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th scope="col" class="action-checkbox-column">
+                                <div class="text">
+                                    <span><input type="checkbox" id="action-toggle" style="display: inline-block; "></span>
+                                </div>
+                                <div class="clear"></div>
+                            </th>
+                            <th  class="header">Type</th>
+                            <th  class="header">Project</th>
+                            <th  class="header">Keywords</th>
+                            <th class="header">Tags</th>          
+                            <th  class="header">Assigned To</th>      
+                            <th  class="header">Status</th>   
+                            <th  align="right" style="text-align: right;" class="header"> Actions </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for article in articles %}
+                            {% include "articles/article_list_row.html" %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </form>
+        </div>
+        <!-- .block_content ends -->
+        <div class="bendl"></div>
+        <div class="bendr"></div>
+    </div>
+    <!-- .block ends -->
+    {% endwith %}
+</div>
+<div id="changelist-filter">
+    <h2>Filter</h2>
+    {% for key, filter in filters.items %}
+        {% include "articles/filter.html"%}
+    {% endfor %}
+</div>
+
+{% endblock %}

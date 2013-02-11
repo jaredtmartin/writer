@@ -18,7 +18,7 @@ class PluginModel(models.Model):
             self.plugin_class = self.get_plugin_class()
             # Now create an instance of the plugin
             self.plugin = self.get_plugin()
-        except:pass
+        except ImportError as e: print "There was an ImportError loading the plugin: %s" % e
         
     def get_plugin(self):
         # Creates an instance of the plugin
