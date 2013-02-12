@@ -1,3 +1,4 @@
+{% load actions %}
 <tr id="article-{{article.id}}" class="article" onMouseOver="$('#article-{{article.id}}-actions').show();" onMouseOut="$('#article-{{article.id}}-actions').hide();">
 	<td><input type="checkbox" onClick="toggleRows($('#article-{{article.id}}'));"/></td>
 	<td>{% if article.project %} <a href="{% url article_list %}?project={{article.project.name}}"> {{article.project.name.title}} </a>{% else %}None{% endif %}</td>
@@ -11,17 +12,6 @@
 	</td>
 	<td>{{article.status}}</td>
 	<td class="action_cell">
-		<div class="actionrow" id="article-{{article.id}}-actions">
-			<div class="btn-group">
-			    <button data-toggle="dropdown" class="btn btn-link dropdown-toggle"><img src="{{STATIC_URL}}img/dropdownactions.png"></button>
-				<ul class="dropdown-menu cssmalldropdown">
-				    <div><span class="isw-leftarrow"></span></div>
-					<li><a style="padding-left:10px;" href="#">Action 1</a></li>
-					<li><a style="padding-left:10px;" href="#">Action 2</a></li>
-					<li><a style="padding-left:10px;" href="#">Action 3</a></li>
-					<li><a style="padding-left:10px;" href="#">Action 4</a></li>
-				</ul>
-			</div>
-		</div>									
+	    {% show_actions %}										
 	</td>                                
 </tr>

@@ -51,6 +51,7 @@ class Filter(object):
     	    return Choice(label=unicode(choice), base=self.name)
     def build_choices(self):
         choices={}
+        print "self.get_choice_list(): " + str(self.get_choice_list()) 
         for choice in self.get_choice_list():
             choices[self.get_choice_key(choice)] = self.build_choice(choice)
         return choices
@@ -85,8 +86,10 @@ class StatusFilter(RelatedFilter):
         for code, name in ACTIONS: self.codes[code]=name
         super(StatusFilter, self).__init__(**kwargs)
         self.display_name="Status"
+
     def build_choice(self, choice):
-    	    return Choice(label=unicode(self.codes[choice]), base=self.name, lookup=self.display_attr, value=choice)
+        if not choice: return Choice(label=unicode('New'), base=self.name, lookup=self.display_attr, value=choice)
+        return Choice(label=unicode(self.codes[choice]), base=self.name, lookup=self.display_attr, value=choice)
 
 class FilterableListView(SearchableListMixin, ListView):
     def get_queryset(self):

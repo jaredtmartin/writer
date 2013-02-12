@@ -1,0 +1,11 @@
+<div class="actionrow" id="article-{{article.id}}-actions">
+	<div class="btn-group">
+	    <button data-toggle="dropdown" class="btn btn-link dropdown-toggle"><img src="{{STATIC_URL}}img/dropdownactions.png"></button>
+		<ul class="dropdown-menu cssmalldropdown">
+		    <div><span class="isw-leftarrow"></span></div>
+            {% for action in actions %}
+                <li><a class="action" href="jQuery.post('{{article.get_absolute_url}}{{action}}/', {as_row:'True'}, success=ajaxUpdateRow);return false;"">{{action}}</a></li>
+            {% endfor %}
+        </ul>
+	</div>
+</div>	
