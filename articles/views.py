@@ -307,18 +307,18 @@ class ProjectList(FilterableListView):
     def get_context_data(self, **kwargs):
         kwargs['selected_tab']='projects'
         return super(ProjectList, self).get_context_data(**kwargs)
-    
-class ArticleCreate(CreateView):
+
+class ArticleCreate(LoginRequiredMixin, CreateView):
     template_name = 'articles/article_edit.html'
     model = Article
 
-class ArticleUpdate(UpdateWithInlinesView):
+class ArticleUpdate(LoginRequiredMixin, UpdateWithInlinesView):
     template_name = 'articles/article_edit.html'
     model = Article
     form_class=ArticleForm
     inlines = [KeywordInlineFormSet]
 
-class ArticleDelete(DeleteView):
+class ArticleDelete(LoginRequiredMixin, DeleteView):
     model = Article
     success_url = reverse_lazy('article_list')
 
