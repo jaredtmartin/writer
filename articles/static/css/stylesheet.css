@@ -1,8 +1,19 @@
+
+.table-header-row{
+    background:none repeat scroll 0 0 #364952; 
+    box-shadow:-2px 0 2px #111111 inset;
+    color:#FFFFFF; 
+    border:#999999; 
+    solid 0px;
+}
 .article .action{
     padding-left:10px;
 }
-.search-query{
+#search-input{
     width:110px;
+    
+    border-radius:10px 10px 10px 10px;
+    height: 15px;
 }
 #action_bar{
     margin:10px;
@@ -402,7 +413,7 @@ ul#navigation .contact a{
 			
 			.table td.actions div { float:left; width:25%; border:#999999 solid 0px; margin-right:5px; }
 			.divclear { clear:both; }
-			
+
 			[class*="block"] .table tr:hover td{background-color: #E7E7E7; color:#000000;}
             [class*="block"] .table tr:hover nth-child(2n+1) td{background-color: #E7E7E7;}
 			
