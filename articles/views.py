@@ -51,7 +51,6 @@ class Filter(object):
     	    return Choice(label=unicode(choice), base=self.name)
     def build_choices(self):
         choices={}
-        print "self.get_choice_list(): " + str(self.get_choice_list()) 
         for choice in self.get_choice_list():
             choices[self.get_choice_key(choice)] = self.build_choice(choice)
         return choices
