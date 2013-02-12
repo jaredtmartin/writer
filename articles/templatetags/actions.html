@@ -1,0 +1,3 @@
+{% for action in actions %}
+    <li><a class="action" href="jQuery.post('{{article.get_absolute_url}}{{action}}/', {as_row:'True'}, success=ajaxUpdateRow);return false;"">{{action}}</a></li>
+{% endfor %}

@@ -1,5 +1,8 @@
+.article .action{
+    padding-left:10px;
+}
 .search-query{
-    width:120px;
+    width:110px;
 }
 #action_bar{
     margin:10px;

@@ -129,7 +129,7 @@ class ArticleAction(models.Model):
     code = models.CharField(choices=ACTIONS, max_length=1)
     user = models.ForeignKey(User)                              # This is the reviewer/employer/admin
     timestamp = models.DateTimeField(auto_now_add=True)
-    timezone = models.CharField(max_length=32)
+    timezone = models.CharField(max_length=32, default="", blank=True)
     comment = models.CharField(max_length=64, default="", blank=True)
     def __unicode__(self): 
         return self.get_code_display() + " by " + self.user.get_full_name()
@@ -202,7 +202,20 @@ class Article(ValidationModelMixin, models.Model):
     _tags = models.CharField(max_length=128, blank=True, default="")
     owner = models.ForeignKey(User, related_name='articles')
     expires = models.DateTimeField(blank=True, null=True)
-    
+#    _actions = (
+#        # This is a tuple of actions that can be done on the articles
+#        # The first element of each action is its name
+#        # The mode it is used for
+#        # The permissions required to do the action
+#        ['claim', WRITER_MODE, None]
+#        ['assign', REQUESTER_MODE, None]
+#        ['submit', REQUESTER_MODE, None]
+#        ['accept', REQUESTER_MODE, None]
+#        ['reject', ]
+#        'publish'
+#        'release'
+#    
+#    )
     def get_tags(self):
         return self._tags.split(',')
     def set_tags(self, value):
@@ -226,18 +239,32 @@ class Article(ValidationModelMixin, models.Model):
     released    = models.ForeignKey(ArticleAction, null=True, blank=True, related_name='released_articles')
     class ArticleWorkflowException(Exception): pass
     ATTRIBUTES={'publish':ACT_PUBLISH,'approved':ACT_APPROVE,'submitted':ACT_SUBMIT,'assigned':ACT_ASSIGN,'rejected':ACT_REJECT,'released':ACT_RELEASE}
+    def add_action(self, action):
+        action.articles.add(self)
+        if action.code == ACT_SUBMIT:   self.submitted = action
+        elif action.code == ACT_REJECT:   self.rejected = action
+        elif action.code == ACT_APPROVE:  self.approved = action
+        elif action.code == ACT_ASSIGN:   self.assigned = action
+        elif action.code == ACT_CLAIM:    self.assigned = action
+        elif action.code == ACT_RELEASE:  self.released = action
+        elif action.code == ACT_PUBLISH:  self.published = action
+        elif action.code == ACT_COMMENT:  self.commented = action
+        self.last_action = action
+        self.save()
 
-    @property
-    def available_actions(self):
-        status= self.last_action.code
+    def get_available_actions(self, user):
+        try: status= self.last_action.code
+        except: status = None
         print "status: " + str(status) 
-        print "status==ACT_ASSIGN: " + str(status==ACT_ASSIGN) 
-        print "ACT_ASSIGN: " + str(ACT_ASSIGN) 
-        if status == None: return []
-        elif status == ACT_ASSIGN: return ['submit','release']
-        elif status == ACT_SUBMIT: return ['approve','reject']
-        elif status == ACT_APPROVE: return ['publish']
-        elif status == ACT_REJECT: return ['submit','release']
+        print "self.assigned: " + str(self.assigned) 
+        if self.assigned and user == self.assigned.author and (status == ACT_ASSIGN or status == ACT_CLAIM): return ['submit','release']
+        elif user == self.owner:
+            if status == None or status == ACT_RELEASE or status == ACT_REJECT: return ['assign',]
+            elif status == ACT_SUBMIT: return ['approve','reject']
+            elif status == ACT_APPROVE: return ['publish']
+            elif status == ACT_CLAIM or status == ACT_ASSIGN: return ['release']
+        elif status == None or status == ACT_RELEASE or status == ACT_REJECT: return ['claim',]
+        return []
             
     def change_status(self, attribute='', code=None, user=None, author=None, comment="", save=True, req=True, clear=[], error="Undefined Workflow Error"):
         if req and attribute in Article.ATTRIBUTES.keys():

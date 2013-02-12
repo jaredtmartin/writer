@@ -41,5 +41,84 @@ class PublishingOutletTests(TestCase):
         self.assertEqual(list(self.fred.publishing_outlets.all()),[outlet1, outlet2, outlet3])
     def fetch_the_module_for_an_outlet_and_run_action(self):
         outlet1=PublishingOutletConfiguration.objects.create(user=self.fred, outlet=self.facebook_outlet)
+        
+class ArticleTests(TestCase):
+    fixtures = ['initial_data.yaml', 'test_data.yaml'] 
+    def setUp(self):
+        self.writer= User.objects.get(username='writer')
+        self.requester= User.objects.get(username='requester')
+        self.fred=User.objects.get(username='fred')
+        self.blog = ArticleType.objects.get(name='Blog')
+        
+    def test_available_actions_with_new_article_and_user_that_is_not_owner(self):
+        article=Article.objects.create(owner=self.requester, article_type=self.blog)
+        self.assertEqual(article.get_available_actions(self.fred), ['claim'])
+        
+    def test_available_actions_with_new_article_and_owner(self):    
+        article=Article.objects.create(owner=self.requester, article_type=self.blog)
+        self.assertEqual(article.get_available_actions(self.requester), ['assign'])
+        
+    def test_available_actions_with_the_assigned_writer_when_he_can_submit(self):
+        article=Article.objects.create(owner=self.requester, article_type=self.blog)
+        action=ArticleAction.objects.create(code='G', user=self.requester, author=self.writer)
+        article.add_action(action)
+        self.assertEqual(article.get_available_actions(self.writer), ['submit','release'])
+        
+    def test_available_actions_with_the_claimed_writer_when_he_can_submit(self):
+        article=Article.objects.create(owner=self.requester, article_type=self.blog)
+        action=ArticleAction.objects.create(code='C', user=self.writer, author=self.writer)
+        article.add_action(action)
+        self.assertEqual(article.get_available_actions(self.writer), ['submit','release'])
 
+    def test_available_actions_with_the_assigned_writer_after_he_submitted(self):
+        article=Article.objects.create(owner=self.requester, article_type=self.blog)
+        action=ArticleAction.objects.create(code='S', user=self.writer, author=self.writer)
+        article.add_action(action)
+        self.assertEqual(article.get_available_actions(self.writer), [])
+        
+    def test_available_actions_with_the_owner_when_hes_waiting_on_the_writer(self):
+        article=Article.objects.create(owner=self.requester, article_type=self.blog)
+        action=ArticleAction.objects.create(code='G', user=self.requester, author=self.writer)
+        article.add_action(action)
+        self.assertEqual(article.get_available_actions(self.requester), ['release'])
+        
+    def test_available_actions_with_the_owner_after_writer_has_submitted(self):
+        article=Article.objects.create(owner=self.requester, article_type=self.blog)
+        action=ArticleAction.objects.create(code='S', user=self.writer, author=self.writer)
+        article.add_action(action)
+        self.assertEqual(article.get_available_actions(self.requester), ['approve','reject'])
+        
+    def test_available_actions_with_other_user_after_article_has_been_assigned_to_someone_else(self):
+        article=Article.objects.create(owner=self.requester, article_type=self.blog)
+        action=ArticleAction.objects.create(code='G', user=self.requester, author=self.writer)
+        article.add_action(action)
+        self.assertEqual(article.get_available_actions(self.fred), [])
+        
+    def test_available_actions_with_other_user_after_article_has_been_submitted_by_someone_else(self):
+        article=Article.objects.create(owner=self.requester, article_type=self.blog)
+        action=ArticleAction.objects.create(code='S', user=self.writer, author=self.writer)
+        article.add_action(action)
+        self.assertEqual(article.get_available_actions(self.fred), [])
+        
+    def test_available_actions_with_the_owner_after_he_has_published(self):
+        article=Article.objects.create(owner=self.requester, article_type=self.blog)
+        action=ArticleAction.objects.create(code='P', user=self.requester, author=self.writer)
+        article.add_action(action)
+        self.assertEqual(article.get_available_actions(self.requester), [])
+        
+    def test_available_actions_with_the_writer_after_owner_has_published(self):
+        article=Article.objects.create(owner=self.requester, article_type=self.blog)
+        action=ArticleAction.objects.create(code='P', user=self.requester, author=self.writer)
+        article.add_action(action)
+        self.assertEqual(article.get_available_actions(self.writer), [])
+        
+    def test_available_actions_with_the_other_user_after_owner_has_published(self):
+        article=Article.objects.create(owner=self.requester, article_type=self.blog)
+        action=ArticleAction.objects.create(code='P', user=self.requester, author=self.writer)
+        article.add_action(action)
+        self.assertEqual(article.get_available_actions(self.fred), [])
+
+class StatusFilterTests(TestCase):
+    def test_getting_choices_when_there_is_a_article_that_has_no_actions(self):
+        pass
         
