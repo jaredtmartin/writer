@@ -9,7 +9,7 @@
 				    <ul class="sList" style="border:none; height:355px;">
 					    <li>
 					        <form class="search_form" action="" method="GET">
-						        <input type="text" class="search-query" value="{{q}}" name="q">
+						        <input type="text" class="search-query" value="{{q}}" name="q" id="search-input">
                                 <a href="#" onclick="$('#search_form').submit();"><i class="icon-search"></i></a>
 					        </form>
 					    </li>
@@ -31,8 +31,8 @@
                     <form class="actions-form" id="actions-form" method="post" action="">{% csrf_token %}
                         <table cellpadding="0" cellspacing="0" width="100%" class="table" id="articles">
                             <thead>
-				                <tr style="background-color:#D4D4D4; color:#FFFFFF; border:#999999 solid 0px;">
-					                <th width="3%" style="background-color:#D4D4D4;">
+				                <tr class="table-header-row">
+					                <th width="3%">
 					                <input type="checkbox" id="checkall" name="checkall" onClick="toggleMaster();" /></th>
 					                <th class="column-header">Project</th>
 					                <th class="column-header">Keywords</th>
