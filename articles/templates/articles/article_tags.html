@@ -1,51 +1,9 @@
-<script type="text/javascript">
-    //function insertTag(data, result){
-    //    $('#tags-title-row').after(data);
-   // }
-    function saveTags() {
-        parent.$.fancybox.close();
-        $.ajax({
-            url: "{{article.get_absolute_url}}tag/",
-            type:'POST',
-            data:{
-                _tags: $('#tag_input').val(),
-            },
-            success: updateTags
-        });
-    }
-    function updateTags(data){
-        $('#tags').children().remove(); 
-        ajaxUpdateRow(data);
-    }
-    //function saveTag(){
-    //    $('#tags').val($('#tag_input').val());
-        
-    //}
-    function hideRow(){
-        $(this).closest('tr').slideUp();
-    }
-    $(document).ready(function($) {
-        $(".popup").fancybox({
-            transitionIn : 'elastic',
-            transitionOut : 'elastic',
-            titleShow : false,
-            width : 680,
-            height : 375,
-            autoDimensions : true,
-            autoScale : false,
-            'overlayOpacity' : '0.6',
-            'overlayColor' : '#000'
-        }); 
-    });
-</script>
-
-<div style="display:none">
-    <div id="tag-form">
-        Please enter the name of the tag you would like this article to have:
-        <input id="tag_input" value="{{article.tags_as_str}}">
-        <a class="button continue-button" onclick="saveTags();">Save</a>
-    </div>
-</div>
 <table class="block_content tags" width="100%" cellspacing="0" cellpadding="0" border="0" style="border: none; margin:0;">
-    {% include "articles/article_tags_row.html" %}
-</table>
+    <tr id="tag-alltags">
+	    <th colspan="1">Tags:</th>
+	    <td>
+	        {% include "articles/article_tags_td.html" %}
+	    </td>
+	    <td><a id="tag-button" class="popup" href="#tag-form"><input type="button" value="Add or Edit Tags" class="submit long"></a></td>
+	</tr>    
+</table>			

@@ -2,7 +2,7 @@ from django.views.generic import ListView
 from extra_views import SearchableListMixin
 from django.http import HttpResponse
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, ModelFormMixin
-from django.views.generic.detail import DetailView
+from django.views.generic.detail import DetailView, SingleObjectMixin
 from django.views.generic import TemplateView, FormView
 from articles.models import Article, Keyword, Project, ArticleAction, ACTIONS, Relationship
 from django.views.generic.base import View, TemplateResponseMixin
@@ -355,6 +355,17 @@ class ArticleActionView(DetailView):
         context = self.get_context_data(object=self.object)
         return self.render_to_response(context)
         
+class ArticleClaim(ArticleActionView):
+    def do_action(self):
+        if self.object.assigned:
+            messages.error(self.request, 'This article has already been assigned or claimed.')
+        elif self.request.user == self.object.owner:
+            messages.error(self.request, 'A requester cannot claim his or her own article. Try assigning it to a writer.')
+        else:
+            self.object.claim(self.request.user)
+            messages.info(self.request, 'The article has been claimed successfully.')
+            
+
 class ArticleSubmit(ArticleActionView):
     def do_action(self):
         if self.request.user == self.object.assigned.author or self.request.user.is_staff:
@@ -479,7 +490,7 @@ class UserUpdateView(UpdateView):
             
 class TagArticle(UpdateView):
     model=Article
-    template_name = "articles/ajax_article_tags_row.html"
+    template_name = "articles/article_tags_td.html"  # Old Template: "articles/ajax_article_tags_row.html"
     form_class = TagArticleForm
     def get_context_data(self, **kwargs):
         kwargs['object']=self.object
@@ -490,6 +501,41 @@ class TagArticle(UpdateView):
         self.object = form.save()
         messages.info(self.request, 'The article has been tagged successfully.')
         return self.render_to_response(self.get_context_data(form=form))
+
+
+class AjaxKeywordInlineForm(FormView):
+    template_name = "articles/keyword_inline_form.html"
+    form_class = KeywordInlineForm
+
+    def form_invalid(self, form):
+        return self.render_to_response(self.get_context_data(form=form))
+        
+    def form_valid(self, id_form):
+        f=KeywordInlineFormSet(Article, self.request, Keyword.objects.all()[0])
+        fs=f.get_formset()
+        form=fs()._construct_form(id_form.cleaned_data['num'])
+        return self.render_to_response(self.get_context_data(form=form))
+class AssignArticle(SingleObjectMixin, FormView):
+    model=Article
+    template_name = "articles/ajax_article_list_row.html"
+    form_class = AssignToForm
+    def get_context_data(self, **kwargs):
+        kwargs['object']=self.object
+        kwargs.update({'as_row':True, 'as_form':False,'object_list':[self.object]})
+        return super(AssignArticle, self).get_context_data(**kwargs)
+    def get_template_names(self):
+        return [self.template_name]
+    def form_invalid(self, form):
+        messages.info(self.request, 'The specified user was not found.')
+    def form_valid(self, form):
+        self.object = self.get_object()
+        self.object.assign(author=form.cleaned_data['assign_to_user'], user=self.request.user)
+        messages.info(self.request, 'The article has been assigned successfully.')
+        # return self.render_to_response(self.get_context_data(form=form))
+        context = self.get_context_data(form=form) 
+        print "context:%s" % context
+        print "self.get_template_names():%s" % self.get_template_names()
+        return self.render_to_response(context)
 
 class AddRelationship(AjaxRowTemplateResponseMixin, CreateView):
     model=Relationship

@@ -12,7 +12,7 @@ from django.template import Context
 FACEBOOK_BUTTON=u"""<div id="fb-root"></div>\n<script>\n  // Additional JS functions here\n  function login() {\n    //Use this to prompt people to log into Facebook\n        FB.login(function(response) {\n            if (response.authResponse) {\n                // connected\n            } else {\n                // cancelled\n            }\n        }, {scope: \'publish_stream\'});\n    }\n    function testAPI() {\n        console.log(\'Welcome!  Fetching your information.... \');\n        FB.api(\'/me\', function(response) {\n            console.log(\'Good to see you, \' + response.name + \'.\');\n        });\n    }\n    \n  window.fbAsyncInit = function() {\n    FB.init({\n      appId      : \'519129288106424\', // App ID\n      channelUrl : \'/static/js/channel.html\', // Channel File\n      status     : true, // check login status\n      cookie     : true, // enable cookies to allow the server to access the session\n      xfbml      : true  // parse XFBML\n    });\n\n    FB.getLoginStatus(function(response) {\n      if (response.status === \'connected\') {\n        // connected\n        testAPI();\n      } else if (response.status === \'not_authorized\') {\n        // not_authorized\n        login();\n      } else {\n        // not_logged_in\n        login();\n      }\n     });\n\n     \n  };\n\n  // Load the SDK Asynchronously\n  (function(d){\n     var js, id = \'facebook-jssdk\', ref = d.getElementsByTagName(\'script\')[0];\n     if (d.getElementById(id)) {return;}\n     js = d.createElement(\'script\'); js.id = id; js.async = true;\n     js.src = "//connect.facebook.net/en_US/all.js";\n     ref.parentNode.insertBefore(js, ref);\n   }(document));\n</script>\n\n<script>\n    function post_on_facebook(title,body){\n        FB.api(\'/me/feed\', \'post\', {message:body,name:title},\n            function(response) {\n                if (!response || response.error) {\n                    alert(\'Error occured\');\n                } else {\n                    alert(\'Post ID: \' + response.id);\n                }\n        });\n    }\n</script>\n<a onclick="post_on_facebook($(\'#id_title\').val(), $(\'#id_body\'));return false;">Post to Facebook</a>\n"""
 TWITTER_BUTTON=u'<a href="http://twitter.com/home?status=%3Cp%3ECan%20%3Cspan%20style%3D%22background-color%3A%20%23ffff00%3B%22%3Eyou%3C/span%3E%20hear%20the%20words%20%3Cstrong%3Ecoming%3C/strong%3E%20out%20of%20my%20%3Cspan%20style%3D%22color%3A%20%23ff0000%3B%22%3Emouth%3C/span%3E%3F%26nbsp%3B%20I%20really%20%3Cspan%20style%3D%22text-decoration%3A%20underline%3B%22%3E%3Cstrong%3Ehope%3C/strong%3E%3C/span%3E%20this%20works%21s%3C/p%3E%0D%0A%3Cul%3E%0D%0A%3Cli%3EDog%3C/li%3E%0D%0A%3Cli%3ECat%3C/li%3E%0D%0A%3Cli%3EBird%3C/li%3E%0D%0A%3C/ul%3E%0D%0A%3Cp%3ESome%20%3Cspan%20style%3D%22font-size%3A%20large%3B%22%3Emore%3C/span%3E%20stuff%20down%20here.%3C/p%3E%20Jumper">Twitter</a>'
 class PublishingOutletTests(TestCase):
-    fixtures = ['initial_data.yaml', 'test_data.yaml'] 
+    fixtures = ['initial_data.yaml', 'test_data.yaml']
     class Request(object):
         build_absolute_uri="http://www.webaxis.com/article/1/"
     def setUp(self):
@@ -118,7 +118,36 @@ class ArticleTests(TestCase):
         article.add_action(action)
         self.assertEqual(article.get_available_actions(self.fred), [])
 
+
 class StatusFilterTests(TestCase):
     def test_getting_choices_when_there_is_a_article_that_has_no_actions(self):
         pass
+        
+class PublishingOutletConfigurationTests(TestCase):
+    fixtures = ['initial_data.yaml', 'test_data.yaml']
+    def setUp(self):
+        self.facebook= PublishingOutlet.objects.get(title='Facebook')
+        self.fred=User.objects.get(username='fred')
+        self.writer=User.objects.get(username='fred')
+        self.fred=User.objects.get(username='fred')
+    def test_saving_and_retrieving_data_from_a_configuration(self):
+        poc=PublishingOutletConfiguration.objects.create(outlet=self.facebook, user=self.fred)
+        poc.data={'cat':'pablito', 'username':'Jared', 'wins':123}
+        self.assertEqual(poc.get_setting('cat'), 'pablito')
+        poc.save()
+        poc2=PublishingOutletConfiguration.objects.get()
+        self.assertEqual(poc2.get_setting('wins'), 123)
+
+class UserPropertiesTests(TestCase):
+    fixtures = ['initial_data.yaml', 'test_data.yaml']
+    def setUp(self):
+        self.fred=User.objects.get(username='fred')
+        self.writer= User.objects.get(username='writer')
+        self.requester= User.objects.get(username='requester')
+    def test_full_name(self):
+        self.assertEqual(self.fred.full_name, 'Fred Flintstone')
+    def test_writers_property(self):
+        self.assertEqual(self.requester.writers, [self.writer, self.fred])
+    def test_requesters_property(self):
+        self.assertEqual(self.writer.requesters, [self.requester])
         

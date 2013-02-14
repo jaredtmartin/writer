@@ -28,3 +28,6 @@
 - fields: {class_name: TwitterOutlet, module_name: twitter, title: 'Twitter'}
   model: articles.publishingoutlet
   pk: 3
+- fields: {class_name: FacebookOutlet, module_name: facebook, title: Facebook}
+  model: articles.publishingoutlet
+  pk: 1

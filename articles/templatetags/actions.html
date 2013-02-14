@@ -1,3 +1,28 @@
-{% for action in actions %}
+<ul class="nav nav-pills">
+  {% for action in actions %}
+    {% if action == 'claim' %}
+      <li class="active"><a href="#" class="action">Claim</a></li>
+    {% elif action == 'assign' %}
+      <li class="dropdown active">
+        <a href="#" data-toggle="dropdown" role="button" id="drop4" class="dropdown-toggle action">Assign <b class="caret"></b></a>
+        <ul aria-labelledby="drop4" role="menu" class="dropdown-menu" id="menu1">
+          {% for writer in user.writers %}
+            <li role="presentation"><a href="#" tabindex="-1" role="menuitem">{{writer}}</a></li>
+          {% endfor %}
+        </ul>
+      </li>
+    {% elif action == 'submit' %}
+      <li class="active"><a href="#" class="action">Submit</a></li>
+    {% elif action == 'release' %}
+      <li class="active"><a href="#" class="action">Release</a></li>
+    {% elif action == 'approve' %}
+      <li class="active"><a href="#" class="action">Approve</a></li>
+    {% elif action == 'reject' %}
+      <li class="active"><a href="#" class="action">Reject</a></li>
+    {% elif action == 'tag' %}
+    {% elif action == 'delete' %}
+    {% else %} <li>{{action}}</li>
+    {% endif %}
     <li><a class="action" href="jQuery.post('{{article.get_absolute_url}}{{action}}/', {as_row:'True'}, success=ajaxUpdateRow);return false;"">{{action}}</a></li>
-{% endfor %}
+  {% endfor %}
+</ul>
