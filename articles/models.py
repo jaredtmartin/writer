@@ -6,7 +6,7 @@ from validation_plugins import *
 from plugin_manager import PluginManager
 from django.conf import settings
 from django.template import Context
-from plugins import PluginModel
+from plugins import PluginModel, PluginBaseMixin
 #from publishing_outlets import *
 def CamelToWords(name):
     s1 = re.sub('(.)([A-Z][a-z]+)', r'\1 \2', name)
@@ -48,31 +48,75 @@ class TestOutlet(PluginModel):
 class PublishingOutlet(PluginModel):
     package_name = "articles.publishing_outlets"
     title = models.CharField(max_length=256)
+    
     def do_action(self):
         return self.plugin.do_action()
     def get_button_url(self, context=Context()):
         context.update({'title':self.title})
         return self.plugin.get_button_url(context)
     def __unicode__(self): return self.title
-    
-class PublishingOutletConfiguration(models.Model):
+
+class UserConfigBaseModel(PluginBaseMixin, models.Model):
+    class Meta:
+        abstract = True
+    _data=None
+    def _get_data(self): 
+        if self._data: return self._data
+        import pickle
+        self._data = pickle.loads(self.pickled_data)
+        return self._data
+    def _set_data(self,value):
+        self._data = value
+        import pickle
+        self.pickled_data = pickle.dumps(value)
+    data = property(_get_data, _set_data)
+    def get_setting(self, setting):
+        return self.data[setting]
+    def set_setting(setting, value):
+        self.data[setting] = value
+    def __init__(self, *args, **kwargs):
+        super(UserConfigBaseModel, self).__init__(*args, **kwargs)
+        self.load_plugin()
+        
+class PublishingOutletConfiguration(UserConfigBaseModel):
+    plugin_foreign_key_name='outlet'
     user = models.ForeignKey(User, related_name='publishing_outlets')
     outlet = models.ForeignKey(PublishingOutlet, related_name='users')
-    username = models.CharField(max_length=128, default="", blank=True)
-    password = models.CharField(max_length=128, default="", blank=True)
-    server = models.CharField(max_length=128, default="", blank=True)
-    def publish(self, article):
-        pass
-    def get_button_url(self, context=Context()):
-        context.update({
-            'username':self.username,
-            'password':self.password,
-            'user':self.user,
-            'server':self.server,
-        })
-        return self.outlet.get_button_url(context=context)
+    pickled_data = models.CharField(max_length=256, default="", blank=True)
     
     def __unicode__(self): return "%s for %s" % (self.outlet.title, self.user.username)
+    
+
+        
+#class PublishingOutletConfiguration(models.Model):
+#    user = models.ForeignKey(User, related_name='publishing_outlets')
+#    outlet = models.ForeignKey(PublishingOutlet, related_name='users')
+#    pickled_data = models.CharField(max_length=256, default="", blank=True)
+#    def _get_data(self): 
+#        if self._data: return self._data
+#        import pickle
+#        self._data = pickle.loads(self.pickled_data)
+#        return self._data
+#    def _set_data(self,value):
+#        self._data = value
+#        self.pickled_data = pickle.dumps(value)
+#    data = property(_get_data, _set_data)
+#    def get_setting(setting):
+#        return self.data[setting]
+#    def set_setting(setting, value):
+#        self.data[setting] = value
+#    def publish(self, article):
+#        pass
+#    def get_button_url(self, context=Context()):
+#        context.update({
+#            'username':self.username,
+#            'password':self.password,
+#            'user':self.user,
+#            'server':self.server,
+#        })
+#        return self.outlet.get_button_url(context=context)
+#    
+#    def __unicode__(self): return "%s for %s" % (self.outlet.title, self.user.username)
 
 class PluginMount(type):
     name="generic"
@@ -123,7 +167,7 @@ class ValidationModelMixin(object):
     
 class ArticleAction(models.Model):
     class Meta:
-        ordering = ['-timestamp']
+        ordering = ["timestamp"]
     articles = models.ManyToManyField('Article')
     author = models.ForeignKey(User, related_name = 'authors', null=True, blank=True)  # This is the writer
     code = models.CharField(choices=ACTIONS, max_length=1)
@@ -141,31 +185,16 @@ class ConfirmedRelationshipManager(models.Manager):
 class UnconfirmedRelationshipManager(models.Manager):
     def get_query_set(self):
         return super(UnconfirmedRelationshipManager, self).get_query_set().filter(confirmed=False)
-def full_name(self):
+def user_full_name(self):
     return "%s %s" % (self.first_name,self.last_name)
-User.full_name=property(full_name)
-def writers(self):
-    l=[]
-    for r in self.writer_relationships.all():
-        writer = r.writer
-        writer.is_confirmed = r.confirmed
-        writer.is_confirmable = not r.confirmed and not self == r.created_by
-        writer.relationship = r
-        l.append(writer)
-    return l
-    return [r.writer for r in self.writer_relationships.all()]
-User.writers=property(writers)
-def requesters(self):
-    l=[]
-    for r in self.requester_relationships.all():
-        requester = r.requester
-        requester.is_confirmed = r.confirmed
-        requester.is_confirmable = not r.confirmed and not self == r.created_by
-        requester.relationship = r
-        l.append(requester)
-    return l
-    return [r.requester for r in self.requester_relationships.all()]
-User.requesters=property(requesters)
+User.full_name = property(user_full_name)
+def user_writers(self):
+    return self.writer_relationships.filter(confirmed=True)
+User.writers = property(user_writers)
+def user_requesters(self):
+    return self.requester_relationships.filter(confirmed=True)
+User.requesters = property(user_requesters)
+
 def is_requester(self): return self.get_profile().is_requester
 def is_writer(self): return self.get_profile().is_writer
 User.is_requester=property(is_requester)
@@ -216,12 +245,14 @@ class Article(ValidationModelMixin, models.Model):
 #        'release'
 #    
 #    )
+
     def get_tags(self):
         return self._tags.split(',')
     def set_tags(self, value):
         if type(value)==list:
             self._tags=",".join(value)
         else: self._tags=value
+    @property
     def tags_as_str(self):
         return self._tags
     tags=property(get_tags, set_tags)
@@ -241,7 +272,7 @@ class Article(ValidationModelMixin, models.Model):
     ATTRIBUTES={'publish':ACT_PUBLISH,'approved':ACT_APPROVE,'submitted':ACT_SUBMIT,'assigned':ACT_ASSIGN,'rejected':ACT_REJECT,'released':ACT_RELEASE}
     def add_action(self, action):
         action.articles.add(self)
-        if action.code == ACT_SUBMIT:   self.submitted = action
+        if action.code == ACT_SUBMIT:     self.submitted = action
         elif action.code == ACT_REJECT:   self.rejected = action
         elif action.code == ACT_APPROVE:  self.approved = action
         elif action.code == ACT_ASSIGN:   self.assigned = action
@@ -259,10 +290,10 @@ class Article(ValidationModelMixin, models.Model):
         print "self.assigned: " + str(self.assigned) 
         if self.assigned and user == self.assigned.author and (status == ACT_ASSIGN or status == ACT_CLAIM): return ['submit','release']
         elif user == self.owner:
-            if status == None or status == ACT_RELEASE or status == ACT_REJECT: return ['assign',]
-            elif status == ACT_SUBMIT: return ['approve','reject']
-            elif status == ACT_APPROVE: return ['publish']
-            elif status == ACT_CLAIM or status == ACT_ASSIGN: return ['release']
+            if status == None or status == ACT_RELEASE or status == ACT_REJECT: return ['assign','tag','delete']
+            elif status == ACT_SUBMIT: return ['approve','reject','tag','delete']
+            elif status == ACT_APPROVE: return ['publish','tag','delete']
+            elif status == ACT_CLAIM or status == ACT_ASSIGN: return ['release','tag','delete']
         elif status == None or status == ACT_RELEASE or status == ACT_REJECT: return ['claim',]
         return []
             
@@ -372,10 +403,28 @@ class Article(ValidationModelMixin, models.Model):
         return self.keywords + length
     @models.permalink
     def get_absolute_url(self):
-        return ('article_update', [self.id,])  
+        return ('article_update', [self.id,])
+    @models.permalink
+    def get_tag_url(self):
+        return ('tag_article', [self.id,])
+    @models.permalink
+    def get_claim_url(self):
+        return ('article_claim', [self.id,])
+    @models.permalink
+    def get_accept_url(self):
+        return ('accept_article', [self.id,])
+    @models.permalink
+    def get_submit_url(self):
+        return ('article_submit', [self.id,])
+    @models.permalink
+    def get_release_url(self):
+        return ('article_release', [self.id,])
+    @models.permalink
+    def get_assign_url(self):
+        return ('article_assign', [self.id,])
 
 class Keyword(models.Model):
-    article = models.ForeignKey(Article)  
+    article = models.ForeignKey(Article)
     keyword = models.CharField(max_length=32)
     url = models.CharField(max_length=64)
     times = models.IntegerField(default=1)

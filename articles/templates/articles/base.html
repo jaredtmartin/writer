@@ -9,7 +9,7 @@
     
     <link rel='stylesheet' type='text/css' href='{{STATIC_URL}}css/navstyle.css' />
 	<link href="{{STATIC_URL}}css/stylesheets.css" rel="stylesheet" type="text/css" />	
-    
+    <script type='text/javascript' src='{{STATIC_URL}}js/ajax.js'></script>
     <script type='text/javascript' src='{{STATIC_URL}}js/plugins/jquery/jquery.min.js'></script>
     <script type='text/javascript' src='{{STATIC_URL}}js/plugins/jquery/jquery-ui.min.js'></script>
 	<script type='text/javascript' src='{{STATIC_URL}}js/plugins/jquery/jquery.mousewheel.min.js'></script>
@@ -25,7 +25,9 @@
 	
     <link media="screen" type="text/css" href="{{STATIC_URL}}js/fancybox/jquery.fancybox.css" rel="stylesheet">
     <script type="text/javascript" src="/static/js/fancybox/jquery.fancybox.pack.js"></script>
-    {% block head %}{% endblock %}
+    {% block js %}{% endblock js %}
+    {% block css %}{% endblock css %}
+    {% block head %}{% endblock head %}
 </head>
 
 
@@ -82,6 +84,7 @@
 			    }
 		    );
 	    });
-    </script>    
+    </script>   
+    <div id="ajax-data" style="display:none;"></div> 
 </body>
 </html>

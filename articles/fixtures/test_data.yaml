@@ -4,7 +4,7 @@
 - fields: {name: Large Project, owner: 1}
   model: articles.project
   pk: 2
-- fields: {_tags: 'World, Ride, John', approved: 227, article_type: 1, assigned: 225,
+- fields: {_tags: 'World, Ride, John', approved: null, article_type: 1, assigned: null,
     body: "<p>Can <span style=\"background-color: #ffff00;\">you</span> hear the words\
       \ <strong>coming</strong> out of my <span style=\"color: #ff0000;\">mouth</span>?&nbsp;\
       \ I really <span style=\"text-decoration: underline;\"><strong>hope</strong></span>\
@@ -73,3 +73,17 @@
     username: requester
   model: auth.user
   pk: 4
+- fields:
+    requester: 4
+    writer: 3
+    created_by: 3
+    confirmed: true
+  model: articles.relationship
+  pk: 1
+- fields:
+    requester: 4
+    writer: 2
+    created_by: 4
+    confirmed: true
+  model: articles.relationship
+  pk: 2

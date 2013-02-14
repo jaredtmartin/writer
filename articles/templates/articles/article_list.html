@@ -1,5 +1,7 @@
 {% extends 'articles/base.html' %}
-
+{% block js %}
+	<script type='text/javascript' src='{{STATIC_URL}}js/tags.js'></script>
+{% endblock js %}
 {% block content %}   
 	<div class="workplace" style="padding:0; position:relative;">
 			
@@ -38,7 +40,7 @@
 					                <th class="column-header">Keywords</th>
 					                <th class="column-header">Tags</th>
 					                <th class="column-header">Status</th>  
-					                <th></th>        
+					                <th></th>         
 				                </tr>
 			                </thead>
                             <tbody>
@@ -61,6 +63,7 @@
             showOrHideActionBar();
             checked_rows = $('.article :checked');
             if (checked_rows.length>0){selectRows(checked_rows.parents('tr'));}
+            $('.tag-popover').popover(html=true, content=$('#tag-popover-html'));
         });
     </script>
 {% endblock %}
