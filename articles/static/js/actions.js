@@ -1,27 +1,27 @@
 function saveTags() {
-    parent.$.fancybox.close();
+    $('#tag-modal').modal('hide');
     $.ajax({
         url: window.ajax_url,
         type:'POST',
         data:{
             _tags: $('#tag_input').val(),
+            as_row:'True',
         },
-        success: updateTags
+        success: ajaxUpdateRow
     });
-    $('#tag-modal').modal('hide');
 }
-function updateTags(data){
-    $('#tag-cell-'+window.last_id).html(data);
-}
+// function updateTags(data){
+//     $('#tag-cell-'+window.last_id).html(data);
+// }
 function rejectArticle() {
-    parent.$.fancybox.close();
+    $('#reject-modal').modal('hide');
     $.ajax({
         url: window.ajax_url,
         type:'POST',
         data:{
-            _tags: $('#reject_input').val(),
+            reason: $('#reject_input').val(),
+            as_row:'True',
         },
-        success: updateTags
+        success: ajaxUpdateRow
     });
-    $('#tag-modal').modal('hide');
 }

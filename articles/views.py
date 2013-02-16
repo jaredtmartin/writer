@@ -3,12 +3,12 @@ from extra_views import SearchableListMixin
 # from django.http import HttpResponse
 from django.contrib.auth.models import User
 from django.contrib import messages
-from django.views.generic.edit import CreateView, UpdateView, DeleteView#, ModelFormMixin
-from django.views.generic.detail import DetailView, SingleObjectMixin
+from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormMixin#, ModelFormMixin
+from django.views.generic.detail import DetailView# , SingleObjectMixin
 from django.views.generic import FormView #, TemplateView, 
 from articles.models import Article, Keyword, Project, ArticleAction, ACTIONS, Relationship
 from django.views.generic.base import View, TemplateResponseMixin
-from articles.forms import ArticleForm, KeywordInlineFormSet, KeywordInlineForm, ConfirmRelationshipForm, \
+from articles.forms import RejectForm, ArticleForm, KeywordInlineFormSet, KeywordInlineForm, ConfirmRelationshipForm, \
 TagArticleForm, ActionUserID, AssignToForm, UserForm, UserProfileForm, NoteForm, TagForm, RelationshipForm, \
 ACT_SUBMIT, ACT_REJECT, ACT_APPROVE, ACT_ASSIGN, ACT_CLAIM, ACT_RELEASE, ACT_PUBLISH, ACT_COMMENT
 
@@ -322,9 +322,9 @@ class ArticleUpdate(LoginRequiredMixin, UpdateWithInlinesView):
     form_class=ArticleForm
     inlines = [KeywordInlineFormSet]
 
-class ArticleDelete(LoginRequiredMixin, DeleteView):
-    model = Article
-    success_url = reverse_lazy('article_list')
+# class ArticleDelete(LoginRequiredMixin, DeleteView):
+#     model = Article
+#     success_url = reverse_lazy('article_list')
 
 class ProjectDelete(DeleteView):
     model = Project
@@ -352,7 +352,6 @@ class ArticleActionView(DetailView):
             kwargs.update({'as_row':True, 'as_form':False,'object_list':[self.object]})
         elif 'as_form' in self.request.POST: 
             kwargs.update({'as_row':False, 'as_form':True, 'form':ArticleForm(instance=self.object.get_profile()),'object_list':[self.object]})
-        print "kwargs: " + str(kwargs)
         return super(ArticleActionView, self).get_context_data(**kwargs)
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -370,7 +369,6 @@ class ArticleClaim(ArticleActionView):
             self.object.claim(self.request.user)
             messages.info(self.request, 'The article has been claimed successfully.')
             
-
 class ArticleSubmit(ArticleActionView):
     def do_action(self):
         if self.request.user == self.object.assigned.author or self.request.user.is_staff:
@@ -395,6 +393,104 @@ class ArticleApprove(ArticleActionView):
             messages.info(self.request, 'The article has been submitted successfully.')
         else:
             messages.error(self.request, 'You do not have permission to approve this article.')
+class ArticleDelete(ArticleActionView):
+    def do_action(self):
+        if self.request.user == self.object.owner or self.request.user.is_staff:
+            self.old_object_id = self.object.pk
+            self.object.delete()
+            messages.info(self.request, 'The article has been submitted successfully.')
+        else:
+            messages.error(self.request, 'You do not have permission to delete this article.')
+    def get_context_data(self, **kwargs):
+        self.object=Article(pk=self.old_object_id)
+        kwargs.update({'deleted':True})
+        return super(ArticleDelete, self).get_context_data(**kwargs)
+
+class ArticleActionFormView(ArticleActionView, FormMixin):
+    form_invalid_msg = ""
+    def form_valid(self, form):
+        self.form = form
+        self.do_action()
+        context = self.get_context_data(object=self.object)
+        print "context = %s" % str(context)
+        return self.render_to_response(context)
+    def form_invalid(self, form):
+        messages.info(self.request, self.form_invalid_msg)
+        return self.render_to_response(self.get_context_data(form=form))
+    def post(self, request, *args, **kwargs):
+        # This is an exact copy of BaseFormView's post method, but due to multiple inheritance, 
+        # I have to put it here
+        self.object = self.get_object()
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        if form.is_valid():
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
+
+class AssignArticle(ArticleActionFormView):
+    form_class = AssignToForm
+    form_invalid_msg = 'The specified user was not found.'
+    def do_action(self):
+        self.object.assign(author=self.form.cleaned_data['assign_to_user'], user=self.request.user)
+        messages.info(self.request, 'The article has been assigned successfully.')
+
+class TagArticle(ArticleActionFormView):
+    form_class = TagArticleForm
+    form_invalid_msg = 'The specified tag was invalid.'
+    def do_action(self):
+        self.object.tags = self.form.cleaned_data['_tags']
+        self.object.save()
+        messages.info(self.request, 'The article has been tagged successfully.')
+
+class RejectArticle(ArticleActionFormView):
+    form_class = RejectForm
+    form_invalid_msg = 'The reason specified was invalid.'
+    def do_action(self):
+        self.object.reject(comment=self.form.cleaned_data['reason'], user=self.request.user)
+        messages.info(self.request, 'The article has been rejected and the reason has been noted.')
+# class AssignArticle(SingleObjectMixin, FormView):
+#     model=Article
+#     template_name = "articles/ajax_article_list_row.html"
+#     form_class = AssignToForm
+#     def get_context_data(self, **kwargs):
+#         kwargs['object']=self.object
+#         if 'as_row' in self.request.POST: 
+#             kwargs.update({'as_row':True, 'as_form':False,'object_list':[self.object]})
+#         elif 'as_form' in self.request.POST: 
+#             kwargs.update({'as_row':False, 'as_form':True, 'form':ArticleForm(instance=self.object.get_profile()),'object_list':[self.object]})
+#         return super(AssignArticle, self).get_context_data(**kwargs)
+#     def get_template_names(self):
+#         return [self.template_name]
+#     def form_invalid(self, form):
+#         messages.info(self.request, 'The specified user was not found.')
+#     def form_valid(self, form):
+#         self.object = self.get_object()
+#         self.object.assign(author=form.cleaned_data['assign_to_user'], user=self.request.user)
+#         messages.info(self.request, 'The article has been assigned successfully.')
+#         # return self.render_to_response(self.get_context_data(form=form))
+#         context = self.get_context_data(form=form) 
+#         print "context:%s" % context
+#         print "self.get_template_names():%s" % self.get_template_names()
+#         return self.render_to_response(context)
+
+# class TagArticle(UpdateView):
+#     model=Article
+#     template_name = "articles/article_tags_td.html"  # Old Template: "articles/ajax_article_tags_row.html"
+#     form_class = TagArticleForm
+#     def get_context_data(self, **kwargs):
+#         kwargs['object']=self.object
+#         if 'as_row' in self.request.POST: 
+#             kwargs.update({'as_row':True, 'as_form':False,'object_list':[self.object]})
+#         elif 'as_form' in self.request.POST: 
+#             kwargs.update({'as_row':False, 'as_form':True, 'form':ArticleForm(instance=self.object.get_profile()),'object_list':[self.object]})
+#         return super(TagArticle, self).get_context_data(**kwargs)
+#     def get_template_names(self):
+#         return [self.template_name]
+#     def form_valid(self, form):
+#         self.object = form.save()
+#         messages.info(self.request, 'The article has been tagged successfully.')
+#         return self.render_to_response(self.get_context_data(form=form))
 
 class AssignVariousArticles(PostActionsView):
     def filter_action_queryset(self, qs):
@@ -492,21 +588,6 @@ class UserUpdateView(UpdateView):
             return super(UserUpdateView, self).form_valid(form)
         else:
             return self.render_to_response(self.get_context_data(form=form, user_profile_form=user_profile_form))
-            
-class TagArticle(UpdateView):
-    model=Article
-    template_name = "articles/article_tags_td.html"  # Old Template: "articles/ajax_article_tags_row.html"
-    form_class = TagArticleForm
-    def get_context_data(self, **kwargs):
-        kwargs['object']=self.object
-        return super(TagArticle, self).get_context_data(**kwargs)
-    def get_template_names(self):
-        return [self.template_name]
-    def form_valid(self, form):
-        self.object = form.save()
-        messages.info(self.request, 'The article has been tagged successfully.')
-        return self.render_to_response(self.get_context_data(form=form))
-
 
 class AjaxKeywordInlineForm(FormView):
     template_name = "articles/keyword_inline_form.html"
@@ -520,27 +601,6 @@ class AjaxKeywordInlineForm(FormView):
         fs=f.get_formset()
         form=fs()._construct_form(id_form.cleaned_data['num'])
         return self.render_to_response(self.get_context_data(form=form))
-class AssignArticle(SingleObjectMixin, FormView):
-    model=Article
-    template_name = "articles/ajax_article_list_row.html"
-    form_class = AssignToForm
-    def get_context_data(self, **kwargs):
-        kwargs['object']=self.object
-        kwargs.update({'as_row':True, 'as_form':False,'object_list':[self.object]})
-        return super(AssignArticle, self).get_context_data(**kwargs)
-    def get_template_names(self):
-        return [self.template_name]
-    def form_invalid(self, form):
-        messages.info(self.request, 'The specified user was not found.')
-    def form_valid(self, form):
-        self.object = self.get_object()
-        self.object.assign(author=form.cleaned_data['assign_to_user'], user=self.request.user)
-        messages.info(self.request, 'The article has been assigned successfully.')
-        # return self.render_to_response(self.get_context_data(form=form))
-        context = self.get_context_data(form=form) 
-        print "context:%s" % context
-        print "self.get_template_names():%s" % self.get_template_names()
-        return self.render_to_response(context)
 
 class AddRelationship(AjaxRowTemplateResponseMixin, CreateView):
     model=Relationship

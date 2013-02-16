@@ -305,13 +305,14 @@ class Article(ValidationModelMixin, models.Model):
         if req and attribute in Article.ATTRIBUTES.keys():
             if not author: author=self.assigned.author
             if not code: code=Article.ATTRIBUTES[attribute]
-            action = self.articleaction_set.create(
+            action = ArticleAction.objects.create(
                 code=code, 
                 user=user, 
                 author=author, 
                 comment=comment,
                 timezone=user.get_profile().timezone,
             )
+            ArticlesActions.objects.create(action=action, article=self)
             setattr(self, attribute, action)
             self.last_action=action
             for attr in clear: setattr(self, attr, None)
@@ -335,7 +336,7 @@ class Article(ValidationModelMixin, models.Model):
             save=save,
             req=self.submitted,
             user=user, 
-            clear=['approved','submitted'],
+            clear=['approved','submitted','assigned'],
             error="This article cannot be rejected until it has been submitted."
         )
     def publish(self, user=None, comment="", save=True):
@@ -391,9 +392,9 @@ class Article(ValidationModelMixin, models.Model):
 #            clear = ['assigned'],
             error="This article has already been assigned or claimed."
         )
-    def reject_and_release(self, user=None, comment="", save=True):
-        self.reject(user=user, comment=comment, save=False)
-        self.release(user=user, comment=comment, save=save)
+    # def reject_and_release(self, user=None, comment="", save=True):
+    #     self.reject(user=user, comment=comment, save=False)
+    #     self.release(user=user, comment=comment, save=save)
     @property
     def klass(self):return self.article_type.name
     @property
@@ -426,9 +427,17 @@ class Article(ValidationModelMixin, models.Model):
     @models.permalink
     def get_assign_url(self):
         return ('article_assign', [self.id,])
+    @models.permalink
+    def get_reject_url(self):
+        return ('article_reject', [self.id,])
+    @models.permalink
+    def get_delete_url(self):
+        return ('article_delete', [self.id,])
+
 class ArticlesActions(models.Model):
     article = models.ForeignKey(Article)
     action = models.ForeignKey(ArticleAction)
+
 class Keyword(models.Model):
     article = models.ForeignKey(Article)
     keyword = models.CharField(max_length=32)

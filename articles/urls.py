@@ -17,6 +17,7 @@ urlpatterns = patterns('',
     url(r'^article/(?P<pk>\d+)/approve/$', ArticleApprove.as_view(), name='article_approve'),
     url(r'^article/(?P<pk>\d+)/claim/$', ArticleClaim.as_view(), name='article_claim'),
     url(r'^article/(?P<pk>\d+)/assign/$', AssignArticle.as_view(), name='article_assign'),
+    url(r'^article/(?P<pk>\d+)/reject/$', RejectArticle.as_view(), name='article_reject'),
     
     url(r'^various/assign/$', AssignVariousArticles.as_view(), name='assign_various_articles'),
     url(r'^various/reject/$', RejectVariousArticles.as_view(), name='reject_various_articles'),

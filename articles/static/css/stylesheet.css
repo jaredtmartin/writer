@@ -1,3 +1,7 @@
+.table th, .table td{
+    font-size: 16px;
+}
+
 .header,.btn-blue { 
     background-color: hsl(206, 95%, 38%) !important;
     background-repeat: repeat-x;

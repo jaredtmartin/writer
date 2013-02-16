@@ -25,6 +25,9 @@ class ActionUserID(Form):
 class TagForm(Form):
     tags = CharField(max_length=128)
 
+class RejectForm(Form):
+    reason = CharField(max_length=128)
+
 class NoteForm(Form):
     note = CharField(max_length=128)
 
