@@ -158,12 +158,12 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
     'django.contrib.markup',
-    'knowledge',
+    # 'knowledge',
     'django_extensions',
     'django_facebook',
     #'forms',
     'articles',
-    'common',
+    # 'common',
     'django_actions',
 
 )

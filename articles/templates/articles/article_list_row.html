@@ -3,8 +3,13 @@
 	<td><input type="checkbox" onClick="toggleRows($('#article-{{article.id}}'));"/></td>
 	<td>{% if article.project %} <a href="{% url article_list %}?project={{article.project.name}}"> {{article.project.name.title}} </a>{% else %}None{% endif %}</td>
 	<td><a href="{{article.get_absolute_url}}">{{article.keywords}}</a></td>
-	<td id="tag-cell">
-		{% include "articles/article_tags_td.html" %}
+	<td id="tag-cell-{{article.pk}}">
+		
+	    {% for tag in article.tags %}
+	    	{% if tag %}
+				<a class="btn btn-small btn-blue" href="{% url article_list %}?q={{tag}}" title="Click here to see all articles with this tag">{{tag}}</a>
+	    	{% endif %}
+	    {% endfor %}
 	</td>
 	<td>{{article.status}}</td>
 	<td >
