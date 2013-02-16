@@ -8,7 +8,9 @@
       <ul class="dropdown-menu">
         {% for writer_relationship in user.writers %}
           {% with writer=writer_relationship.writer %}
-            <li><a tabindex="-1" href="#" onclick="jQuery.post('{{article.get_assign_url}}', {assign_to_user:{{writer.id}} }, success=ajaxUpdateRow);return false;">{{writer}}</a></li>
+            <li><a tabindex="-1" href="#" onclick="jQuery.post('{{article.get_assign_url}}', 
+              {assign_to_user:{{writer.id}}, as_row:'True'}, 
+              success=ajaxUpdateRow);return false;">{{writer}}</a></li>
           {% endwith %}
         {% endfor %}
       </ul>
@@ -20,10 +22,10 @@
   {% elif action == 'approve' %}
     <button class="btn btn-small" onclick="jQuery.post('{{article.get_approve_url}}', {as_row:'True'}, success=ajaxUpdateRow);return false;" >Approve</button>
   {% elif action == 'reject' %}
-    <button class="btn btn-small" onclick="window.ajax_url='{{article.get_reject_url}}'; window.last_id={{article.pk}};$('#reject-modal').modal('show');return false;" >Reject</button>
+    <button class="btn btn-small" onclick="window.ajax_url='{{article.get_reject_url}}'; $('#reject-modal').modal('show');return false;" >Reject</button>
   {% elif action == 'tag' %}
-    <button class="btn btn-small" onclick="window.ajax_url='{{article.get_tag_url}}'; window.last_id={{article.pk}};$('#tag_input').val('{{article.tags_as_str}}');$('#tag-modal').modal('show');return false;" >Tag</button>
+    <button class="btn btn-small" onclick="window.ajax_url='{{article.get_tag_url}}'; $('#tag_input').val('{{article.tags_as_str}}');$('#tag-modal').modal('show');return false;" >Tag</button>
   {% elif action == 'delete' %}
-    <button class="btn btn-small" onclick="window.ajax_url='{{article.get_delete_url}}'; window.last_id={{article.pk}};$('#delete-modal').modal('show');return false;" >Delete</button>
+    <button class="btn btn-small" onclick="window.ajax_url='{{article.get_delete_url}}'; window.last_id={{article.pk}}; $('#delete-modal').modal('show');return false;" >Delete</button>
   {% endif %}
 {% endfor %}

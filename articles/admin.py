@@ -7,10 +7,10 @@ class KeywordInline(admin.TabularInline):
     model = Keyword
     extra=1
 
-class ActionInline(admin.TabularInline):
-    list_display = ('code','comment')
-    model = Article.actions.through
-    extra=1
+# class ActionInline(admin.TabularInline):
+#     list_display = ('code','comment')
+#     model = Article.actions.through
+#     extra=1
 
 def approve(modeladmin, request, queryset):
     for obj in queryset:
@@ -62,7 +62,7 @@ class ArticleAdmin(admin.ModelAdmin):
 #    list_filter = ('assigned','submitted','approved','published')
     list_filter=('project','minimum')
     search_fields = ['project']
-    inlines = [KeywordInline, ActionInline]
+    inlines = [KeywordInline]
     actions = [approve, reject, publish, submit, release, claim, reject_and_release]
     
 admin.site.register(Article, ArticleAdmin)
