@@ -1,33 +1,29 @@
-<ul class="nav nav-pills">
-  {% for action in actions %}
-    {% if action == 'claim' %}
-      <li class="active"><a href="#" onclick="jQuery.post('{{article.get_claim_url}}', {as_row:'True'}, success=ajaxUpdateRow);return false;" class="action">Claim</a></li>
-    {% elif action == 'assign' %}
-      <li class="dropdown active">
-        <a href="#" data-toggle="dropdown" role="button" id="drop4" class="dropdown-toggle action">Assign <b class="caret"></b></a>
-        <ul aria-labelledby="drop4" role="menu" class="dropdown-menu" id="menu1">
-          {% for writer_relationship in user.writers %}
-            {% with writer=writer_relationship.writer %}
-                <li role="presentation"><a href="#" tabindex="-1" role="menuitem" onclick="jQuery.post('{{article.get_assign_url}}', {assign_to_user:{{writer.id}} }, success=ajaxUpdateRow);return false;">{{writer}}</a></li>
-            {% endwith %}
-          {% endfor %}
-        </ul>
-      </li>
-    {% elif action == 'submit' %}
-      <li class="active"><a href="#" onclick="jQuery.post('{{article.get_submit_url}}', {as_row:'True'}, success=ajaxUpdateRow);return false;" class="action">Submit</a></li>
-    {% elif action == 'release' %}
-      <li class="active"><a href="#" onclick="jQuery.post('{{article.get_release_url}}', {as_row:'True'}, success=ajaxUpdateRow);return false;" class="action">Release</a></li>
-    {% elif action == 'approve' %}
-      <li class="active"><a href="{{article.get_approve_url}}" class="action">Approve</a></li>
-    {% elif action == 'reject' %}
-      <li class="active"><a href="#" class="action">Reject</a></li>
-    {% elif action == 'tag' %}
-      <li class="active">
-          <div id="tag-popover-html" style="display:none;">{% include 'articles/tag_popover_form.html' %}</div>
-          <a href="#" class="action action-popover" title="Add or Remove Tags" data-placement="left">Tag</a></li>
-    {% elif action == 'delete' %}
-      <li class="active"><a href="#" class="action">Delete</a></li>
-    {% endif %}
-<!--     <li><a class="action" href="jQuery.post('{{article.get_absolute_url}}{{action}}/', {as_row:'True'}, success=ajaxUpdateRow);return false;"">{{action}}</a></li> -->
-  {% endfor %}
-</ul>
+{% for action in actions %}
+  {% if action == 'claim' %}
+    <button class="btn btn-small" onclick="jQuery.post('{{article.get_claim_url}}', {as_row:'True'}, success=ajaxUpdateRow);return false;" >Claim</button>
+  {% elif action == 'assign' %}
+    <div class="btn-group">
+      <a class="btn  btn-small dropdown-toggle" data-toggle="dropdown" href="#">
+      Assign<span class="caret"></span></a>
+      <ul class="dropdown-menu">
+        {% for writer_relationship in user.writers %}
+          {% with writer=writer_relationship.writer %}
+            <li><a tabindex="-1" href="#" onclick="jQuery.post('{{article.get_assign_url}}', {assign_to_user:{{writer.id}} }, success=ajaxUpdateRow);return false;">{{writer}}</a></li>
+          {% endwith %}
+        {% endfor %}
+      </ul>
+    </div>
+  {% elif action == 'submit' %}
+    <button class="btn btn-small" onclick="jQuery.post('{{article.get_submit_url}}', {as_row:'True'}, success=ajaxUpdateRow);return false;" >Submit</button>
+  {% elif action == 'release' %}
+    <button class="btn btn-small" onclick="jQuery.post('{{article.get_release_url}}', {as_row:'True'}, success=ajaxUpdateRow);return false;" >Release</button>
+  {% elif action == 'approve' %}
+    <button class="btn btn-small" onclick="jQuery.post('{{article.get_approve_url}}', {as_row:'True'}, success=ajaxUpdateRow);return false;" >Approve</button>
+  {% elif action == 'reject' %}
+    <button class="btn btn-small" onclick="window.ajax_url='{{article.get_reject_url}}'; window.last_id={{article.pk}};$('#reject-modal').modal('show');return false;" >Reject</button>
+  {% elif action == 'tag' %}
+    <button class="btn btn-small" onclick="window.ajax_url='{{article.get_tag_url}}'; window.last_id={{article.pk}};$('#tag_input').val('{{article.tags_as_str}}');$('#tag-modal').modal('show');return false;" >Tag</button>
+  {% elif action == 'delete' %}
+    <button class="btn btn-small" onclick="window.ajax_url='{{article.get_delete_url}}'; window.last_id={{article.pk}};$('#delete-modal').modal('show');return false;" >Delete</button>
+  {% endif %}
+{% endfor %}

@@ -1,10 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
-from django.db.models import Q
-from validation_plugins import *
-from plugin_manager import PluginManager
-from django.conf import settings
+# from django.db.models import Q
+# from validation_plugins import *
+# from plugin_manager import PluginManager
+# from django.conf import settings
+import facebook
+import re
 from django.template import Context
 from plugins import PluginModel, PluginBaseMixin
 #from publishing_outlets import *
@@ -72,7 +74,7 @@ class UserConfigBaseModel(PluginBaseMixin, models.Model):
     data = property(_get_data, _set_data)
     def get_setting(self, setting):
         return self.data[setting]
-    def set_setting(setting, value):
+    def set_setting(self, setting, value):
         self.data[setting] = value
     def __init__(self, *args, **kwargs):
         super(UserConfigBaseModel, self).__init__(*args, **kwargs)
@@ -168,7 +170,8 @@ class ValidationModelMixin(object):
 class ArticleAction(models.Model):
     class Meta:
         ordering = ["timestamp"]
-    articles = models.ManyToManyField('Article')
+    # articles = models.ManyToManyField('Article', related_name='actions')
+    articles = models.ManyToManyField('Article', through='ArticlesActions')
     author = models.ForeignKey(User, related_name = 'authors', null=True, blank=True)  # This is the writer
     code = models.CharField(choices=ACTIONS, max_length=1)
     user = models.ForeignKey(User)                              # This is the reviewer/employer/admin
@@ -231,6 +234,7 @@ class Article(ValidationModelMixin, models.Model):
     _tags = models.CharField(max_length=128, blank=True, default="")
     owner = models.ForeignKey(User, related_name='articles')
     expires = models.DateTimeField(blank=True, null=True)
+    actions = models.ManyToManyField(ArticleAction, through='ArticlesActions')
 #    _actions = (
 #        # This is a tuple of actions that can be done on the articles
 #        # The first element of each action is its name
@@ -422,7 +426,9 @@ class Article(ValidationModelMixin, models.Model):
     @models.permalink
     def get_assign_url(self):
         return ('article_assign', [self.id,])
-
+class ArticlesActions(models.Model):
+    article = models.ForeignKey(Article)
+    action = models.ForeignKey(ArticleAction)
 class Keyword(models.Model):
     article = models.ForeignKey(Article)
     keyword = models.CharField(max_length=32)

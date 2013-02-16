@@ -1,23 +1,28 @@
 from django.views.generic import ListView
 from extra_views import SearchableListMixin
-from django.http import HttpResponse
-from django.views.generic.edit import CreateView, UpdateView, DeleteView, ModelFormMixin
+# from django.http import HttpResponse
+from django.contrib.auth.models import User
+from django.contrib import messages
+from django.views.generic.edit import CreateView, UpdateView, DeleteView#, ModelFormMixin
 from django.views.generic.detail import DetailView, SingleObjectMixin
-from django.views.generic import TemplateView, FormView
+from django.views.generic import FormView #, TemplateView, 
 from articles.models import Article, Keyword, Project, ArticleAction, ACTIONS, Relationship
 from django.views.generic.base import View, TemplateResponseMixin
-from articles.forms import ArticleForm, KeywordInlineFormSet, KeywordInlineForm, ConfirmRelationshipForm, TagArticleForm, ActionUserID, AssignToForm, UserForm, UserProfileForm, NoteForm, TagForm, RelationshipForm
+from articles.forms import ArticleForm, KeywordInlineFormSet, KeywordInlineForm, ConfirmRelationshipForm, \
+TagArticleForm, ActionUserID, AssignToForm, UserForm, UserProfileForm, NoteForm, TagForm, RelationshipForm, \
+ACT_SUBMIT, ACT_REJECT, ACT_APPROVE, ACT_ASSIGN, ACT_CLAIM, ACT_RELEASE, ACT_PUBLISH, ACT_COMMENT
+
 #from django_actions.views import ActionViewMixin
 import pickle
-from datetime import datetime
+# from datetime import datetime
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.core.urlresolvers import reverse_lazy
-from extra_views import CreateWithInlinesView, UpdateWithInlinesView
-import django_filters
-from actions import *
-from django import template
+from extra_views import UpdateWithInlinesView #, CreateWithInlinesView, 
+# import django_filters
+# from actions import *
+# from django import template
 
 VALID_STRING_LOOKUPS = ('exact','isnull','iexact', 'contains', 'icontains', 'startswith', 'istartswith', 'endswith', 'iendswith', 'search', 'regex', 'iregex')
 class LoginRequiredMixin(object):
@@ -180,7 +185,7 @@ class PostActionsView(TemplateResponseMixin, View):
             if form_class: self.action_form=form_class(self.request.POST)
             else: self.action_form=None
             if (not self.action_form) or self.action_form.is_valid():
-                qs=list(self.action_qs)  # Save it as a list so we don't lose track of the ones we change due to the filters
+                # qs=list(self.action_qs)  # Save it as a list so we don't lose track of the ones we change due to the filters
                 print "self.action_qs: " + str(self.action_qs) 
                 self.action=self.create_action()
                 print "self.action_qs: " + str(self.action_qs) 
@@ -208,17 +213,17 @@ class SearchableListView(SearchableListMixin, ListView):
 
 class ArticleList(GetActionsMixin, FilterableListView):
     model = Article
-    actions = [
-        claim_articles,
-        assign_articles,
-        release_articles,
-        submit_articles,
-#        tag_articles,
-        approve_articles,
-        reject_articles,
-        publish_articles,
-        reject_and_release_articles,
-    ]
+#     actions = [
+#         claim_articles,
+#         assign_articles,
+#         release_articles,
+#         submit_articles,
+# #        tag_articles,
+#         approve_articles,
+#         reject_articles,
+#         publish_articles,
+#         reject_and_release_articles,
+#     ]
 #    queryset = Article.objects.filter(submitted=None)
     context_object_name = 'available'
     search_fields = ['_tags', 'project__name', 'keyword__keyword']
@@ -280,7 +285,7 @@ class ProjectCreate(AjaxUpdateMixin, CreateView):
         self.article_form=None
         if 'article' in self.request.POST:
             try: 
-                pk=self.request.POST['article']
+                # pk=self.request.POST['article']
                 self.article = Article.objects.get(pk=self.request.POST['article'])
                 self.article.project=self.object
                 self.article.save()

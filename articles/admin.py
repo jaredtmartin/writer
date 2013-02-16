@@ -1,10 +1,15 @@
 from django.contrib import admin
-from articles.models import *
+from articles.models import Article, ArticleType, ArticleAction, Keyword, Project, Relationship, UserProfile, PublishingOutlet, PublishingOutletConfiguration
 from django.contrib import messages
 
 class KeywordInline(admin.TabularInline):
     list_display = ('keyword','url', 'times')
     model = Keyword
+    extra=1
+
+class ActionInline(admin.TabularInline):
+    list_display = ('code','comment')
+    model = Article.actions.through
     extra=1
 
 def approve(modeladmin, request, queryset):
@@ -57,7 +62,7 @@ class ArticleAdmin(admin.ModelAdmin):
 #    list_filter = ('assigned','submitted','approved','published')
     list_filter=('project','minimum')
     search_fields = ['project']
-    inlines = [KeywordInline]
+    inlines = [KeywordInline, ActionInline]
     actions = [approve, reject, publish, submit, release, claim, reject_and_release]
     
 admin.site.register(Article, ArticleAdmin)

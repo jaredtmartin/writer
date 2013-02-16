@@ -66,4 +66,32 @@
             $('.tag-popover').popover(html=true, content=$('#tag-popover-html'));
         });
     </script>
+    <div id="tag-modal" class="modal hide fade">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h3>Change Tags</h3>
+      </div>
+      <div class="modal-body">
+        <p>List the tags for this article separated by commas.</p>
+        <input id="tag_input" name="tags" value="{{article.tags_as_str}}">
+      </div>
+      <div class="modal-footer">
+        <a href="#" class="btn btn-primary" onclick="saveTags();return false;">Save</a>
+        <a href="#" class="btn btn-primary" onclick="$('#tag-modal').modal('hide');">Cancel</a>
+      </div>
+    </div>
+    <div id="reject-modal" class="modal hide fade">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h3>Reject Article</h3>
+      </div>
+      <div class="modal-body">
+        <p>Please provide a brief explanation for rejecting the article.</p>
+        <input id="reject_input">
+      </div>
+      <div class="modal-footer">
+        <a href="#" class="btn btn-primary" onclick="rejectArticle();return false;">Save</a>
+        <a href="#" class="btn btn-primary" onclick="$('#reject-modal').modal('hide');">Cancel</a>
+      </div>
+    </div>
 {% endblock %}
