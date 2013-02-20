@@ -1,5 +1,5 @@
 <div id="action_bar" class="">
-    <button class="btn btn-small" onclick="doSimpleActionOnVarious();return false;" >Claim</button>
+    <button class="btn btn-small" onclick="doActionOnArticles('{% url claim_articles %}');return false;" >Claim</button>
     <div class="btn-group">
       <button class="btn btn-small dropdown-toggle" data-toggle="dropdown">Assign<span class="caret"></span></button>
       <ul class="dropdown-menu">
@@ -12,10 +12,10 @@
         {% endfor %}
       </ul>
     </div>
-    <button class="btn btn-small" onclick="" >Submit</button>
-    <button class="btn btn-small" onclick="" >Release</button>
-    <button class="btn btn-small" onclick="" >Approve</button>
-    <button class="btn btn-small" onclick="" >Reject</button>
-    <button class="btn btn-small" onclick="" >Tag</button>
-    <button class="btn btn-small" onclick="" >Delete</button>
+    <button class="btn btn-small" onclick="doActionOnArticles('{% url submit_articles %}');return false;" >Submit</button>
+    <button class="btn btn-small" onclick="doActionOnArticles('{% url release_articles %}');return false;" >Release</button>
+    <button class="btn btn-small" onclick="doActionOnArticles('{% url approve_articles %}');return false;" >Approve</button>
+    <button class="btn btn-small" onclick="window.article_id=undefined; $('#reject-modal').modal('show');return false;" >Reject</button>
+    <button class="btn btn-small" onclick="showTagModal();return false;" >Tag</button>
+    <button class="btn btn-small" onclick="showDeleteModal();return false;" >Delete</button>
 </div>

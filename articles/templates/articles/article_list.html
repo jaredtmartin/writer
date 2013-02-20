@@ -63,7 +63,9 @@
         $(document).ready(function(){
             window.row_selector='.article';
             showOrHideActionBar();
+            window.tag_url = '{% url tag_articles %}';
             checked_rows = $('.article :checked');
+            window.codeForRows=[showOrHideActionBar, updateMasterCheckbox];
             if (checked_rows.length>0){selectRows(checked_rows.parents('tr'));}
             $('.tag-popover').popover(html=true, content=$('#tag-popover-html'));
         });
@@ -74,7 +76,7 @@
         <h3>Change Tags</h3>
       </div>
       <div class="modal-body">
-        <p>List the tags for this article separated by commas.</p>
+        <p id="tag-instructions">List the tags for this article separated by commas.</p>
         <input id="tag_input" name="tags" value="{{article.tags_as_str}}">
       </div>
       <div class="modal-footer">
@@ -102,10 +104,10 @@
         <h3>Delete Article</h3>
       </div>
       <div class="modal-body">
-        <p>Are you sure you want to delete this article?</p>
+        <p>Are you sure you want to delete <span id="delete-prompt-partial">this article?</span></p>
       </div>
       <div class="modal-footer">
-        <a href="#" class="btn btn-primary" onclick="$('#delete-modal').modal('hide');jQuery.post(window.ajax_url, {as_row:'True'}, success=ajaxUpdateRow);return false;">Yes</a>
+        <a href="#" class="btn btn-primary" onclick="$('#delete-modal').modal('hide');doActionOnArticles('{% url delete_articles %}', window.article_id);return false;">Yes</a>
         <a href="#" class="btn btn-primary" onclick="$('#delete-modal').modal('hide');">No</a>
       </div>
     </div>

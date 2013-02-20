@@ -1,31 +1,28 @@
 {% for action in actions %}
   {% if action == 'claim' %}
-    <button class="btn btn-small" onclick="jQuery.post('{{article.get_claim_url}}', {as_row:'True'}, success=ajaxUpdateRow);return false;" >Claim</button>
+    <button class="btn btn-small" onclick="doActionOnArticles('{% url claim_articles %}',{{article.id}});return false;" >Claim</button>
   {% elif action == 'assign' %}
     <div class="btn-group">
       <button class="btn  btn-small dropdown-toggle" data-toggle="dropdown">Assign<span class="caret"></span></button>
       <ul class="dropdown-menu">
         {% for writer_relationship in user.writers %}
           {% with writer=writer_relationship.writer %}
-            <li><a tabindex="-1" href="#" onclick="jQuery.post('{{article.get_assign_url}}', 
-              {assign_to_user:{{writer.id}}, as_row:'True'}, 
-              success=ajaxUpdateRow);return false;">{{writer}}</a></li>
+            <li><a tabindex="-1" href="#" onclick="assignArticles('{% url assign_articles %}', {{writer.id}},{{article.id}}); return false;">{{writer}}</a></li>
           {% endwith %}
         {% endfor %}
       </ul>
     </div>
   {% elif action == 'submit' %}
-    <button class="btn btn-small" onclick="jQuery.post('{{article.get_submit_url}}', {as_row:'True'}, success=ajaxUpdateRow);return false;" >Submit</button>
+    <button class="btn btn-small" onclick="doActionOnArticles('{% url submit_articles %}',{{article.id}});return false;" >Submit</button>
   {% elif action == 'release' %}
-    <button class="btn btn-small" onclick="jQuery.post('{{article.get_release_url}}', {as_row:'True'}, success=ajaxUpdateRow);return false;" >Release</button>
+    <button class="btn btn-small" onclick="doActionOnArticles('{% url release_articles %}',{{article.id}});return false;" >Release</button>
   {% elif action == 'approve' %}
-    <button class="btn btn-small" onclick="jQuery.post('{{article.get_approve_url}}', {as_row:'True'}, success=ajaxUpdateRow);return false;" >Approve</button>
+    <button class="btn btn-small" onclick="doActionOnArticles('{% url approve_articles %}',{{article.id}});return false;" >Approve</button>
   {% elif action == 'reject' %}
-    <button class="btn btn-small" onclick="window.ajax_url='{{article.get_reject_url}}'; $('#reject-modal').modal('show');return false;" >Reject</button>
+    <button class="btn btn-small" onclick="window.article_id={{article.id}}; $('#reject-modal').modal('show');return false;" >Reject</button>
   {% elif action == 'tag' %}
-    <button class="btn btn-small" onclick="window.ajax_url='{{article.get_tag_url}}'; $('#tag_input').val('{{article.tags_as_str}}');$('#tag-modal').modal('show');return false;" >Tag</button>
+    <button class="btn btn-small" onclick="showTagModal('{{article.id}}', '{{article.tags_as_str}}');return false;" >Tag</button>
   {% elif action == 'delete' %}
-    <button class="btn btn-small" 
-    onclick="window.ajax_url='{{article.get_delete_url}}'; window.last_id={{article.pk}}; $('#delete-modal').modal('show');return false;" >Delete</button>
+    <button class="btn btn-small" onclick="showDeleteModal('{{article.id}}');return false;" >Delete</button>
   {% endif %}
 {% endfor %}
