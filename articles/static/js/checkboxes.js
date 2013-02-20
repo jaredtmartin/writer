@@ -24,6 +24,12 @@ function updateMasterCheckbox(){
     if ($(window.row_selector+' :checkbox:not(:checked)').length==0){$('#checkall').prop("checked", true);}
 }
 function toggleMaster(){
-    if($('#checkall').prop("checked")) {selectRows($(window.row_selector))}
-    else {deselectRows($(window.row_selector))}
+    if($('#checkall').prop("checked")) {
+        selectRows($(window.row_selector));
+        $('#select-across').val('1');
+    }
+    else {
+        deselectRows($(window.row_selector)); 
+        $('#select-across').val('0')
+    }
 }

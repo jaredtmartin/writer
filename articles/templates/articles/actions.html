@@ -3,8 +3,7 @@
     <button class="btn btn-small" onclick="jQuery.post('{{article.get_claim_url}}', {as_row:'True'}, success=ajaxUpdateRow);return false;" >Claim</button>
   {% elif action == 'assign' %}
     <div class="btn-group">
-      <a class="btn  btn-small dropdown-toggle" data-toggle="dropdown" href="#">
-      Assign<span class="caret"></span></a>
+      <button class="btn  btn-small dropdown-toggle" data-toggle="dropdown">Assign<span class="caret"></span></button>
       <ul class="dropdown-menu">
         {% for writer_relationship in user.writers %}
           {% with writer=writer_relationship.writer %}
@@ -26,6 +25,7 @@
   {% elif action == 'tag' %}
     <button class="btn btn-small" onclick="window.ajax_url='{{article.get_tag_url}}'; $('#tag_input').val('{{article.tags_as_str}}');$('#tag-modal').modal('show');return false;" >Tag</button>
   {% elif action == 'delete' %}
-    <button class="btn btn-small" onclick="window.ajax_url='{{article.get_delete_url}}'; window.last_id={{article.pk}}; $('#delete-modal').modal('show');return false;" >Delete</button>
+    <button class="btn btn-small" 
+    onclick="window.ajax_url='{{article.get_delete_url}}'; window.last_id={{article.pk}}; $('#delete-modal').modal('show');return false;" >Delete</button>
   {% endif %}
 {% endfor %}

@@ -132,8 +132,15 @@ class PostActionsView(TemplateResponseMixin, View):
     def get_action_form_class(self):
         return self.action_form_class
     def get_requested_objects(self):
+
+        try: model_class = self.request.session['serialized_model_qs']   
+        except IndexError: 
+            messages.error(self.request, 'Your browser made an incomplete request. Missing value for: serialized_model_qs')
+            return None 
         if 'select-across' in self.request.POST:
-            model_class = self.request.session['serialized_model_qs']
+            print "model_class = %s" % str(model_class)
+            print "self.request.POST.getlist('action-select') = %s" % str(self.request.POST.getlist('action-select'))
+            print "self.request.POST['select-across'] == u'0' = %s" % str(self.request.POST['select-across'] == u'0')
             if self.request.POST['select-across'] == u'0':
                 # select a specific set of items
                 qs = model_class.objects.filter(pk__in=(self.request.POST.getlist('action-select')))
@@ -142,17 +149,23 @@ class PostActionsView(TemplateResponseMixin, View):
                 qs = model_class.objects.all()[:1]
                 qs.query = pickle.loads(self.request.session['serialized_qs'])
             return qs
-        else: return []
+        else: 
+            messages.error(self.request, 'Your browser made an incomplete request. Missing value for: select-across')
+            return model_class.objects.none()
     def get_action_queryset(self):
         try:
+            print "a"
             if self.action_qs: return self.action_qs
         except AttributeError: pass
+        print "AAA"
         qs=self.get_requested_objects()
-        self.initial_action_qty=qs.count()
+        print "BBB"
+        print "qs = %s" % str(qs)
+        self.initial_action_qty=len(qs)
         if self.initial_action_qty:
-            print "qs A: " + str(qs) 
+            print "qs A: " + str(qs)
             qs=self.filter_action_queryset(qs)
-            print "qs D: " + str(qs) 
+            print "qs D: " + str(qs)
             self.final_action_qty=qs.count()
             return qs
         else:
@@ -162,7 +175,8 @@ class PostActionsView(TemplateResponseMixin, View):
     def create_action(self):
         raise NotImplemented
     def update_articles(self, qs, action):
-        action.articles.add(*qs)
+        # ArticleAction.objects.create(action=action, article=self, *qs)
+        action.articles.update(*qs)
         qs.update(last_action=action)
     def get_action_verb(self):
         return self.action_verb
@@ -178,6 +192,7 @@ class PostActionsView(TemplateResponseMixin, View):
         else: messages.info(self.request, 'All %s of the articles have been %s sucessfully' % (self.final_action_qty, self.get_past_tense_action_verb()))
     def post(self, request, *args, **kwargs):
         self.action_qs = self.get_action_queryset()
+        print "self.action_qs = %s" % str(self.action_qs)
         # Make sure the articles are available
         form_class=self.get_action_form_class()
         print "form_class: " + str(form_class) 
@@ -495,6 +510,7 @@ class RejectArticle(ArticleActionFormView):
 class AssignVariousArticles(PostActionsView):
     def filter_action_queryset(self, qs):
         # Make sure user has permission to assign articles
+        print "qs = %s" % str(qs)
         qs=qs.filter(assigned__isnull=True)
         if not self.request.user.is_staff: return qs.filter(owner=self.request.user)
         else: return qs

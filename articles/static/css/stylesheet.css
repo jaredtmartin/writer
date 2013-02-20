@@ -2,7 +2,7 @@
     font-size: 16px;
 }
 
-.header,.btn-blue { 
+.header,.btn-tag { 
     background-color: hsl(206, 95%, 38%) !important;
     background-repeat: repeat-x;
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#2ea1f9", endColorstr="#046dbc");

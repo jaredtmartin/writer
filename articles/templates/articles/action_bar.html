@@ -1,8 +1,21 @@
 <div id="action_bar" class="">
-    <div class="glinks"><center><div class="refresh"></div></center></div>
-    <div class="glinks"><center><div class="delete"></div></center></div>
-    <div class="glinks"><center><div class="label"></div></center></div>
-    <div class="glinks"><center><div class="undo"></div></center></div>
-    <div class="glinks"><strong>More</strong></div>
-    <div class="clear"></div>
+    <button class="btn btn-small" onclick="doSimpleActionOnVarious();return false;" >Claim</button>
+    <div class="btn-group">
+      <button class="btn btn-small dropdown-toggle" data-toggle="dropdown">Assign<span class="caret"></span></button>
+      <ul class="dropdown-menu">
+        {% for writer_relationship in user.writers %}
+          {% with writer=writer_relationship.writer %}
+            <li>
+        		<a tabindex="-1" href="#" onclick="assignArticles('{% url assign_articles %}', {{writer.id}}); return false;">{{writer}}</a>
+          	</li>
+          {% endwith %}
+        {% endfor %}
+      </ul>
+    </div>
+    <button class="btn btn-small" onclick="" >Submit</button>
+    <button class="btn btn-small" onclick="" >Release</button>
+    <button class="btn btn-small" onclick="" >Approve</button>
+    <button class="btn btn-small" onclick="" >Reject</button>
+    <button class="btn btn-small" onclick="" >Tag</button>
+    <button class="btn btn-small" onclick="" >Delete</button>
 </div>
