@@ -144,7 +144,7 @@ def create_user_profile(sender, instance, created, **kwargs):
     if created:
         UserProfile.objects.create(user=instance)
 
-post_save.connect(create_user_profile, sender=User)
+#post_save.connect(create_user_profile, sender=User)
 
 class LinkedPage(models.Model):
     facebook_id = models.BigIntegerField(blank=True, null=True)
