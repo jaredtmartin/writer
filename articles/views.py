@@ -127,32 +127,40 @@ class GetActionsMixin(object):
         return self.actions
         
 class PostActionsView(TemplateResponseMixin, View):
+    template_name = "articles/ajax_article_list_row.html"
+    model = Article
+    action_property_name=None
+    action_verb=None
+    action_form_class = None
+    pks=[]
+    def get_action_property_name(self):
+        return self.action_property_name or self.action_verb+'ed'
     def filter_action_queryset(qs):
         return qs
     def get_action_form_class(self):
         return self.action_form_class
     def get_requested_objects(self):
-        if 'select-across' in self.request.POST:
-            model_class = self.request.session['serialized_model_qs']
-            if self.request.POST['select-across'] == u'0':
-                # select a specific set of items
-                qs = model_class.objects.filter(pk__in=(self.request.POST.getlist('action-select')))
-            else:
+        if not self.pks:
+            if 'select-across' in self.request.POST and self.request.POST['select-across'] == u'0':
                 # Building a empty queryset to load pickled data
-                qs = model_class.objects.all()[:1]
+                qs = self.model.objects.all()#[:1]
                 qs.query = pickle.loads(self.request.session['serialized_qs'])
-            return qs
-        else: return []
+            else:
+                # select a specific set of items
+                qs = self.model.objects.filter(pk__in=(self.request.POST.getlist('action-select')))
+            self.pks = list(qs.values_list('id', flat=True))
+        else: qs=Article.all_objects.filter(pk__in=self.pks)
+        return qs
+
     def get_action_queryset(self):
         try:
             if self.action_qs: return self.action_qs
         except AttributeError: pass
         qs=self.get_requested_objects()
-        self.initial_action_qty=qs.count()
+        self.initial_action_qty=len(qs)
         if self.initial_action_qty:
-            print "qs A: " + str(qs) 
             qs=self.filter_action_queryset(qs)
-            print "qs D: " + str(qs) 
+            # self.pks = list(qs.values_list('id', flat=True))
             self.final_action_qty=qs.count()
             return qs
         else:
@@ -162,8 +170,10 @@ class PostActionsView(TemplateResponseMixin, View):
     def create_action(self):
         raise NotImplemented
     def update_articles(self, qs, action):
-        action.articles.add(*qs)
-        qs.update(last_action=action)
+        # qs= self.model_class.objects.filter(pk__in=list(qs)) # This converts the queryset so objects will not 'slip out'
+        qs.update(**{'last_action':action})
+        try:qs.update(**{self.get_action_property_name():action})
+        except AttributeError:pass
     def get_action_verb(self):
         return self.action_verb
     def get_past_tense_action_verb(self):
@@ -175,28 +185,24 @@ class PostActionsView(TemplateResponseMixin, View):
             messages.error(self.request, 'You did not select a valid value to complete this action.')
         elif self.final_action_qty < self.initial_action_qty:
             messages.warning(self.request, 'Only %i of the articles selected have been %s. Please verify the operation and that you have authority to make this change on the remaining articles.' % (self.final_action_qty, self.get_past_tense_action_verb()))
-        else: messages.info(self.request, 'All %s of the articles have been %s sucessfully' % (self.final_action_qty, self.get_past_tense_action_verb()))
+        else: messages.info(self.request, 'All (%s) of the articles have been %s sucessfully' % (self.final_action_qty, self.get_past_tense_action_verb()))
     def post(self, request, *args, **kwargs):
         self.action_qs = self.get_action_queryset()
         # Make sure the articles are available
         form_class=self.get_action_form_class()
-        print "form_class: " + str(form_class) 
         if self.action_qs and self.final_action_qty > 0:
             if form_class: self.action_form=form_class(self.request.POST)
             else: self.action_form=None
             if (not self.action_form) or self.action_form.is_valid():
                 # qs=list(self.action_qs)  # Save it as a list so we don't lose track of the ones we change due to the filters
-                print "self.action_qs: " + str(self.action_qs) 
                 self.action=self.create_action()
-                print "self.action_qs: " + str(self.action_qs) 
-                self.update_articles(self.action_qs, self.action)
-                print "self.action_qs: " + str(self.action_qs) 
-                print "self.action_qs: " + str(self.action_qs) 
-                self.action_qs=self.get_requested_objects()
-                print "self.action_qs: " + str(self.action_qs) 
+                if self.action:
+                    self.update_articles(self.action_qs, self.action)
+                    self.action_qs=self.get_requested_objects()
         elif form_class: self.action_form=form_class()
         self.send_result_messages()
         context = self.get_context_data()
+        print "context = %s" % str(context)
         return self.render_to_response(context)
     def get_context_data(self, **kwargs):
         kwargs.update({'as_row':True,'object_list':self.action_qs})
@@ -242,12 +248,14 @@ class ArticleList(GetActionsMixin, FilterableListView):
     def get_context_data(self, **kwargs):
         kwargs['selected_tab']='articles'
         return super(ArticleList, self).get_context_data(**kwargs)
+
 class AjaxDeleteRowView(DeleteView):
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object()
         self.object.delete()
         messages.info(self.request, 'The '+ self.object._meta.verbose_name+' has been created successfully.')
         return self.render_to_response(self.get_context_data())
+
 class AjaxRowTemplateResponseMixin(object):
     template_name = 'articles/ajax_row.html'
     def get_context_data(self, **kwargs):
@@ -359,52 +367,52 @@ class ArticleActionView(DetailView):
         context = self.get_context_data(object=self.object)
         return self.render_to_response(context)
         
-class ArticleClaim(ArticleActionView):
-    def do_action(self):
-        if self.object.assigned:
-            messages.error(self.request, 'This article has already been assigned or claimed.')
-        elif self.request.user == self.object.owner:
-            messages.error(self.request, 'A requester cannot claim his or her own article. Try assigning it to a writer.')
-        else:
-            self.object.claim(self.request.user)
-            messages.info(self.request, 'The article has been claimed successfully.')
+# class ArticleClaim(ArticleActionView):
+#     def do_action(self):
+#         if self.object.assigned:
+#             messages.error(self.request, 'This article has already been assigned or claimed.')
+#         elif self.request.user == self.object.owner:
+#             messages.error(self.request, 'A requester cannot claim his or her own article. Try assigning it to a writer.')
+#         else:
+#             self.object.claim(self.request.user)
+#             messages.info(self.request, 'The article has been claimed successfully.')
             
-class ArticleSubmit(ArticleActionView):
-    def do_action(self):
-        if self.request.user == self.object.assigned.author or self.request.user.is_staff:
-            self.object.submit(self.request.user)
+# class ArticleSubmit(ArticleActionView):
+#     def do_action(self):
+#         if self.request.user == self.object.assigned.author or self.request.user.is_staff:
+#             self.object.submit(self.request.user)
 
-class ArticleRelease(ArticleActionView):
-    def do_action(self):
-        if not self.object.assigned:
-            messages.error(self.request, 'This article has not been assigned.')
-        elif self.request.user == self.object.owner or self.request.user.is_staff or self.request.user==self.object.assigned.author:
-            self.object.release(self.request.user)
-            messages.info(self.request, 'The article has been released successfully.')
-        else:
-            messages.error(self.request, 'You must be the owner or author to release this article.')
+# class ArticleRelease(ArticleActionView):
+#     def do_action(self):
+#         if not self.object.assigned:
+#             messages.error(self.request, 'This article has not been assigned.')
+#         elif self.request.user == self.object.owner or self.request.user.is_staff or self.request.user==self.object.assigned.author:
+#             self.object.release(self.request.user)
+#             messages.info(self.request, 'The article has been released successfully.')
+#         else:
+#             messages.error(self.request, 'You must be the owner or author to release this article.')
         
-class ArticleApprove(ArticleActionView):
-    def do_action(self):
-        if not self.object.submitted:
-            messages.error(self.request, 'This article has not been submitted.')
-        elif self.request.user == self.object.owner or self.request.user.is_staff:
-            self.object.approve(self.request.user)
-            messages.info(self.request, 'The article has been submitted successfully.')
-        else:
-            messages.error(self.request, 'You do not have permission to approve this article.')
-class ArticleDelete(ArticleActionView):
-    def do_action(self):
-        if self.request.user == self.object.owner or self.request.user.is_staff:
-            self.old_object_id = self.object.pk
-            self.object.delete()
-            messages.info(self.request, 'The article has been submitted successfully.')
-        else:
-            messages.error(self.request, 'You do not have permission to delete this article.')
-    def get_context_data(self, **kwargs):
-        self.object=Article(pk=self.old_object_id)
-        kwargs.update({'deleted':True})
-        return super(ArticleDelete, self).get_context_data(**kwargs)
+# class ArticleApprove(ArticleActionView):
+#     def do_action(self):
+#         if not self.object.submitted:
+#             messages.error(self.request, 'This article has not been submitted.')
+#         elif self.request.user == self.object.owner or self.request.user.is_staff:
+#             self.object.approve(self.request.user)
+#             messages.info(self.request, 'The article has been submitted successfully.')
+#         else:
+#             messages.error(self.request, 'You do not have permission to approve this article.')
+# class ArticleDelete(ArticleActionView):
+#     def do_action(self):
+#         if self.request.user == self.object.owner or self.request.user.is_staff:
+#             self.old_object_id = self.object.pk
+#             self.object.delete()
+#             messages.info(self.request, 'The article has been submitted successfully.')
+#         else:
+#             messages.error(self.request, 'You do not have permission to delete this article.')
+#     def get_context_data(self, **kwargs):
+#         self.object=Article(pk=self.old_object_id)
+#         kwargs.update({'deleted':True})
+#         return super(ArticleDelete, self).get_context_data(**kwargs)
 
 class ArticleActionFormView(ArticleActionView, FormMixin):
     form_invalid_msg = ""
@@ -428,12 +436,12 @@ class ArticleActionFormView(ArticleActionView, FormMixin):
         else:
             return self.form_invalid(form)
 
-class AssignArticle(ArticleActionFormView):
-    form_class = AssignToForm
-    form_invalid_msg = 'The specified user was not found.'
-    def do_action(self):
-        self.object.assign(author=self.form.cleaned_data['assign_to_user'], user=self.request.user)
-        messages.info(self.request, 'The article has been assigned successfully.')
+# class AssignArticle(ArticleActionFormView):
+#     form_class = AssignToForm
+#     form_invalid_msg = 'The specified user was not found.'
+#     def do_action(self):
+#         self.object.assign(author=self.form.cleaned_data['assign_to_user'], user=self.request.user)
+#         messages.info(self.request, 'The article has been assigned successfully.')
 
 class TagArticle(ArticleActionFormView):
     form_class = TagArticleForm
@@ -443,12 +451,12 @@ class TagArticle(ArticleActionFormView):
         self.object.save()
         messages.info(self.request, 'The article has been tagged successfully.')
 
-class RejectArticle(ArticleActionFormView):
-    form_class = RejectForm
-    form_invalid_msg = 'The reason specified was invalid.'
-    def do_action(self):
-        self.object.reject(comment=self.form.cleaned_data['reason'], user=self.request.user)
-        messages.info(self.request, 'The article has been rejected and the reason has been noted.')
+# class RejectArticle(ArticleActionFormView):
+#     form_class = RejectForm
+#     form_invalid_msg = 'The reason specified was invalid.'
+#     def do_action(self):
+#         self.object.reject(comment=self.form.cleaned_data['reason'], user=self.request.user)
+#         messages.info(self.request, 'The article has been rejected and the reason has been noted.')
 # class AssignArticle(SingleObjectMixin, FormView):
 #     model=Article
 #     template_name = "articles/ajax_article_list_row.html"
@@ -492,14 +500,13 @@ class RejectArticle(ArticleActionFormView):
 #         messages.info(self.request, 'The article has been tagged successfully.')
 #         return self.render_to_response(self.get_context_data(form=form))
 
-class AssignVariousArticles(PostActionsView):
+class AssignArticles(PostActionsView):
     def filter_action_queryset(self, qs):
         # Make sure user has permission to assign articles
+        print "qs = %s" % str(qs)
         qs=qs.filter(assigned__isnull=True)
         if not self.request.user.is_staff: return qs.filter(owner=self.request.user)
         else: return qs
-    template_name = "articles/ajax_article_list_row.html"
-    model = Article
     action_verb="assign"
     action_form_class = ActionUserID
     def create_action(self):
@@ -509,65 +516,130 @@ class AssignVariousArticles(PostActionsView):
                 )
         return action
     def update_articles(self, qs, action):
-        super(AssignVariousArticles, self).update_articles(qs, action)
+        super(AssignArticles, self).update_articles(qs, action)
         qs.update(assigned=action)
 
-class RejectVariousArticles(PostActionsView):
-    def filter_action_queryset(self, qs):
-        # Make sure user has permission to assign articles
-        qs=qs.filter(submitted__isnull=False)
-        if not self.request.user.is_staff: return qs.filter(owner=self.request.user)
-        else: return qs
-    template_name = "articles/ajax_article_list_row.html"
-    model = Article
+class RejectArticles(PostActionsView):
     action_verb="reject"
     action_form_class = NoteForm
-    def create_action(self):
-        action = ArticleAction.objects.create(user=self.request.user, 
-                    code=ACT_REJECT, 
-                    comment=self.action_form.cleaned_data['note'],
-                )
-        return action
-    def update_articles(self, qs, action):
-        super(RejectVariousArticles, self).update_articles(qs, action)
-        qs.update(rejected=action)
-        qs.update(submitted=None)
-        qs.update(approved=None)
-
-class ApproveVariousArticles(PostActionsView):
     def filter_action_queryset(self, qs):
-        # Make sure user has permission to assign articles
+        # Make sure user has permission to reject articles
         qs=qs.filter(submitted__isnull=False)
         if not self.request.user.is_staff: return qs.filter(owner=self.request.user)
         else: return qs
-    template_name = "articles/ajax_article_list_row.html"
-    model = Article
-    action_verb="approve"
-    action_form_class = None
     def create_action(self):
-        action = ArticleAction.objects.create(user=self.request.user, 
-                    code=ACT_APPROVE, 
-                )
-        return action
+        return ArticleAction.objects.create(
+            user=self.request.user, 
+            code=ACT_REJECT, 
+            comment=self.action_form.cleaned_data['note'],
+        )
     def update_articles(self, qs, action):
-        super(ApproveVariousArticles, self).update_articles(qs, action)
-        qs.update(approved=action)
+        super(RejectArticles, self).update_articles(qs, action)
+        qs.update(submitted=None)
+        qs.update(approved=None)
+        qs.update(assigned=None)
+
+class ApproveArticles(PostActionsView):
+    action_verb="approve"
+    action_property_name="approved"
+    def filter_action_queryset(self, qs):
+        # Make sure user has permission to Approve the articles
+        qs=qs.filter(submitted__isnull=False)
+        if not self.request.user.is_staff: return qs.filter(owner=self.request.user)
+        else: return qs
+    def create_action(self):
+        return ArticleAction.objects.create(
+            user=self.request.user, 
+            code=ACT_APPROVE, 
+        )
+
+class SubmitArticles(PostActionsView):
+    action_verb="submit"
+    action_property_name="submitted"
+    def filter_action_queryset(self, qs):
+        # Make sure user has permission to submit the articles
+        qs=qs.filter(submitted__isnull=True)
+        if not self.request.user.is_staff: return qs.filter(last_action__author=self.request.user)
+        else: return qs
+    def create_action(self):
+        return ArticleAction.objects.create(
+            user=self.request.user, 
+            author=self.request.user, 
+            code=ACT_SUBMIT, 
+        )
+
+class DeleteArticles(PostActionsView):
+    action_verb="delete"
+    action_property_name="deleted"
+    def filter_action_queryset(self, qs):
+        # Make sure user has permission to submit the articles
+        # qs=qs.filter(submitted__isnull=True)
+        if not self.request.user.is_staff: return qs.filter(owner=self.request.user)
+        else: return qs
+    def create_action(self):
+        print "rinngin action"
+        return True
+    def update_articles(self, qs, action):
+        print "self.action_qs = %s" % str(self.action_qs)
+        l=list(qs.values_list('id', flat=True))
+
+        self.action_qs=Article.all_objects.filter(pk__in=l)
+        print "qs = %s" % str(qs)
+        print "self.action_qs = %s" % str(self.action_qs)
+        super(DeleteArticles, self).update_articles(qs, action)
+        print "qs = %s" % str(qs)
+        print "self.action_qs = %s" % str(self.action_qs)
         
-class TagVariousArticles(PostActionsView):
+
+class ReleaseArticles(PostActionsView):
+    action_verb="release"
+    action_property_name="released"
+    def filter_action_queryset(self, qs):
+        # Make sure user has permission to release the articles
+        qs=qs.filter(assigned__isnull=False)
+        if not self.request.user.is_staff: return qs.filter(owner=self.request.user)
+        else: return qs
+    def create_action(self):
+        return ArticleAction.objects.create(
+            user=self.request.user, 
+            code=ACT_RELEASE, 
+        )
+    def update_articles(self, qs, action):
+        super(ReleaseArticles, self).update_articles(qs, action)
+        qs.update(assigned=None)
+
+class ClaimArticles(PostActionsView):
+    action_verb="claim"
+    action_property_name="assigned"
+    def filter_action_queryset(self, qs):
+        return qs.filter(assigned__isnull=True)
+    def create_action(self):
+        return ArticleAction.objects.create(
+            user=self.request.user, 
+            author=self.request.user, 
+            code=ACT_CLAIM, 
+        )
+        
+class TagArticles(PostActionsView):
+    action_verb="tag"
+    action_form_class = TagForm
     def filter_action_queryset(self, qs):
         # Make sure user has permission to tag articles
         if not self.request.user.is_staff: return qs.filter(owner=self.request.user)
         else: return qs
-    template_name = "articles/ajax_article_list_row.html"
-    model = Article
-    action_verb="tag"
-    action_form_class = TagForm
     def create_action(self):
+        # if self.request.POST['append'] == 'true': tags=self.object._tags+self.action_form.cleaned_data['tags']
+        # else: tags=self.action_form.cleaned_data['tags']
         return self.action_form.cleaned_data['tags']
     def update_articles(self, qs, action):
         for article in qs:
-            if article.tags: article._tags+=", "+action
+            if self.request.POST['append']=='True': tags=article.tags
+            else: tags=[]
+            tags.append(action)
+            article.tags = tags
             article.save()
+        # else:
+        #     qs.update(_tags=action)
             #.add(*[x.pk for x in action]) # action actual is a list of tags, this will add them all at once.
     def get_past_tense_action_verb(self): return 'tagged'
 

@@ -1,8 +1,21 @@
 <div id="action_bar" class="">
-    <div class="glinks"><center><div class="refresh"></div></center></div>
-    <div class="glinks"><center><div class="delete"></div></center></div>
-    <div class="glinks"><center><div class="label"></div></center></div>
-    <div class="glinks"><center><div class="undo"></div></center></div>
-    <div class="glinks"><strong>More</strong></div>
-    <div class="clear"></div>
+    <button class="btn btn-small" onclick="doActionOnArticles('{% url claim_articles %}');return false;" >Claim</button>
+    <div class="btn-group">
+      <button class="btn btn-small dropdown-toggle" data-toggle="dropdown">Assign<span class="caret"></span></button>
+      <ul class="dropdown-menu">
+        {% for writer_relationship in user.writers %}
+          {% with writer=writer_relationship.writer %}
+            <li>
+        		<a tabindex="-1" href="#" onclick="assignArticles('{% url assign_articles %}', {{writer.id}}); return false;">{{writer}}</a>
+          	</li>
+          {% endwith %}
+        {% endfor %}
+      </ul>
+    </div>
+    <button class="btn btn-small" onclick="doActionOnArticles('{% url submit_articles %}');return false;" >Submit</button>
+    <button class="btn btn-small" onclick="doActionOnArticles('{% url release_articles %}');return false;" >Release</button>
+    <button class="btn btn-small" onclick="doActionOnArticles('{% url approve_articles %}');return false;" >Approve</button>
+    <button class="btn btn-small" onclick="window.article_id=undefined; $('#reject-modal').modal('show');return false;" >Reject</button>
+    <button class="btn btn-small" onclick="showTagModal();return false;" >Tag</button>
+    <button class="btn btn-small" onclick="showDeleteModal();return false;" >Delete</button>
 </div>

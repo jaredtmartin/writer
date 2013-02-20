@@ -58,7 +58,7 @@ def reject_and_release(modeladmin, request, queryset):
 reject_and_release.short_description = "Reject and release selected articles"
 
 class ArticleAdmin(admin.ModelAdmin):
-    list_display = ('name','assigned','submitted','approved','published')
+    list_display = ('name','last_action','assigned','submitted','approved','published')
 #    list_filter = ('assigned','submitted','approved','published')
     list_filter=('project','minimum')
     search_fields = ['project']

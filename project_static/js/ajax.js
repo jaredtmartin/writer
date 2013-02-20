@@ -31,3 +31,10 @@ function ajaxUpdateRow(data){                                               // G
 function sendAjaxPost(url, data){
     jQuery.post(url, data, success=ajaxUpdateRow);
 }
+function removeDeletedRows(data){
+    results=$('.deleted', data);
+    results.each(function(i){
+        elmt_id=$(this).attr('code-delete-id');
+        $('#'+elmt_id).remove();
+    });
+}
