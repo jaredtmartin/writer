@@ -1,8 +1,21 @@
+.accordian 
+a, a:link,a:visited, a:hover, a:active {
+    text-decoration:none;
+    color: #FFFFFF;
+    font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+}  
+
+Try it yourself »
+
+}
+
 .table th, .table td{
     font-size: 16px;
 }
-
-.header,.btn-blue { 
+#sidebar{width: 200px; position: absolute; left:0px;top:42px;}
+.header,.btn-tag{ 
     background-color: hsl(206, 95%, 38%) !important;
     background-repeat: repeat-x;
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#2ea1f9", endColorstr="#046dbc");
@@ -28,7 +41,7 @@ li{
     padding-bottom: 4px;
     padding-top: 4px;
 }
-.table-header-row{
+.table-header-row,.accordion-toggle{
     background-color:#425560;
     background-image:-moz-linear-gradient(top,#455a65,#3d4f59);
     background-image:-ms-linear-gradient(top,#455a65,#3d4f59);
@@ -49,9 +62,12 @@ li{
 #search-input{
     width:110px;
     
-    border-radius:10px 10px 10px 10px;
+    border-radius:5px 5px 5px 5px;
     height: 15px;
+    margin-left: 10px;
+    margin-top: 20px;
 }
+.search_form i{vertical-align: -13px;}
 #action_bar{
     margin:10px;
 }
@@ -369,7 +385,7 @@ ul#navigation .contact a{
     .breadLine .buttons li .popup{right: 0px; top: 35px;}
         .breadLine .buttons li .popup .head .arrow{width: 17px; height: 12px; left: auto; right: 10px !important; top: -11px; background: url("../img/arrow-top.png") left top no-repeat transparent;}
 
-.content{position: relative; margin-left: 52px; padding-top: 10px;}
+.content{position: relative; margin-left: 200px; padding-top: 10px;}
     .content .workplace{position: relative; padding: 20px; padding:0;}
 
     
