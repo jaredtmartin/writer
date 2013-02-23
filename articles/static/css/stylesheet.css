@@ -7,8 +7,6 @@ a, a:link,a:visited, a:hover, a:active {
     font-weight: 600;
 }  
 
-
-
 .table th, .table td{
     font-size: 16px;
 }
@@ -56,7 +54,7 @@ li{
 }
 .accordion-heading .accordion-toggle {
   display: block;
-  padding: 3px 90px;
+  padding: 4px 90px;
 }
 .article .action{
     padding-left:10px;
@@ -108,11 +106,11 @@ display:inline-block;
     .menu .dr{float: left; margin: 10px 0px;}
 
 .header{
-    border-top:10px solid #7abad9;
+    border-top:0px solid #7abad9;
     border-bottom:10px solid #73b6d6;
     box-shadow:inset -2px 0 2px rgba(0,0,0,0.15);
     display: block; 
-    height: 40px; 
+    height: 50px; 
     width: 100%; 
     position: absolute; 
     z-index: 998; }
