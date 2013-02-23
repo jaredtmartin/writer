@@ -7,9 +7,7 @@ a, a:link,a:visited, a:hover, a:active {
     font-weight: 600;
 }  
 
-Try it yourself »
 
-}
 
 .table th, .table td{
     font-size: 16px;
@@ -51,13 +49,21 @@ li{
     background-image:linear-gradient(top,#455a65,#3d4f59);
     background-repeat:repeat-x;
     box-shadow:none;
-    border-bottom: 1px solid #1D2E37;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 0px solid #1D2E37;
+    border-top: 0px solid rgba(255, 255, 255, 0.1);
     /*box-shadow: -3px 0 1px rgba(1,1,1,1) inset;*/
     color: #FFFFFF;
 }
+.accordion-heading .accordion-toggle {
+  display: block;
+  padding: 3px 90px;
+}
 .article .action{
     padding-left:10px;
+}
+.accordion-inner {
+  padding: 3px 8px;
+  border-top: 1px solid #e5e5e5;
 }
 #search-input{
     width:110px;
@@ -102,8 +108,8 @@ display:inline-block;
     .menu .dr{float: left; margin: 10px 0px;}
 
 .header{
-    border-top:1px solid #7abad9;
-    border-bottom:1px solid #73b6d6;
+    border-top:10px solid #7abad9;
+    border-bottom:10px solid #73b6d6;
     box-shadow:inset -2px 0 2px rgba(0,0,0,0.15);
     display: block; 
     height: 40px; 
