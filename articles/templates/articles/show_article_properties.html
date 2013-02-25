@@ -1,16 +1,16 @@
 <div class="row-fluid">
-    <div class="span10 offset1"><legend>Properties:</legend></div>
+    <div class="span12"><legend>Properties:</legend></div>
 </div>
 <div class="row-fluid">
-    <div class="span4 offset1"><label class="inline-label">Minimum:</label> {{article.minimum}}</div>
+    <div class="span4"><label class="inline-label">Minimum:</label> {{article.minimum}}</div>
     <div class="span4"><label class="inline-label">Maximum:</label> {{article.maximum}}</div>
 </div>
 <div class="row-fluid">
-    <div class="span4 offset1"><label class="inline-label">Type:</label> {{article.article_type}}</div>
+    <div class="span4"><label class="inline-label">Type:</label> {{article.article_type}}</div>
     <div class="span4"><label class="inline-label">Project:</label> {{article.project}}</div>
 </div>
 <div class="row-fluid" id="tags-list">
-    <div class="span8 offset1">
+    <div class="span8">
         <label class="inline-label">Tags:</label>
         {% for tag in article.tags %}
             {% if tag %}
@@ -21,10 +21,10 @@
     </div>
 </div>
 <div class="row-fluid">
-    <div class="span10 offset1"><legend>Keywords:</legend></div>
+    <div class="span10"><legend>Keywords:</legend></div>
 </div>
 <div class="row-fluid">
-<div class="span10 well offset1">
+<div class="span12 well">
     <table id="keywords-table" class="table block_content" width="100%" cellspacing="0" cellpadding="0" border="0" style="border: none; margin:0;">
 	    <tr id="keywords-title-row">
 	        <th><h5>Keyword</h5></th>
