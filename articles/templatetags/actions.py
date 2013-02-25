@@ -4,7 +4,10 @@ register = template.Library()
 @register.inclusion_tag('articles/actions.html', takes_context = True)
 def show_actions(context):
 	user = context['request'].user
-	article = context['article']
+	if 'article' in context:
+		article = context['article']
+	else:pass
+		# article = Article()
 	try:
 		actions = article.get_available_actions(user)
 	except: actions=[]
