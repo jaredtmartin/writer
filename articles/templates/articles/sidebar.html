@@ -1,3 +1,4 @@
+{% load addparam %}
 <form class="search_form" action="" method="GET">                 
     <input type="text" placeholder="Search" class="search-query" value="{{q}}" name="q" id="search-input">
     <a href="#" onclick="$('#search_form').submit();"><i class="icon-remove"></i></a>
@@ -18,7 +19,7 @@
         </div>
         <div id="collapseTwo" class="accordion-body in collapse">
             <div class="accordion-inner">
-                All Articles
+                <a href="{% noparameters %}">All Articles</a>
             </div>
             <div class="accordion-inner">
                  Unavailable
@@ -27,22 +28,22 @@
                  Available
             </div>
             <div class="accordion-inner">
-                 Assigned
+                 <a href="{% addurlparameter "last_action" "G" %}">Assigned</a>
             </div>
             <div class="accordion-inner">
-                 Claimed
+                 <a href="{% addurlparameter "last_action" "C" %}">Claimed</a>
             </div>
             <div class="accordion-inner">
-                 Submitted
+                 <a href="{% addurlparameter "last_action" "S" %}">Submitted</a>
             </div>
             <div class="accordion-inner">
-                 Approved
+                 <a href="{% addurlparameter "last_action" "A" %}">Approved</a>
             </div>
             <div class="accordion-inner">
-                 Rejected
+                 <a href="{% addurlparameter "last_action" "X" %}">Rejected</a>
             </div>
             <div class="accordion-inner">
-                 Published
+                 <a href="{% addurlparameter "last_action" "P" %}">Published</a>
             </div>
         </div>
     </div>
