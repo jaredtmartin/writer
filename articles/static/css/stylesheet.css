@@ -19,13 +19,19 @@ body{
     color: #FFFFFF;
     font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
     font-size: 15px;
-    font-weight: 600;
-}  
+    }  
 
 .table th, .table td{
     font-size: 16px;
+    font-family:"Segoe UI", sans-serif;
+    font-style:normal;
+    margin-top: 57px;
 }
-#sidebar{width: 200px; position: absolute; left:0px;top:42px;}
+
+.table th {
+  font-weight: ;
+}
+#sidebar{width: 175px; position: absolute; left:0px;top:55px;}
 .header,.btn-tag{ 
     background-color: hsl(206, 95%, 38%) !important;
     background-repeat: repeat-x;
@@ -69,14 +75,19 @@ li{
 }
 .accordion-heading .accordion-toggle {
   display: block;
-  padding: 4px 90px;
+  padding: 5px 10px;
+  font-family:"Segoe UI", sans-serif;
+  font-style:normal;
 }
+
 .article .action{
     padding-left:10px;
 }
 .accordion-inner {
-  padding: 3px 8px;
+  padding: 5px 10px;
   border-top: 1px solid #e5e5e5;
+  font-family:"Segoe UI", sans-serif;
+  font-style:normal;
 }
 #search-input{
     width:110px;
@@ -88,7 +99,7 @@ li{
 }
 .search_form i{vertical-align: -13px;}
 #action_bar{
-    margin:10px;
+    margin:20px;
 }
 tr.selected-row {
     background:#0072C6;
