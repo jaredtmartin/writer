@@ -2,41 +2,23 @@
     <div class="span12"><legend>Properties:</legend></div>
 </div>
 <div class="row-fluid">
-    <div class="span4"><label class="inline-label">Minimum:</label> {{article.minimum}}</div>
-    <div class="span4"><label class="inline-label">Maximum:</label> {{article.maximum}}</div>
+    <div class="span3"><label class="inline-label">Minimum:</label></div>
+    <div class="span3">{{article.minimum}}</div>
+    <div class="span3"><label class="inline-label">Maximum:</label></div>
+    <div class="span3">{{article.maximum}}</div>
 </div>
 <div class="row-fluid">
-    <div class="span4"><label class="inline-label">Type:</label> {{article.article_type}}</div>
-    <div class="span4"><label class="inline-label">Project:</label> {{article.project}}</div>
+    <div class="span3"><label class="inline-label">Type:</label></div>
+    <div class="span3">{{article.article_type}}</div>
+    <div class="span3"><label class="inline-label">Project:</label></div>
+    <div class="span3">{{article.project}}</div>
 </div>
 <div class="row-fluid" id="tags-list">
-    <div class="span8">
-        <label class="inline-label">Tags:</label>
-        {% for tag in article.tags %}
-            {% if tag %}
-                <a class="badge badge-small btn-tag" href="{% url article_list %}?q={{tag}}" title="Click here to see all articles with this tag">{{tag}}</a>
-            {% endif %}
-        {% endfor %}
-        <button class="btn btn-small"> Edit Tags </button>
-    </div>
+    {% include "articles/edit_articles_tags.html" %}
 </div>
 <div class="row-fluid">
     <div class="span10"><legend>Keywords:</legend></div>
 </div>
 <div class="row-fluid">
-<div class="span12 well">
-    <table id="keywords-table" class="table block_content" width="100%" cellspacing="0" cellpadding="0" border="0" style="border: none; margin:0;">
-	    <tr id="keywords-title-row">
-	        <th><h5>Keyword</h5></th>
-	        <th><h5>Url</h5></th>
-	        <th><h5>Times</h5></th>
-	    </tr>
-	    {% for keyword in article.keyword_set.all %}
-            <tr>
-		        <td>{{ keyword.keyword }}</td>
-		        <td>{{ keyword.url }}</td>
-		        <td>{{ keyword.times }}</td>
-		    </tr>
-	    {% endfor %}
-	</table>
-</div>
+    {% include "articles/edit_articles_keywords.html" %}
+</div> 
