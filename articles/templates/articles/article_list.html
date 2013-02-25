@@ -1,4 +1,7 @@
 {% extends 'articles/base.html' %}
+{% block navbar %}
+  <li><a role="button" href="#">Add</a></li>
+{% endblock %}
 {% block js %}
 	<script type='text/javascript' src='{{STATIC_URL}}js/actions.js'></script>
   <script type='text/javascript' src='{{STATIC_URL}}js/ajax.js'></script>
@@ -42,7 +45,7 @@
             </tr>
           </thead>
         <tbody>
-          {% for article in available %}
+          {% for article in object_list %}
             {% include "articles/article_list_row.html" %}
           {% endfor %}
         </tbody>
