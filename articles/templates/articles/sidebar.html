@@ -19,7 +19,7 @@
         </div>
         <div id="collapseTwo" class="accordion-body in collapse">
             <div class="accordion-inner">
-                <a href="{% noparameters %}">All Articles</a>
+                <a href="{% url article_list %}">All Articles</a>
             </div>
             <div class="accordion-inner">
                  Unavailable
@@ -28,22 +28,22 @@
                  Available
             </div>
             <div class="accordion-inner">
-                 <a href="{% addurlparameter "last_action" "G" %}">Assigned</a>
+                 <a href="{% url article_list %}?last_action=G">Assigned</a>
             </div>
             <div class="accordion-inner">
-                 <a href="{% addurlparameter "last_action" "C" %}">Claimed</a>
+                 <a href="{% url article_list %}?last_action=C">Claimed</a>
             </div>
             <div class="accordion-inner">
-                 <a href="{% addurlparameter "last_action" "S" %}">Submitted</a>
+                 <a href="{% url article_list %}?last_action=S">Submitted</a>
             </div>
             <div class="accordion-inner">
-                 <a href="{% addurlparameter "last_action" "A" %}">Approved</a>
+                 <a href="{% url article_list %}?last_action=A">Approved</a>
             </div>
             <div class="accordion-inner">
-                 <a href="{% addurlparameter "last_action" "X" %}">Rejected</a>
+                 <a href="{% url article_list %}?last_action=X">Rejected</a>
             </div>
             <div class="accordion-inner">
-                 <a href="{% addurlparameter "last_action" "P" %}">Published</a>
+                 <a href="{% url article_list %}?last_action=P">Published</a>
             </div>
         </div>
     </div>
