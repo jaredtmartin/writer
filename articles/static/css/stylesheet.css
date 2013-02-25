@@ -1,5 +1,8 @@
-.accordian 
-a, a:link,a:visited, a:hover, a:active {
+.accordian a, 
+.accordian a:link, 
+.accordian a:visited, 
+.accordian a:hover, 
+.accordian a:active {
     text-decoration:none;
     color: #FFFFFF;
     font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
