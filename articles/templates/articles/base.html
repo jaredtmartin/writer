@@ -8,7 +8,7 @@
     <title>Writer Axis</title>
     
     <link rel='stylesheet' type='text/css' href='{{STATIC_URL}}css/navstyle.css' />
-	<link href="{{STATIC_URL}}css/stylesheets.css" rel="stylesheet" type="text/css" />	
+	<link href="{{STATIC_URL}}css/stylesheet.css" rel="stylesheet" type="text/css" />	
     <script type='text/javascript' src='{{STATIC_URL}}js/ajax.js'></script>
     <script type='text/javascript' src='{{STATIC_URL}}js/plugins/jquery/jquery.min.js'></script>
     <script type='text/javascript' src='{{STATIC_URL}}js/plugins/jquery/jquery-ui.min.js'></script>
@@ -59,97 +59,7 @@
         </div>	
 	</div> -->
     <div id="sidebar">
-        <form class="search_form" action="" method="GET">                 
-            <input type="text" placeholder="Search" class="search-query" value="{{q}}" name="q" id="search-input">
-            <a href="#" onclick="$('#search_form').submit();"><i class="icon-remove"></i></a>
-        </form>
-        <div class="accordion" id="accordion2">
-            <div class="accordion-group">
-                <div class="accordion-heading">
-                    <a class="accordion-toggle collapsed" data-parent="#accordion2" href="#collapseOne">  Dashboard
-                    </a>
-                        
-                </div>
-            </div>
-            <div class="accordion-group">
-                <div class="accordion-heading">
-                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
-                        Articles
-                    </a>
-                </div>
-                <div id="collapseTwo" class="accordion-body in collapse">
-                    <div class="accordion-inner">
-                        All Articles
-                    </div>
-                    <div class="accordion-inner">
-                         Unavailable
-                    </div>
-                    <div class="accordion-inner">
-                         Available
-                    </div>
-                    <div class="accordion-inner">
-                         Assigned
-                    </div>
-                    <div class="accordion-inner">
-                         Claimed
-                    </div>
-                    <div class="accordion-inner">
-                         Submitted
-                    </div>
-                    <div class="accordion-inner">
-                         Approved
-                    </div>
-                    <div class="accordion-inner">
-                         Rejected
-                    </div>
-                    <div class="accordion-inner">
-                         Published
-                    </div>
-                </div>
-            </div>
-            <div class="accordion-group">
-                <div class="accordion-heading">
-                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion2" href="#collapseThree">
-                        Writers
-                    </a>
-                </div>
-                <div id="collapseThree" class="accordion-body">
-                    <div class="accordion-inner">
-                        All Writers
-                    </div>
-                    <div class="accordion-inner">
-                         My Writers
-                    </div>
-                    <div class="accordion-inner">
-                         Unconfirmed Writers
-                    </div>
-                    <div class="accordion-inner">
-                         Other Writers
-                    </div>
-                </div>
-            </div>
-            <div class="accordion-group">
-                <div class="accordion-heading">
-                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion2" href="#collapseFour">
-                        Requesters
-                    </a>
-                </div>
-                <div id="collapseFour" class="accordion-body collapse">
-                    <div class="accordion-inner">
-                        All Requesters
-                    </div>
-                    <div class="accordion-inner">
-                         My Requesters
-                    </div>
-                    <div class="accordion-inner">
-                         Unconfirmed Requesters
-                    </div>
-                    <div class="accordion-inner">
-                         Other Requesters
-                    </div>
-                </div>
-            </div>
-        </div>
+        {% include "articles/sidebar.html" %}
     </div>
 	{% if user.is_authenticated %}
         <p class="user">Hi <a href="/users/{{user.username}}/{{user.pk}}/">{{user.username}}</a>! <!--(1589/0)--> &nbsp;|&nbsp; <a href="{% url logout %}">Logout</a></p>
