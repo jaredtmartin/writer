@@ -42,22 +42,12 @@
                 <div class="span3">{{ form.project }}</div>
             </div>
             <div class="row-fluid">
-                <div class="span2">Tags:</div>
-                <div class="span8" id="tags-list">
-                    {% for tag in article.tags %}
-                        {% if tag %}
-                            <a class="badge badge-small btn-tag" href="{% url article_list %}?q={{tag}}" title="Click here to see all articles with this tag">{{tag}}</a>
-                        {% endif %}
-                    {% endfor %}
-                </div>
-                <div class="span2"><button class="btn"> Edit Tags </button></div>
-                
+                {% include "articles/edit_articles_tags.html" %}
             </div>
             <div class="row-fluid">
                 <div class="span12"><legend>Keywords:</legend></div>
             </div>
             <div class="row-fluid">
-            <div class="span12 well">
                 {% with inlines.0 as inline %}
                     {% include "articles/edit_article_keywords_form.html" %}
                 {% endwith %}
