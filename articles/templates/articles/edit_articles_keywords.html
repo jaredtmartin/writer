@@ -1,0 +1,66 @@
+{% if user = article.owner%}
+<script type="text/javascript">
+    function insertKeywordInlineForm(data, result){
+        $('#keywords-title-row').after(data);
+        numKeywords=parseInt($('#id_keyword_set-TOTAL_FORMS').val());
+        $('#id_keyword_set-TOTAL_FORMS').val(numKeywords+1);
+    }
+    function getKeywordInlineForm() {
+        jQuery("#last_id").val("None");
+        $.ajax({
+            url: "/articles/keyword/new/",
+            type:'POST',
+            data:{
+                num: $('#id_keyword_set-TOTAL_FORMS').val(),
+            },
+            success: insertKeywordInlineForm
+        });
+    }
+    function hideRow(){
+        $(this).closest('tr').slideUp();
+    }
+    $(document).ready(function($) {
+        // $("#add_keyword").click(getKeywordInlineForm);
+        $('[name$="DELETE"]').click(hideRow);
+        $(".popup").fancybox({
+            transitionIn : 'elastic',
+            transitionOut : 'elastic',
+            titleShow : false,
+            width : 680,
+            height : 375,
+            autoDimensions : true,
+            /*centerOnScroll : true,*/
+            autoScale : false,
+            /*'scrolling' : 'no',*/
+            'overlayOpacity' : '0.6',
+            'overlayColor' : '#000'
+        }); 
+    });
+</script>
+{{ inline.management_form }}
+{% endif %}
+<div class="span12 well">
+    <table id="keywords-table" class="table block_content" width="100%" cellspacing="0" cellpadding="0" border="0" style="border: none; margin:0;">
+	    <tr id="keywords-title-row">
+	        <th><h5>Keyword</h5></th>
+	        <th><h5>Url</h5></th>
+	        <th><h5>Times</h5></th>
+	    </tr>
+        {% if user = article.owner%}
+            {% for form in inline %}
+                {% include "articles/keyword_inline_form.html" %}
+            {% endfor %}
+        {% else %}
+           {% for keyword in article.keyword_set.all %}
+                <tr>
+                    <td>{{ keyword.keyword }}</td>
+                    <td>{{ keyword.url }}</td>
+                    <td>{{ keyword.times }}</td>
+                </tr>
+            {% endfor %}
+        {% endif %}
+	</table>
+    {% if user = article.owner%}
+        <button onclick="getKeywordInlineForm();return false;" class="btn">Add Keyword</button>
+    {% endif %}
+</div>
