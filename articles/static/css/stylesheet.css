@@ -1,3 +1,26 @@
+.btn {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    background-repeat: repeat-x;
+    border-image: none;
+    border-style: solid;
+    border-width: 1px;
+    display: inline-block;
+    line-height: 20px;
+    text-align: center;
+    vertical-align: middle;
+}
+.btn-group.open 
+.btn.dropdown-toggle {
+    background-color: none;
+}
+.btn-group 
+.dropdown-toggle:active, 
+.btn-group.open .dropdown-toggle {
+    outline: 0 none;
+}
 .accordian 
 a, a:link,a:visited, a:hover, a:active {
     text-decoration:none;
@@ -5,6 +28,17 @@ a, a:link,a:visited, a:hover, a:active {
     font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
     font-size: 15px;
     }  
+    .header,
+    a:link{ 
+    text-decoration:none;
+    color: #FFFFFF;
+    font-family: "Segoe UI",sans-serif;
+    font-size: 20px;
+    padding-left: 10px;
+    padding-top: 5px;
+    vertical-align: middle;
+    
+    }
 
 .table th, .table td{
     font-size: 16px;
@@ -14,8 +48,9 @@ a, a:link,a:visited, a:hover, a:active {
 }
 
 .table th {
-  font-weight: ;
+  font-weight: normal;
 }
+
 #sidebar{width: 175px; position: absolute; left:0px;top:55px;}
 .header,.btn-tag{ 
     background-color: hsl(206, 95%, 38%) !important;
@@ -63,6 +98,7 @@ li{
   padding: 5px 10px;
   font-family:"Segoe UI", sans-serif;
   font-style:normal;
+  font-size: 16px
 }
 
 .article .action{
@@ -73,6 +109,7 @@ li{
   border-top: 1px solid #e5e5e5;
   font-family:"Segoe UI", sans-serif;
   font-style:normal;
+  font-size: 16px
 }
 #search-input{
     width:110px;
