@@ -438,7 +438,7 @@ ul#navigation .contact a{
         .breadLine .buttons li .popup .head .arrow{width: 17px; height: 12px; left: auto; right: 10px !important; top: -11px; background: url("../img/arrow-top.png") left top no-repeat transparent;}
 
 .content{position: relative; margin-left: 200px; padding-top: 10px;}
-    .content .workplace{position: relative; padding: 20px; padding:0;}
+    .content .workplace{position: relative; padding: 20px; padding:0; margin-top:55px;}
 
     
         /* ~BOXES~ */
