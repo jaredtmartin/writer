@@ -5,9 +5,177 @@ when you run "manage.py test".
 Replace this with more appropriate tests for your application.
 """
 
-from django.test import TestCase
-from articles.models import *
+from django.test import TestCase, LiveServerTestCase
+from articles.models import Article, User, PublishingOutlet, PublishingOutletConfiguration, ArticleType, ArticleAction
 from django.template import Context
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import Select
+# from selenium.webdriver.firefox.webdriver import WebDriver
+
+class BaseFunctionalTest(LiveServerTestCase):
+    fixtures = ['initial_data.yaml', 'test_data.yaml']
+    def setUp(self):
+        # self.browser = WebDriver()
+        self.browser = webdriver.Firefox()
+        self.browser.implicitly_wait(3)
+    def tearDown(self):
+        self.browser.quit()
+
+class AdminTest(BaseFunctionalTest):
+    def test_can_create_new_poll_via_admin_site(self):
+        # Gertrude opens her web browser, and goes to the admin page
+        self.browser.get(self.live_server_url + '/admin/')
+
+        # She sees the familiar 'Django administration' heading
+        body = self.browser.find_element_by_tag_name('body')
+        self.assertIn('Django administration', body.text)
+
+class CreateArticles(BaseFunctionalTest):
+    def test_can_create_a_simple_article(self):
+        # John opens his browser and types www.writeraxis.com
+        self.browser.get(self.live_server_url)
+        # He is greeted and gets the articles list
+        body = self.browser.find_element_by_tag_name('body')
+        self.assertIn('Articles List', body.text)
+        # He sees a link to 'add' a new poll, so he clicks it
+        new_article_link = self.browser.find_element_by_link_text('Add Article')
+        new_article_link.click()
+
+        # He gets redirected to the login screen
+
+        # He fills in his username and password and hits return
+        self.browser.find_element_by_name('username').send_keys('requester')
+        self.browser.find_element_by_name('password').send_keys('pass')
+        self.browser.find_element_by_id('login-submit').click()
+        # password_field.send_keys(Keys.RETURN)
+
+        self.browser.implicitly_wait(3)
+        # Should be greeted
+        body = self.browser.find_element_by_tag_name('body')
+        self.assertIn('Hi Joe Requester!', body.text)
+        # Click on Article Type
+        article_type_dropdown = Select(self.browser.find_element_by_name('article_type'))
+        # Select Simple Articles    
+        article_type_dropdown.select_by_visible_text("Simple Articles");
+
+        # He sees a link to create a 'new' project, so he clicks it
+        new_project_link = self.browser.find_element_by_link_text('New Project')
+        new_project_link.click()
+        # He sees the New Project Dialog
+        body = self.browser.find_element_by_tag_name('body')
+        self.assertIn('Type the name of your new project', body.text)
+        # He types in "Big Project" in the name field
+        new_project_name_field = self.browser.find_element_by_name('project_name')
+        new_project_name_field.send_keys("Big Project")
+        new_project_name_field.send_keys(Keys.RETURN)
+        self.browser.implicitly_wait(3)
+        # Click on Create Project
+        create_project_button = self.browser.find_element_by_link_text('Create Project')
+        create_project_button.click()
+        # (New Project Dialog Disappears and the name of the project appears in the form)
+        self.fail('Finished this test')
+class LoginTest(BaseFunctionalTest):
+    def test_can_login(self):
+        # John opens his browser and types www.writeraxis.com
+        self.browser.get(self.live_server_url)
+        # He is greeted and gets the articles list
+        body = self.browser.find_element_by_tag_name('body')
+        self.assertIn('Articles List', body.text)
+        # He sees a link to 'add' a new poll, so he clicks it
+        login_link = self.browser.find_element_by_link_text('Log in')
+        login_link.click()
+
+        # He gets redirected to the login screen
+
+        # He fills in his username and password and hits return
+        self.browser.find_element_by_name('username').send_keys('requester')
+        password_field=self.browser.find_element_by_name('password')
+        password_field.send_keys('pass')
+        password_field.send_keys(Keys.RETURN)
+        # self.browser.find_element_by_id('login-submit').click()
+    def test_with_bad_username(self):
+        self.fail('Finish this test')
+    def test_with_bad_password(self):
+        self.fail('Finish this test')
+# Fill Description with "A simple article"
+# Set the Due Date to Next Week
+# Set number of Articles to 10
+# Fill Article Notes with "Be sure to use good grammar."
+# Fill Review Notes with "Make sure they used good grammar"
+# Fill Tags with "High, Rush"
+# Keywords:
+# Fill keyword with "Austin Plumber"
+# Fill URL with "www.austinplumber.com"
+# Fill Frequency with "2"
+# Click on add a keyword
+# Fill keyword with "qualities"
+# Fill URL with "www.austinplumber.com/qualities/"
+# Fill Frequency with "1"
+# Click on "Save and Add Another"
+# (This will create another article in the same project)
+# Fill Description with "Another simple article"
+# Set the Due Date to two Weeks from now  
+# Set number of Articles to 20
+# Fill Article Notes with "Be sure to use legal terms."
+# Fill Review Notes with "Make sure they used legal terms"
+# Fill Tags with "Medium, Legal"
+# Keywords:
+# Fill keyword with "Austin Lawyer"
+# Fill URL with "www.austinlaw.com"
+# Fill Frequency with "2"
+# (We'll leave this article with only one keyword although we could add more)
+# Click on Save Article
+# Go to Articles list and make sure they are all displayed
+
+# Create a Rewrite:
+#     Click on New Article
+#     Select "Big Project"
+#     (Here we're using an existing project that has 2 simple articles in it)
+#     Click on Article Type
+#     Select Rewrite
+#     Fill Name with "Fred's"
+#     Fill Description with "Rewrites of Fred's Articles"
+#     Set the Due Date to Next Week
+#     Set number of Articles to 50
+#     Fill Article Notes with "Be sure it's unique."
+#     Fill Review Notes with "Make sure they made it unique"
+#     Fill Tags with "Rewrite, Fred"
+#     Copy and Paste Original into field labeled "Original Article"
+#     Keywords:
+#         Fill keyword with "Austin Lawyer"
+#         Fill URL with "www.austinlaw.com"
+#         Fill Frequency with "2"
+#         (We'll leave this article with only one keyword although we could add more)
+#     Click Save Article
+# UAW Article:
+#     Click on New Article
+#     Click on Article Type
+#     Select UAW Article Set
+#     Click on New Project
+#     (New Project Dialog Appears)
+#     Type "Green Project"
+#     Click on Create Project
+#     (New Project Dialog Disappears and the name of the project appears in the form)
+#     Fill Description with "A few UAW Articles for the green company"
+#     Set the Due Date to Next Week
+#     Set Number of Article Sets to 7
+#     Fill Article Notes with "Don't run with sizzors."
+#     Fill Review Notes with "Check Spelling"
+#     Fill Tags with "Green, UAW"
+#     Keywords:
+#         Fill keyword with "Green Oil"
+#         Fill URL with "www.exxonvaldez.com"
+#         Fill Frequency with "1"
+#     (We'll leave this article with only one keyword although we could add more)
+# Now, Go back and make sure all of the Articles were created correctly
+
+    
+
+
+
+
+
 
 FACEBOOK_BUTTON=u"""<div id="fb-root"></div>\n<script>\n  // Additional JS functions here\n  function login() {\n    //Use this to prompt people to log into Facebook\n        FB.login(function(response) {\n            if (response.authResponse) {\n                // connected\n            } else {\n                // cancelled\n            }\n        }, {scope: \'publish_stream\'});\n    }\n    function testAPI() {\n        console.log(\'Welcome!  Fetching your information.... \');\n        FB.api(\'/me\', function(response) {\n            console.log(\'Good to see you, \' + response.name + \'.\');\n        });\n    }\n    \n  window.fbAsyncInit = function() {\n    FB.init({\n      appId      : \'519129288106424\', // App ID\n      channelUrl : \'/static/js/channel.html\', // Channel File\n      status     : true, // check login status\n      cookie     : true, // enable cookies to allow the server to access the session\n      xfbml      : true  // parse XFBML\n    });\n\n    FB.getLoginStatus(function(response) {\n      if (response.status === \'connected\') {\n        // connected\n        testAPI();\n      } else if (response.status === \'not_authorized\') {\n        // not_authorized\n        login();\n      } else {\n        // not_logged_in\n        login();\n      }\n     });\n\n     \n  };\n\n  // Load the SDK Asynchronously\n  (function(d){\n     var js, id = \'facebook-jssdk\', ref = d.getElementsByTagName(\'script\')[0];\n     if (d.getElementById(id)) {return;}\n     js = d.createElement(\'script\'); js.id = id; js.async = true;\n     js.src = "//connect.facebook.net/en_US/all.js";\n     ref.parentNode.insertBefore(js, ref);\n   }(document));\n</script>\n\n<script>\n    function post_on_facebook(title,body){\n        FB.api(\'/me/feed\', \'post\', {message:body,name:title},\n            function(response) {\n                if (!response || response.error) {\n                    alert(\'Error occured\');\n                } else {\n                    alert(\'Post ID: \' + response.id);\n                }\n        });\n    }\n</script>\n<a onclick="post_on_facebook($(\'#id_title\').val(), $(\'#id_body\'));return false;">Post to Facebook</a>\n"""
 TWITTER_BUTTON=u'<a href="http://twitter.com/home?status=%3Cp%3ECan%20%3Cspan%20style%3D%22background-color%3A%20%23ffff00%3B%22%3Eyou%3C/span%3E%20hear%20the%20words%20%3Cstrong%3Ecoming%3C/strong%3E%20out%20of%20my%20%3Cspan%20style%3D%22color%3A%20%23ff0000%3B%22%3Emouth%3C/span%3E%3F%26nbsp%3B%20I%20really%20%3Cspan%20style%3D%22text-decoration%3A%20underline%3B%22%3E%3Cstrong%3Ehope%3C/strong%3E%3C/span%3E%20this%20works%21s%3C/p%3E%0D%0A%3Cul%3E%0D%0A%3Cli%3EDog%3C/li%3E%0D%0A%3Cli%3ECat%3C/li%3E%0D%0A%3Cli%3EBird%3C/li%3E%0D%0A%3C/ul%3E%0D%0A%3Cp%3ESome%20%3Cspan%20style%3D%22font-size%3A%20large%3B%22%3Emore%3C/span%3E%20stuff%20down%20here.%3C/p%3E%20Jumper">Twitter</a>'
@@ -39,8 +207,8 @@ class PublishingOutletTests(TestCase):
         outlet2=PublishingOutletConfiguration.objects.create(user=self.fred, outlet=self.wordpress_outlet)
         outlet3=PublishingOutletConfiguration.objects.create(user=self.fred, outlet=self.wordpress_outlet)
         self.assertEqual(list(self.fred.publishing_outlets.all()),[outlet1, outlet2, outlet3])
-    def fetch_the_module_for_an_outlet_and_run_action(self):
-        outlet1=PublishingOutletConfiguration.objects.create(user=self.fred, outlet=self.facebook_outlet)
+    # def fetch_the_module_for_an_outlet_and_run_action(self):
+    #     outlet1=PublishingOutletConfiguration.objects.create(user=self.fred, outlet=self.facebook_outlet)
         
 class ArticleTests(TestCase):
     fixtures = ['initial_data.yaml', 'test_data.yaml'] 

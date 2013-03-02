@@ -1,5 +1,8 @@
 @import "bootstrap.css";
 @import "bootstrap-responsive.css";
+.btn-success{
+    vertical-align: top;
+}
 .navbar-inverse .navbar-text, .navbar-inverse .navbar-text a, .navbar-inverse .navbar-link{
     color:white;
     font-size:.9em;

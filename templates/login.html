@@ -1,5 +1,16 @@
 {% extends "writeaid_base.html" %}
-
+{% block js %}
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("input").keypress(function(event) {
+            if (event.which == 13) {
+                event.preventDefault();
+                $("#login-form").submit();
+            }
+        });
+     });
+</script>
+{% endblock %}
 {% block content %}
 
 <div class="block">
@@ -19,7 +30,7 @@
     <div align="center">
     
     
-        <form method="post" action="{% url django.contrib.auth.views.login %}">
+        <form id="login-form" method="post" action="{% url django.contrib.auth.views.login %}">
         {% csrf_token %}
         <input type="hidden" name="next" value="{{ next }}" />
                 
@@ -32,7 +43,7 @@
             <tr style="background-color: rgb(251, 251, 251);">
                 <td><input type="text" style="width: 300px;" value="" class="text small" name="username" id="id_username"></td>
                 <td><input type="password" style="width: 300px;" class="text small" name="password" id="id_password"></td>
-                <td><input type="submit" style="float: right; margin-right:14px;" value="Login" class="submit mid"></td>
+                <td><input id="login-submit" type="submit" style="float: right; margin-right:14px;" value="Login" class="submit mid"></td>
             </tr>
                         <tr>
                 <td><div class="aleft smfont"><input type="checkbox" style="margin: 0 0 0 5px; vertical-align: text-bottom; " value="1" checked="checked" name="remember_login"> Remember my password?</div></td>

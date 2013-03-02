@@ -3,6 +3,29 @@
 {% block head %}
     <script type="text/javascript" src="{{ STATIC_URL}}js/tiny_mce/jquery.tinymce.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL}}js/ajax.js"></script>
+    <script type="text/javascript">
+        $('#new-project-form').submit(function() {
+          return false;
+        });
+        function createProject(){
+            // data={
+            //     name:$('#new_project_name_input'),
+            // };
+            // jQuery.post({
+            //     url:"{% url new_project %}", 
+            //     data:{name:$('#new_project_name_input')}, 
+            //     success:confirmProjectCreation,
+            // });
+            $.post('{% url new_project %}', {name: $('#new_project_name_input').val()}, function(data) {
+                d=saveDataInCache(data);
+                updateMessages(d); 
+                result=$('#new-project-name', data).val();
+            });
+        }
+        function confirmProjectCreation(){
+        }
+
+    </script>
 {% endblock %}
 
 {% block content %}
@@ -38,7 +61,7 @@
                 <div class="span3">Type</div>
                 <div class="span3">{{ form.article_type }}</div>
                 <div class="span3">Project</div>
-                <div class="span3">{{ form.project }}</div>
+                <div class="span3">{{ form.project }} <a href="#new-project-modal" class="btn btn-small btn-success" role="button" data-toggle="modal"><i class="icon-plus icon-white"></i></a></div>
             </div>
             <div class="row-fluid">
                 {% include "articles/edit_articles_tags.html" %}
@@ -76,5 +99,21 @@
                 <button class="btn btn-primary">Save</button>
             </div>
         </div>
+    </div>
+    <div id="new-project-modal" class="modal  fade">
+        <form id="new-project-form">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3>New Project</h3>
+            </div>
+            <div class="modal-body">
+                <p>Enter the name of the new project.</p>
+                <input id="new_project_name_input" name="name">
+            </div>
+            <div class="modal-footer">
+                <a href="#" class="btn btn-primary" onclick="createProject();return false;">Create</a>
+                <a href="#" class="btn btn-primary" onclick="$('#new-project-modal').modal('hide');">Cancel</a>
+            </div>
+        </form>
     </div>
 {% endblock %}

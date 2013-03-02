@@ -44,7 +44,7 @@
                     {% block navbar %}{% endblock %}
                 </ul>
                 {% if user.is_authenticated %}
-                    <p class="navbar-text pull-right">Hi <a class="navbar-link" href="/users/{{user.username}}/{{user.pk}}/">{{user.username}}</a>! <!--(1589/0)--> &nbsp;|&nbsp; <a href="{% url logout %}">Logout</a></p>
+                    <p class="navbar-text pull-right">Hi <a class="navbar-link" href="/users/{{user.username}}/{{user.pk}}/">{{user.full_name}}</a>! <!--(1589/0)--> &nbsp;|&nbsp; <a href="{% url logout %}">Logout</a></p>
                 {% else %}
                     <p class="navbar-text pull-right">Welcome, guest. <!--(1589/0)--> &nbsp;|&nbsp; <a class="navbar-link" href="{% url login %}">Log in</a>.</p>
                 {% endif %}

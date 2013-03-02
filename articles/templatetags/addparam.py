@@ -4,18 +4,9 @@ register = Library()
 
 class AddParameter(Node):
   def __init__(self, varname, value):
-    if self.quoted(varname): 
-        print "quoted"
-        self.varname = varname[1:-1]
-        print "self.varname = %s" % str(self.varname)
-    else: 
-      print "not quoted"
-      self.varname = template.Variable(varname)
-      print "self.varname = %s" % str(self.varname)
-    if self.quoted(value): 
-      print "quoted"
-      self.value = value[1:-1]
-      print "self.value = %s" % str(self.value)
+    if self.quoted(varname): self.varname = varname[1:-1]
+    else: self.varname = template.Variable(varname)
+    if self.quoted(value): self.value = value[1:-1]
     else: self.value = template.Variable(value)
     
   def quoted(self, string):
