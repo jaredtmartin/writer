@@ -210,7 +210,7 @@ FACEBOOK_SCOPE = ['manage_pages']
 
 # If manage.py test was called, use SQLite
 import sys
-if 'test' in sys.argv:
+if 'test' in sys.argv or 'runserver' in sys.argv:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
