@@ -84,7 +84,7 @@
         <form class="search_form" action="" method="GET">                 
             <input type="text" placeholder="Search" class="search-query" value="{{q}}" name="q" id="search-input"><a href="#" onclick="$('#search_form').submit();"><i class="icon-remove"></i></a>
         </form>
-        <div class="accordion" id="accordion2">
+        <!-- <div class="accordion" id="accordion2">
             <div class="accordion-group">
                 <div class="accordion-heading">
                     <a class="accordion-toggle collapsed" data-parent="#accordion2" href="#collapseOne"> 
@@ -172,18 +172,18 @@
                 </div>
             </div>
         </div>
-    </div>
-	{% if user.is_authenticated %}
-        <p class="user">Hi <a href="/users/{{user.username}}/{{user.pk}}/">{{user.username}}</a>! <!--(1589/0)--> &nbsp;|&nbsp; <a href="{% url logout %}">Logout</a></p>
-    {% else %}
-        <p class="user">Welcome, guest. <!--(1589/0)--> &nbsp;|&nbsp; <a href="{% url login %}">Log in</a>.</p>
-    {% endif %}
+    </div> -->
+	<!-- {% if user.is_authenticated %}
+        <p class="user">Hi <a href="/users/{{user.username}}/{{user.pk}}/">{{user.username}}</a>! <!--(1589/0)--><!--  &nbsp;|&nbsp; <a href="{% url logout %}">Logout</a></p>
+    <!-- <!-- {% else %} -->
+        <!-- <p class="user">Welcome, guest. <!--(1 --><!-- 589/0)--> <!-- &nbsp;|&nbsp; <a href="{% url login %}">Log in</a>.</p> -->
+    <!-- {% endif %}
     <ul id="messages" class="messages">
         {% block messages %}{% endblock %}
         {% for message in messages %}
         <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
         {% endfor %}
-    </ul>
+    </ul> --> 
     <div class="content">
         {% block content %}{% endblock %}
 	</div> 
