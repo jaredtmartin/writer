@@ -67,7 +67,12 @@ body{
   font-weight: normal;
 }
 
-#sidebar{width: 175px; position: absolute; left:0px;top:55px;}
+#sidebar {
+    width: 157px; 
+    position: absolute; 
+    left:0px;
+    top:55px;
+}
 .btn-tag{ text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.33);}
 .navbar-inverse .navbar-inner,.btn-tag{ 
     background-color: hsl(206, 95%, 38%) !important;
@@ -115,7 +120,8 @@ li{
   padding: 5px 10px;
   font-family:"Segoe UI", sans-serif;
   font-style:normal;
-  font-size: 16px
+  font-size: 16px;
+  width: 157px;
 }
 
 .article .action{
@@ -126,7 +132,8 @@ li{
   border-top: 1px solid #e5e5e5;
   font-family:"Segoe UI", sans-serif;
   font-style:normal;
-  font-size: 16px
+  font-size: 16px;
+  width: 157px;
 }
 #search-input{
     width:110px;
