@@ -231,7 +231,7 @@ class ArticleList(GetActionsMixin, FilterableListView):
 #         reject_and_release_articles,
 #     ]
 #    queryset = Article.objects.filter(submitted=None)
-    # context_object_name = 'available'
+    context_object_name = 'available'
     search_fields = ['_tags', 'project__name', 'keyword__keyword']
     filter_fields={
         'minimum':FilterWithChoicesFromModel(name='minimum', model=Article),
@@ -307,10 +307,6 @@ class ProjectList(FilterableListView):
 class ArticleCreate(LoginRequiredMixin, CreateView):
     template_name = 'articles/article_edit.html'
     model = Article
-    context_object_name = 'article'
-    def get_context_data(self, **kwargs):
-        kwargs['article']=self.object
-        return super(ArticleCreate, self).get_context_data(**kwargs)
 
 class ArticleUpdate(LoginRequiredMixin, UpdateWithInlinesView):
     template_name = 'articles/article_edit.html'

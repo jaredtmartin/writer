@@ -55,15 +55,36 @@
     </div>
   </div>
 </div>
-<script>
-    $(document).ready(function(){
-        window.row_selector='.article';
-        showOrHideActionBar();
-        checked_rows = $('.article :checked');
-        if (checked_rows.length>0){selectRows(checked_rows.parents('tr'));}
-        $('.tag-popover').popover(html=true, content=$('#tag-popover-html'));
-    });
-</script>
+       <!--  <div class="span2 filteroptions" style="border:none;background-color:#F9F9F9; height:100%;">
+          <div class="block-fluid" style="border:none; height:100%;">
+            <ul class="sList" style="border:none; height:355px;">
+              <li>
+                  <form class="search_form" action="" method="GET">
+                    <input type="text" placeholder="Search" class="search-query" value="{{q}}" name="q" id="search-input">
+                                <a href="#" onclick="$('#search_form').submit();"><i class="icon-remove"></i></a>
+                  </form>
+              </li>
+              <li>All Articles</li>
+              <li>Unavailable</li>
+              <li>Available</li>
+              <li>Assigned</li>
+              <li>Claimed</li>
+              <li>Submitted</li>
+              <li>Approved</li>
+              <li>Rejected</li>
+              <li>Published</li>
+            </ul>                                                
+          </div>
+        </div> -->
+    <script>
+        $(document).ready(function(){
+            window.row_selector='.article';
+            showOrHideActionBar();
+            checked_rows = $('.article :checked');
+            if (checked_rows.length>0){selectRows(checked_rows.parents('tr'));}
+            $('.tag-popover').popover(html=true, content=$('#tag-popover-html'));
+        });
+    </script>
 <div id="tag-modal" class="modal hide fade">
   <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -105,4 +126,5 @@
     <a href="#" class="btn btn-primary" onclick="$('#delete-modal').modal('hide');">No</a>
   </div>
 </div>
+
 {% endblock %}

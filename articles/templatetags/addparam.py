@@ -11,13 +11,12 @@ class AddParameter(Node):
     
   def quoted(self, string):
     return (string[0] == string[-1] and string[0] in ('"', "'"))
-
   def render(self, context):
-    req = resolve_variable('request',context)
     try: varname = self.varname.resolve(context)
-    except:varname=self.varname
+    except:pass
     try: value = self.value.resolve(context)
-    except:value=self.value
+    except:pass
+    req = resolve_variable('request',context)
     params = req.GET.copy()
     params[varname] = value
     return '%s?%s' % (req.path, params.urlencode())
@@ -62,11 +61,3 @@ def removeurlparameter(parser, token):
 #  return RemoveParameter(bits[1])  
 
 register.tag('removeurlparameter', removeurlparameter)
-
-class NoParameters(Node):
-  def render(self, context):
-    req = resolve_variable('request',context)
-    return req.path
-def noparameters(parser, token):
-  return NoParameters()
-register.tag('noparameters', noparameters)

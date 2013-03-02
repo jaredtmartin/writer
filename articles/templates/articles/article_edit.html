@@ -1,7 +1,7 @@
-{% extends "articles/base.html" %}
-{% load actions %}
+{% extends "writeaid_base.html" %}
 {% block head %}
     <script type="text/javascript" src="{{ STATIC_URL}}js/tiny_mce/jquery.tinymce.js"></script>
+    <link href="{{ STATIC_URL}}css/writersaxis.css" rel="stylesheet" type="text/css" />
     <script type="text/javascript" src="{{ STATIC_URL}}js/ajax.js"></script>
     <script type="text/javascript">
         $('#new-project-form').submit(function() {
@@ -31,13 +31,18 @@
 {% block content %}
     <div id="article">
         {{form.errors}}
-        <form  action="{{ article.get_absolute_url }}" method="post"> {% csrf_token %}
+        <form action="{{ article.get_absolute_url }}" method="post"> {% csrf_token %}
         {{form.ID}}
         <input type="hidden" name="owner" value="{% if article.owner %}{{article.owner.pk}}{% else %}{{user.pk}}{% endif %}">
-        <div class="row-fluid">
-            <div class="span10">
-                <div class="page-header">
-                    <h1>{% if article.pk %} Article: {{article.name}} {% else %} New Article {% endif %}</h1>
+        <div class="block">
+            <div class="block_head">
+                <div class="bheadl"></div>
+                <div class="bheadr"></div>
+                <div class="table-header" style="width:90%;">
+                    <h2>{% if article.pk %} Article: {{article.name}} {% else %} New Article {% endif %}</h2>
+                    <div class="non-header" style="float:right;">
+                        <a href="{% url article_list %}">Back to Article List</a>
+                    </div>
                 </div>
             </div>
             <div class="span2">
@@ -74,30 +79,51 @@
                     {% with inlines.0 as inline %}
                         {% include "articles/edit_article_keywords_form.html" %}
                     {% endwith %}
-                </div>
-            {% endif %}
-        {% else %}
-            {% include "articles/show_article_properties.html"%}
-        {% endif %}
-        {% if user = article.assigned.author %}
-            {% include "articles/article_body.html" %}
-        {% endif %}
-        {% if article.pk %}
-            <div class="row-fluid">
-                <div class="span12"><legend>Last Action:</legend></div>
+                {% else %}
+                    {% include "articles/show_article_properties.html"%}
+                {% endif %}
+                <table class="block_content" width="100%" cellspacing="0" cellpadding="0" border="0" style="border: none; margin:0;">
+                    <tr>
+                        <td>
+                            <ul class="priority">
+                                {% for action in article.available_actions %}
+                                    <a href="#" onclick="jQuery.post('{{article.get_absolute_url}}{{action}}/', success=ajaxUpdateRow);return false;"><li title="" class="blue-keyword">{{action}}</li></a>
+                                {% endfor %}
+                            </ul>
+                        </td>
+                    </tr>
+                </table>
+                {% if article.assigned %}
+                    {% include "articles/article_body.html" %}
+                {% endif %}
+                {% include "articles/confirm_delete.html" %}
+                <table class="block_content" width="100%" cellspacing="0" cellpadding="0" border="0" style="border: none; margin:0;">
+                    <tr>
+                        {% for action in article.available_actions %}
+                            {% if action.1 %}
+                                <td><a id="{{action}}-button" href="#{{action}}-popup"><input type="button" value="{{action.title}}" class="submit long"></a></td>
+                                <div id="delete-popup" style="display:none">
+                                <div id="{{action}}-box">
+                                    {{action.1}}
+                                    <a class="button continue-button" onclick="{{object.get_delete_url}}">{{action}}</a>
+                                </div>
+                            </div>
+                            <script>
+                                $(document).ready(function() {
+                                    $("a#delete-button").fancybox();
+                                });
+                            </script>
+                            {% else %}
+                                <td><a id="{{action}}-button" href="{{article.get_absolute_url}}{{action}}/"><input type="button" value="{{action.title}}" class="submit long"></a></td>
+                            {% endif %}
+                        {% endfor %}
+                        <td><a id="delete-button" href="#delete-popup"><input type="button" value="Delete" class="submit long"></a></td>
+                        <td><div class="aright"><input type="submit" value="Save Article" class="submit long"></div></td>
+                    </tr>
+                </table>
             </div>
-            <div class="row-fluid">
-                <div class="span12">{{article.last_action}}</div>
-            </div>
-        {% endif %}
-        <div class="row-fluid">
-            <div class="span12"><legend>Available Actions:</legend></div>
-        </div>
-        <div class="row-fluid">
-            <div class="span12">
-                {% show_actions %}
-                <button class="btn btn-primary">Save</button>
-            </div>
+            <div class="bendl"></div>
+            <div class="bendr"></div>
         </div>
     </div>
     <div id="new-project-modal" class="modal  fade">
