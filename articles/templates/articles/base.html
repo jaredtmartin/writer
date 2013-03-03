@@ -29,6 +29,8 @@
     {% block css %}{% endblock css %}
     {% block head %}{% endblock head %}
 </head>
+
+
 <body>    
     <div id="navbar" class="navbar navbar-inverse navbar-static">
         <div class="navbar-inner">
@@ -41,28 +43,41 @@
                             <li role="presentation"><a href="#" tabindex="-1" role="menuitem">Requester</a></li>
                         </ul>
                     </li>
-                    {% block navbar %}{% endblock %}
-                </ul>
-                {% if user.is_authenticated %}
-                    <p class="navbar-text pull-right">Hi <a class="navbar-link" href="/users/{{user.username}}/{{user.pk}}/">{{user.full_name}}</a>! <!--(1589/0)--> &nbsp;|&nbsp; <a href="{% url logout %}">Logout</a></p>
-                {% else %}
-                    <p class="navbar-text pull-right">Welcome, guest. &nbsp;|&nbsp; <a class="navbar-link" href="{% url login %}">Log in</a>.</p>
-                {% endif %}
+                </div>
             </div>
         </div>
     </div>
-    <div id="sidebar">
-        {% include "articles/sidebar.html" %}
+    <div class="row-fluid">
+        <div class="menu span2">                     
+           <div class="navdiv" id="Nav">
+              <ul class="unstyled">
+                    <li class="{% if selected_tab == 'dashboard' %}active{% endif%}"><a href="{% url dashboard %}"><i class="icon-nav-dashboard"></i> <span>Dashboard</span></a></li>
+                
+                    <li class="{% if selected_tab == 'articles' %}active{% endif%}"><a href="{% url article_list %}"><i class="icon-nav-receipts"></i> <span>Articles</span></a></li>
+                    {% if user.get_profile.is_writer %}
+                        <li class="{% if selected_tab == 'writers' %}active{% endif%}"><a href="{% url writer_list %}"><i class="icon-nav-contacts"></i> <span>Writers</span></a></li>
+                    {% endif %}
+                    {% if user.get_profile.is_requester %}
+                        <li class="{% if selected_tab == 'requesters' %}active{% endif%}"><a href="{% url requester_list %}"><i class="icon-nav-contacts"></i> <span>Requesters</span></a></li>
+                    {% endif %}
+                    <li class="{% if selected_tab == 'reports' %}active{% endif%}"><a href=""><i class="icon-nav-reports"></i> <span>Reports</span></a></li>
+                
+                    <li class="{% if selected_tab == 'settings' %}active{% endif%}"><a href=""><i class="icon-nav-advanced"></i> <span>Settings</span></a></li>            
+              </ul>
+            </div>	
+    	</div>
+        <div id="maincolumn" class="span10">
+            <ul id="messages" class="messages">
+                {% block messages %}{% endblock %}
+                {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                {% endfor %}
+            </ul>
+            <div class="content">
+                {% block content %}{% endblock %}
+        	</div> 
+        </div>
     </div>
-    <ul id="messages" class="messages">
-        {% block messages %}{% endblock %}
-        {% for message in messages %}
-        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-        {% endfor %}
-    </ul>
-    <div class="content">
-        {% block content %}{% endblock %}
-	</div> 
     <script type="text/javascript">
 	    $(function() {
 		    $('#navigation a').stop().animate({'marginLeft':'-15px'},1000);
@@ -77,6 +92,7 @@
 		    );
 	    });
     </script>   
+    <!-- I use this for storing data -->
     <div id="ajax-data" style="display:none;"></div> 
 </body>
 </html>
