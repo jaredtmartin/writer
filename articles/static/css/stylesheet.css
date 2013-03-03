@@ -26,7 +26,7 @@
 #article input, #article select{
     width:150px;
 }
-<<<<<<< HEAD
+
 .menu #Nav {
     background: none repeat scroll 0 0 #1D2E37;
     box-shadow: -2px 0 2px #046DBC inset;
@@ -34,7 +34,7 @@
     left: 0;
     position: fixed;
     top: 150px;
-    width: 175px;
+    width: 150px;
     z-index: 99999999;
 }
 .menu #Nav ul li a {
@@ -85,6 +85,7 @@ body{
     font-family:"Segoe UI", sans-serif;
     font-style:normal;
     margin-top: 57px;
+    margin-left: 200px;
 }
 
 .table th {
