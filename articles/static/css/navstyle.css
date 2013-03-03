@@ -249,10 +249,10 @@
 .menu #Nav{
     background:#1d2e37;
     z-index:99999999;
-     position:fixed;
-    top:40px;
-    left:0;
-    width:50px;
+     /*position:fixed;*/
+    /*top:40px;*/
+    /*left:0;*/
+    /*width:50px;*/
     height:100%;
     box-shadow:inset -2px 0 2px #111
 }

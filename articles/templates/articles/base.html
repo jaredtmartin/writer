@@ -32,7 +32,6 @@
 
 
 <body>    
-
     <div id="navbar" class="navbar navbar-inverse navbar-static">
         <div class="navbar-inner">
             <div class="container" style="width: auto;">
@@ -47,143 +46,38 @@
                 </div>
             </div>
         </div>
-        
     </div>
-    <div class="menu">                     
-       <div class="navdiv" id="Nav">
-          <ul class="unstyled">
-                <li class="{% if selected_tab == 'dashboard' %}active{% endif%}"><a href="{% url dashboard %}"><i class="icon-nav-dashboard"></i> <span>Dashboard</span></a></li>
-            
-                <li class="{% if selected_tab == 'articles' %}active{% endif%}"><a href="{% url article_list %}"><i class="icon-nav-receipts"></i> <span>Articles</span></a></li>
-                {% if user.get_profile.is_writer %}
-                    <li class="{% if selected_tab == 'writers' %}active{% endif%}"><a href="{% url writer_list %}"><i class="icon-nav-contacts"></i> <span>Writers</span></a></li>
-                {% endif %}
-                {% if user.get_profile.is_requester %}
-                    <li class="{% if selected_tab == 'requesters' %}active{% endif%}"><a href="{% url requester_list %}"><i class="icon-nav-contacts"></i> <span>Requesters</span></a></li>
-                {% endif %}
-                <li class="{% if selected_tab == 'reports' %}active{% endif%}"><a href=""><i class="icon-nav-reports"></i> <span>Reports</span></a></li>
-            
-                <li class="{% if selected_tab == 'settings' %}active{% endif%}"><a href=""><i class="icon-nav-advanced"></i> <span>Settings</span></a></li>            
-          </ul>
-        </div>	
-	</div>
-    <!-- <div id="sidebar">
-        <form class="search_form" action="" method="GET">                 
-            <input type="text" placeholder="Search" class="search-query" value="{{q}}" name="q" id="search-input"><a href="#" onclick="$('#search_form').submit();"><i class="icon-remove"></i></a>
-        </form>
-         <!-- <div class="accordion" id="accordion2">
-            <div class="accordion-group">
-                <div class="accordion-heading">
-                    <a class="accordion-toggle collapsed" data-parent="#accordion2" href="#collapseOne"> 
-                     Dashboard
-                    </a>
-                        
-                </div>
-            </div>
-            <div class="accordion-group">
-                <div class="accordion-heading">
-                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
-                        Articles
-                    </a>
-                </div>
-                <div id="collapseTwo" class="accordion-body in collapse">
-                    <div class="accordion-inner">
-                        All Articles
-                    </div>
-                    <div class="accordion-inner">
-                         Unavailable
-                    </div>
-                    <div class="accordion-inner">
-                         Available
-                    </div>
-                    <div class="accordion-inner">
-                         Assigned
-                    </div>
-                    <div class="accordion-inner">
-                         Claimed
-                    </div>
-                    <div class="accordion-inner">
-                         Submitted
-                    </div>
-                    <div class="accordion-inner">
-                         Approved
-                    </div>
-                    <div class="accordion-inner">
-                         Rejected
-                    </div>
-                    <div class="accordion-inner">
-                         Published
-                    </div>
-                </div>
-            </div>
-            <div class="accordion-group">
-                <div class="accordion-heading">
-                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion2" href="#collapseThree">
-                        Writers
-                    </a>
-                </div>
-                <div id="collapseThree" class="accordion-body">
-                    <div class="accordion-inner">
-                        All Writers
-                    </div>
-                    <div class="accordion-inner">
-                         My Writers
-                    </div>
-                    <div class="accordion-inner">
-                         Unconfirmed Writers
-                    </div>
-                    <div class="accordion-inner">
-                         Other Writers
-                    </div>
-                </div>
-            </div>
-            <div class="accordion-group">
-                <div class="accordion-heading">
-                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion2" href="#collapseFour">
-                        Requesters
-                    </a>
-                </div>
-                <div id="collapseFour" class="accordion-body collapse">
-                    <div class="accordion-inner">
-                        All Requesters
-                    </div>
-                    <div class="accordion-inner">
-                         My Requesters
-                    </div>
-                    <div class="accordion-inner">
-                         Unconfirmed Requesters
-                    </div>
-                    <div class="accordion-inner">
-                         Other Requesters
-                    </div>
-                </div> -->
-
-
-                     <!-- </li>
-+                     {% block navbar %}{% endblock %}
-+                 </ul>
-+                 {% if user.is_authenticated %}
-+                     <p class="navbar-text pull-right">Hi <a class="navbar-link" href="/users/{{user.username}}/{{user.pk}}/">{{user.full_name}}</a>! <!--(1589/0)--> 
-                            <!-- &nbsp;|&nbsp; <a href="{% url logout %}">Logout</a></p>
-+                 {% else %}
-+                     <p class="navbar-text pull-right">Welcome, guest. &nbsp;|&nbsp; <a class="navbar-link" href="{% url login %}">Log in</a>.</p>
-+                 {% endif %}
-
-                </div>
-             </div> 
-    </div> 
-    <div id="sidebar">
-        {% include "articles/sidebar.html" %}
-    </div>-->
-    <ul id="messages" class="messages">
-        {% block messages %}{% endblock %}
-        {% for message in messages %}
-        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-        {% endfor %}
-    </ul>
-    <div class="content">
-        {% block content %}{% endblock %}
-	</div> 
+    <div class="row-fluid">
+        <div class="menu span2">                     
+           <div class="navdiv" id="Nav">
+              <ul class="unstyled">
+                    <li class="{% if selected_tab == 'dashboard' %}active{% endif%}"><a href="{% url dashboard %}"><i class="icon-nav-dashboard"></i> <span>Dashboard</span></a></li>
+                
+                    <li class="{% if selected_tab == 'articles' %}active{% endif%}"><a href="{% url article_list %}"><i class="icon-nav-receipts"></i> <span>Articles</span></a></li>
+                    {% if user.get_profile.is_writer %}
+                        <li class="{% if selected_tab == 'writers' %}active{% endif%}"><a href="{% url writer_list %}"><i class="icon-nav-contacts"></i> <span>Writers</span></a></li>
+                    {% endif %}
+                    {% if user.get_profile.is_requester %}
+                        <li class="{% if selected_tab == 'requesters' %}active{% endif%}"><a href="{% url requester_list %}"><i class="icon-nav-contacts"></i> <span>Requesters</span></a></li>
+                    {% endif %}
+                    <li class="{% if selected_tab == 'reports' %}active{% endif%}"><a href=""><i class="icon-nav-reports"></i> <span>Reports</span></a></li>
+                
+                    <li class="{% if selected_tab == 'settings' %}active{% endif%}"><a href=""><i class="icon-nav-advanced"></i> <span>Settings</span></a></li>            
+              </ul>
+            </div>	
+    	</div>
+        <div id="maincolumn" class="span10">
+            <ul id="messages" class="messages">
+                {% block messages %}{% endblock %}
+                {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                {% endfor %}
+            </ul>
+            <div class="content">
+                {% block content %}{% endblock %}
+        	</div> 
+        </div>
+    </div>
     <script type="text/javascript">
 	    $(function() {
 		    $('#navigation a').stop().animate({'marginLeft':'-15px'},1000);
@@ -198,6 +92,7 @@
 		    );
 	    });
     </script>   
+    <!-- I use this for storing data -->
     <div id="ajax-data" style="display:none;"></div> 
 </body>
 </html>
