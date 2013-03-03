@@ -22,11 +22,32 @@ function runCode(){
         codeForRows[x]();
     }
 }
-function ajaxUpdateRow(data){                                               // Get last transaction id
+function ajaxUpdateRow(data){
     d=saveDataInCache(data);
     updateMessages(d);                                                                  // Add new messages
     addRows(d);
     runCode();
+}
+function updateClasses(data){
+    var i, x, class, results, result;
+    for (i = 0; i < window.classesToUpdate.length; ++i) {
+        class = window.classesToUpdate[i];
+        results=$('.'+class, data);
+        for (x = 0; x < window.classesToUpdate.length; ++x) {
+            result=results[x];
+            if ($('#'+result.id+":visible").length>0){ // See if the item already exists on the page
+                $('#'+result.id+":visible:first").replaceWith(result);                 // Replace it
+            } else {
+                $('#'+obj_cls+'s').append(result);        // Otherwise add it to the top of the list
+            }
+
+        }
+    }
+}
+function updatePage(data){
+    d=saveDataInCache(data);
+    updateMessages(d);  
+    updateClasses(d);
 }
 function sendAjaxPost(url, data){
     jQuery.post(url, data, success=ajaxUpdateRow);

@@ -1,3 +1,4 @@
+{% if user = article.owner%}
 <script type="text/javascript">
     function insertKeywordInlineForm(data, result){
         $('#keywords-title-row').after(data);
@@ -37,16 +38,29 @@
     });
 </script>
 {{ inline.management_form }}
-<table id="keywords-table" class="table block_content" width="100%" cellspacing="0" cellpadding="0" border="0" style="border: none; margin:0;">
-    <tr id="keywords-title-row">
-        <th><h5>Keyword</h5></th>
-        <th><h5>Url</h5></th>
-        <th><h5>Times</h5></th>
-        <th><h5>Remove</h5></th>
-    </tr>
-    {% for form in inline %}
-        {% include "articles/keyword_inline_form.html" %}
-    {% endfor %}
-</table>
-<button onclick="getKeywordInlineForm();return false;" class="btn">Add Keyword</button>
-
+{% endif %}
+<div class="span12 well">
+    <table id="keywords-table" class="table block_content" width="100%" cellspacing="0" cellpadding="0" border="0" style="border: none; margin:0;">
+	    <tr id="keywords-title-row">
+	        <th><h5>Keyword</h5></th>
+	        <th><h5>Url</h5></th>
+	        <th><h5>Times</h5></th>
+	    </tr>
+        {% if user = article.owner%}
+            {% for form in inline %}
+                {% include "articles/keyword_inline_form.html" %}
+            {% endfor %}
+        {% else %}
+           {% for keyword in article.keyword_set.all %}
+                <tr>
+                    <td>{{ keyword.keyword }}</td>
+                    <td>{{ keyword.url }}</td>
+                    <td>{{ keyword.times }}</td>
+                </tr>
+            {% endfor %}
+        {% endif %}
+	</table>
+    {% if user = article.owner%}
+        <button onclick="getKeywordInlineForm();return false;" class="btn">Add Keyword</button>
+    {% endif %}
+</div>

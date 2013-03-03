@@ -231,7 +231,7 @@ class ArticleList(GetActionsMixin, FilterableListView):
 #         reject_and_release_articles,
 #     ]
 #    queryset = Article.objects.filter(submitted=None)
-    context_object_name = 'available'
+    # context_object_name = 'available'
     search_fields = ['_tags', 'project__name', 'keyword__keyword']
     filter_fields={
         'minimum':FilterWithChoicesFromModel(name='minimum', model=Article),
@@ -282,33 +282,17 @@ class AjaxUpdateMixin(object):
         messages.info(self.request, 'The '+ self.object._meta.verbose_name+' has been updated successfully.')
         return self.render_to_response(self.get_context_data(form=form))
 
-class ProjectCreate(AjaxUpdateMixin, CreateView):
+class ProjectCreate(CreateView):
     # Takes name, owner, and article_id
     # Creates Project with given name and owner and assignes it to article
     # Returns message and article project field with new item selected
     model = Project
-    def form_valid(self, form):
-        self.object = form.save()
-        self.article=None
-        self.article_form=None
-        if 'article' in self.request.POST:
-            try: 
-                # pk=self.request.POST['article']
-                self.article = Article.objects.get(pk=self.request.POST['article'])
-                self.article.project=self.object
-                self.article.save()
-                self.article_form = ArticleForm(instance=self.article)
-            except: 
-                messages.error(self.request, 'We were unable to find the specified article.')
-        if not self.article_form:
-            print "theres no article form"
-            self.article_form = ArticleForm()
-        messages.info(self.request, 'The '+ self.object._meta.verbose_name+' has been created successfully.')
-        return self.render_to_response(self.get_context_data(form=form))
-    def get_context_data(self, **kwargs):
-        kwargs['article_form']=self.article_form
-        kwargs['article']=self.article
-        return super(ProjectCreate, self).get_context_data(**kwargs)
+    # def form_valid(self, form):
+    #     self.object = form.save()
+    #     messages.info(self.request, 'The '+ self.object._meta.verbose_name+' has been created successfully.')
+    #     return self.render_to_response(self.get_context_data(form=form))
+    # def get_context_data(self, **kwargs):
+    #     return super(ProjectCreate, self).get_context_data(**kwargs)
 
 class ProjectList(FilterableListView):
     model = Project
@@ -323,6 +307,10 @@ class ProjectList(FilterableListView):
 class ArticleCreate(LoginRequiredMixin, CreateView):
     template_name = 'articles/article_edit.html'
     model = Article
+    context_object_name = 'article'
+    def get_context_data(self, **kwargs):
+        kwargs['article']=self.object
+        return super(ArticleCreate, self).get_context_data(**kwargs)
 
 class ArticleUpdate(LoginRequiredMixin, UpdateWithInlinesView):
     template_name = 'articles/article_edit.html'

@@ -1,0 +1,92 @@
+{% load addparam %}
+<form class="search_form" action="" method="GET">                 
+    <input type="text" placeholder="Search" class="search-query" value="{{q}}" name="q" id="search-input">
+    <a href="#" onclick="$('#search_form').submit();"><i class="icon-remove"></i></a>
+</form>
+<div class="accordion" id="accordion2">
+    <div class="accordion-group">
+        <div class="accordion-heading">
+            <a class="accordion-toggle collapsed" data-parent="#accordion2" href="#collapseOne">  Dashboard
+            </a>
+                
+        </div>
+    </div>
+    <div class="accordion-group">
+        <div class="accordion-heading">
+            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
+                Articles
+            </a>
+        </div>
+        <div id="collapseTwo" class="accordion-body in collapse">
+            <div class="accordion-inner">
+                <a href="{% url article_list %}">All Articles</a>
+            </div>
+            <div class="accordion-inner">
+                 Unavailable
+            </div>
+            <div class="accordion-inner">
+                 Available
+            </div>
+            <div class="accordion-inner">
+                 <a href="{% url article_list %}?last_action=G">Assigned</a>
+            </div>
+            <div class="accordion-inner">
+                 <a href="{% url article_list %}?last_action=C">Claimed</a>
+            </div>
+            <div class="accordion-inner">
+                 <a href="{% url article_list %}?last_action=S">Submitted</a>
+            </div>
+            <div class="accordion-inner">
+                 <a href="{% url article_list %}?last_action=A">Approved</a>
+            </div>
+            <div class="accordion-inner">
+                 <a href="{% url article_list %}?last_action=X">Rejected</a>
+            </div>
+            <div class="accordion-inner">
+                 <a href="{% url article_list %}?last_action=P">Published</a>
+            </div>
+        </div>
+    </div>
+    <div class="accordion-group">
+        <div class="accordion-heading">
+            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseThree">
+                Writers
+            </a>
+        </div>
+        <div id="collapseThree" class="accordion-body collapse">
+            <div class="accordion-inner">
+                All Writers
+            </div>
+            <div class="accordion-inner">
+                 My Writers
+            </div>
+            <div class="accordion-inner">
+                 Unconfirmed Writers
+            </div>
+            <div class="accordion-inner">
+                 Other Writers
+            </div>
+        </div>
+    </div>
+    <div class="accordion-group">
+        <div class="accordion-heading">
+            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseFour">
+                Requesters
+            </a>
+        </div>
+        <div id="collapseFour" class="accordion-body collapse">
+            <div class="accordion-inner">
+                All Requesters
+            </div>
+            <div class="accordion-inner">
+                 My Requesters
+            </div>
+            <div class="accordion-inner">
+                 Unconfirmed Requesters
+            </div>
+            <div class="accordion-inner">
+                 Other Requesters
+            </div>
+        </div>
+    </div>
+</div>

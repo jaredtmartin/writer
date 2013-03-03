@@ -1,5 +1,2 @@
-{% extends "writeaid_base.html" %}
-
-{% block content %}
-{{form}}
-{% endblock %}
+{% include "articles/messages.html" %}
+<input id="new-project-name" type="hidden" value="{{form.instance.name}}">

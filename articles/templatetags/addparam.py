@@ -4,19 +4,20 @@ register = Library()
 
 class AddParameter(Node):
   def __init__(self, varname, value):
-    if self.quoted(varname): self.varname = varname
+    if self.quoted(varname): self.varname = varname[1:-1]
     else: self.varname = template.Variable(varname)
-    if self.quoted(value): self.value = value
+    if self.quoted(value): self.value = value[1:-1]
     else: self.value = template.Variable(value)
     
   def quoted(self, string):
     return (string[0] == string[-1] and string[0] in ('"', "'"))
+
   def render(self, context):
-    try: varname = self.varname.resolve(context)
-    except:pass
-    try: value = self.value.resolve(context)
-    except:pass
     req = resolve_variable('request',context)
+    try: varname = self.varname.resolve(context)
+    except:varname=self.varname
+    try: value = self.value.resolve(context)
+    except:value=self.value
     params = req.GET.copy()
     params[varname] = value
     return '%s?%s' % (req.path, params.urlencode())
@@ -61,3 +62,11 @@ def removeurlparameter(parser, token):
 #  return RemoveParameter(bits[1])  
 
 register.tag('removeurlparameter', removeurlparameter)
+
+class NoParameters(Node):
+  def render(self, context):
+    req = resolve_variable('request',context)
+    return req.path
+def noparameters(parser, token):
+  return NoParameters()
+register.tag('noparameters', noparameters)

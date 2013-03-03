@@ -1,9 +1,9 @@
 {% for action in actions %}
   {% if action == 'claim' %}
-    <button class="btn btn-small" onclick="doActionOnArticles('{% url claim_articles %}',{{article.id}});return false;" >Claim</button>
+    <button class="btn {{btn_size}}" onclick="doActionOnArticles('{% url claim_articles %}',{{article.id}});return false;" >Claim</button>
   {% elif action == 'assign' %}
     <div class="btn-group">
-      <button class="btn  btn-small dropdown-toggle" data-toggle="dropdown">Assign<span class="caret"></span></button>
+      <button class="btn  {{btn_size}} dropdown-toggle" data-toggle="dropdown">Assign<span class="caret"></span></button>
       <ul class="dropdown-menu">
         {% for writer_relationship in user.writers %}
           {% with writer=writer_relationship.writer %}
@@ -13,16 +13,16 @@
       </ul>
     </div>
   {% elif action == 'submit' %}
-    <button class="btn btn-small" onclick="doActionOnArticles('{% url submit_articles %}',{{article.id}});return false;" >Submit</button>
+    <button class="btn {{btn_size}}" onclick="doActionOnArticles('{% url submit_articles %}',{{article.id}});return false;" >Submit</button>
   {% elif action == 'release' %}
-    <button class="btn btn-small" onclick="doActionOnArticles('{% url release_articles %}',{{article.id}});return false;" >Release</button>
+    <button class="btn {{btn_size}}" onclick="doActionOnArticles('{% url release_articles %}',{{article.id}});return false;" >Release</button>
   {% elif action == 'approve' %}
-    <button class="btn btn-small" onclick="doActionOnArticles('{% url approve_articles %}',{{article.id}});return false;" >Approve</button>
+    <button class="btn {{btn_size}}" onclick="doActionOnArticles('{% url approve_articles %}',{{article.id}});return false;" >Approve</button>
   {% elif action == 'reject' %}
-    <button class="btn btn-small" onclick="window.article_id={{article.id}}; $('#reject-modal').modal('show');return false;" >Reject</button>
+    <button class="btn {{btn_size}}" onclick="window.article_id={{article.id}}; $('#reject-modal').modal('show');return false;" >Reject</button>
   {% elif action == 'tag' %}
-    <button class="btn btn-small" onclick="showTagModal('{{article.id}}', '{{article.tags_as_str}}');return false;" >Tag</button>
+    <button class="btn {{btn_size}}" onclick="showTagModal('{{article.id}}', '{{article.tags_as_str}}');return false;" >Tag</button>
   {% elif action == 'delete' %}
-    <button class="btn btn-small" onclick="showDeleteModal('{{article.id}}');return false;" >Delete</button>
+    <button class="btn {{btn_size}}" onclick="showDeleteModal('{{article.id}}');return false;" >Delete</button>
   {% endif %}
 {% endfor %}
