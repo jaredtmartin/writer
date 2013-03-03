@@ -6,5 +6,74 @@
 {% endblock %}
 
 {% block content %}
-    {% include "articles/article_form.html" %}
+    <div id="article">
+        {{form.errors}}
+        <form action="{{ article.get_absolute_url }}" method="post"> {% csrf_token %}
+        {{form.ID}}
+        <input type="hidden" name="owner" value="{% if article.owner %}{{article.owner.pk}}{% else %}{{user.pk}}{% endif %}">
+        <div class="block">
+            <div class="block_head">
+                <div class="bheadl"></div>
+                <div class="bheadr"></div>
+                <div class="table-header" style="width:90%;">
+                    <h2>{% if article.pk %} Article: {{article.name}} {% else %} New Article {% endif %}</h2>
+                    <div class="non-header" style="float:right;">
+                        <a href="{% url article_list %}">Back to Article List</a>
+                    </div>
+                </div>
+            </div>
+            <div class="block_content">
+                {% if user == article.owner %}
+                    {% include "articles/edit_article_properties_form.html"%}
+                    {% include "articles/article_tags.html" %}
+                    {% with inlines.0 as inline %}
+                        {% include "articles/edit_article_keywords_form.html" %}
+                    {% endwith %}
+                {% else %}
+                    {% include "articles/show_article_properties.html"%}
+                {% endif %}
+                <table class="block_content" width="100%" cellspacing="0" cellpadding="0" border="0" style="border: none; margin:0;">
+                    <tr>
+                        <td>
+                            <ul class="priority">
+                                {% for action in article.available_actions %}
+                                    <a href="#" onclick="jQuery.post('{{article.get_absolute_url}}{{action}}/', success=ajaxUpdateRow);return false;"><li title="" class="blue-keyword">{{action}}</li></a>
+                                {% endfor %}
+                            </ul>
+                        </td>
+                    </tr>
+                </table>
+                {% if article.assigned %}
+                    {% include "articles/article_body.html" %}
+                {% endif %}
+                {% include "articles/confirm_delete.html" %}
+                <table class="block_content" width="100%" cellspacing="0" cellpadding="0" border="0" style="border: none; margin:0;">
+                    <tr>
+                        {% for action in article.available_actions %}
+                            {% if action.1 %}
+                                <td><a id="{{action}}-button" href="#{{action}}-popup"><input type="button" value="{{action.title}}" class="submit long"></a></td>
+                                <div id="delete-popup" style="display:none">
+                                <div id="{{action}}-box">
+                                    {{action.1}}
+                                    <a class="button continue-button" onclick="{{object.get_delete_url}}">{{action}}</a>
+                                </div>
+                            </div>
+                            <script>
+                                $(document).ready(function() {
+                                    $("a#delete-button").fancybox();
+                                });
+                            </script>
+                            {% else %}
+                                <td><a id="{{action}}-button" href="{{article.get_absolute_url}}{{action}}/"><input type="button" value="{{action.title}}" class="submit long"></a></td>
+                            {% endif %}
+                        {% endfor %}
+                        <td><a id="delete-button" href="#delete-popup"><input type="button" value="Delete" class="submit long"></a></td>
+                        <td><div class="aright"><input type="submit" value="Save Article" class="submit long"></div></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="bendl"></div>
+            <div class="bendr"></div>
+        </div>
+    </div>
 {% endblock %}

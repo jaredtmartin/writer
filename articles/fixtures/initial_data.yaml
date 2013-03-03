@@ -1,6 +1,12 @@
-- fields: {name: Blog}
+- fields: {name: Simple Articles}
   model: articles.articletype
   pk: 1
+- fields: {name: Rewrites}
+  model: articles.articletype
+  pk: 2
+- fields: {name: UAW Articles}
+  model: articles.articletype
+  pk: 3
 - fields:
     date_joined: 2012-11-03 18:54:59+00:00
     email: jared@home.com

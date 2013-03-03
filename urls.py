@@ -1,8 +1,9 @@
-from django.conf.urls import patterns, include, url
-from django.views.generic import TemplateView, ListView, DetailView
+from django.conf.urls import patterns, include, url #, redirect_to
+from django.views.generic.simple import redirect_to
+# from django.views.generic import TemplateView, ListView, DetailView
 from django.contrib import admin
 from django.conf import settings
-from django.contrib.auth.views import login
+# from django.contrib.auth.views import login
 admin.autodiscover()
 urlpatterns = patterns('',
     # Examples:
@@ -25,6 +26,9 @@ urlpatterns = patterns('',
     url(r'^accounts/logout/$', 'django.contrib.auth.views.logout_then_login', {'login_url': '/accounts/login/'}, name='logout'),
 #    url(r'^accounts/login/$', login(template_name="login.html"), name='login'),
     url(r'^users/', include('articles.user_urls')),
+    url(r'^$', redirect_to, {'url': '/articles/articles/'}),
+    # url(r'^$','articles.ArticleList.as_view()',name="root"),
+    # url(r'^$', redirect_to, {'url': '/articles/articles/'}),
 )
 
 if settings.DEBUG:

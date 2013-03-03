@@ -19,60 +19,12 @@
     project: 2, published: null, rejected: null, released: null, submitted: null, title: ''}
   model: articles.article
   pk: 2
-- fields:
-    date_joined: 2012-11-17 16:07:33+00:00
-    email: fred@gmail.com
-    first_name: Fred
-    groups: []
-    is_active: true
-    is_staff: false
-    is_superuser: false
-    last_login: 2012-12-21 23:56:24+00:00
-    last_name: Flintstone
-    password: pbkdf2_sha256$10000$S6xpGLC0fIMQ$lSv+fV3BWJVQrw53zvKf6BjNdEPN4PN/ENkXChpJJ5g=
-    user_permissions: []
-    username: fred
-  model: auth.user
-  pk: 2
 - fields: {article: 1, keyword: Chicago Plumber, times: 1, url: www.google.com}
   model: articles.keyword
   pk: 1
 - fields: {article: 2, keyword: Dutch Sailor, times: 1, url: www.google.com}
   model: articles.keyword
   pk: 2
-- fields: {access_token: '', preferred_mode: 1, timezone: '', user: 2}
-  model: articles.userprofile
-  pk: 2
-- fields:
-    date_joined: 2012-11-17 16:07:33+00:00
-    email: writer@gmail.com
-    first_name: Writer
-    groups: []
-    is_active: true
-    is_staff: false
-    is_superuser: false
-    last_login: 2012-12-21 23:56:24+00:00
-    last_name: Writer
-    password: pbkdf2_sha256$10000$S6xpGLC0fIMQ$lSv+fV3BWJVQrw53zvKf6BjNdEPN4PN/ENkXChpJJ5g=
-    user_permissions: []
-    username: writer
-  model: auth.user
-  pk: 3
-- fields:
-    date_joined: 2012-11-17 16:07:33+00:00
-    email: requester@gmail.com
-    first_name: Requester
-    groups: []
-    is_active: true
-    is_staff: false
-    is_superuser: false
-    last_login: 2012-12-21 23:56:24+00:00
-    last_name: Requester
-    password: pbkdf2_sha256$10000$S6xpGLC0fIMQ$lSv+fV3BWJVQrw53zvKf6BjNdEPN4PN/ENkXChpJJ5g=
-    user_permissions: []
-    username: requester
-  model: auth.user
-  pk: 4
 - fields:
     requester: 4
     writer: 3
@@ -87,3 +39,48 @@
     confirmed: true
   model: articles.relationship
   pk: 2
+- fields:
+    date_joined: 2013-02-11 03:11:32+00:00
+    email: 'ralph@gmail.com'
+    first_name: 'Ralph'
+    groups: []
+    is_active: true
+    is_staff: false
+    is_superuser: false
+    last_login: 2013-02-11 03:11:32+00:00
+    last_name: 'Writer'
+    password: pbkdf2_sha256$10000$9artnjluCTkF$zPZk0n3VSnqoAHkoI4RbAuMVq0hTWQzj3wA4fyUQu0s=
+    user_permissions: []
+    username: writer
+  model: auth.user
+  pk: 2
+- fields:
+    date_joined: 2013-02-11 03:11:48+00:00
+    email: 'joe@gmail.com'
+    first_name: 'Joe'
+    groups: []
+    is_active: true
+    is_staff: false
+    is_superuser: false
+    last_login: 2013-02-11 03:11:48+00:00
+    last_name: 'Requester'
+    password: pbkdf2_sha256$10000$ovoHgRxZ9Dvs$6CxdV3o+Edfad1z5B8o5BLwLW4iLVIbulySaz/2ib9M=
+    user_permissions: []
+    username: requester
+  model: auth.user
+  pk: 3
+- fields:
+    date_joined: 2013-02-11 03:11:48+00:00
+    email: ''
+    first_name: 'Fred'
+    groups: []
+    is_active: true
+    is_staff: false
+    is_superuser: false
+    last_login: 2013-02-11 03:11:48+00:00
+    last_name: 'Flintstone'
+    password: pbkdf2_sha256$10000$fjSbFnW4uleX$g07403tGh5NJiYpVB6/TCh3gEW4sHYJG10uwDfg7Qag=
+    user_permissions: []
+    username: fred
+  model: auth.user
+  pk: 4
