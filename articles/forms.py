@@ -77,4 +77,17 @@ class ConfirmRelationshipForm(ModelForm):
         super(ConfirmRelationshipForm, self).save(commit=False)
         self.instance.confirmed=True
         return super(ConfirmRelationshipForm, self).save(commit=True)
-
+class ProjectForm(ModelForm):
+    class Meta:
+        model = Project
+        fields=('name',)
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user')
+        super(ProjectForm, self).__init__(*args, **kwargs)
+    def save(self, commit=True):
+        model = super(ProjectForm, self).save(commit=False)
+        user=self.user.username
+        model.owner = self.user
+        z=model.owner.username
+        if commit: model.save()
+        return model

@@ -43,17 +43,12 @@
                             <li role="presentation"><a href="#" tabindex="-1" role="menuitem">Writer</a></li>
                             <li role="presentation"><a href="#" tabindex="-1" role="menuitem">Requester</a></li>
                         </ul>
-
+                    </li>
                 </div>
             </div>
+        </div>
         
     </div>
-    
-   
-        
-    
-    
-
     <div class="menu">                     
        <div class="navdiv" id="Nav">
           <ul class="unstyled">
@@ -72,7 +67,7 @@
           </ul>
         </div>	
 	</div>
-    <div id="sidebar">
+    <!-- <div id="sidebar">
         <form class="search_form" action="" method="GET">                 
             <input type="text" placeholder="Search" class="search-query" value="{{q}}" name="q" id="search-input"><a href="#" onclick="$('#search_form').submit();"><i class="icon-remove"></i></a>
         </form>
@@ -169,17 +164,17 @@
 +                 </ul>
 +                 {% if user.is_authenticated %}
 +                     <p class="navbar-text pull-right">Hi <a class="navbar-link" href="/users/{{user.username}}/{{user.pk}}/">{{user.full_name}}</a>! <!--(1589/0)--> 
-                            <!-- &nbsp;|&nbsp; <a href="{% url logout %}">Logout</a></p> --> 
+                            <!-- &nbsp;|&nbsp; <a href="{% url logout %}">Logout</a></p>
 +                 {% else %}
 +                     <p class="navbar-text pull-right">Welcome, guest. &nbsp;|&nbsp; <a class="navbar-link" href="{% url login %}">Log in</a>.</p>
 +                 {% endif %}
 
                 </div>
-             </div>
-    </div>
+             </div> 
+    </div> 
     <div id="sidebar">
         {% include "articles/sidebar.html" %}
-    </div>
+    </div>-->
     <ul id="messages" class="messages">
         {% block messages %}{% endblock %}
         {% for message in messages %}

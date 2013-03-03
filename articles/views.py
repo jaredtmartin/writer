@@ -9,7 +9,7 @@ from django.views.generic import FormView #, TemplateView,
 from articles.models import Article, Keyword, Project, ArticleAction, ACTIONS, Relationship
 from django.views.generic.base import View, TemplateResponseMixin
 from articles.forms import RejectForm, ArticleForm, KeywordInlineFormSet, KeywordInlineForm, ConfirmRelationshipForm, \
-TagArticleForm, ActionUserID, AssignToForm, UserForm, UserProfileForm, NoteForm, TagForm, RelationshipForm, \
+TagArticleForm, ActionUserID, AssignToForm, UserForm, UserProfileForm, NoteForm, TagForm, RelationshipForm, ProjectForm, \
 ACT_SUBMIT, ACT_REJECT, ACT_APPROVE, ACT_ASSIGN, ACT_CLAIM, ACT_RELEASE, ACT_PUBLISH, ACT_COMMENT
 
 #from django_actions.views import ActionViewMixin
@@ -282,17 +282,32 @@ class AjaxUpdateMixin(object):
         messages.info(self.request, 'The '+ self.object._meta.verbose_name+' has been updated successfully.')
         return self.render_to_response(self.get_context_data(form=form))
 
-class ProjectCreate(CreateView):
+class ProjectCreate(AjaxUpdateMixin, CreateView):
     # Takes name, owner, and article_id
     # Creates Project with given name and owner and assignes it to article
     # Returns message and article project field with new item selected
     model = Project
+    form_class = ProjectForm
+
     # def form_valid(self, form):
     #     self.object = form.save()
     #     messages.info(self.request, 'The '+ self.object._meta.verbose_name+' has been created successfully.')
     #     return self.render_to_response(self.get_context_data(form=form))
     # def get_context_data(self, **kwargs):
     #     return super(ProjectCreate, self).get_context_data(**kwargs)
+    # def post(self, request, *args, **kwargs):
+    #     return super(ProjectCreate, self).post(request, *args, **kwargs)
+    def form_invalid(self, form):
+        messages.error(self.request, 'Unable to create project with the name given.')
+        messages.error(self.request, form.errors)
+        return super(ProjectCreate, self).form_invalid(form)
+    def get_form_kwargs(self):
+        """
+        Returns the keyword arguments for instanciating the form.
+        """
+        kwargs = super(ProjectCreate, self).get_form_kwargs()
+        kwargs.update({'user': self.request.user})
+        return kwargs
 
 class ProjectList(FilterableListView):
     model = Project
