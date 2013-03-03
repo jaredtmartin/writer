@@ -12,6 +12,33 @@
     text-align: center;
     vertical-align: middle;
 }
+.menu #Nav {
+    background: none repeat scroll 0 0 #1D2E37;
+    box-shadow: -2px 0 2px #046DBC inset;
+    height: 100%;
+    left: 0;
+    position: fixed;
+    top: 150px;
+    width: 175px;
+    z-index: 99999999;
+}
+.menu #Nav ul li a {
+    background-color: #046DBC;
+    background-image: -moz-linear-gradient(center top , #394D57, #31424B);
+    background-repeat: repeat-x;
+    border-bottom: 1px solid #1D2E37;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: -3px 0 1px rgba(0, 0, 0, 0.2) inset;
+    color: #FFFFFF;
+    display: block;
+    font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 20px;
+    padding: 9px 10px;
+    position: relative;
+    text-shadow: 0 -1px 0 #000000;
+}
 .btn-group.open 
 .btn.dropdown-toggle {
     background-color: none;
@@ -51,7 +78,7 @@ a, a:link,a:visited, a:hover, a:active {
   font-weight: normal;
 }
 
-#sidebar{width: 175px; position: absolute; left:0px;top:55px;}
+#sidebar{width: 175px; position: absolute; left:0px;top:100px; margin-left:175px; }
 .header,.btn-tag{ 
     background-color: hsl(206, 95%, 38%) !important;
     background-repeat: repeat-x;

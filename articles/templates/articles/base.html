@@ -62,7 +62,7 @@
     
     
 
-   <!--  <div class="menu">                     
+    <div class="menu">                     
        <div class="navdiv" id="Nav">
           <ul class="unstyled">
                 <li class="{% if selected_tab == 'dashboard' %}active{% endif%}"><a href="{% url dashboard %}"><i class="icon-nav-dashboard"></i> <span>Dashboard</span></a></li>
@@ -79,7 +79,7 @@
                 <li class="{% if selected_tab == 'settings' %}active{% endif%}"><a href=""><i class="icon-nav-advanced"></i> <span>Settings</span></a></li>            
           </ul>
         </div>	
-	</div> -->
+	</div>
     <div id="sidebar">
         <form class="search_form" action="" method="GET">                 
             <input type="text" placeholder="Search" class="search-query" value="{{q}}" name="q" id="search-input"><a href="#" onclick="$('#search_form').submit();"><i class="icon-remove"></i></a>
