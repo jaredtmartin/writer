@@ -125,7 +125,12 @@ class GetActionsMixin(object):
         return context
     def get_actions(self):
         return self.actions
-        
+class FormWithUserMixin(object):
+    def get_form_kwargs(self):
+        # Passes user to the form
+        kwargs = super(FormWithUserMixin, self).get_form_kwargs()
+        kwargs.update({'user': self.request.user})
+        return kwargs
 class PostActionsView(TemplateResponseMixin, View):
     template_name = "articles/ajax_article_list_row.html"
     model = Article
@@ -282,7 +287,7 @@ class AjaxUpdateMixin(object):
         messages.info(self.request, 'The '+ self.object._meta.verbose_name+' has been updated successfully.')
         return self.render_to_response(self.get_context_data(form=form))
 
-class ProjectCreate(AjaxUpdateMixin, CreateView):
+class ProjectCreate(FormWithUserMixin, AjaxUpdateMixin, CreateView):
     # Takes name, owner, and article_id
     # Creates Project with given name and owner and assignes it to article
     # Returns message and article project field with new item selected
@@ -301,13 +306,6 @@ class ProjectCreate(AjaxUpdateMixin, CreateView):
         messages.error(self.request, 'Unable to create project with the name given.')
         messages.error(self.request, form.errors)
         return super(ProjectCreate, self).form_invalid(form)
-    def get_form_kwargs(self):
-        """
-        Returns the keyword arguments for instanciating the form.
-        """
-        kwargs = super(ProjectCreate, self).get_form_kwargs()
-        kwargs.update({'user': self.request.user})
-        return kwargs
 
 class ProjectList(FilterableListView):
     model = Project
@@ -319,15 +317,16 @@ class ProjectList(FilterableListView):
         kwargs['selected_tab']='projects'
         return super(ProjectList, self).get_context_data(**kwargs)
 
-class ArticleCreate(LoginRequiredMixin, CreateView):
+class ArticleCreate(FormWithUserMixin, LoginRequiredMixin, CreateView):
     template_name = 'articles/article_edit.html'
     model = Article
+    form_class=ArticleForm
     context_object_name = 'article'
     def get_context_data(self, **kwargs):
         kwargs['article']=self.object
         return super(ArticleCreate, self).get_context_data(**kwargs)
 
-class ArticleUpdate(LoginRequiredMixin, UpdateWithInlinesView):
+class ArticleUpdate(FormWithUserMixin, LoginRequiredMixin, UpdateWithInlinesView):
     template_name = 'articles/article_edit.html'
     model = Article
     form_class=ArticleForm
