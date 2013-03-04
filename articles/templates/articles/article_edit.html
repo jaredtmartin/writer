@@ -68,7 +68,7 @@
             <div class="row-fluid">
             </div>
             <div class="row-fluid">
-                <div class="span2">Tags: {% if user = article.owner %}<a href="#">(Change)</a>{% endif %}</div>
+                <div class="span2">Tags: {% if user = article.owner or not article.pk %}<a href="#">(Change)</a>{% endif %}</div>
                 <div class="span4" id="tags-list">
                     {% for tag in article.tags %}
                         {% if tag %}
