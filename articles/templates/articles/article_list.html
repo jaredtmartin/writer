@@ -1,6 +1,6 @@
 {% extends 'articles/base.html' %}
 {% block navbar %}
-  <li><a role="button" href="{% url article_add %}">Add Article</a></li>
+  <li><a href="{% url article_add %}">Add Articles</a></li>
 {% endblock %}
 {% block js %}
 	<script type='text/javascript' src='{{STATIC_URL}}js/actions.js'></script>
