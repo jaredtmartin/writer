@@ -60,11 +60,11 @@ class CreateArticles(BaseFunctionalTest):
         article_type_dropdown.select_by_visible_text("Simple Articles");
 
         # He sees a link to create a 'new' project, so he clicks it
-        new_project_link = self.browser.find_element_by_link_text('New Project')
-        new_project_link.click()
-        # He sees the New Project Dialog
-        body = self.browser.find_element_by_tag_name('body')
-        self.assertIn('Type the name of your new project', body.text)
+        # new_project_link = self.browser.find_element_by_link_text('New Project')
+        # new_project_link.click()
+        # # He sees the New Project Dialog
+        # body = self.browser.find_element_by_tag_name('body')
+        # self.assertIn('Type the name of your new project', body.text)
         # He types in "Big Project" in the name field
         new_project_name_field = self.browser.find_element_by_name('project_name')
         new_project_name_field.send_keys("Big Project")

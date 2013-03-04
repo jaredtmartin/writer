@@ -1,16 +1,47 @@
 from articles.models import *
-from django.forms import ModelForm, DateField, ChoiceField, IntegerField, Form, ModelChoiceField, CharField, ModelMultipleChoiceField
+from django.forms import ModelForm, DateField, ValidationError, ChoiceField, IntegerField, Form, ModelChoiceField, CharField, ModelMultipleChoiceField
 from extra_views import InlineFormSet
 from articles.widgets import SelectWithFlexibleOptionLabels
 from django.utils.encoding import smart_unicode
 import pytz
 
+class FormWithLookupsMixin(object):
+    lookup_field_names={}
+    def auto_create_related_object(self, data, field_name, model):
+        lookup_field=self.lookup_field_names[field_name]
+        return model.objects.create(**{lookup_field:data})
 
-class ArticleForm(ModelForm):
+    def fetch_object_from_lookup(self, data, field_name, model):
+        lookup_field=self.lookup_field_names[field_name]
+        return model.objects.filter(**{lookup_field:data}).get()
+
+    def clean_lookup(self, name, model, by_pk=False, title=None, auto_create=False):
+        if not title: title=name
+        data = self.cleaned_data[name]
+        if (not data) and (not self.fields[name].required): return data
+        try: return self.fetch_object_from_lookup(data, name, model)
+        except model.MultipleObjectsReturned: 
+            raise ValidationError('There are more than one %ss with the name %s. Resolve this issue and try again.' % (title, data))
+        except model.DoesNotExist: 
+            if auto_create: return self.auto_create_related_object(data, name, model)
+            else: raise ValidationError('Unable to find %s in the list of %ss.' % (data, title))
+
+class ArticleForm(FormWithLookupsMixin, ModelForm):
     class Meta:
         model = Article
         fields = ('minimum','maximum','article_type','project','title','body', 'owner')
-#        ['minimum', 'maximum', 'body', 'title', 'article_type', 'project', 'tags', 'owner', 'last_action', 'published', 'approved', 'submitted', 'assigned', 'rejected', 'released']
+    lookup_field_names = {'project':'name'}
+    project = CharField(required=False)
+    def clean_project(self):
+        # Looksup project by name and creates it if it doesnt exist
+        return self.clean_lookup('project', Project, auto_create=True)
+    def auto_create_related_object(self, data, field_name, model):
+        # creates the new project with the user as owner
+        return Project.objects.create(name=data, owner=self.user)
+    def __init__(self, *args, **kwargs):
+        # Recieves user from request
+        self.user = kwargs.pop('user')
+        super(ArticleForm, self).__init__(*args, **kwargs)
         
 class KeywordInlineFormSet(InlineFormSet):
     model = Keyword
@@ -86,8 +117,6 @@ class ProjectForm(ModelForm):
         super(ProjectForm, self).__init__(*args, **kwargs)
     def save(self, commit=True):
         model = super(ProjectForm, self).save(commit=False)
-        user=self.user.username
         model.owner = self.user
-        z=model.owner.username
         if commit: model.save()
         return model

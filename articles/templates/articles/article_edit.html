@@ -62,8 +62,8 @@
                 <div class="span3">{{ form.article_type }}</div>
                 <div class="span3">Project</div>
                 <div class="span3">
-                    <input id="id_project" name="project" type="text" data-provide="typeahead" data-source='{% project_list %}'>
-                <a href="#new-project-modal" class="btn btn-small btn-success" role="button" data-toggle="modal"><i class="icon-plus icon-white"></i></a></div>
+                    <input id="id_project" name="project" type="text" value="{{ article.project }}" data-provide="typeahead" data-source='{% project_list %}'>
+                </div>
             </div>
             <div class="row-fluid">
                 {% include "articles/edit_articles_tags.html" %}
@@ -102,7 +102,7 @@
             </div>
         </div>
     </div>
-    <div id="new-project-modal" class="modal  fade">
+    <!-- <div id="new-project-modal" class="modal  fade">
         <form id="new-project-form">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -117,5 +117,5 @@
                 <a href="#" class="btn btn-primary" onclick="$('#new-project-modal').modal('hide');">Cancel</a>
             </div>
         </form>
-    </div>
+    </div> -->
 {% endblock %}
