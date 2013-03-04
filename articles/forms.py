@@ -1,5 +1,7 @@
 from articles.models import *
-from django.forms import ModelForm, DateField, ValidationError, ChoiceField, IntegerField, Form, ModelChoiceField, CharField, ModelMultipleChoiceField
+from django.forms import ModelForm, DateField, ValidationError, ChoiceField, \
+    IntegerField, Form, ModelChoiceField, CharField, ModelMultipleChoiceField, \
+    widgets
 from extra_views import InlineFormSet
 from articles.widgets import SelectWithFlexibleOptionLabels
 from django.utils.encoding import smart_unicode
@@ -29,9 +31,13 @@ class FormWithLookupsMixin(object):
 class ArticleForm(FormWithLookupsMixin, ModelForm):
     class Meta:
         model = Article
-        fields = ('minimum','maximum','article_type','project','title','body', 'owner')
+        fields = ('minimum','maximum','article_type','project','title','body', 'owner','number_of_articles','article_notes','review_notes','description')
     lookup_field_names = {'project':'name'}
     project = CharField(required=False)
+    article_notes = CharField(widget=widgets.Textarea(attrs={'class':'notes'}))
+    review_notes = CharField(widget=widgets.Textarea(attrs={'class':'notes'}))
+    description = CharField(widget=widgets.Textarea(attrs={'class':'notes'}))
+    number_of_articles = IntegerField(required=False)
     def clean_project(self):
         # Looksup project by name and creates it if it doesnt exist
         return self.clean_lookup('project', Project, auto_create=True)
@@ -42,6 +48,16 @@ class ArticleForm(FormWithLookupsMixin, ModelForm):
         # Recieves user from request
         self.user = kwargs.pop('user')
         super(ArticleForm, self).__init__(*args, **kwargs)
+    def save(self, commit=True):
+        model = super(ArticleForm, self).save(commit=False)
+        # If number_of_articles was specified, clone the model that many times
+        if 'number_of_articles' in self.cleaned_data and self.cleaned_data['number_of_articles']:
+            # Do one less since we already had one instance
+            for x in xrange(self.cleaned_data['number_of_articles']-1):
+                model.pk=None
+                model.save()
+        if commit: model.save()
+        return model
         
 class KeywordInlineFormSet(InlineFormSet):
     model = Keyword

@@ -1,5 +1,15 @@
 @import "bootstrap.css";
 @import "bootstrap-responsive.css";
+.input-label{
+    text-align: right;
+}
+#content{
+    margin-right: 50px;
+}
+.notes{
+    width:100%;
+    height:30px;
+}
 .btn-success{
     vertical-align: top;
 }
