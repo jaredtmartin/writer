@@ -320,6 +320,7 @@ class ProjectList(FilterableListView):
 class ArticleCreate(FormWithUserMixin, LoginRequiredMixin, CreateView):
     template_name = 'articles/article_edit.html'
     model = Article
+    form_class=ArticleForm
     context_object_name = 'article'
     def get_context_data(self, **kwargs):
         kwargs['article']=self.object
