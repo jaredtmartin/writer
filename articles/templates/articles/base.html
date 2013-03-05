@@ -36,6 +36,13 @@
         <div class="navbar-inner">
             <div class="container" style="width: auto;">
                 <a class="brand" href="#">WriterAxis</a>
+                <p class="navbar-text pull-right">
+                    {% if user.is_authenticated %}
+                        Hi <a href="/users/{{user.username}}/{{user.pk}}/">{{user.full_name}}</a>! <!--(1589/0)--> &nbsp;|&nbsp; <a href="{% url logout %}">Logout</a>
+                    {% else %}
+                        Welcome, guest. <!--(1589/0)--> &nbsp;|&nbsp; <a href="{% url login %}">Log in</a>.
+                    {% endif %}
+                </p>
                 <ul class="nav">
                     <li><a id="drop1" class="dropdown-toggle" data-toggle="dropdown" role="button" href="#">Requester <span class="caret"></span></a>
                         <ul aria-labelledby="drop1" role="menu" class="dropdown-menu">
@@ -51,7 +58,7 @@
     <div class="row-fluid">
         <div class="menu span2">                     
            <div class="navdiv" id="Nav">
-              <ul class="unstyled">
+                <ul class="unstyled">
                     <li class="{% if selected_tab == 'dashboard' %}active{% endif%}"><a href="{% url dashboard %}"><i class="icon-nav-dashboard"></i> <span>Dashboard</span></a></li>
                 
                     <li class="{% if selected_tab == 'articles' %}active{% endif%}"><a href="{% url article_list %}"><i class="icon-nav-receipts"></i> <span>Articles</span></a></li>
@@ -64,9 +71,10 @@
                     <li class="{% if selected_tab == 'reports' %}active{% endif%}"><a href=""><i class="icon-nav-reports"></i> <span>Reports</span></a></li>
                 
                     <li class="{% if selected_tab == 'settings' %}active{% endif%}"><a href=""><i class="icon-nav-advanced"></i> <span>Settings</span></a></li>            
-              </ul>
+                </ul>
             </div>	
     	</div>
+
         <div id="maincolumn" class="span10">
             <ul id="messages" class="messages">
                 {% block messages %}{% endblock %}
@@ -74,11 +82,12 @@
                 <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
                 {% endfor %}
             </ul>
-            <div class="content">
+            <div id="content">
                 {% block content %}{% endblock %}
         	</div> 
         </div>
     </div>
+
     <script type="text/javascript">
 	    $(function() {
 		    $('#navigation a').stop().animate({'marginLeft':'-15px'},1000);
@@ -93,7 +102,8 @@
 		    );
 	    });
     </script>   
-    <!-- I use this for storing data -->
-    <div id="ajax-data" style="display:none;"></div> 
+    
+     <div id="ajax-data" style="display:none;"></div> 
 </body>
 </html>
+ 

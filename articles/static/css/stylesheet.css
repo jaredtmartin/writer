@@ -1,5 +1,15 @@
 @import "bootstrap.css";
 @import "bootstrap-responsive.css";
+.input-label{
+    text-align: right;
+}
+#content{
+    margin-right: 50px;
+}
+.notes{
+    width:100%;
+    height:30px;
+}
 .btn-success{
     vertical-align: top;
 }
@@ -13,7 +23,7 @@
     text-shadow:none;
 }
 .navbar {
-    font-size: 1.25em;
+    font-size: 25px;
 }
 .navbar [role=button]{
     color:white !important;
@@ -21,6 +31,7 @@
 .header, .header .btn{
     padding:10px;
     font-size: 30px;
+    font:"Segoe UI", sans-serif;
     color: white;
 }
 #article input, #article select{
@@ -46,7 +57,7 @@
     box-shadow: -3px 0 1px rgba(0, 0, 0, 0.2) inset;
     color: #FFFFFF;
     display: block;
-    font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-family: "Segoe UI",sans-serif;
     font-size: 15px;
     font-weight: 600;
     line-height: 20px;
@@ -198,6 +209,7 @@ display:inline-block;
 .header{
     border-top:0px solid #7abad9;
     border-bottom:1px solid #73b6d6;
+   
 /*    box-shadow:inset -2px 0 2px rgba(0,0,0,0.15);
     display: block; */
     /*height: 49px; */

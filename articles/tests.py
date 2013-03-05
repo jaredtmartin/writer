@@ -58,22 +58,18 @@ class CreateArticles(BaseFunctionalTest):
         article_type_dropdown = Select(self.browser.find_element_by_name('article_type'))
         # Select Simple Articles    
         article_type_dropdown.select_by_visible_text("Simple Articles");
-
-        # He sees a link to create a 'new' project, so he clicks it
-        # new_project_link = self.browser.find_element_by_link_text('New Project')
-        # new_project_link.click()
-        # # He sees the New Project Dialog
-        # body = self.browser.find_element_by_tag_name('body')
-        # self.assertIn('Type the name of your new project', body.text)
-        # He types in "Big Project" in the name field
-        new_project_name_field = self.browser.find_element_by_name('project_name')
-        new_project_name_field.send_keys("Big Project")
-        new_project_name_field.send_keys(Keys.RETURN)
-        self.browser.implicitly_wait(3)
-        # Click on Create Project
-        create_project_button = self.browser.find_element_by_link_text('Create Project')
-        create_project_button.click()
-        # (New Project Dialog Disappears and the name of the project appears in the form)
+        # He types in "Big Project" in the project name field
+        self.browser.find_element_by_name('project').send_keys("Big Project")
+        # Fill Description with "A simple article"
+        self.browser.find_element_by_name('description').send_keys("A simple article")
+        # Set the Due Date to Next Week
+        # Set number of Articles to 10
+        self.browser.find_element_by_name('number_of_articles').send_keys("10")
+        # Fill Article Notes with "Be sure to use good grammar."
+        self.browser.find_element_by_name('article_notes').send_keys("Be sure to use good grammar.")
+        # Fill Review Notes with "Make sure they used good grammar"
+        self.browser.find_element_by_name('review_notes').send_keys("Make sure they used good grammar")
+        # Fill Tags with "High, Rush"
         self.fail('Finished this test')
 class LoginTest(BaseFunctionalTest):
     def test_can_login(self):
@@ -98,12 +94,6 @@ class LoginTest(BaseFunctionalTest):
         self.fail('Finish this test')
     def test_with_bad_password(self):
         self.fail('Finish this test')
-# Fill Description with "A simple article"
-# Set the Due Date to Next Week
-# Set number of Articles to 10
-# Fill Article Notes with "Be sure to use good grammar."
-# Fill Review Notes with "Make sure they used good grammar"
-# Fill Tags with "High, Rush"
 # Keywords:
 # Fill keyword with "Austin Plumber"
 # Fill URL with "www.austinplumber.com"
