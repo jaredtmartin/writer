@@ -235,9 +235,22 @@ class Article(ValidationModelMixin, models.Model):
     article_type = models.ForeignKey(ArticleType, related_name='articles')
     project = models.ForeignKey(Project, related_name='articles', null=True, blank=True)
     _tags = models.CharField(max_length=128, blank=True, default="")
-    owner = models.ForeignKey(User, related_name='articles')
+    
+    owner       = models.ForeignKey(User, related_name='articles_owned')
+    writer      = models.ForeignKey(User, null=True, blank=True, related_name='articles_writing')
+    reviewer    = models.ForeignKey(User, null=True, blank=True, related_name='articles_reviewing')
+    
+    last_action = models.ForeignKey(ArticleAction, null=True, blank=True, related_name='last_action_articles')
+    published   = models.ForeignKey(ArticleAction, null=True, blank=True, related_name='published_articles')
+    approved    = models.ForeignKey(ArticleAction, null=True, blank=True, related_name='approved_articles')
+    submitted   = models.ForeignKey(ArticleAction, null=True, blank=True, related_name='submitted_articles')
+    # assigned    = models.ForeignKey(ArticleAction, null=True, blank=True, related_name='assigned_articles')
+    rejected    = models.ForeignKey(ArticleAction, null=True, blank=True, related_name='rejected_articles')
+    # released    = models.ForeignKey(ArticleAction, null=True, blank=True, related_name='released_articles')
+    
     expires = models.DateTimeField(blank=True, null=True)
     deleted = models.BooleanField(default=False, blank=True)
+    released = models.BooleanField(default=False, blank=True)
     description = models.TextField(max_length=256, blank=True, default="")
     article_notes = models.CharField(max_length=128, blank=True, default="")
     review_notes = models.CharField(max_length=128, blank=True, default="")
@@ -274,27 +287,8 @@ class Article(ValidationModelMixin, models.Model):
         if self.last_action: return self.last_action.get_code_display()
         return u"New"
     
-    last_action = models.ForeignKey(ArticleAction, null=True, blank=True, related_name='last_action_articles')
-    published   = models.ForeignKey(ArticleAction, null=True, blank=True, related_name='published_articles')
-    approved    = models.ForeignKey(ArticleAction, null=True, blank=True, related_name='approved_articles')
-    submitted   = models.ForeignKey(ArticleAction, null=True, blank=True, related_name='submitted_articles')
-    assigned    = models.ForeignKey(ArticleAction, null=True, blank=True, related_name='assigned_articles')
-    rejected    = models.ForeignKey(ArticleAction, null=True, blank=True, related_name='rejected_articles')
-    released    = models.ForeignKey(ArticleAction, null=True, blank=True, related_name='released_articles')
     class ArticleWorkflowException(Exception): pass
     ATTRIBUTES={'publish':ACT_PUBLISH,'approved':ACT_APPROVE,'submitted':ACT_SUBMIT,'assigned':ACT_ASSIGN,'rejected':ACT_REJECT,'released':ACT_RELEASE}
-    # def add_action(self, action):
-    #     action.articles.add(self)
-    #     if action.code == ACT_SUBMIT:     self.submitted = action
-    #     elif action.code == ACT_REJECT:   self.rejected = action
-    #     elif action.code == ACT_APPROVE:  self.approved = action
-    #     elif action.code == ACT_ASSIGN:   self.assigned = action
-    #     elif action.code == ACT_CLAIM:    self.assigned = action
-    #     elif action.code == ACT_RELEASE:  self.released = action
-    #     elif action.code == ACT_PUBLISH:  self.published = action
-    #     elif action.code == ACT_COMMENT:  self.commented = action
-    #     self.last_action = action
-    #     self.save()
 
     def get_available_actions(self, user):
         try: status= self.last_action.code
@@ -310,100 +304,6 @@ class Article(ValidationModelMixin, models.Model):
         elif status == None or status == ACT_RELEASE or status == ACT_REJECT: return ['claim',]
         return []
             
-#     def change_status(self, attribute='', code=None, user=None, author=None, comment="", save=True, req=True, clear=[], error="Undefined Workflow Error"):
-#         if req and attribute in Article.ATTRIBUTES.keys():
-#             if not author: author=self.assigned.author
-#             if not code: code=Article.ATTRIBUTES[attribute]
-#             action = ArticleAction.objects.create(
-#                 code=code, 
-#                 user=user, 
-#                 author=author, 
-#                 comment=comment,
-#                 timezone=user.get_profile().timezone,
-#             )
-#             ArticlesActions.objects.create(action=action, article=self)
-#             setattr(self, attribute, action)
-#             self.last_action=action
-#             for attr in clear: setattr(self, attr, None)
-#             if save: self.save()
-#         else: raise self.ArticleWorkflowException(error)
-
-            
-#     def approve(self, user=None, comment="", save=True):
-#         self.change_status(
-#             attribute='approved',
-#             comment=comment,
-#             save=save,
-#             req=self.submitted,
-#             user=user, 
-#             error="This article cannot be approved until it has been submitted."
-#         )
-#     def reject(self, user=None, comment="", save=True):
-#         self.change_status(
-#             attribute='rejected',
-#             comment=comment,
-#             save=save,
-#             req=self.submitted,
-#             user=user, 
-#             clear=['approved','submitted','assigned'],
-#             error="This article cannot be rejected until it has been submitted."
-#         )
-#     def publish(self, user=None, comment="", save=True):
-#         self.change_status(
-#             attribute='published',
-#             comment=comment,
-#             save=save,
-#             user=user, 
-#             req=self.approved,
-#             error="This article cannot be published until it has been approved."
-#         )
-#     def submit(self, user=None, comment="", save=True):
-#         self.change_status(
-#             attribute='submitted',
-#             comment=comment,
-#             save=save,
-#             user=user, 
-#             req=(not self.submitted),
-#             author=user,
-#             clear=['rejected'],
-#             error="This article has already been submitted."
-#         )
-#     def release(self, user=None, comment="", save=True):
-#         self.change_status(
-#             attribute='released',
-#             comment=comment,
-#             save=save,
-#             user=user, 
-#             req=self.assigned,
-#             clear = ['assigned'],
-#             error="This article has not been assigned or claimed."
-#         )
-#     def assign(self, author, user=None, comment="", save=True):
-#         self.change_status(
-#             attribute='assigned',
-#             author=author,
-#             comment=comment,
-#             save=save,
-#             user=user, 
-#             req=(not self.assigned),
-# #            clear = ['assigned'],
-#             error="This article has already been assigned or claimed."
-#         )
-#     def claim(self, user=None, comment="", save=True):
-#         self.change_status(
-#             attribute='assigned',
-#             comment=comment,
-#             author=user,
-#             user=user, 
-#             code=ACT_CLAIM,
-#             save=save,
-#             req=(not self.assigned),
-# #            clear = ['assigned'],
-#             error="This article has already been assigned or claimed."
-#         )
-    # def reject_and_release(self, user=None, comment="", save=True):
-    #     self.reject(user=user, comment=comment, save=False)
-    #     self.release(user=user, comment=comment, save=save)
     @property
     def klass(self):return self.article_type.name
     @property
@@ -442,10 +342,6 @@ class Article(ValidationModelMixin, models.Model):
     @models.permalink
     def get_delete_url(self):
         return ('article_delete', [self.id,])
-
-# class ArticlesActions(models.Model):
-#     article = models.ForeignKey(Article)
-#     action = models.ForeignKey(ArticleAction)
 
 class Keyword(models.Model):
     article = models.ForeignKey(Article)

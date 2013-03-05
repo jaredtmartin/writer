@@ -95,6 +95,11 @@
                         {% include "articles/edit_article_keywords_form.html" %}
                     {% endwith %}
                 </div>
+            {% else %}
+            <div class="row-fluid">
+                <div class="span2">Number of Articles</div>
+                <div class="span4">{{form.number_of_articles}}</div>
+            </div>
             {% endif %}
         {% else %}
             <div class="row-fluid">
