@@ -234,7 +234,7 @@ class Article(ValidationModelMixin, models.Model):
     title = models.CharField(max_length=256, blank=True, default="")
     article_type = models.ForeignKey(ArticleType, related_name='articles')
     project = models.ForeignKey(Project, related_name='articles', null=True, blank=True)
-    _tags = models.CharField(max_length=128, blank=True, default="")
+    tags = models.CharField(max_length=128, blank=True, default="")
     
     owner       = models.ForeignKey(User, related_name='articles_owned')
     writer      = models.ForeignKey(User, null=True, blank=True, related_name='articles_writing')
@@ -273,15 +273,15 @@ class Article(ValidationModelMixin, models.Model):
 #    )
 
     def get_tags(self):
-        return self._tags.split(',')
+        return self.tags.split(',')
     def set_tags(self, value):
         if type(value)==list:
-            self._tags=",".join(set(value))
-        else: self._tags=value
-    @property
-    def tags_as_str(self):
-        return self._tags
-    tags=property(get_tags, set_tags)
+            self.tags=",".join(set(value))
+        else: self.tags=value
+    # @property
+    # def tags_as_list(self):
+    #     return self._tags
+    tags_as_list=property(get_tags, set_tags)
     @property
     def status(self): 
         if self.last_action: return self.last_action.get_code_display()

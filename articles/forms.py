@@ -31,7 +31,7 @@ class FormWithLookupsMixin(object):
 class ArticleForm(FormWithLookupsMixin, ModelForm):
     class Meta:
         model = Article
-        fields = ('minimum','maximum','article_type','project','title','body', 'owner','number_of_articles','article_notes','review_notes','description')
+        fields = ('tags', 'minimum','maximum','article_type','project','title','body', 'owner','number_of_articles','article_notes','review_notes','description')
     lookup_field_names = {'project':'name'}
     project = CharField(required=False)
     article_notes = CharField(widget=widgets.Textarea(attrs={'class':'notes'}))
@@ -111,7 +111,7 @@ class UserProfileForm(ModelForm):
 class TagArticleForm(ModelForm):
     class Meta:
         model = Article
-        fields = ('_tags',)
+        fields = ('tags',)
 class RelationshipForm(ModelForm):
     class Meta:
         model = Relationship
