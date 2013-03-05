@@ -1,6 +1,6 @@
 .menu a{
     color:#1296d6;
-    font-family:"Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-family:"Segoe UI",sans-serif;
     font-size:inherit;
     font-weight:600;
     line-height:inherit;
@@ -43,7 +43,7 @@
     color:#999
 }
 .menu h1{
-    font-family:"Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-family:"Segoe UI",sans-serif;
     font-size:30px;
     font-weight:normal;
     line-height:30px;

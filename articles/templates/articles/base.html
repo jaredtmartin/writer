@@ -58,7 +58,7 @@
     <div class="row-fluid">
         <div class="menu span2">                     
            <div class="navdiv" id="Nav">
-              <ul class="unstyled">
+                <ul class="unstyled">
                     <li class="{% if selected_tab == 'dashboard' %}active{% endif%}"><a href="{% url dashboard %}"><i class="icon-nav-dashboard"></i> <span>Dashboard</span></a></li>
                 
                     <li class="{% if selected_tab == 'articles' %}active{% endif%}"><a href="{% url article_list %}"><i class="icon-nav-receipts"></i> <span>Articles</span></a></li>
@@ -71,9 +71,10 @@
                     <li class="{% if selected_tab == 'reports' %}active{% endif%}"><a href=""><i class="icon-nav-reports"></i> <span>Reports</span></a></li>
                 
                     <li class="{% if selected_tab == 'settings' %}active{% endif%}"><a href=""><i class="icon-nav-advanced"></i> <span>Settings</span></a></li>            
-              </ul>
+                </ul>
             </div>	
     	</div>
+
         <div id="maincolumn" class="span10">
             <ul id="messages" class="messages">
                 {% block messages %}{% endblock %}
@@ -86,6 +87,7 @@
         	</div> 
         </div>
     </div>
+
     <script type="text/javascript">
 	    $(function() {
 		    $('#navigation a').stop().animate({'marginLeft':'-15px'},1000);
@@ -100,7 +102,8 @@
 		    );
 	    });
     </script>   
-    <!-- I use this for storing data -->
-    <div id="ajax-data" style="display:none;"></div> 
+    
+     <div id="ajax-data" style="display:none;"></div> 
 </body>
 </html>
+ 
