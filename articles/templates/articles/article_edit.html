@@ -68,14 +68,8 @@
             <div class="row-fluid">
             </div>
             <div class="row-fluid">
-                <div class="span2">Tags: {% if user = article.owner or not article.pk %}<a href="#">(Change)</a>{% endif %}</div>
-                <div class="span4" id="tags-list">
-                    {% for tag in article.tags %}
-                        {% if tag %}
-                            <a class="badge badge-small btn-tag" href="{% url article_list %}?q={{tag}}" title="Click here to see all articles with this tag">{{tag}}</a>
-                        {% endif %}
-                    {% endfor %}
-                </div>
+                <div class="span2">Tags:</div>
+                <div class="span4">{{form.tags}}</div>
                 
                 <div class="span2">Description</div>
                 <div class="span4">{{form.description}}</div>
@@ -95,6 +89,11 @@
                         {% include "articles/edit_article_keywords_form.html" %}
                     {% endwith %}
                 </div>
+            {% else %}
+            <div class="row-fluid">
+                <div class="span2">Number of Articles</div>
+                <div class="span4">{{form.number_of_articles}}</div>
+            </div>
             {% endif %}
         {% else %}
             <div class="row-fluid">
@@ -145,4 +144,5 @@
             </div>
         </form>
     </div> -->
+
 {% endblock %}

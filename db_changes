@@ -1,3 +1,13 @@
+alter table articles_article add column `writer_id` integer NOT NULL;
+alter table articles_article add column `reviewer_id` integer NOT NULL;
+alter table articles_article change column `released` `released` bool NOT NULL;
+alter table articles_article add column `description` longtext NOT NULL;
+alter table articles_article add column `article_notes` varchar(128) NOT NULL;
+alter table articles_article add column `review_notes` varchar(128) NOT NULL;
+alter table articles_article change column `_tags` `tags` varchar(128) NOT NULL;
+
+
+
 alter table articles_article add column `deleted` bool NOT NULL;
 
 

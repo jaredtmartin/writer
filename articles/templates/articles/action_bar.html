@@ -6,7 +6,7 @@
         {% for writer_relationship in user.writers %}
           {% with writer=writer_relationship.writer %}
             <li>
-        		<a tabindex="-1" href="#" onclick="assignArticles('{% url assign_articles %}', {{writer.id}}); return false;">{{writer}}</a>
+        		<a tabindex="-1" href="#" onclick="assignArticles('{% url assign_writer %}', {{writer.id}}); return false;">{{writer}}</a>
           	</li>
           {% endwith %}
         {% endfor %}
