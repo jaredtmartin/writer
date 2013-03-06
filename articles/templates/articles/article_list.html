@@ -46,8 +46,9 @@
             </tr>
           </thead>
           <tbody>
-                        {% include "articles/article_list_row.html" %}
-          
+            {% for article in object_list %}
+              {% include "articles/article_list_row.html" %}
+            {% endfor %}
           </tbody>
         </table>
       </form>
