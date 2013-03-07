@@ -19,7 +19,7 @@ from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.core.urlresolvers import reverse_lazy
-from extra_views import UpdateWithInlinesView #, CreateWithInlinesView, 
+from extra_views import UpdateWithInlinesView, CreateWithInlinesView 
 # import django_filters
 # from actions import *
 # from django import template
@@ -212,15 +212,6 @@ class ProjectCreate(FormWithUserMixin, AjaxUpdateMixin, CreateView):
     # Returns message and article project field with new item selected
     model = Project
     form_class = ProjectForm
-
-    # def form_valid(self, form):
-    #     self.object = form.save()
-    #     messages.info(self.request, 'The '+ self.object._meta.verbose_name+' has been created successfully.')
-    #     return self.render_to_response(self.get_context_data(form=form))
-    # def get_context_data(self, **kwargs):
-    #     return super(ProjectCreate, self).get_context_data(**kwargs)
-    # def post(self, request, *args, **kwargs):
-    #     return super(ProjectCreate, self).post(request, *args, **kwargs)
     def form_invalid(self, form):
         messages.error(self.request, 'Unable to create project with the name given.')
         messages.error(self.request, form.errors)
@@ -236,19 +227,43 @@ class ProjectList(FilterableListView):
         kwargs['selected_tab']='projects'
         return super(ProjectList, self).get_context_data(**kwargs)
 
-class ArticleCreate(FormWithUserMixin, LoginRequiredMixin, CreateView):
+class ArticleCreate(FormWithUserMixin, LoginRequiredMixin, CreateWithInlinesView):
     template_name = 'articles/article_edit.html'
     model = Article
     form_class=ArticleForm
     context_object_name = 'article'
+    inlines = [KeywordInlineFormSet]
+    success_url = reverse_lazy('article_list')
     def get_context_data(self, **kwargs):
         kwargs['article']=self.object
         return super(ArticleCreate, self).get_context_data(**kwargs)
+    def forms_valid(self, form, inlines):
+        response = super(ArticleCreate, self).forms_valid(form, inlines)
+        # If number_of_articles was specified, clone the model that many times
+        if 'number_of_articles' in form.cleaned_data and form.cleaned_data['number_of_articles']:
+            print "self.object = %s" % str(self.object)
+            print "self.object.keywords = %s" % str(self.object.keywords)
+            print "self.object.pk = %s" % str(self.object.pk)
+            keywords = list(self.object.keyword_set.all())
+            # Do one less since we already had one instance
+            for x in xrange(form.cleaned_data['number_of_articles']-1):
+                self.object.pk = None
+                self.object.save()
+                print "self.object.pk = %s" % str(self.object.pk)
+                for keyword in keywords:
+                    keyword.pk = None
+                    keyword.article = self.object
+                    keyword.save()
+                    print "keyword.pk = %s" % str(keyword.pk)
+                    print "keyword.article_id = %s" % str(keyword.article_id)
+        return response
 
 class ArticleUpdate(FormWithUserMixin, LoginRequiredMixin, UpdateWithInlinesView):
     template_name = 'articles/article_edit.html'
     model = Article
-    form_class=ArticleForm
+    form_class = ArticleForm
+    extra = 1
+    max_num = 1
     inlines = [KeywordInlineFormSet]
 
 # class ArticleDelete(LoginRequiredMixin, DeleteView):

@@ -34,9 +34,9 @@ class ArticleForm(FormWithLookupsMixin, ModelForm):
         fields = ('tags', 'minimum','maximum','article_type','project','title','body', 'owner','number_of_articles','article_notes','review_notes','description')
     lookup_field_names = {'project':'name'}
     project = CharField(required=False)
-    article_notes = CharField(widget=widgets.Textarea(attrs={'class':'notes'}))
-    review_notes = CharField(widget=widgets.Textarea(attrs={'class':'notes'}))
-    description = CharField(widget=widgets.Textarea(attrs={'class':'notes'}))
+    article_notes = CharField(widget=widgets.Textarea(attrs={'class':'notes'}), required=False)
+    review_notes = CharField(widget=widgets.Textarea(attrs={'class':'notes'}), required=False)
+    description = CharField(widget=widgets.Textarea(attrs={'class':'notes'}), required=False)
     number_of_articles = IntegerField(required=False)
     def clean_project(self):
         # Looksup project by name and creates it if it doesnt exist
@@ -48,20 +48,9 @@ class ArticleForm(FormWithLookupsMixin, ModelForm):
         # Recieves user from request
         self.user = kwargs.pop('user')
         super(ArticleForm, self).__init__(*args, **kwargs)
-    def save(self, commit=True):
-        model = super(ArticleForm, self).save(commit=False)
-        # If number_of_articles was specified, clone the model that many times
-        if 'number_of_articles' in self.cleaned_data and self.cleaned_data['number_of_articles']:
-            # Do one less since we already had one instance
-            for x in xrange(self.cleaned_data['number_of_articles']-1):
-                model.pk=None
-                model.save()
-        if commit: model.save()
-        return model
         
 class KeywordInlineFormSet(InlineFormSet):
     model = Keyword
-    extra=0
 
 class KeywordInlineForm(Form):
     num = IntegerField(min_value=0)
