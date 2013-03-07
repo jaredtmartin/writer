@@ -4,7 +4,7 @@
 - fields: {name: Large Project, owner: 1}
   model: articles.project
   pk: 2
-- fields: {_tags: 'World, Ride, John', approved: null, article_type: 1, writer: null,
+- fields: {tags: 'World, Ride, John', approved: null, article_type: 1, writer: null,
     body: "<p>Can <span style=\"background-color: #ffff00;\">you</span> hear the words\
       \ <strong>coming</strong> out of my <span style=\"color: #ff0000;\">mouth</span>?&nbsp;\
       \ I really <span style=\"text-decoration: underline;\"><strong>hope</strong></span>\
@@ -14,7 +14,7 @@
     project: 1, published: null, rejected: null, released: True, submitted: null, title: Jumper}
   model: articles.article
   pk: 1
-- fields: {_tags: 'Red, Green, Yellow', approved: null, article_type: 1, writer: null,
+- fields: {tags: 'Red, Green, Yellow', approved: null, article_type: 1, writer: null,
     body: '', expires: null, last_action: null, maximum: 0, minimum: 100, owner: 1,
     project: 2, published: null, rejected: null, released: True, submitted: null, title: ''}
   model: articles.article
