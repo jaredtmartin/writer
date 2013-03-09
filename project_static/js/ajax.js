@@ -3,7 +3,7 @@ function saveDataInCache(data){
     return $('#ajax-data').append(data);                                               // Add new data to cache
 }
 function updateMessages(data){
-    $('.message').remove();
+    $('.message:visible').remove();
     $('.message', d).appendTo($('#messages'))
 }
 function addRows(data){
