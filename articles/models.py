@@ -14,34 +14,41 @@ def CamelToWords(name):
     s1 = re.sub('(.)([A-Z][a-z]+)', r'\1 \2', name)
     return re.sub('([a-z0-9])([A-Z])', r'\1 \2', s1)
     
-ACT_SUBMIT = "S"  # When author finishes writing
-ACT_REJECT = "X"  # When the user does not accept the article
-ACT_APPROVE = "A" # When the user accepts the article
-ACT_ASSIGN = "G"  # When the user assigns the article to a writer
-ACT_CLAIM = "C"   # When a writer claims an article
-ACT_RELEASE = "R" # When a user releases an article that was either claimed or assigned
-ACT_PUBLISH = "P" # When the article has been published
-ACT_COMMENT = "M" # When reviewing and a comment should be added
+ACT_SUBMIT          = "S"  # When author finishes writing
+ACT_REJECT          = "X"  # When the user does not accept the article
+ACT_APPROVE         = "A" # When the user accepts the article
+ACT_WRITER          = "W"  # When the user assigns the article to a writer
+ACT_REVIEWER        = "V"  # When the user assigns the article to a reviewer
+ACT_CLAIM           = "C"   # When a writer claims an article
+ACT_RELEASE         = "R" # When a user releases an article that was either claimed or assigned
+ACT_PUBLISH         = "P" # When the article has been published
+ACT_COMMENT         = "M" # When reviewing and a comment should be added
+ACT_REMOVE_REVIEWER = "A"
+ACT_REMOVE_WRITER   = "B"
 
 ACTIONS = (
     (ACT_SUBMIT, 'Submitted'),
     (ACT_REJECT, 'Rejected'),
     (ACT_APPROVE, 'Approved'),
-    (ACT_ASSIGN, 'Assigned'),
+    (ACT_WRITER, 'Assigned'),
     (ACT_CLAIM, 'Claimed'),
-    (ACT_RELEASE, 'Released'),
+    (ACT_RELEASE, 'Made Available'),
     (ACT_PUBLISH, 'Published'),
     (ACT_COMMENT, 'Commented On'),
+    (ACT_REVIEWER, 'Assigned'),
+    (ACT_REMOVE_WRITER, 'Removed Writer'),
+    (ACT_REMOVE_REVIEWER, 'Removed Reviewer'),
+
 )
 
 WRITER_MODE = 1
 REQUESTER_MODE = 2 
-DUAL_MODE = 3
+REVIEWER_MODE = 3
 
 USER_MODES = (
     (WRITER_MODE, 'Writer'),
     (REQUESTER_MODE, 'Requester'),
-    (DUAL_MODE, 'Both'),
+    (REVIEWER_MODE, 'Reviewer'),
 )
         
 class TestOutlet(PluginModel):
@@ -192,33 +199,63 @@ def user_full_name(self):
     return "%s %s" % (self.first_name,self.last_name)
 User.full_name = property(user_full_name)
 def user_writers(self):
-    return self.writer_relationships.filter(confirmed=True)
+    return self.relationships_as_requester.filter(confirmed=True, writer__isnull=False)
 User.writers = property(user_writers)
 def user_requesters(self):
-    return self.requester_relationships.filter(confirmed=True)
+    return Relationship.objects.filter((Q(writer=self)|Q(reviewer=self)) & Q(confirmed=True))
 User.requesters = property(user_requesters)
+def user_reviewers(self):
+    return self.relationships_as_requester.filter(confirmed=True, reviewer__isnull=False)
+User.reviewers = property(user_reviewers)
 
 def is_requester(self): return self.get_profile().is_requester
 def is_writer(self): return self.get_profile().is_writer
+def is_reviewer(self): return self.get_profile().is_reviewer
 User.is_requester=property(is_requester)
 User.is_writer=property(is_writer)
+User.is_reviewer=property(is_reviewer)
+
+def get_user_mode(self):
+    return self.get_profile().preferred_mode
+def set_user_mode(self, value):
+    p = self.get_profile()
+    p.preferred_mode = value
+    print "p = %s" % str(p)
+    print "value = %s" % str(value)
+    print "p.preferred_mode = %s" % str(p.preferred_mode)
+    p.save()
+    print "p.preferred_mode = %s" % str(p.preferred_mode)
+User.mode=property(get_user_mode, set_user_mode)
+
+def get_user_mode_display(self):
+    return self.get_profile().get_preferred_mode_display()
+User.mode_display = property(get_user_mode_display)
 
 class Relationship(ValidationModelMixin, models.Model):
-    requester = models.ForeignKey(User, related_name='writer_relationships')
-    writer = models.ForeignKey(User, related_name='requester_relationships')
+    requester = models.ForeignKey(User, related_name='relationships_as_requester')
+    writer = models.ForeignKey(User, related_name='relationships_as_writer', null=True, blank=True)
+    reviewer = models.ForeignKey(User, related_name='relationships_as_reviewer', null=True, blank=True)
     created_by = models.ForeignKey(User, related_name='friend_requests')
     confirmed = models.BooleanField(default=False, blank=True)
     objects = models.Manager()
     pending_objects = UnconfirmedRelationshipManager()
     confirmed_objects = ConfirmedRelationshipManager()
+    @property
+    def worker(self):
+        if self.writer: return self.writer
+        else: return self.reviewer
+    @property
+    def verb(self):
+        if self.writer: return "writes"
+        else: return "reviews"
     def __unicode__(self): 
         if self.confirmed:
-            return "%s writes for %s" % (self.writer.full_name, self.requester.full_name)
+            return "%s %s for %s" % (self.worker.full_name, self.verb, self.requester.full_name)
         else:
             if self.created_by==self.requester: 
-                return "%s requested %s to write for him" % (self.created_by.full_name, self.writer.full_name)
+                return "%s requested %s to %s for him" % (self.created_by.full_name, self.verb, self.worker.full_name)
             else:
-                return "%s requested to write for %s" % (self.created_by.full_name, self.requester.full_name)
+                return "%s requested to %s for %s" % (self.created_by.full_name, self.verb, self.requester.full_name)
     @models.permalink
     def get_delete_url(self):
         return ('relationship_delete', [self.id,])
@@ -288,7 +325,7 @@ class Article(ValidationModelMixin, models.Model):
         return u"New"
     
     class ArticleWorkflowException(Exception): pass
-    ATTRIBUTES={'publish':ACT_PUBLISH,'approved':ACT_APPROVE,'submitted':ACT_SUBMIT,'assigned':ACT_ASSIGN,'rejected':ACT_REJECT,'released':ACT_RELEASE}
+    # ATTRIBUTES={'publish':ACT_PUBLISH,'approved':ACT_APPROVE,'submitted':ACT_SUBMIT,'assigned':ACT_ASSIGN,'rejected':ACT_REJECT,'released':ACT_RELEASE}
 
     def get_available_actions(self, user):
         try: status= self.last_action.code
@@ -359,10 +396,13 @@ class UserProfile(models.Model):
 
     @property
     def is_requester(self):
-        return self.preferred_mode >= REQUESTER_MODE
+        return self.preferred_mode == REQUESTER_MODE
     @property
     def is_writer(self):
-        return self.preferred_mode in [WRITER_MODE, DUAL_MODE]
+        return self.preferred_mode == WRITER_MODE
+    @property
+    def is_reviewer(self):
+        return self.preferred_mode == REVIEWER_MODE
     @property
     def graph(self): return facebook.GraphAPI(self.access_token)
 

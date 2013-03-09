@@ -63,7 +63,7 @@ class ArticleAdmin(admin.ModelAdmin):
     list_filter=('project','minimum')
     search_fields = ['project']
     inlines = [KeywordInline]
-    actions = [approve, reject, publish, submit, release, claim, reject_and_release]
+    # actions = [approve, reject, publish, submit, release, claim, reject_and_release]
     
 admin.site.register(Article, ArticleAdmin)
 admin.site.register(ArticleType)

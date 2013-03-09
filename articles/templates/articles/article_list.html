@@ -1,4 +1,5 @@
 {% extends 'articles/base.html' %}
+{% load actions %}
 {% block navbar %}
   <li><a href="{% url article_add %}">Add Article</a></li>
 {% endblock %}
@@ -7,102 +8,102 @@
   <script type='text/javascript' src='{{STATIC_URL}}js/ajax.js'></script>
 {% endblock js %}
 {% block content %}   
-<div class="row-fluid">
-   <!--  <div class="span2 filteroptions" style="border:none;background-color:#F9F9F9; height:100%;">
-	    <div class="block-fluid" style="border:none; height:100%;">
-		    <ul class="sList" style="border:none; height:355px;">
-			    <li>
-			        <form class="search_form" action="" method="GET">
-				        <input type="text" placeholder="Search" class="search-query" value="{{q}}" name="q" id="search-input">
-                            <a href="#" onclick="$('#search_form').submit();"><i class="icon-remove"></i></a>
-			        </form>
-			    </li>
-			    <li>All Articles</li>
-			    <li>Unavailable</li>
-			    <li>Available</li>
-			    <li>Assigned</li>
-			    <li>Claimed</li>
-			    <li>Submitted</li>
-			    <li>Approved</li>
-			    <li>Rejected</li>
-			    <li>Published</li>
-		    </ul>                                                
-	    </div>
-  </div> -->
-  <div class="span10" style="position:relative;">
-    <h1>Articles List</h1>
-    {% include "articles/action_bar.html"%}
-    <div class="block-fluid table-sorting" style="border:none; ">
-      <form class="actions-form" id="actions-form" method="post" action="">{% csrf_token %}
-        <table cellpadding="0" cellspacing="0" width="100%" class="table" id="articles">
-          <thead>
-            <tr class="table-header-row">
-              <th width="3%"><input type="checkbox" id="checkall" name="checkall" onClick="toggleMaster();" /></th>
-              <th class="column-header">Project</th>
-              <th class="column-header">Keywords</th>
-              <th class="column-header">Tags</th>
-              <th class="column-header">Status</th>  
-              <th></th>         
-            </tr>
-          </thead>
-          <tbody>
-            {% for article in object_list %}
-              {% include "articles/article_list_row.html" %}
-            {% endfor %}
-          </tbody>
-        </table>
-      </form>
+  <div class="row-fluid">
+     <!--  <div class="span2 filteroptions" style="border:none;background-color:#F9F9F9; height:100%;">
+  	    <div class="block-fluid" style="border:none; height:100%;">
+  		    <ul class="sList" style="border:none; height:355px;">
+  			    <li>
+  			        <form class="search_form" action="" method="GET">
+  				        <input type="text" placeholder="Search" class="search-query" value="{{q}}" name="q" id="search-input">
+                              <a href="#" onclick="$('#search_form').submit();"><i class="icon-remove"></i></a>
+  			        </form>
+  			    </li>
+  			    <li>All Articles</li>
+  			    <li>Unavailable</li>
+  			    <li>Available</li>
+  			    <li>Assigned</li>
+  			    <li>Claimed</li>
+  			    <li>Submitted</li>
+  			    <li>Approved</li>
+  			    <li>Rejected</li>
+  			    <li>Published</li>
+  		    </ul>                                                
+  	    </div>
+    </div> -->
+    <div class="span10" style="position:relative;">
+      <h1>Articles List</h1>
+      {% include "articles/action_bar.html"%}
+      <div class="block-fluid table-sorting" style="border:none; ">
+        <form class="actions-form" id="actions-form" method="post" action="">{% csrf_token %}
+          <table cellpadding="0" cellspacing="0" width="100%" class="table" id="articles">
+            <thead>
+              <tr class="table-header-row">
+                <th width="3%"><input type="checkbox" id="checkall" name="checkall" onClick="toggleMaster();" /></th>
+                <th class="column-header">Project</th>
+                <th class="column-header">Keywords</th>
+                <th class="column-header">Tags</th>
+                <th class="column-header">Status</th>  
+                <th></th>         
+              </tr>
+            </thead>
+            <tbody>
+              {% for article in object_list %}
+                {% include "articles/article_list_row.html" %}
+              {% endfor %}
+            </tbody>
+          </table>
+        </form>
+      </div>
     </div>
   </div>
-</div>
-<script>
-    $(document).ready(function(){
-        window.row_selector='.article';
-        showOrHideActionBar();
-        checked_rows = $('.article :checked');
-        if (checked_rows.length>0){selectRows(checked_rows.parents('tr'));}
-        $('.tag-popover').popover(html=true, content=$('#tag-popover-html'));
-    });
-</script>
-<div id="tag-modal" class="modal hide fade">
-  <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-    <h3>Change Tags</h3>
+  <script>
+      $(document).ready(function(){
+          window.row_selector='.article';
+          showOrHideActionBar();
+          checked_rows = $('.article :checked');
+          if (checked_rows.length>0){selectRows(checked_rows.parents('tr'));}
+          $('.tag-popover').popover(html=true, content=$('#tag-popover-html'));
+      });
+  </script>
+  <div id="tag-modal" class="modal hide fade">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+      <h3>Change Tags</h3>
+    </div>
+    <div class="modal-body">
+      <p>List the tags for this article separated by commas.</p>
+      <input id="tag_input" name="tags" value="{{article.tags_as_str}}">
+    </div>
+    <div class="modal-footer">
+      <a href="#" class="btn btn-primary" onclick="saveTags();return false;">Save</a>
+      <a href="#" class="btn btn-primary" onclick="$('#tag-modal').modal('hide');">Cancel</a>
+    </div>
   </div>
-  <div class="modal-body">
-    <p>List the tags for this article separated by commas.</p>
-    <input id="tag_input" name="tags" value="{{article.tags_as_str}}">
+  <div id="reject-modal" class="modal hide fade">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+      <h3>Reject Article</h3>
+    </div>
+    <div class="modal-body">
+      <p>Please provide a brief explanation for rejecting the article.</p>
+      <input id="reject_input">
+    </div>
+    <div class="modal-footer">
+      <a href="#" class="btn btn-primary" onclick="rejectArticle();return false;">Save</a>
+      <a href="#" class="btn btn-primary" onclick="$('#reject-modal').modal('hide');">Cancel</a>
+    </div>
   </div>
-  <div class="modal-footer">
-    <a href="#" class="btn btn-primary" onclick="saveTags();return false;">Save</a>
-    <a href="#" class="btn btn-primary" onclick="$('#tag-modal').modal('hide');">Cancel</a>
+  <div id="delete-modal" class="modal hide fade">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+      <h3>Delete Article</h3>
+    </div>
+    <div class="modal-body">
+      <p>Are you sure you want to delete this article?</p>
+    </div>
+    <div class="modal-footer">
+      <a href="#" class="btn btn-primary" onclick="$('#delete-modal').modal('hide');doActionOnArticles('{% url delete_articles %}');return false;">Yes</a>
+      <a href="#" class="btn btn-primary" onclick="$('#delete-modal').modal('hide');">No</a>
+    </div>
   </div>
-</div>
-<div id="reject-modal" class="modal hide fade">
-  <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-    <h3>Reject Article</h3>
-  </div>
-  <div class="modal-body">
-    <p>Please provide a brief explanation for rejecting the article.</p>
-    <input id="reject_input">
-  </div>
-  <div class="modal-footer">
-    <a href="#" class="btn btn-primary" onclick="rejectArticle();return false;">Save</a>
-    <a href="#" class="btn btn-primary" onclick="$('#reject-modal').modal('hide');">Cancel</a>
-  </div>
-</div>
-<div id="delete-modal" class="modal hide fade">
-  <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-    <h3>Delete Article</h3>
-  </div>
-  <div class="modal-body">
-    <p>Are you sure you want to delete this article?</p>
-  </div>
-  <div class="modal-footer">
-    <a href="#" class="btn btn-primary" onclick="$('#delete-modal').modal('hide');jQuery.post(window.ajax_url, {as_row:'True'}, success=ajaxUpdateRow);return false;">Yes</a>
-    <a href="#" class="btn btn-primary" onclick="$('#delete-modal').modal('hide');">No</a>
-  </div>
-</div>
 {% endblock %}

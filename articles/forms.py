@@ -85,7 +85,7 @@ class ModelChoiceFieldTitleLabels(ModelChoiceField):
     
 class AssignToForm(Form):
 #    assign_to_user = ModelChoiceFieldWithFlexibleChoiceLabels(queryset=User.objects.all(), pre_label="Assign to ")
-    assign_to_user = ModelChoiceFieldTitleLabels(queryset=User.objects.all(), empty_label="Assign select articles to:")
+    user = ModelChoiceFieldTitleLabels(queryset=User.objects.all(), empty_label="Assign select articles to:")
 def get_timezone_choices():
         return [(t,t) for t in pytz.common_timezones]
 class UserForm(ModelForm):
@@ -125,3 +125,6 @@ class ProjectForm(ModelForm):
         model.owner = self.user
         if commit: model.save()
         return model
+class UserModeForm(Form):
+    mode = IntegerField(min_value=1, max_value=3)
+    next = CharField(max_length=128, required=False)

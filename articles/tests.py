@@ -32,7 +32,8 @@ class AdminTest(BaseFunctionalTest):
         self.assertIn('Django administration', body.text)
 
 class CreateArticles(BaseFunctionalTest):
-    def test_can_create_a_simple_article(self):
+
+    def test_can_create_a_simple_set_of_articles(self):
         # John opens his browser and types www.writeraxis.com
         self.browser.get(self.live_server_url)
         # He is greeted and gets the articles list
@@ -50,7 +51,6 @@ class CreateArticles(BaseFunctionalTest):
         self.browser.find_element_by_id('login-submit').click()
         # password_field.send_keys(Keys.RETURN)
 
-        self.browser.implicitly_wait(3)
         # Should be greeted
         body = self.browser.find_element_by_tag_name('body')
         self.assertIn('Hi Joe Requester!', body.text)
@@ -65,7 +65,7 @@ class CreateArticles(BaseFunctionalTest):
         # Set the Due Date to Next Week
         # TODO: Add Due Date
         # Set number of Articles to 10
-        self.browser.find_element_by_name('number_of_articles').send_keys("3")
+        self.browser.find_element_by_name('number_of_articles').send_keys("5")
         # Fill Article Notes with "Be sure to use good grammar."
         self.browser.find_element_by_name('article_notes').send_keys("Be sure to use good grammar.")
         # Fill Review Notes with "Make sure they used good grammar"
@@ -78,14 +78,39 @@ class CreateArticles(BaseFunctionalTest):
         self.browser.find_element_by_name('keyword_set-0-url').send_keys("www.google.com")
         # He clickes the Save button
         self.browser.find_element_by_id('save-btn').click()
-        # He waits while he is brought to the article list page
-        self.browser.implicitly_wait(3)
+        # He sees his 3 articles there
+        new_article_links = self.browser.find_elements_by_link_text("Atlanta Plumber")
+  
+        # self.browser.save_screenshot('screenie2.png')
+        # He clicks on the user mode dropdown
+        self.browser.find_element_by_id('user-mode-dropdown').click()
+        # Then he selects the requester mode
+        self.browser.find_element_by_id('requester-mode-link').click()
+        # All five of the articles should be "new"
+        self.assertEquals(len(self.browser.find_elements_by_class_name('status-new')), 7)
+        # He checks the first box
+        checkboxes = self.browser.find_elements_by_class_name('action-select')
+        checkboxes[0].click()
+        # Then he clicks on the assign dropdown
+        self.browser.find_element_by_id('assign-writer-button').click()
+        # Then he sees the name of his writer.
+        self.browser.find_element_by_link_text('Ralph Writer').click()
+        # Now only four of the articles should be "new"
+        self.assertEquals(len(self.browser.find_elements_by_class_name('status-new')), 6)
+        # And one should be Assigned
+        self.assertEquals(len(self.browser.find_elements_by_class_name('status-assigned')), 1)
+        
+         
+
+    def test_writing_an_article(self):
+        # John opens his browser and types www.writeraxis.com
+        self.browser.get(self.live_server_url)
         # He sees his 3 articles there
         new_article_links = self.browser.find_elements_by_link_text("Atlanta Plumber")
         print "new_article_links = %s" % str(new_article_links)
         self.browser.save_screenshot('screenie.png')
-        self.assertEquals(len(new_article_links), 3)
-
+        self.assertEquals(len(new_article_links), 5)
+        new_article_links[0].click()
     def test_creating_projects(self):
         pass
     def test_creating_articles_without_notes(self):

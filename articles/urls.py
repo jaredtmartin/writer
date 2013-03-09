@@ -14,16 +14,21 @@ urlpatterns = patterns('',
     url(r'^project/(?P<pk>\d+)/delete/$',       ProjectDelete.as_view(),        name='project_delete'),
     url(r'^project/add/$',                      ProjectCreate.as_view(),        name='new_project'),
 
-    url(r'^articles/claim/$',                   ClaimArticles.as_view(),        name='claim_articles'),
+    url(r'^articles/claimaswriter/$',           ClaimArticlesAsWriter.as_view(),  name='claim_articles_as_writer'),
+    url(r'^articles/claimasreviewer/$',         ClaimArticlesAsReviewer.as_view(), name='claim_articles_as_reviewer'),
     url(r'^articles/assignwriter/$',            AssignWriterToArticles.as_view(),name='assign_writer'),
     url(r'^articles/assignreviewer/$',          AssignReviewerToArticles.as_view(),name='assign_reviewer'),
     url(r'^articles/reject/$',                  RejectArticles.as_view(),       name='reject_articles'),
-    url(r'^articles/release/$',                 ReleaseArticles.as_view(),      name='release_articles'),
+    url(r'^articles/releasewriter/$',           ReleaseWriter.as_view(),        name='release_writer'),
+    url(r'^articles/releasereviewer/$',         ReleaseReviewer.as_view(),      name='release_reviewer'),
+    url(r'^articles/initialrelease/$',          InitialRelease.as_view(),       name='initial_release_articles'),
     url(r'^articles/approve/$',                 ApproveArticles.as_view(),      name='approve_articles'),
     url(r'^articles/submit/$',                  SubmitArticles.as_view(),       name='submit_articles'),
     url(r'^articles/tag/$',                     TagArticles.as_view(),          name='tag_articles'),
     url(r'^articles/delete/$',                  DeleteArticles.as_view(),       name='delete_articles'),
 
+    
+    url(r'^user/mode/$',                        ChangeModeView.as_view(),       name='change_user_mode'),
     
     url(r'^requester/add/$',                    AddRequester.as_view(),         name='requester_add'),
     url(r'^writer/add/$',                       AddWriter.as_view(),            name='writer_add'),

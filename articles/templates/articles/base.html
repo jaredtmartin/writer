@@ -1,3 +1,4 @@
+{% load addparam %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -40,14 +41,18 @@
                     {% if user.is_authenticated %}
                         Hi <a href="/users/{{user.username}}/{{user.pk}}/">{{user.full_name}}</a>! <!--(1589/0)--> &nbsp;|&nbsp; <a href="{% url logout %}">Logout</a>
                     {% else %}
-                        Welcome, guest. <!--(1589/0)--> &nbsp;|&nbsp; <a href="{% url login %}">Log in</a>.
+                        {% include "articles/login.html" %}
                     {% endif %}
                 </p>
+                <form id="user-mode-form" method="POST" action="{% url change_user_mode %}">
+                    <input id="user-mode-input" type="hidden" name="mode" value="">
+                </form>
                 <ul class="nav">
-                    <li><a id="drop1" class="dropdown-toggle" data-toggle="dropdown" role="button" href="#">Requester <span class="caret"></span></a>
+                    <li><a id="user-mode-dropdown" class="dropdown-toggle" data-toggle="dropdown" role="button" href="#">{{user.mode_display}} <span class="caret"></span></a>
                         <ul aria-labelledby="drop1" role="menu" class="dropdown-menu">
-                            <li role="presentation"><a href="#" tabindex="-1" role="menuitem">Writer</a></li>
-                            <li role="presentation"><a href="#" tabindex="-1" role="menuitem">Requester</a></li>
+                            <li role="presentation"><a id="writer-mode-link" href="#" onclick="$('#user-mode-input').val('1');$('#user-mode-form').submit();" tabindex="-1" role="menuitem">Writer</a></li>
+                            <li role="presentation"><a id="reviewer-mode-link" href="#" onclick="$('#user-mode-input').val('3');$('#user-mode-form').submit();" tabindex="-1" role="menuitem">Reviewer</a></li>
+                            <li role="presentation"><a id="requester-mode-link" href="#" onclick="$('#user-mode-input').val('2');$('#user-mode-form').submit();" tabindex="-1" role="menuitem">Requester</a></li>
                         </ul>
                     </li>
                     {% block navbar %}{% endblock %}

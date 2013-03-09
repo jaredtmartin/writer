@@ -11,7 +11,7 @@
     </ul>
   </td>
   <td>{% if article.assigned %}<a href="{{article.assigned.author.get_absolute_url}}">{{article.assigned.author.username.title}}</a>{% else %}Nobody{% endif %}</td>              
-  <td title="{{article.status}}" class="q_desc">{{article.status}}</td>
+  <td title="{{article.status}}" class="status-{{article.status}}">{{article.status}}</td>
   <td align="right" style="text-align: right;">
     <ul align="right" class="priority">
         {% for action in article.available_actions %}

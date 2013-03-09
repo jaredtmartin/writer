@@ -1,6 +1,6 @@
 function checkallTheBox()
 	{
-		if(document.myform["checkall"].checked)
+		if(document.actions-form["checkall"].checked)
 		{
 			//alert("nowchecked");
 			checkAllBoxes();
@@ -8,7 +8,7 @@ function checkallTheBox()
 			acdiv.style.display='block';
 			for (var i=0; i < 10; i++)
 			{
-				document.myform["checkboxes[]"][i].checked;
+				document.actions-form["checkboxes[]"][i].checked;
 				var idnumber = i+1;
 				var maketr = "rw" + idnumber;
 				//alert(maketr);
@@ -25,7 +25,7 @@ function checkallTheBox()
 			acdiv.style.display='none';
 			for (var i=0; i < 10; i++)
 			{
-				document.myform["checkboxes[]"][i].checked;
+				document.actions-form["checkboxes[]"][i].checked;
 				var idnumber = i+1;
 				var maketr = "rw" + idnumber;
 				//alert(maketr);
@@ -41,9 +41,9 @@ function checkallTheBox()
 		var acdiv = document.getElementById('topactionbar');
 		for (var i=0; i < 10; i++)
 		{
-			if(document.myform["checkboxes[]"][i].checked)
+			if(document.actions-form["checkboxes[]"][i].checked)
 			{
-				document.myform["checkboxes[]"][i].checked;
+				document.actions-form["checkboxes[]"][i].checked;
 				var idnumber = i+1;
 				var maketr = "rw" + idnumber;
 				//alert(maketr);
@@ -60,7 +60,9 @@ function checkallTheBox()
 			}
 		}
 		if (flag > 0){ acdiv.style.display='block'; }
-		if (flag==0){ document.myform["checkall"].checked = false; acdiv.style.display='none';
+		if (flag==0){ 
+		    document.actions-form["checkall"].checked = false; 
+		    acdiv.style.display='none';
 		}
 	}
 	
@@ -68,7 +70,7 @@ function checkallTheBox()
 	{
 		for (var i=0; i < 10; i++)
 		{
-			document.myform["checkboxes[]"][i].checked=true;
+			document.actions-form["checkboxes[]"][i].checked=true;
 		}	
 	}
 	
@@ -76,7 +78,7 @@ function checkallTheBox()
 	{
 		for (var i=0; i < 10; i++)
 		{
-			document.myform["checkboxes[]"][i].checked=false;
+			document.actions-form["checkboxes[]"][i].checked=false;
 		}
 	}
 

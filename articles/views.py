@@ -1,6 +1,6 @@
 from django.views.generic import ListView
 from extra_views import SearchableListMixin
-# from django.http import HttpResponse
+from django.http import HttpResponseRedirect
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormMixin#, ModelFormMixin
@@ -10,7 +10,8 @@ from articles.models import Article, Keyword, Project, ArticleAction, ACTIONS, R
 from django.views.generic.base import View, TemplateResponseMixin
 from articles.forms import RejectForm, ArticleForm, KeywordInlineFormSet, KeywordInlineForm, ConfirmRelationshipForm, \
 TagArticleForm, ActionUserID, AssignToForm, UserForm, UserProfileForm, NoteForm, TagForm, RelationshipForm, ProjectForm, \
-ACT_SUBMIT, ACT_REJECT, ACT_APPROVE, ACT_ASSIGN, ACT_CLAIM, ACT_RELEASE, ACT_PUBLISH, ACT_COMMENT
+ACT_SUBMIT, ACT_REJECT, ACT_APPROVE, ACT_WRITER, ACT_REVIEWER, ACT_CLAIM, ACT_RELEASE, \
+ACT_PUBLISH, ACT_COMMENT, ACT_REMOVE_REVIEWER, ACT_REMOVE_WRITER, UserModeForm
 
 #from django_actions.views import ActionViewMixin
 import pickle
@@ -156,7 +157,7 @@ class ArticleList(GetActionsMixin, FilterableListView):
 #     ]
 #    queryset = Article.objects.filter(submitted=None)
     # context_object_name = 'available'
-    search_fields = ['_tags', 'project__name', 'keyword__keyword']
+    search_fields = ['tags', 'project__name', 'keyword__keyword']
     filter_fields={
         'minimum':FilterWithChoicesFromModel(name='minimum', model=Article),
         'project':RelatedFilter(name='project', model=Article, display_attr='name'),
@@ -171,7 +172,9 @@ class ArticleList(GetActionsMixin, FilterableListView):
         ]
     def get_context_data(self, **kwargs):
         kwargs['selected_tab']='articles'
-        return super(ArticleList, self).get_context_data(**kwargs)
+        context = super(ArticleList, self).get_context_data(**kwargs)
+        print "context = %s" % str(context)
+        return context
 
 class AjaxDeleteRowView(DeleteView):
     def delete(self, request, *args, **kwargs):
@@ -331,6 +334,7 @@ class TagArticle(ArticleActionFormView):
         self.object.tags = self.form.cleaned_data['_tags']
         self.object.save()
         messages.info(self.request, 'The article has been tagged successfully.')
+
 class PostActionsView(TemplateResponseMixin, View):
     template_name = "articles/ajax_article_list_row.html"
     model = Article
@@ -339,37 +343,49 @@ class PostActionsView(TemplateResponseMixin, View):
     action_form_class = None
     pks=[]
     def filter_by_owner(self, qs, user):
-        if not self.request.user.is_staff: return qs.filter(owner=user)
+        if not user.is_authenticated(): return qs.none()
+        user= user.pk
+        if not self.request.user.is_staff: return qs.filter(owner_id=user.pk)
         else: return qs
     def filter_by_owner_or_writer(self, qs, user):
-        if not self.request.user.is_staff: return qs.filter(Q(owner=self.request.user)|Q(writer=self.request.user))
+        if not user.is_authenticated(): return qs.none()
+        if not self.request.user.is_staff: return qs.filter(Q(owner_id=self.request.user.pk)|Q(writer_id=self.request.user.pk))
         else: return qs
     def filter_by_owner_or_reviewer(self, qs, user):
-        if not self.request.user.is_staff: return qs.filter(Q(owner=self.request.user)|Q(reviewer=self.request.user))
+        if not user.is_authenticated(): return qs.none()
+        if not self.request.user.is_staff: return qs.filter(Q(owner_id=self.request.user.pk)|Q(reviewer_id=self.request.user.pk))
         else: return qs
     def filter_by_writer(self, qs, user):
-        if not self.request.user.is_staff: return qs.filter(writer=user)
+        if not user.is_authenticated(): return qs.none()
+        if not self.request.user.is_staff: return qs.filter(writer_id=user.pk)
         else: return qs
     def filter_by_owner_or_writer_or_reviewer(self, qs, user):
-        if not self.request.user.is_staff: return qs.filter(writer=user)
+        if not user.is_authenticated(): return qs.none()
+        if not self.request.user.is_staff: return qs.filter(writer_id=user.pk)
         else: return qs
     def get_action_property_name(self):
         return self.action_property_name or self.action_verb+'ed'
-    def filter_action_queryset(qs):
+    def filter_action_queryset(self, qs):
         return qs
     def get_action_form_class(self):
         return self.action_form_class
     def get_requested_objects(self):
+        print "self.pks = %s" % str(self.pks)
         if not self.pks:
+            print "A1"
             if 'select-across' in self.request.POST and self.request.POST['select-across'] == u'0':
                 # Building a empty queryset to load pickled data
                 qs = self.model.objects.all()#[:1]
                 qs.query = pickle.loads(self.request.session['serialized_qs'])
+                print "A2"
             else:
                 # select a specific set of items
                 qs = self.model.objects.filter(pk__in=(self.request.POST.getlist('action-select')))
+                print "A3"
             self.pks = list(qs.values_list('id', flat=True))
+            print "A4"
         else: qs=Article.all_objects.filter(pk__in=self.pks)
+        print "A5"
         return qs
 
     def get_action_queryset(self):
@@ -377,9 +393,11 @@ class PostActionsView(TemplateResponseMixin, View):
             if self.action_qs: return self.action_qs
         except AttributeError: pass
         qs=self.get_requested_objects()
+        print "qs = %s" % str(qs)
         self.initial_action_qty=len(qs)
         if self.initial_action_qty:
             qs=self.filter_action_queryset(qs)
+            print "qs = %s" % str(qs)
             # self.pks = list(qs.values_list('id', flat=True))
             self.final_action_qty=qs.count()
             return qs
@@ -397,7 +415,7 @@ class PostActionsView(TemplateResponseMixin, View):
     def get_action_verb(self):
         return self.action_verb
     def get_past_tense_action_verb(self):
-        return self.get_action_verb()+'ed'
+        return str(self.get_action_verb())+'ed'
     def send_result_messages(self):
         if self.final_action_qty==0:
             messages.error(self.request, 'The articles selected are not ready to be %s or are not yours to %s.' % (self.get_past_tense_action_verb(), self.get_action_verb()))
@@ -408,7 +426,6 @@ class PostActionsView(TemplateResponseMixin, View):
         else: messages.info(self.request, 'All (%s) of the articles have been %s sucessfully' % (self.final_action_qty, self.get_past_tense_action_verb()))
     def post(self, request, *args, **kwargs):
         self.action_qs = self.get_action_queryset()
-        # Make sure the articles are available
         form_class=self.get_action_form_class()
         if self.action_qs and self.final_action_qty > 0:
             if form_class: self.action_form=form_class(self.request.POST)
@@ -428,31 +445,37 @@ class PostActionsView(TemplateResponseMixin, View):
         kwargs.update({'as_row':True,'object_list':self.action_qs})
         return kwargs
     
-class AssignWriterToArticles(PostActionsView):
-    def filter_action_queryset(self, qs):
-        # Make sure user has permission to assign articles
-        qs=qs.filter(assigned__isnull=True)
-        return self.filter_by_owner(qs, self.request.user)
+class AssignArticles(PostActionsView):
+    action_form_class = AssignToForm
+    action_verb="assign"
     def create_action(self):
-        return self.action_form.cleaned_data['user']
-    def update_articles(self, qs, action):
-        qs.update(writer=action)
-
-class AssignReviewerToArticles(PostActionsView):
+        return self.request.user
     def filter_action_queryset(self, qs):
-        # Make sure user has permission to assign articles
-        qs=qs.filter(assigned__isnull=True)
         return self.filter_by_owner(qs, self.request.user)
-    def create_action(self):
-        return self.action_form.cleaned_data['user']
     def update_articles(self, qs, action):
-        qs.update(reviewer=action)
+        qs.update(last_action=action)
+        qs.update(released=True)
+    def create_action(self):
+        return ArticleAction.objects.create(
+            user=self.request.user, 
+            code=self.action_type, 
+            author=self.action_form.cleaned_data['user'],
+        )
+class AssignWriterToArticles(AssignArticles):
+    action_type=ACT_WRITER
+    def update_articles(self, qs, action):
+        super(AssignWriterToArticles, self).update_articles(qs, action)
+        qs.update(writer=self.request.user)
+class AssignReviewerToArticles(AssignArticles):
+    action_type=ACT_REVIEWER
+    def update_articles(self, qs, action):
+        super(AssignReviewerToArticles, self).update_articles(qs, action)
+        qs.update(reviewer=self.request.user)
 
 class RejectArticles(PostActionsView):
     action_verb="reject"
     action_form_class = NoteForm
     def filter_action_queryset(self, qs):
-        # Make sure user has permission to reject articles
         qs=qs.filter(submitted__isnull=False)
         return self.filter_by_owner_or_reviewer(qs, self.request.user)
     def create_action(self):
@@ -500,7 +523,9 @@ class DeleteArticles(PostActionsView):
     def filter_action_queryset(self, qs):
         # Make sure user has permission to submit the articles
         # qs=qs.filter(submitted__isnull=True)
-        return self.filter_by_owner(qs, self.request.user)
+        print "qs = %s" % str(qs)
+        qs = self.filter_by_owner(qs, self.request.user)
+        return qs
     def create_action(self):
         return True
     def update_articles(self, qs, action):
@@ -512,29 +537,56 @@ class DeleteArticles(PostActionsView):
 class ReleaseArticles(PostActionsView):
     action_verb="release"
     action_property_name="released"
-    def filter_action_queryset(self, qs):
-        # Make sure user has permission to release the articles
-        qs=qs.filter(assigned__isnull=False)
-        return self.filter_by_owner_or_writer_or_reviewer(qs, self.request.user)
     def create_action(self):
-        return None
+        return ArticleAction.objects.create(
+            user=self.request.user, 
+            code=self.action_type, 
+        )
+
+class ReleaseWriter(ReleaseArticles):
+    action_type=ACT_REMOVE_WRITER
+    def filter_action_queryset(self, qs):
+        return self.filter_by_owner_or_writer(qs, self.request.user)
     def update_articles(self, qs, action):
+        super(ReleaseWriter, self).update_articles(qs, action)
+        qs.update(writer=None)
+
+class ReleaseReviewer(ReleaseArticles):
+    action_type=ACT_REMOVE_REVIEWER
+    def filter_action_queryset(self, qs):
+        return self.filter_by_owner_or_reviewer(qs, self.request.user)
+    def update_articles(self, qs, action):
+        super(ReleaseReviewer, self).update_articles(qs, action)
+        qs.update(reviewer=None)
+
+class InitialRelease(ReleaseArticles):
+    action_type=ACT_RELEASE
+    def filter_action_queryset(self, qs):
+        return self.filter_by_owner(qs, self.request.user)
+    def update_articles(self, qs, action):
+        super(InitialRelease, self).update_articles(qs, action)
         qs.update(released=True)
-        if self.submitted: qs.update(reviewer=None)
-        else: qs.update(writer=None)
 
 class ClaimArticles(PostActionsView):
     action_verb="claim"
-    action_property_name="assigned"
-    def filter_action_queryset(self, qs):
-        return qs.filter(assigned__isnull=True)
     def create_action(self):
-        return self.action_form.cleaned_data['user']
+        return self.request.user
     def update_articles(self, qs, action):
         qs.update(released=True)
         if self.submitted: qs.update(reviewer=action)
         else: qs.update(writer=action)
-
+class ClaimArticlesAsWriter(ClaimArticles):
+    action_property_name="writer"
+    def filter_action_queryset(self, qs):
+        return qs.filter(writer__isnull=True, released = True)
+    def update_articles(self, qs, action):
+        qs.update(writer=action)
+class ClaimArticlesAsReviewer(ClaimArticles):
+    action_property_name="reviewer"
+    def filter_action_queryset(self, qs):
+        return qs.filter(reviewer__isnull=True, released = True)
+    def update_articles(self, qs, action):
+        qs.update(reviewer=action)
         
 class TagArticles(PostActionsView):
     action_verb="tag"
@@ -668,3 +720,19 @@ class ConfirmRelationship(AjaxRowTemplateResponseMixin, UpdateView):
             messages.error(self.request, 'You are not the recipient of this invitation.')
             return self.form_invalid(self.get_form(self.get_form_class()))
         return super(ConfirmRelationship, self).post(request, *args, **kwargs)
+class ChangeModeView(FormView, ArticleList):
+    form_class=UserModeForm
+    def form_valid(self, form):
+        p = self.request.user.get_profile()
+        print "p.preferred_mode = %s" % str(p.preferred_mode)
+        print "p = %s" % str(p)
+        p.preferred_mode = form.cleaned_data['mode']
+        print "during"
+        print "p.preferred_mode = %s" % str(p.preferred_mode)
+        p.save()
+        print "self.request.user.mode_display = %s" % str(self.request.user.mode_display)
+        # self.request.user.mode = form.cleaned_data['mode']
+        messages.info(self.request, "You are now in %s mode." % self.request.user.mode_display)
+        return HttpResponseRedirect(reverse_lazy('article_list'))
+    def form_invalid(self, form): 
+        return HttpResponseRedirect(reverse_lazy('article_list'))

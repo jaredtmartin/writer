@@ -26,20 +26,6 @@
   model: articles.keyword
   pk: 2
 - fields:
-    requester: 4
-    writer: 3
-    created_by: 3
-    confirmed: true
-  model: articles.relationship
-  pk: 1
-- fields:
-    requester: 4
-    writer: 2
-    created_by: 4
-    confirmed: true
-  model: articles.relationship
-  pk: 2
-- fields:
     date_joined: 2013-02-11 03:11:32+00:00
     email: 'ralph@gmail.com'
     first_name: 'Ralph'
@@ -78,9 +64,15 @@
     is_staff: false
     is_superuser: false
     last_login: 2013-02-11 03:11:48+00:00
-    last_name: 'Flintstone'
+    last_name: 'Reviewer'
     password: pbkdf2_sha256$10000$fjSbFnW4uleX$g07403tGh5NJiYpVB6/TCh3gEW4sHYJG10uwDfg7Qag=
     user_permissions: []
     username: fred
   model: auth.user
   pk: 4
+- fields: {confirmed: true, created_by: 1, requester: 1, reviewer: null, writer: 2}
+  model: articles.relationship
+  pk: 1
+- fields: {confirmed: true, created_by: 1, requester: 1, reviewer: 4, writer: null}
+  model: articles.relationship
+  pk: 2

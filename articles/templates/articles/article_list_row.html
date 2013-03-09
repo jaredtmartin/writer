@@ -10,8 +10,8 @@
 	    	{% endif %}
 	    {% endfor %}
 	</td>
-	<td>{{article.status}}</td>
+	<td><span class="status-{{article.status.lower}}">{{article.status}}</span></td>
 	{% with btn_size='btn-small' %}
-	<td>{% show_actions %}</td>
+		<td>{% show_actions %}</td>
 	{% endwith %}
 </tr>
