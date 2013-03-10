@@ -330,14 +330,13 @@ class Article(ValidationModelMixin, models.Model):
     def get_available_actions(self, user):
         try: status= self.last_action.code
         except: status = None
-        print "status: " + str(status) 
-        print "self.assigned: " + str(self.assigned) 
-        if self.assigned and user == self.assigned.author and (status == ACT_ASSIGN or status == ACT_CLAIM): return ['submit','release']
+        if user == self.writer and (status == ACT_WRITER or status == ACT_CLAIM): return ['submit','release']
+        elif user == self.reviewer and (status == ACT_SUBMIT): return ['accept','reject']
         elif user == self.owner:
             if status == None or status == ACT_RELEASE or status == ACT_REJECT: return ['assign','tag','delete']
             elif status == ACT_SUBMIT: return ['approve','reject','tag','delete']
             elif status == ACT_APPROVE: return ['publish','tag','delete']
-            elif status == ACT_CLAIM or status == ACT_ASSIGN: return ['release','tag','delete']
+            else: return ['release','tag','delete']
         elif status == None or status == ACT_RELEASE or status == ACT_REJECT: return ['claim',]
         return []
             

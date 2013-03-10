@@ -7,15 +7,17 @@
       <ul class="dropdown-menu">
         {% for writer_relationship in user.writers %}
           {% with writer=writer_relationship.writer %}
-            <li><a tabindex="-1" href="#" onclick="assignArticles('{% url assign_articles %}', {{writer.id}},{{article.id}}); return false;">{{writer}}</a></li>
+            <li><a tabindex="-1" href="#" onclick="assignArticles('{% url assign_writer %}', {{writer.id}},{{article.id}}); return false;">{{writer}}</a></li>
           {% endwith %}
         {% endfor %}
       </ul>
     </div>
   {% elif action == 'submit' %}
     <button class="btn {{btn_size}}" onclick="doActionOnArticles('{% url submit_articles %}',{{article.id}});return false;" >Submit</button>
-  {% elif action == 'release' %}
-    <button class="btn {{btn_size}}" onclick="doActionOnArticles('{% url release_articles %}',{{article.id}});return false;" >Release</button>
+  {% elif action == 'releasewriter' %}
+    <button class="btn {{btn_size}}" onclick="doActionOnArticles('{% url release_writer %}',{{article.id}});return false;" >Release</button>
+  {% elif action == 'releasereviewer' %}
+    <button class="btn {{btn_size}}" onclick="doActionOnArticles('{% url release_reviewer %}',{{article.id}});return false;" >Release</button>
   {% elif action == 'approve' %}
     <button class="btn {{btn_size}}" onclick="doActionOnArticles('{% url approve_articles %}',{{article.id}});return false;" >Approve</button>
   {% elif action == 'reject' %}

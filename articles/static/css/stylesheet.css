@@ -1,5 +1,6 @@
 @import "bootstrap.css";
 @import "bootstrap-responsive.css";
+
 .input-label{
     text-align: right;
 }
@@ -37,7 +38,9 @@
 #article input, #article select{
     width:150px;
 }
-
+input#id_title{
+    width:100%;
+}
 .menu #Nav {
     background: none repeat scroll 0 0 #1D2E37;
     box-shadow: -2px 0 2px #046DBC inset;
@@ -45,9 +48,10 @@
     /*left: 0;*/
     /*position: fixed;*/
     /*top: 150px;*/
-    /*width: 150px;*/
+    width: 50px;
     z-index: 99999999;
 }
+
 .menu #Nav ul li a {
     background-color: #046DBC;
     background-image: -moz-linear-gradient(center top , #394D57, #31424B);
@@ -64,6 +68,7 @@
     padding: 9px 10px;
     position: relative;
     text-shadow: 0 -1px 0 #000000;
+    
 }
 .btn-group.open 
 .btn.dropdown-toggle {
