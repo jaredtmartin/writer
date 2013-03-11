@@ -1,6 +1,6 @@
 {% for action in actions %}
   {% if action == 'claim' %}
-    <button class="btn {{btn_size}}" onclick="doActionOnArticles('{% url claim_articles %}',{{article.id}});return false;" >Claim</button>
+    <button class="btn {{btn_size}}" onclick="doActionOnArticles('{% url claim_articles_as_writer %}',{{article.id}});return false;" >Claim</button>
   {% elif action == 'assign' %}
     <div class="btn-group">
       <button class="btn  {{btn_size}} dropdown-toggle" data-toggle="dropdown">Assign<span class="caret"></span></button>
