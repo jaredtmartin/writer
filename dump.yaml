@@ -1,285 +1,172 @@
-- fields: {codename: add_logentry, content_type: 7, name: Can add log entry}
-  model: auth.permission
-  pk: 19
-- fields: {codename: change_logentry, content_type: 7, name: Can change log entry}
-  model: auth.permission
-  pk: 20
-- fields: {codename: delete_logentry, content_type: 7, name: Can delete log entry}
-  model: auth.permission
-  pk: 21
-- fields: {codename: add_article, content_type: 20, name: Can add article}
-  model: auth.permission
-  pk: 58
-- fields: {codename: change_article, content_type: 20, name: Can change article}
-  model: auth.permission
-  pk: 59
-- fields: {codename: delete_article, content_type: 20, name: Can delete article}
-  model: auth.permission
-  pk: 60
-- fields: {codename: add_articleaction, content_type: 18, name: Can add article action}
-  model: auth.permission
-  pk: 52
-- fields: {codename: change_articleaction, content_type: 18, name: Can change article
-      action}
-  model: auth.permission
-  pk: 53
-- fields: {codename: delete_articleaction, content_type: 18, name: Can delete article
-      action}
-  model: auth.permission
-  pk: 54
-- fields: {codename: add_articletype, content_type: 16, name: Can add article type}
-  model: auth.permission
-  pk: 46
-- fields: {codename: change_articletype, content_type: 16, name: Can change article
-      type}
-  model: auth.permission
-  pk: 47
-- fields: {codename: delete_articletype, content_type: 16, name: Can delete article
-      type}
-  model: auth.permission
-  pk: 48
-- fields: {codename: add_keyword, content_type: 21, name: Can add keyword}
-  model: auth.permission
-  pk: 61
-- fields: {codename: change_keyword, content_type: 21, name: Can change keyword}
-  model: auth.permission
-  pk: 62
-- fields: {codename: delete_keyword, content_type: 21, name: Can delete keyword}
-  model: auth.permission
-  pk: 63
-- fields: {codename: add_project, content_type: 17, name: Can add project}
-  model: auth.permission
-  pk: 49
-- fields: {codename: change_project, content_type: 17, name: Can change project}
-  model: auth.permission
-  pk: 50
-- fields: {codename: delete_project, content_type: 17, name: Can delete project}
-  model: auth.permission
-  pk: 51
-- fields: {codename: add_publishingoutlet, content_type: 14, name: Can add publishing
-      outlet}
-  model: auth.permission
-  pk: 40
-- fields: {codename: change_publishingoutlet, content_type: 14, name: Can change publishing
-      outlet}
-  model: auth.permission
-  pk: 41
-- fields: {codename: delete_publishingoutlet, content_type: 14, name: Can delete publishing
-      outlet}
-  model: auth.permission
-  pk: 42
-- fields: {codename: add_publishingoutletconfiguration, content_type: 15, name: Can
-      add publishing outlet configuration}
-  model: auth.permission
-  pk: 43
-- fields: {codename: change_publishingoutletconfiguration, content_type: 15, name: Can
-      change publishing outlet configuration}
-  model: auth.permission
-  pk: 44
-- fields: {codename: delete_publishingoutletconfiguration, content_type: 15, name: Can
-      delete publishing outlet configuration}
-  model: auth.permission
-  pk: 45
-- fields: {codename: add_relationship, content_type: 19, name: Can add relationship}
-  model: auth.permission
-  pk: 55
-- fields: {codename: change_relationship, content_type: 19, name: Can change relationship}
-  model: auth.permission
-  pk: 56
-- fields: {codename: delete_relationship, content_type: 19, name: Can delete relationship}
-  model: auth.permission
-  pk: 57
-- fields: {codename: add_testoutlet, content_type: 13, name: Can add test outlet}
-  model: auth.permission
-  pk: 37
-- fields: {codename: change_testoutlet, content_type: 13, name: Can change test outlet}
-  model: auth.permission
-  pk: 38
-- fields: {codename: delete_testoutlet, content_type: 13, name: Can delete test outlet}
-  model: auth.permission
-  pk: 39
-- fields: {codename: add_userprofile, content_type: 22, name: Can add user profile}
-  model: auth.permission
-  pk: 64
-- fields: {codename: change_userprofile, content_type: 22, name: Can change user profile}
-  model: auth.permission
-  pk: 65
-- fields: {codename: delete_userprofile, content_type: 22, name: Can delete user profile}
-  model: auth.permission
-  pk: 66
-- fields: {codename: add_group, content_type: 2, name: Can add group}
-  model: auth.permission
+eval: self.module.FacebookOutlet
+eval: self.module.WordPressOutlet
+eval: self.module.TwitterOutlet
+- fields: {class_name: FacebookOutlet, module_name: facebook, title: Facebook}
+  model: articles.publishingoutlet
+  pk: 1
+- fields: {class_name: WordPressOutlet, module_name: wordpress, title: Post on Wordpress}
+  model: articles.publishingoutlet
+  pk: 2
+- fields: {class_name: TwitterOutlet, module_name: twitter, title: Twitter}
+  model: articles.publishingoutlet
+  pk: 3
+- fields: {name: Simple Articles}
+  model: articles.articletype
+  pk: 1
+- fields: {name: Rewrites}
+  model: articles.articletype
+  pk: 2
+- fields: {name: UAW Articles}
+  model: articles.articletype
+  pk: 3
+- fields: {name: Red Ryder, owner: 1}
+  model: articles.project
+  pk: 1
+- fields:
+    articles: []
+    author: 2
+    code: W
+    comment: ''
+    timestamp: 2013-03-09 04:26:31+00:00
+    timezone: ''
+    user: 1
+  model: articles.articleaction
+  pk: 1
+- fields:
+    articles: []
+    author: 2
+    code: W
+    comment: ''
+    timestamp: 2013-03-09 04:27:11+00:00
+    timezone: ''
+    user: 1
+  model: articles.articleaction
+  pk: 2
+- fields:
+    articles: []
+    author: 2
+    code: W
+    comment: ''
+    timestamp: 2013-03-09 04:28:45+00:00
+    timezone: ''
+    user: 1
+  model: articles.articleaction
+  pk: 3
+- fields:
+    articles: []
+    author: 5
+    code: V
+    comment: ''
+    timestamp: 2013-03-09 05:00:32+00:00
+    timezone: ''
+    user: 1
+  model: articles.articleaction
   pk: 4
-- fields: {codename: change_group, content_type: 2, name: Can change group}
-  model: auth.permission
+- fields:
+    articles: []
+    author: 2
+    code: W
+    comment: ''
+    timestamp: 2013-03-09 05:00:52+00:00
+    timezone: ''
+    user: 1
+  model: articles.articleaction
   pk: 5
-- fields: {codename: delete_group, content_type: 2, name: Can delete group}
-  model: auth.permission
+- fields:
+    articles: []
+    author: null
+    code: R
+    comment: ''
+    timestamp: 2013-03-09 05:35:18+00:00
+    timezone: ''
+    user: 1
+  model: articles.articleaction
   pk: 6
-- fields: {codename: add_permission, content_type: 1, name: Can add permission}
-  model: auth.permission
-  pk: 1
-- fields: {codename: change_permission, content_type: 1, name: Can change permission}
-  model: auth.permission
-  pk: 2
-- fields: {codename: delete_permission, content_type: 1, name: Can delete permission}
-  model: auth.permission
-  pk: 3
-- fields: {codename: add_user, content_type: 3, name: Can add user}
-  model: auth.permission
+- fields:
+    articles: []
+    author: null
+    code: B
+    comment: ''
+    timestamp: 2013-03-09 05:41:36+00:00
+    timezone: ''
+    user: 1
+  model: articles.articleaction
   pk: 7
-- fields: {codename: change_user, content_type: 3, name: Can change user}
-  model: auth.permission
+- fields:
+    articles: []
+    author: null
+    code: A
+    comment: ''
+    timestamp: 2013-03-09 05:41:42+00:00
+    timezone: ''
+    user: 1
+  model: articles.articleaction
   pk: 8
-- fields: {codename: delete_user, content_type: 3, name: Can delete user}
-  model: auth.permission
+- fields:
+    articles: []
+    author: null
+    code: A
+    comment: ''
+    timestamp: 2013-03-09 05:41:45+00:00
+    timezone: ''
+    user: 1
+  model: articles.articleaction
   pk: 9
-- fields: {codename: add_contenttype, content_type: 4, name: Can add content type}
-  model: auth.permission
+- fields:
+    articles: []
+    author: null
+    code: R
+    comment: ''
+    timestamp: 2013-03-09 05:51:10+00:00
+    timezone: ''
+    user: 1
+  model: articles.articleaction
   pk: 10
-- fields: {codename: change_contenttype, content_type: 4, name: Can change content
-      type}
-  model: auth.permission
-  pk: 11
-- fields: {codename: delete_contenttype, content_type: 4, name: Can delete content
-      type}
-  model: auth.permission
-  pk: 12
-- fields: {codename: add_article, content_type: 10, name: Can add Article}
-  model: auth.permission
-  pk: 28
-- fields: {codename: change_article, content_type: 10, name: Can change Article}
-  model: auth.permission
-  pk: 29
-- fields: {codename: delete_article, content_type: 10, name: Can delete Article}
-  model: auth.permission
-  pk: 30
-- fields: {codename: add_category, content_type: 9, name: Can add Category}
-  model: auth.permission
-  pk: 25
-- fields: {codename: change_category, content_type: 9, name: Can change Category}
-  model: auth.permission
-  pk: 26
-- fields: {codename: delete_category, content_type: 9, name: Can delete Category}
-  model: auth.permission
-  pk: 27
-- fields: {codename: add_question, content_type: 11, name: Can add Question}
-  model: auth.permission
-  pk: 31
-- fields: {codename: change_question, content_type: 11, name: Can change Question}
-  model: auth.permission
-  pk: 32
-- fields: {codename: delete_question, content_type: 11, name: Can delete Question}
-  model: auth.permission
-  pk: 33
-- fields: {codename: add_response, content_type: 12, name: Can add Response}
-  model: auth.permission
-  pk: 34
-- fields: {codename: change_response, content_type: 12, name: Can change Response}
-  model: auth.permission
-  pk: 35
-- fields: {codename: delete_response, content_type: 12, name: Can delete Response}
-  model: auth.permission
-  pk: 36
-- fields: {codename: add_screenshot, content_type: 8, name: Can add screenshot}
-  model: auth.permission
-  pk: 22
-- fields: {codename: change_screenshot, content_type: 8, name: Can change screenshot}
-  model: auth.permission
-  pk: 23
-- fields: {codename: delete_screenshot, content_type: 8, name: Can delete screenshot}
-  model: auth.permission
-  pk: 24
-- fields: {codename: add_session, content_type: 5, name: Can add session}
-  model: auth.permission
-  pk: 13
-- fields: {codename: change_session, content_type: 5, name: Can change session}
-  model: auth.permission
-  pk: 14
-- fields: {codename: delete_session, content_type: 5, name: Can delete session}
-  model: auth.permission
-  pk: 15
-- fields: {codename: add_site, content_type: 6, name: Can add site}
-  model: auth.permission
-  pk: 16
-- fields: {codename: change_site, content_type: 6, name: Can change site}
-  model: auth.permission
-  pk: 17
-- fields: {codename: delete_site, content_type: 6, name: Can delete site}
-  model: auth.permission
-  pk: 18
-- fields:
-    date_joined: 2012-11-03 23:54:59+00:00
-    email: jared@home.com
-    first_name: Jared
-    groups: []
-    is_active: true
-    is_staff: true
-    is_superuser: true
-    last_login: 2013-03-01 13:50:40+00:00
-    last_name: Martin
-    password: pbkdf2_sha256$10000$waRyWWRqkZjE$R6VzYLP0tHcrK1eCIRPlRFwCkEYIhramDQEXh2EVaOQ=
-    user_permissions: []
-    username: jared
-  model: auth.user
+- fields: {confirmed: true, created_by: 1, requester: 1, reviewer: null, writer: 2}
+  model: articles.relationship
   pk: 1
-- fields:
-    date_joined: 2013-02-11 03:11:32+00:00
-    email: ''
-    first_name: ''
-    groups: []
-    is_active: true
-    is_staff: false
-    is_superuser: false
-    last_login: 2013-02-11 03:11:32+00:00
-    last_name: ''
-    password: pbkdf2_sha256$10000$9artnjluCTkF$zPZk0n3VSnqoAHkoI4RbAuMVq0hTWQzj3wA4fyUQu0s=
-    user_permissions: []
-    username: writer
-  model: auth.user
-  pk: 2
-- fields:
-    date_joined: 2013-02-11 03:11:48+00:00
-    email: ''
-    first_name: ''
-    groups: []
-    is_active: true
-    is_staff: false
-    is_superuser: false
-    last_login: 2013-02-11 03:11:48+00:00
-    last_name: ''
-    password: pbkdf2_sha256$10000$ovoHgRxZ9Dvs$6CxdV3o+Edfad1z5B8o5BLwLW4iLVIbulySaz/2ib9M=
-    user_permissions: []
-    username: requester
-  model: auth.user
+- fields: {confirmed: true, created_by: 1, requester: 1, reviewer: 5, writer: null}
+  model: articles.relationship
   pk: 3
-- fields:
-    date_joined: 2013-02-11 03:11:48+00:00
-    email: ''
-    first_name: ''
-    groups: []
-    is_active: true
-    is_staff: false
-    is_superuser: false
-    last_login: 2013-02-11 03:11:48+00:00
-    last_name: ''
-    password: pbkdf2_sha256$10000$fjSbFnW4uleX$g07403tGh5NJiYpVB6/TCh3gEW4sHYJG10uwDfg7Qag=
-    user_permissions: []
-    username: fred
-  model: auth.user
+- fields: {approved: null, article_notes: Red Ryder, article_type: 1, body: '', deleted: false,
+    description: Red Ryder, expires: null, last_action: 9, maximum: 0, minimum: 100,
+    owner: 1, project: 1, published: null, rejected: null, released: true, review_notes: Red
+      Ryder, reviewer: null, submitted: null, tags: 'Red, Ryder', title: '', writer: null}
+  model: articles.article
+  pk: 1
+- fields: {approved: null, article_notes: Red Ryder, article_type: 1, body: '', deleted: false,
+    description: Red Ryder, expires: null, last_action: 4, maximum: 0, minimum: 100,
+    owner: 1, project: 1, published: null, rejected: null, released: true, review_notes: Red
+      Ryder, reviewer: 1, submitted: null, tags: 'Red, Ryder', title: '', writer: 1}
+  model: articles.article
+  pk: 2
+- fields: {approved: null, article_notes: Red Ryder, article_type: 1, body: '', deleted: false,
+    description: Red Ryder, expires: null, last_action: 10, maximum: 0, minimum: 100,
+    owner: 1, project: 1, published: null, rejected: null, released: true, review_notes: Red
+      Ryder, reviewer: null, submitted: null, tags: 'Red, Ryder', title: '', writer: null}
+  model: articles.article
+  pk: 3
+- fields: {approved: null, article_notes: Red Ryder, article_type: 1, body: '', deleted: false,
+    description: Red Ryder, expires: null, last_action: 5, maximum: 0, minimum: 100,
+    owner: 1, project: 1, published: null, rejected: null, released: true, review_notes: Red
+      Ryder, reviewer: null, submitted: null, tags: 'Red, Ryder', title: '', writer: 1}
+  model: articles.article
   pk: 4
-- fields:
-    date_joined: 2013-03-01 01:13:03+00:00
-    email: ''
-    first_name: ''
-    groups: []
-    is_active: true
-    is_staff: false
-    is_superuser: false
-    last_login: 2013-03-01 01:13:03+00:00
-    last_name: ''
-    password: pbkdf2_sha256$10000$bXgR8nfdSOLh$rnnmFnKL9HePjcMAHyN32vPMZ3rXehacPjH4hq5d9b0=
-    user_permissions: []
-    username: joe
-  model: auth.user
+- fields: {article: 1, keyword: Red Ryder, times: 1, url: www.google.com}
+  model: articles.keyword
+  pk: 1
+- fields: {article: 2, keyword: Red Ryder, times: 1, url: www.google.com}
+  model: articles.keyword
+  pk: 2
+- fields: {article: 3, keyword: Red Ryder, times: 1, url: www.google.com}
+  model: articles.keyword
+  pk: 3
+- fields: {article: 4, keyword: Red Ryder, times: 1, url: www.google.com}
+  model: articles.keyword
+  pk: 4
+- fields: {article: 5, keyword: Red Ryder, times: 1, url: www.google.com}
+  model: articles.keyword
   pk: 5
+- fields: {access_token: '', preferred_mode: 2, timezone: Africa/Tunis, user: 1}
+  model: articles.userprofile
+  pk: 1
