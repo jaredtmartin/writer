@@ -9,7 +9,7 @@ def show_actions(context):
 	else:pass
 		# article = Article()
 	if article: actions = article.get_available_actions(user)
-
+	else: actions=[]
 	if 'btn_size' in context: btn_size=context['btn_size']
 	else: btn_size=""
 	return {'actions':actions, 'article':article, 'user':user,'STATIC_URL':context['STATIC_URL'],'btn_size':btn_size}
