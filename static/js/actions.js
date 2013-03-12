@@ -30,33 +30,15 @@ function showDeleteModal(article_id){
 }
 function rejectArticle(url, article_id){
     $('#reject-modal').modal('hide');
-<<<<<<< HEAD
-    data="&reason="+$('#reject_input').val();
-    doActionOnArticles(url, article_id, data);
-}
-function assignArticles(url, writer, article_id){
-    data="&user="+writer;
-=======
     data = "&reason=" + $('#reject_input').val();
     doActionOnArticles(url, article_id, data);
 }
 function assignArticles(url, writer, article_id){
     data = "&user=" + writer;
->>>>>>> 2bc770fb80b8f1145abaafcb30ba4f80e0f36d9c
     doActionOnArticles(url, article_id, data);
 }
 function doActionOnArticles(url, article_id, extra){
     if (article_id == undefined){
-<<<<<<< HEAD
-        data=$('#actions-form').serialize();
-    } else {
-        data="action-select="+String(article_id);
-        // data+="&select-across="+$('#select-across').val();
-    }
-    data+="&as_row="+'True';
-    if (extra!=undefined){data+=extra}
-    jQuery.post(url, data, success=ajaxUpdateRow);
-=======
         data = $('#actions-form').serialize();
     } else {
         data = "action-select=" + String(article_id);
@@ -65,5 +47,4 @@ function doActionOnArticles(url, article_id, extra){
     data += "&as_row=" + 'True';
     if (extra != undefined){data += extra}
     jQuery.post(url, data, success = ajaxUpdateRow);
->>>>>>> 2bc770fb80b8f1145abaafcb30ba4f80e0f36d9c
 }
