@@ -1,7 +1,9 @@
 {% for action in actions %}
-  {% if action == 'claim' %}
+  {% if action == "Claimed by Writer" %}
     <button class="btn {{btn_size}}" onclick="doActionOnArticles('{% url claim_articles_as_writer %}',{{article.id}});return false;" >Claim</button>
-  {% elif action == 'assign' %}
+  {% elif action == "Claimed by Reviewer" %}
+    <button class="btn {{btn_size}}" onclick="doActionOnArticles('{% url claim_articles_as_reviewer %}',{{article.id}});return false;" >Claim</button>
+  {% elif action == "Assigned to Writer" %}
     <div class="btn-group">
       <button class="btn  {{btn_size}} dropdown-toggle" data-toggle="dropdown">Assign<span class="caret"></span></button>
       <ul class="dropdown-menu">
@@ -12,19 +14,30 @@
         {% endfor %}
       </ul>
     </div>
-  {% elif action == 'submit' %}
+  {% elif action == 'Assigned to Reviewer' %}
+    <div class="btn-group">
+      <button class="btn  {{btn_size}} dropdown-toggle" data-toggle="dropdown">Assign<span class="caret"></span></button>
+      <ul class="dropdown-menu">
+        {% for reviewer_relationship in user.reviewers %}
+          {% with reviewer=reviewer_relationship.reviewer %}
+            <li><a tabindex="-1" href="#" onclick="assignArticles('{% url assign_reviewer %}', {{reviewer.id}},{{article.id}}); return false;">{{reviewer}}</a></li>
+          {% endwith %}
+        {% endfor %}
+      </ul>
+    </div>
+  {% elif action == "Submitted" %}
     <button class="btn {{btn_size}}" onclick="doActionOnArticles('{% url submit_articles %}',{{article.id}});return false;" >Submit</button>
-  {% elif action == 'releasewriter' %}
+  {% elif action == 'Removed Writer' %}
     <button class="btn {{btn_size}}" onclick="doActionOnArticles('{% url release_writer %}',{{article.id}});return false;" >Release</button>
-  {% elif action == 'releasereviewer' %}
+  {% elif action == 'Removed Reviewer' %}
     <button class="btn {{btn_size}}" onclick="doActionOnArticles('{% url release_reviewer %}',{{article.id}});return false;" >Release</button>
-  {% elif action == 'approve' %}
+  {% elif action == 'Approved' %}
     <button class="btn {{btn_size}}" onclick="doActionOnArticles('{% url approve_articles %}',{{article.id}});return false;" >Approve</button>
-  {% elif action == 'reject' %}
+  {% elif action == 'Rejected' %}
     <button class="btn {{btn_size}}" onclick="window.article_id={{article.id}}; $('#reject-modal').modal('show');return false;" >Reject</button>
-  {% elif action == 'tag' %}
+  {% elif action == "Tag" %}
     <button class="btn {{btn_size}}" onclick="showTagModal('{{article.id}}', '{{article.tags_as_str}}');return false;" >Tag</button>
-  {% elif action == 'delete' %}
+  {% elif action == "Delete" %}
     <button class="btn {{btn_size}}" onclick="showDeleteModal('{{article.id}}');return false;" >Delete</button>
   {% endif %}
 {% endfor %}

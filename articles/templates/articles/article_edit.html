@@ -53,10 +53,10 @@
         
         <div class="row-fluid">
             <div class="span2 input-label">Writer:</div>
-            <div class="span2">{{article.writer.full_name}}</div>
+            <div class="span2">{% if article.writer %}{{article.writer.full_name}}{% else %} No writer assigned.{% endif %}</div>
             {% if user == article.owner or user == article.reviewer %}
                 <div class="span2 input-label">Reviewer:</div>
-                <div class="span2">{{article.reviewer.full_name}}</div>
+                <div class="span2">{% if article.reviewer %}{{article.reviewer.full_name}}{% else %} No reviewer assigned.{% endif %}</div>
             {% endif %}
         </div>
         {% if user == article.owner or not article.pk %}

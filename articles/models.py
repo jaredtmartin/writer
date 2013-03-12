@@ -14,32 +14,57 @@ def CamelToWords(name):
     s1 = re.sub('(.)([A-Z][a-z]+)', r'\1 \2', name)
     return re.sub('([a-z0-9])([A-Z])', r'\1 \2', s1)
     
-ACT_SUBMIT          = "S"  # When author finishes writing
-ACT_REJECT          = "X"  # When the user does not accept the article
-ACT_APPROVE         = "A" # When the user accepts the article
-ACT_WRITER          = "W"  # When the user assigns the article to a writer
-ACT_REVIEWER        = "V"  # When the user assigns the article to a reviewer
-ACT_CLAIM           = "C"   # When a writer claims an article
-ACT_RELEASE         = "R" # When a user releases an article that was either claimed or assigned
-ACT_PUBLISH         = "P" # When the article has been published
-ACT_COMMENT         = "M" # When reviewing and a comment should be added
-ACT_REMOVE_REVIEWER = "A"
-ACT_REMOVE_WRITER   = "B"
+ACT_SUBMIT          = "Submitted"  # When author finishes writing
+ACT_REJECT          = "Rejected"  # When the user does not accept the article
+ACT_APPROVE         = "Approved" # When the user accepts the article
+
+ACT_ASSIGN_WRITER          = "Assigned to Writer"  # When the user assigns the article to a writer
+ACT_ASSIGN_REVIEWER        = "Assigned to Reviewer"  # When the user assigns the article to a reviewer
+# ACT_CLAIM           = "C"   # When a writer claims an article
+
+ACT_RELEASE         = "Released" # When a user releases an article that was either claimed or assigned
+ACT_REMOVE_REVIEWER = "Removed Reviewer"
+ACT_REMOVE_WRITER   = "Removed Writer"
+
+ACT_PUBLISH         = "Published" # When the article has been published
+ACT_COMMENT         = "Commented on" # When reviewing and a comment should be added
+
+ACT_CLAIM_REVIEWER  = "Claimed by Reviewer"
+ACT_CLAIM_WRITER    = "Claimed by Writer"
+
+# These actions do not create action objects, but do appear in the button list
+ACT_DELETE          = "Delete"
+ACT_TAG             = "Tag"
 
 ACTIONS = (
     (ACT_SUBMIT, 'Submitted'),
     (ACT_REJECT, 'Rejected'),
     (ACT_APPROVE, 'Approved'),
-    (ACT_WRITER, 'Assigned'),
-    (ACT_CLAIM, 'Claimed'),
+    (ACT_ASSIGN_WRITER, 'Assigned to Writer'),
+    # (ACT_CLAIM, 'Claimed'),
     (ACT_RELEASE, 'Made Available'),
     (ACT_PUBLISH, 'Published'),
     (ACT_COMMENT, 'Commented On'),
-    (ACT_REVIEWER, 'Assigned'),
+    (ACT_ASSIGN_REVIEWER, 'Assigned to Reviewer'),
     (ACT_REMOVE_WRITER, 'Removed Writer'),
     (ACT_REMOVE_REVIEWER, 'Removed Reviewer'),
-
+    (ACT_CLAIM_REVIEWER, 'Claimed by Reviewer'),
+    (ACT_CLAIM_WRITER, 'Claimed by Writer'),
 )
+STATUS_NEW = "New"
+STATUS_RELEASED = 'Released'
+STATUS_ASSIGNED = 'Assigned to Writer'
+STATUS_SUBMITTED = 'Submitted'
+STATUS_APPROVED = 'Approved'
+STATUS_PUBLISHED = 'Published'
+STATUSES = (
+    (STATUS_NEW, "New"),
+    (STATUS_RELEASED, 'Released'),
+    (STATUS_ASSIGNED, 'Assigned to Writer'),
+    (STATUS_SUBMITTED, 'Submitted'),
+    (STATUS_APPROVED, 'Approved'),
+    (STATUS_PUBLISHED, 'Published'),
+    )
 
 WRITER_MODE = 1
 REQUESTER_MODE = 2 
@@ -158,7 +183,7 @@ class ValidationModelMixin(object):
     _validators = models.CharField(max_length=128, blank=True, default="")
 #    plugin_loader=PluginManager(settings.DIRNAME+'/articles/validation_plugins/')
 #    available_validators=ValidationProvider.plugins
-    
+
     def validate(self):
         return all(validator.is_valid(self) for validator in self.validators)
     @property
@@ -180,7 +205,7 @@ class ArticleAction(models.Model):
     articles = models.ManyToManyField('Article', related_name='actions')
     # articles = models.ManyToManyField('Article', through='ArticlesActions')
     author = models.ForeignKey(User, related_name = 'authors', null=True, blank=True)  # This is the writer
-    code = models.CharField(choices=ACTIONS, max_length=1)
+    code = models.CharField(choices=ACTIONS, max_length=32)
     user = models.ForeignKey(User)                              # This is the reviewer/employer/admin
     timestamp = models.DateTimeField(auto_now_add=True)
     timezone = models.CharField(max_length=32, default="", blank=True)
@@ -220,11 +245,7 @@ def get_user_mode(self):
 def set_user_mode(self, value):
     p = self.get_profile()
     p.preferred_mode = value
-    print "p = %s" % str(p)
-    print "value = %s" % str(value)
-    print "p.preferred_mode = %s" % str(p.preferred_mode)
     p.save()
-    print "p.preferred_mode = %s" % str(p.preferred_mode)
 User.mode=property(get_user_mode, set_user_mode)
 
 def get_user_mode_display(self):
@@ -265,14 +286,14 @@ class NotDeletedManager(models.Manager):
 
 class Article(ValidationModelMixin, models.Model):
     def __unicode__(self): return self.name
-    minimum = models.IntegerField(default=100)
-    maximum = models.IntegerField(default=0) # Use zero for no maximum
-    body = models.TextField(blank=True, default="")
-    title = models.CharField(max_length=256, blank=True, default="")
+    minimum     = models.IntegerField(default=100)
+    maximum     = models.IntegerField(default=0) # Use zero for no maximum
+    body        = models.TextField(blank=True, default="")
+    title       = models.CharField(max_length=256, blank=True, default="")
     article_type = models.ForeignKey(ArticleType, related_name='articles')
-    project = models.ForeignKey(Project, related_name='articles', null=True, blank=True)
-    tags = models.CharField(max_length=128, blank=True, default="")
-    
+    project     = models.ForeignKey(Project, related_name='articles', null=True, blank=True)
+    tags        = models.CharField(max_length=128, blank=True, default="")
+    # status      = models.CharField(max_length=16, blank=True, default=STATUS_NEW, choices=STATUSES)
     owner       = models.ForeignKey(User, related_name='articles_owned')
     writer      = models.ForeignKey(User, null=True, blank=True, related_name='articles_writing')
     reviewer    = models.ForeignKey(User, null=True, blank=True, related_name='articles_reviewing')
@@ -321,24 +342,46 @@ class Article(ValidationModelMixin, models.Model):
     tags_as_list=property(get_tags, set_tags)
     @property
     def status(self): 
-        if self.last_action: return self.last_action.get_code_display()
-        return u"New"
+        if self.published: return STATUS_PUBLISHED
+        if self.approved: return STATUS_APPROVED
+        if self.submitted: return STATUS_SUBMITTED
+        if self.writer: return STATUS_ASSIGNED
+        if self.released: return STATUS_RELEASED
+        return STATUS_NEW
     
     class ArticleWorkflowException(Exception): pass
     # ATTRIBUTES={'publish':ACT_PUBLISH,'approved':ACT_APPROVE,'submitted':ACT_SUBMIT,'assigned':ACT_ASSIGN,'rejected':ACT_REJECT,'released':ACT_RELEASE}
-
     def get_available_actions(self, user):
-        try: status= self.last_action.code
-        except: status = None
-        if user == self.writer and (status == ACT_WRITER or status == ACT_CLAIM): return ['submit','release']
-        elif user == self.reviewer and (status == ACT_SUBMIT): return ['accept','reject']
-        elif user == self.owner:
-            if status == None or status == ACT_RELEASE or status == ACT_REJECT: return ['assign','tag','delete']
-            elif status == ACT_SUBMIT: return ['approve','reject','tag','delete']
-            elif status == ACT_APPROVE: return ['publish','tag','delete']
-            else: return ['release','tag','delete']
-        elif status == None or status == ACT_RELEASE or status == ACT_REJECT: return ['claim',]
-        return []
+        status = self.status
+        actions=()
+        if user.mode == WRITER_MODE:
+            if self.writer == user and not self.submitted:
+                actions += (ACT_REMOVE_WRITER, ACT_SUBMIT)
+            elif not self.writer:
+                actions += (ACT_CLAIM_WRITER,)
+            print "actions1 = %s" % str(actions)
+        elif user.mode == REQUESTER_MODE:
+            if   status == STATUS_APPROVED:     actions += (ACT_PUBLISH, ACT_TAG)
+            elif status == STATUS_SUBMITTED:    actions += (ACT_REJECT, ACT_APPROVE)
+            elif status == STATUS_ASSIGNED:     actions += (ACT_REMOVE_WRITER,)
+            elif status == STATUS_RELEASED:     actions += (ACT_ASSIGN_WRITER,)
+            else:                               actions += (ACT_RELEASE,)
+            print "actions2 = %s" % str(actions)
+            if not self.approved:
+                actions += (ACT_DELETE, )
+                if self.reviewer:
+                    actions += (ACT_REMOVE_REVIEWER, )
+                else:
+                    actions += (ACT_ASSIGN_REVIEWER, )
+            actions += (ACT_TAG, )
+            print "actions3 = %s" % str(actions)
+        elif user.mode == REVIEWER_MODE:
+            if self.reviewer == user and status == STATUS_SUBMITTED:
+                actions += (ACT_REMOVE_REVIEWER, ACT_REJECT, ACT_APPROVE)
+            elif not self.reviewer: actions += (ACT_CLAIM_REVIEWER, )
+            print "actions4 = %s" % str(actions)
+        print "actions5 = %s" % str(actions)
+        return actions
             
     @property
     def klass(self):return self.article_type.name

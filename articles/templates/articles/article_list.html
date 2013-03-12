@@ -89,7 +89,7 @@
       <input id="reject_input">
     </div>
     <div class="modal-footer">
-      <a href="#" class="btn btn-primary" onclick="rejectArticle();return false;">Save</a>
+      <a href="#" class="btn btn-primary" onclick="rejectArticle('{% url reject_articles%}', window.article_id);return false;">Save</a>
       <a href="#" class="btn btn-primary" onclick="$('#reject-modal').modal('hide');">Cancel</a>
     </div>
   </div>

@@ -53,6 +53,7 @@ class CreateArticles(BaseFunctionalTest):
 
         # Should be greeted
         body = self.browser.find_element_by_tag_name('body')
+        self.browser.save_screenshot('screenie2.png')
         self.assertIn('Hi Joe Requester!', body.text)
         # Click on Article Type
         article_type_dropdown = Select(self.browser.find_element_by_name('article_type'))
