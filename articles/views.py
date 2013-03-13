@@ -486,14 +486,15 @@ class AssignWriterToArticles(AssignArticles):
         return qs.filter(writer__isnull=True)
     def update_articles(self, qs, action):
         super(AssignWriterToArticles, self).update_articles(qs, action)
-        qs.update(writer=self.request.user)
+        print "self.action_form.cleaned_data['user'] = %s" % str(self.action_form.cleaned_data['user'])
+        qs.update(writer=self.action_form.cleaned_data['user'])
 class AssignReviewerToArticles(AssignArticles):
     action_type=ACT_ASSIGN_REVIEWER
     def filter_action_queryset(self, qs):
         return qs.filter(reviewer__isnull=True)
     def update_articles(self, qs, action):
         super(AssignReviewerToArticles, self).update_articles(qs, action)
-        qs.update(reviewer=self.request.user)
+        qs.update(reviewer=self.action_form.cleaned_data['user'])
 ############################### Reject Actions ####################################
 
 class RejectArticles(PostActionsView):
