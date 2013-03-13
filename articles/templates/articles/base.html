@@ -68,7 +68,12 @@
             <div class="container" style="width: auto;">
                 <a class="brand" href="#"><img src="{{STATIC_URL}}img/writeraxislogo.png"></a>
                 <p class="navbar-text pull-right">
-                    {% include "articles/login.html" %}
+                    {% if user.is_authenticated %}
+                        Hi <a href="/users/{{user.username}}/{{user.pk}}/">{{user.full_name}}</a>! <!--(1589/0)--> &nbsp;|&nbsp; <a href="{% url logout %}">Logout</a>
+                    {% else %}
+                        Welcome, guest. <!--(1589/0)--> &nbsp;|&nbsp; <a id="login-button" href="{% url login %}" role="button" class="btn blue-button">Log in</a>
+                    {% endif %}
+                    {# {% include "articles/login.html" %} #}
                 </p>
                 <form id="user-mode-form" method="POST" action="{% url change_user_mode %}">
                     <input id="user-mode-input" type="hidden" name="mode" value="">
