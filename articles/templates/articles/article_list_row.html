@@ -3,6 +3,7 @@
 	<td><input <input type="checkbox" class="action-select" value="{{article.id}}" name="action-select" onClick="toggleRows($('#article-{{article.id}}'));"/></td>
 	<td>{% if article.project %} <a href="{% url article_list %}?project={{article.project.name}}"> {{article.project.name.title}} </a>{% else %}None{% endif %}</td>
 	<td><a href="{{article.get_absolute_url}}">{{article.keywords}}</a></td>
+	<td>{{article.writer.full_name}}</td>
 	<td id="tag-cell-{{article.pk}}">
 	    {% for tag in article.tags_as_list %}
 	    	{% if tag %}
