@@ -228,27 +228,23 @@ class ArticleCreate(FormWithUserMixin, LoginRequiredMixin, CreateWithInlinesView
     inlines = [KeywordInlineFormSet]
     success_url = reverse_lazy('article_list')
     def get_context_data(self, **kwargs):
+        print "YOOOOOO"
         kwargs['article']=self.object
-        return super(ArticleCreate, self).get_context_data(**kwargs)
+        context = super(ArticleCreate, self).get_context_data(**kwargs)
+        return context
     def forms_valid(self, form, inlines):
         response = super(ArticleCreate, self).forms_valid(form, inlines)
         # If number_of_articles was specified, clone the model that many times
         if 'number_of_articles' in form.cleaned_data and form.cleaned_data['number_of_articles']:
-            print "self.object = %s" % str(self.object)
-            print "self.object.keywords = %s" % str(self.object.keywords)
-            print "self.object.pk = %s" % str(self.object.pk)
             keywords = list(self.object.keyword_set.all())
             # Do one less since we already had one instance
             for x in xrange(form.cleaned_data['number_of_articles']-1):
                 self.object.pk = None
                 self.object.save()
-                print "self.object.pk = %s" % str(self.object.pk)
                 for keyword in keywords:
                     keyword.pk = None
                     keyword.article = self.object
                     keyword.save()
-                    print "keyword.pk = %s" % str(keyword.pk)
-                    print "keyword.article_id = %s" % str(keyword.article_id)
         return response
 
 class ArticleUpdate(FormWithUserMixin, LoginRequiredMixin, UpdateWithInlinesView):
@@ -258,16 +254,25 @@ class ArticleUpdate(FormWithUserMixin, LoginRequiredMixin, UpdateWithInlinesView
     extra = 1
     max_num = 1
     inlines = [KeywordInlineFormSet]
+    success_url = reverse_lazy('article_list')
     def get_form_class(self):
-        print "self.request.user = %s" % str(self.request.user)
-        print "self.object.owner = %s" % str(self.object.owner)
         if self.request.user == self.object.owner: 
-            print "returning articleform"
             return ArticleForm
         else: 
-            print "returnong little form"
             self.inlines = []
             return WriteArticleForm
+    def forms_valid(self, form, inlines):
+        results = super(ArticleUpdate, self).forms_valid(form, inlines)
+        if 'saveandsubmit' in self.request.POST: self.object.submit(self.request.user)
+        print "'saveandapprove' in self.request.POST = %s" % str('saveandapprove' in self.request.POST)
+        if 'saveandapprove' in self.request.POST: 
+            print "approving"
+            self.object.approve(self.request.user)
+        return results
+    def get_context_data(self, **kwargs):
+        kwargs['article']=self.object
+        context = super(ArticleUpdate, self).get_context_data(**kwargs)
+        return context
 
 # class ArticleDelete(LoginRequiredMixin, DeleteView):
 #     model = Article

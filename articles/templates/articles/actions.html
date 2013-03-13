@@ -27,6 +27,12 @@
     </div>
   {% elif action == "Submitted" %}
     <button class="btn {{btn_size}}" onclick="doActionOnArticles('{% url submit_articles %}',{{article.id}});return false;" >Submit</button>
+  {% elif action == 'Submit&Save' %}
+    <button class="btn {{btn_size}} btn-primary" type="submit" name="saveandsubmit" >Submit</button>
+  {% elif action == 'Approve&Save' %}
+    <button class="btn {{btn_size}} btn-primary" type="submit" name="saveandapprove" >Approve</button>
+  {% elif action == 'Save' %}
+    <button class="btn {{btn_size}} btn-primary" type="submit">Save</button>
   {% elif action == "Published" %}
     <button class="btn {{btn_size}}" onclick="doActionOnArticles('',{{article.id}});return false;" >Publish</button>
   {% elif action == "Released" %}
