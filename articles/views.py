@@ -14,7 +14,7 @@ TagForm, RelationshipForm, ProjectForm, ACT_SUBMIT, ACT_REJECT, ACT_APPROVE, \
 ACT_ASSIGN_WRITER, ACT_ASSIGN_REVIEWER, ACT_CLAIM_REVIEWER, ACT_RELEASE, ACT_PUBLISH, ACT_COMMENT, \
 ACT_REMOVE_REVIEWER, ACT_REMOVE_WRITER, ACT_CLAIM_WRITER, UserModeForm, \
 STATUS_NEW, STATUS_RELEASED, STATUS_ASSIGNED, STATUS_SUBMITTED, STATUS_APPROVED, \
-STATUS_PUBLISHED
+STATUS_PUBLISHED, WriteArticleForm
 #from django_actions.views import ActionViewMixin
 import pickle
 # from datetime import datetime
@@ -258,6 +258,16 @@ class ArticleUpdate(FormWithUserMixin, LoginRequiredMixin, UpdateWithInlinesView
     extra = 1
     max_num = 1
     inlines = [KeywordInlineFormSet]
+    def get_form_class(self):
+        print "self.request.user = %s" % str(self.request.user)
+        print "self.object.owner = %s" % str(self.object.owner)
+        if self.request.user == self.object.owner: 
+            print "returning articleform"
+            return ArticleForm
+        else: 
+            print "returnong little form"
+            self.inlines = []
+            return WriteArticleForm
 
 # class ArticleDelete(LoginRequiredMixin, DeleteView):
 #     model = Article

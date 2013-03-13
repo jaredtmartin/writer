@@ -356,7 +356,7 @@ class Article(ValidationModelMixin, models.Model):
         if user.mode == WRITER_MODE:
             if self.writer == user and not self.submitted:
                 actions += (ACT_REMOVE_WRITER, ACT_SUBMIT)
-            elif not self.writer:
+            elif not self.writer and self.released:
                 actions += (ACT_CLAIM_WRITER,)
             print "actions1 = %s" % str(actions)
         elif user.mode == REQUESTER_MODE:
