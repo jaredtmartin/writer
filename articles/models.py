@@ -355,6 +355,7 @@ class Article(ValidationModelMixin, models.Model):
     def get_available_actions(self, user):
         status = self.status
         actions=[]
+        if not user.is_authenticated(): return []
         if user.mode == WRITER_MODE:
             if self.writer == user and not self.submitted:
                 actions += [ACT_REMOVE_WRITER, ACT_SUBMIT]

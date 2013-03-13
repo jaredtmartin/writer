@@ -10,6 +10,7 @@
     
     <link rel='stylesheet' type='text/css' href='{{STATIC_URL}}css/navstyle.css' />
 	<link href="{{STATIC_URL}}css/stylesheet.css" rel="stylesheet" type="text/css" />	
+    <link href="{{STATIC_URL}}css/new_accordion.css" rel="stylesheet" type="text/css" />   
     <script type='text/javascript' src='{{STATIC_URL}}js/ajax.js'></script>
     <script type='text/javascript' src='{{STATIC_URL}}js/plugins/jquery/jquery.min.js'></script>
     <script type='text/javascript' src='{{STATIC_URL}}js/plugins/jquery/jquery-ui.min.js'></script>
@@ -23,9 +24,38 @@
 	<script type='text/javascript' src='{{STATIC_URL}}js/cookies.js'></script>
     <script type='text/javascript' src='{{STATIC_URL}}js/actions.js'></script>
 	<script type = "text/javascript" src='{{STATIC_URL}}js/checkboxes.js'></script>
-	
     <link media="screen" type="text/css" href="{{STATIC_URL}}js/fancybox/jquery.fancybox.css" rel="stylesheet">
     <script type="text/javascript" src="/static/js/fancybox/jquery.fancybox.pack.js"></script>
+    <script>
+    $(function() {
+    var stop = false;
+    $("#accordion h3").click(function( event ) {
+        if ( stop ) {
+            event.stopImmediatePropagation();
+            event.preventDefault();
+            stop = false;
+        }
+    });
+
+    $("#accordion")
+        .accordion({
+            header: "> div > h3",
+            autoHeight: false,
+            changestart:
+              function(event, ui){
+                ui.newHeader.parent().prependTo(this);
+              }
+        })
+        .sortable({
+            axis: "y",
+            handle: "h3",
+            stop: function() {
+                stop = true;
+            }
+        });
+
+});
+  </script>
     {% block js %}{% endblock js %}
     {% block css %}{% endblock css %}
     {% block head %}{% endblock head %}
@@ -74,23 +104,7 @@
         	</div> 
         </div>
     </div>
-
-    <script type="text/javascript">
-	    $(function() {
-		    $('#navigation a').stop().animate({'marginLeft':'-15px'},1000);
-
-		    $('#navigation > li').hover(
-			    function () {
-				    $('a',$(this)).stop().animate({'marginLeft':'-2px'},200);
-			    },
-			    function () {
-				    $('a',$(this)).stop().animate({'marginLeft':'-15px'},200);
-			    }
-		    );
-	    });
-    </script>   
-    
-     <div id="ajax-data" style="display:none;"></div> 
+    <div id="ajax-data" style="display:none;"></div> 
 </body>
 </html>
  

@@ -2,6 +2,7 @@
 	{% csrf_token %}
 	<input type="hidden" name="next" value="{{ next }}" />
 	<input type="text" style="width: 300px;" value="" class="text small" name="username"id="id_username">
+	X{{login_form.password}}X
 	<input type="password" style="width: 300px;" class="text small" name="password" id="id_password">
 	<input id="login-submit" type="submit" style="float: right; margin-right:14px;" value="Login" class="submit mid">
 	<div class="aleft smfont">

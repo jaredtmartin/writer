@@ -5,48 +5,38 @@
         <i class="icon-remove"></i>
     </a>
 </form>
-<div class="accordion" id="accordion2">
-    <div class="accordion-group">
-        <div class="accordion-heading">
-            <a class="accordion-toggle collapsed" data-parent="#accordion2" href="#collapseOne">Dashboard</a> 
+<div class="accordion" id="accordion">
+    <h3><a class="aaccordion-toggle collapsed" data-parent="#aaccordion" href="#collapseOne">Dashboard</a> </h3>
+    <div class="group">
+        <h3>Articles</h3>
+        <div class="aaccordion-body">
+            <div class="aaccordion-inner"><a href="{% url article_list %}">All Articles</a></div>
+            <div class="aaccordion-inner"><xxxa href="{% url article_list %}">Unavailable</a></div>
+            <div class="aaccordion-inner"><a href="{% url article_list %}?status=Released">Available</a></div>
+            <div class="aaccordion-inner"><a href="{% url article_list %}?status=Assigned+to+Writer">Assigned</a></div>
+            <div class="aaccordion-inner"><xxxa href="{% url article_list %}?status=Assigned+to+Writer">Claimed</a></div>
+            <div class="aaccordion-inner"><a href="{% url article_list %}?last_action=Submitted">Submitted</a></div>
+            <div class="aaccordion-inner"><a href="{% url article_list %}?last_action=Approved">Approved</a></div>
+            <div class="aaccordion-inner"><a href="{% url article_list %}?last_action=Rejected">Rejected</a></div>
+            <div class="aaccordion-inner"><a href="{% url article_list %}?status=Published">Published</a></div>
         </div>
     </div>
-    <div class="accordion-group">
-        <div class="accordion-heading">
-            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">Articles</a>
-        </div>
-        <div id="collapseTwo" class="accordion-body in collapse">
-            <div class="accordion-inner"><a href="{% url article_list %}">All Articles</a></div>
-            <div class="accordion-inner"><xxxa href="{% url article_list %}">Unavailable</a></div>
-            <div class="accordion-inner"><a href="{% url article_list %}?status=Released">Available</a></div>
-            <div class="accordion-inner"><a href="{% url article_list %}?status=Assigned+to+Writer">Assigned</a></div>
-            <div class="accordion-inner"><xxxa href="{% url article_list %}?status=Assigned+to+Writer">Claimed</a></div>
-            <div class="accordion-inner"><a href="{% url article_list %}?last_action=Submitted">Submitted</a></div>
-            <div class="accordion-inner"><a href="{% url article_list %}?last_action=Approved">Approved</a></div>
-            <div class="accordion-inner"><a href="{% url article_list %}?last_action=Rejected">Rejected</a></div>
-            <div class="accordion-inner"><a href="{% url article_list %}?status=Published">Published</a></div>
+    <div class="group">
+        <h3>Writers</h3>
+        <div class="aaccordion-body">
+            <div class="aaccordion-inner">All Writers</div>
+            <div class="aaccordion-inner">My Writers</div>
+            <div class="aaccordion-inner">Unconfirmed Writers</div>
+            <div class="aaccordion-inner">Other Writers</div>
         </div>
     </div>
-    <div class="accordion-group">
-        <div class="accordion-heading">
-            <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion2" href="#collapseThree">Writers</a>
-        </div>
-        <div id="collapseThree" class="accordion-body">
-            <div class="accordion-inner">All Writers</div>
-            <div class="accordion-inner">My Writers</div>
-            <div class="accordion-inner">Unconfirmed Writers</div>
-            <div class="accordion-inner">Other Writers</div>
-        </div>
-    </div>
-    <div class="accordion-group">
-        <div class="accordion-heading">
-            <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion2" href="#collapseFour">Requesters</a>
-        </div>
-        <div id="collapseFour" class="accordion-body collapse">
-            <div class="accordion-inner">All Requesters</div>
-            <div class="accordion-inner">My Requesters</div>
-            <div class="accordion-inner">Unconfirmed Requesters</div>
-            <div class="accordion-inner">Other Requesters</div>
+    <div class="group">
+        <h3>Requesters</h3>
+        <div class="aaccordion-body">
+            <div class="aaccordion-inner">All Requesters</div>
+            <div class="aaccordion-inner">My Requesters</div>
+            <div class="aaccordion-inner">Unconfirmed Requesters</div>
+            <div class="aaccordion-inner">Other Requesters</div>
         </div>
     </div>
 </div>

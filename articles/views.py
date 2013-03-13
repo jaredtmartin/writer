@@ -157,6 +157,7 @@ class ArticleList(GetActionsMixin, SearchableListView):
     def get_context_data(self, **kwargs):
         kwargs['selected_tab']='articles'
         context = super(ArticleList, self).get_context_data(**kwargs)
+        print "context!!!!! = %s" % str(context)
         return context
     def get_queryset(self):
         qs=super(ArticleList, self).get_queryset()
