@@ -293,7 +293,7 @@ class Article(ValidationModelMixin, models.Model):
     article_type = models.ForeignKey(ArticleType, related_name='articles')
     project     = models.ForeignKey(Project, related_name='articles', null=True, blank=True)
     tags        = models.CharField(max_length=128, blank=True, default="")
-    # status      = models.CharField(max_length=16, blank=True, default=STATUS_NEW, choices=STATUSES)
+    _status      = models.CharField(max_length=16, blank=True, default=STATUS_NEW, choices=STATUSES)
     owner       = models.ForeignKey(User, related_name='articles_owned')
     writer      = models.ForeignKey(User, null=True, blank=True, related_name='articles_writing')
     reviewer    = models.ForeignKey(User, null=True, blank=True, related_name='articles_reviewing')
@@ -329,7 +329,9 @@ class Article(ValidationModelMixin, models.Model):
 #        'release'
 #    
 #    )
-
+    def save(self, *args, **kwargs):
+        self._status = self.status
+        return super(Article, self).save(*args, **kwargs)
     def get_tags(self):
         return self.tags.split(',')
     def set_tags(self, value):

@@ -10,9 +10,6 @@ def show_actions(context):
 		# article = Article()
 	if article: actions = article.get_available_actions(user)
 	else: actions=[]
-	print "actionsXXXXX = %s" % str(actions)
-	print "article = %s" % str(article)
-	print "article.get_available_actions(user) = %s" % str(article.get_available_actions(user))
 	if 'btn_size' in context: btn_size=context['btn_size']
 	else: btn_size=""
 	return {'actions':actions, 'article':article, 'user':user,'STATIC_URL':context['STATIC_URL'],'btn_size':btn_size}

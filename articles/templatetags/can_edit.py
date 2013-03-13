@@ -4,6 +4,7 @@ register = template.Library()
 
 def can_edit(user, article):
     """Removes all values of arg from the given string"""
+    if not article: return False
     if ((user.is_staff) or (user == article.owner)) and article.status == STATUS_ASSIGNED or\
     	(user == article.writer and not article.accepted and not article.rejected) or \
     	(user == article.reviewer and article.submitted):
