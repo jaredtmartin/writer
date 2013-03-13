@@ -23,7 +23,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.core.urlresolvers import reverse_lazy
 from extra_views import UpdateWithInlinesView, CreateWithInlinesView 
-# import django_filters
+import django_filters
 # from actions import *
 # from django import template
 
@@ -144,39 +144,27 @@ class SearchableListView(SearchableListMixin, ListView):
         context['q']=self.request.GET.get('q','')
         return context
 
-class ArticleList(GetActionsMixin, FilterableListView):
+# class ArticleList(GetActionsMixin, FilterableListView):
+class ArticleList(GetActionsMixin, SearchableListView):
     model = Article
-#     actions = [
-#         claim_articles,
-#         assign_articles,
-#         release_articles,
-#         submit_articles,
-# #        tag_articles,
-#         approve_articles,
-#         reject_articles,
-#         publish_articles,
-#         reject_and_release_articles,
-#     ]
-#    queryset = Article.objects.filter(submitted=None)
-    # context_object_name = 'available'
     search_fields = ['tags', 'project__name', 'keyword__keyword']
-    filter_fields={
-        'minimum':FilterWithChoicesFromModel(name='minimum', model=Article),
-        'project':RelatedFilter(name='project', model=Article, display_attr='name'),
-        'last_action':StatusFilter(name='last_action', model=Article, display_attr='code'),
-    }
-    # def get_actions(self):
-    #     return [
-    #         ('Assign', ActionUserID(),'/articles/various/assign/'),
-    #         ('Tag', TagForm(),'/articles/various/tag/'),
-    #         ('Approve','','/articles/various/approve/'),
-    #         ('Reject',NoteForm(),'/articles/various/reject/'),
-    #     ]
+    # filter_fields={
+    #     'minimum':FilterWithChoicesFromModel(name='minimum', model=Article),
+    #     'project':RelatedFilter(name='project', model=Article, display_attr='name'),
+    #     'last_action':StatusFilter(name='last_action', model=Article, display_attr='code'),
+    #     'status':django_filters.CharFilter(name='status'),
+    # }
     def get_context_data(self, **kwargs):
         kwargs['selected_tab']='articles'
         context = super(ArticleList, self).get_context_data(**kwargs)
-        print "context = %s" % str(context)
         return context
+    def get_queryset(self):
+        qs=super(ArticleList, self).get_queryset()
+        if 'last_action' in self.request.GET:
+            qs=qs.filter(last_action__code=self.request.GET['last_action'])
+        if 'status' in self.request.GET:
+            qs=qs.filter(status=self.request.GET['status'])
+        return qs
 
 class AjaxDeleteRowView(DeleteView):
     def delete(self, request, *args, **kwargs):
@@ -343,6 +331,7 @@ class TagArticle(ArticleActionFormView):
 class PostActionsView(TemplateResponseMixin, View):
     template_name = "articles/ajax_article_list_row.html"
     model = Article
+    next_status = None
     action_property_name=None
     past_tense_action_verb=None
     action_verb=None
@@ -419,6 +408,7 @@ class PostActionsView(TemplateResponseMixin, View):
     def update_articles(self, qs, action):
         # qs= self.model_class.objects.filter(pk__in=list(qs)) # This converts the queryset so objects will not 'slip out'
         qs.update(**{'last_action':action})
+        if self.next_status: qs.update(status=self.next_status)
         try:qs.update(**{self.get_action_property_name():action})
         except :pass
     def get_action_verb(self):
@@ -464,6 +454,7 @@ class AssignArticles(PostActionsView):
     def filter_action_queryset(self, qs):
         return self.filter_by_owner(qs, self.request.user)
     def update_articles(self, qs, action):
+        if self.next_status: qs.update(status=self.next_status)
         qs.update(last_action=action)
         qs.update(released=True)
     def create_action(self):
@@ -474,6 +465,7 @@ class AssignArticles(PostActionsView):
         )
 class AssignWriterToArticles(AssignArticles):
     action_type=ACT_ASSIGN_WRITER
+    next_status = STATUS_ASSIGNED
     def filter_action_queryset(self, qs):
         return qs.filter(writer__isnull=True)
     def update_articles(self, qs, action):
@@ -491,6 +483,7 @@ class AssignReviewerToArticles(AssignArticles):
 class RejectArticles(PostActionsView):
     action_verb="reject"
     action_form_class = RejectForm
+    next_status = STATUS_RELEASED
     def filter_action_queryset(self, qs):
         qs=qs.filter(submitted__isnull=False, approved__isnull=True)
         return self.filter_by_owner_or_reviewer(qs, self.request.user)
@@ -516,6 +509,7 @@ class RejectArticles(PostActionsView):
 class ApproveArticles(PostActionsView):
     action_verb="approve"
     action_property_name="approved"
+    next_status = STATUS_APPROVED
     def filter_action_queryset(self, qs):
         qs=qs.filter(submitted__isnull=False)
         return self.filter_by_owner_or_reviewer(qs, self.request.user)
@@ -529,6 +523,7 @@ class ApproveArticles(PostActionsView):
 class SubmitArticles(PostActionsView):
     action_verb="submit"
     action_property_name="submitted"
+    next_status = STATUS_SUBMITTED
     def filter_action_queryset(self, qs):
         qs=qs.filter(submitted__isnull=True)
         return self.filter_by_writer(qs, self.request.user)
@@ -567,14 +562,18 @@ class ReleaseArticles(PostActionsView):
         )
 class ReleaseWriter(ReleaseArticles):
     action_type=ACT_REMOVE_WRITER
+    next_status = STATUS_RELEASED
     def filter_action_queryset(self, qs):
         qs = qs.filter(writer__isnull=False, submitted__isnull=True)
         return self.filter_by_owner_or_writer(qs, self.request.user)
     def update_articles(self, qs, action):
+        print "Redy to change status"
+        print "self.next_status = %s" % str(self.next_status)
+        if self.next_status: qs.update(status=self.next_status)
         qs.update(writer=None)
 
 class ReleaseReviewer(ReleaseArticles):
-    action_type=ACT_REMOVE_REVIEWER
+    action_type=ACT_REMOVE_REVIEWER 
     def filter_action_queryset(self, qs):
         qs = qs.filter(reviewer__isnull=False, approved__isnull=True)
         return self.filter_by_owner_or_reviewer(qs, self.request.user)
@@ -583,11 +582,13 @@ class ReleaseReviewer(ReleaseArticles):
 
 class InitialRelease(ReleaseArticles):
     action_type=ACT_RELEASE
+    next_status = STATUS_RELEASED
     action_property_name="released"
     def filter_action_queryset(self, qs):
         qs = qs.filter(released=False)
         return self.filter_by_owner(qs, self.request.user)
     def update_articles(self, qs, action):
+        if self.next_status: qs.update(status=self.next_status)
         qs.update(released=True)
 
 ############################### Claim Actions ##################################
@@ -600,10 +601,12 @@ class ClaimArticles(PostActionsView):
             author=self.request.user,
         )
     def update_articles(self, qs, action):
+        if self.next_status: qs.update(status=self.next_status)
         qs.update(last_action=action)
 class ClaimArticlesAsWriter(ClaimArticles):
     action_property_name="writer"
     action_type = ACT_CLAIM_WRITER
+    next_status = STATUS_ASSIGNED
     def filter_action_queryset(self, qs):
         return qs.filter(writer__isnull=True, released = True)
     def update_articles(self, qs, action):

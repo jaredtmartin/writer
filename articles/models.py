@@ -293,7 +293,7 @@ class Article(ValidationModelMixin, models.Model):
     article_type = models.ForeignKey(ArticleType, related_name='articles')
     project     = models.ForeignKey(Project, related_name='articles', null=True, blank=True)
     tags        = models.CharField(max_length=128, blank=True, default="")
-    _status      = models.CharField(max_length=16, blank=True, default=STATUS_NEW, choices=STATUSES)
+    status      = models.CharField(max_length=32, blank=True, default=STATUS_NEW, choices=STATUSES)
     owner       = models.ForeignKey(User, related_name='articles_owned')
     writer      = models.ForeignKey(User, null=True, blank=True, related_name='articles_writing')
     reviewer    = models.ForeignKey(User, null=True, blank=True, related_name='articles_reviewing')
@@ -329,9 +329,6 @@ class Article(ValidationModelMixin, models.Model):
 #        'release'
 #    
 #    )
-    def save(self, *args, **kwargs):
-        self._status = self.status
-        return super(Article, self).save(*args, **kwargs)
     def get_tags(self):
         return self.tags.split(',')
     def set_tags(self, value):
@@ -342,14 +339,14 @@ class Article(ValidationModelMixin, models.Model):
     # def tags_as_list(self):
     #     return self._tags
     tags_as_list=property(get_tags, set_tags)
-    @property
-    def status(self): 
-        if self.published: return STATUS_PUBLISHED
-        if self.approved: return STATUS_APPROVED
-        if self.submitted: return STATUS_SUBMITTED
-        if self.writer: return STATUS_ASSIGNED
-        if self.released: return STATUS_RELEASED
-        return STATUS_NEW
+    # @property
+    # def status(self): 
+    #     if self.published: return STATUS_PUBLISHED
+    #     if self.approved: return STATUS_APPROVED
+    #     if self.submitted: return STATUS_SUBMITTED
+    #     if self.writer: return STATUS_ASSIGNED
+    #     if self.released: return STATUS_RELEASED
+    #     return STATUS_NEW
     
     class ArticleWorkflowException(Exception): pass
     # ATTRIBUTES={'publish':ACT_PUBLISH,'approved':ACT_APPROVE,'submitted':ACT_SUBMIT,'assigned':ACT_ASSIGN,'rejected':ACT_REJECT,'released':ACT_RELEASE}
@@ -363,7 +360,7 @@ class Article(ValidationModelMixin, models.Model):
                 actions += (ACT_CLAIM_WRITER,)
             print "actions1 = %s" % str(actions)
         elif user.mode == REQUESTER_MODE:
-            if   status == STATUS_APPROVED:     actions += (ACT_PUBLISH, ACT_TAG)
+            if   status == STATUS_APPROVED:     actions += (ACT_PUBLISH,)
             elif status == STATUS_SUBMITTED:    actions += (ACT_REJECT, ACT_APPROVE)
             elif status == STATUS_ASSIGNED:     actions += (ACT_REMOVE_WRITER,)
             elif status == STATUS_RELEASED:     actions += (ACT_ASSIGN_WRITER,)

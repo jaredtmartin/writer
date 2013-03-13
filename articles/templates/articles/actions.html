@@ -5,7 +5,7 @@
     <button class="btn {{btn_size}}" onclick="doActionOnArticles('{% url claim_articles_as_reviewer %}',{{article.id}});return false;" >Claim</button>
   {% elif action == "Assigned to Writer" %}
     <div class="btn-group">
-      <button class="btn  {{btn_size}} dropdown-toggle" data-toggle="dropdown">Assign<span class="caret"></span></button>
+      <button class="btn  {{btn_size}} dropdown-toggle" data-toggle="dropdown">Assign Writer <span class="caret"></span></button>
       <ul class="dropdown-menu">
         {% for writer_relationship in user.writers %}
           {% with writer=writer_relationship.writer %}
@@ -16,7 +16,7 @@
     </div>
   {% elif action == 'Assigned to Reviewer' %}
     <div class="btn-group">
-      <button class="btn  {{btn_size}} dropdown-toggle" data-toggle="dropdown">Assign<span class="caret"></span></button>
+      <button class="btn  {{btn_size}} dropdown-toggle" data-toggle="dropdown">Assign Reviewer <span class="caret"></span></button>
       <ul class="dropdown-menu">
         {% for reviewer_relationship in user.reviewers %}
           {% with reviewer=reviewer_relationship.reviewer %}
@@ -27,10 +27,14 @@
     </div>
   {% elif action == "Submitted" %}
     <button class="btn {{btn_size}}" onclick="doActionOnArticles('{% url submit_articles %}',{{article.id}});return false;" >Submit</button>
+  {% elif action == "Published" %}
+    <button class="btn {{btn_size}}" onclick="doActionOnArticles('',{{article.id}});return false;" >Publish</button>
+  {% elif action == "Released" %}
+    <button class="btn {{btn_size}}" onclick="doActionOnArticles('{% url initial_release_articles %}',{{article.id}});return false;" >Release</button>
   {% elif action == 'Removed Writer' %}
-    <button class="btn {{btn_size}}" onclick="doActionOnArticles('{% url release_writer %}',{{article.id}});return false;" >Release</button>
+    <button class="btn {{btn_size}}" onclick="doActionOnArticles('{% url release_writer %}',{{article.id}});return false;" >Remove Writer</button>
   {% elif action == 'Removed Reviewer' %}
-    <button class="btn {{btn_size}}" onclick="doActionOnArticles('{% url release_reviewer %}',{{article.id}});return false;" >Release</button>
+    <button class="btn {{btn_size}}" onclick="doActionOnArticles('{% url release_reviewer %}',{{article.id}});return false;" >Remove Reviewer</button>
   {% elif action == 'Approved' %}
     <button class="btn {{btn_size}}" onclick="doActionOnArticles('{% url approve_articles %}',{{article.id}});return false;" >Approve</button>
   {% elif action == 'Rejected' %}

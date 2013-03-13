@@ -16,15 +16,15 @@
             <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">Articles</a>
         </div>
         <div id="collapseTwo" class="accordion-body in collapse">
-            <div class="accordion-inner"><a {% url article_list %}>All Articles</a></div>
-            <div class="accordion-inner"><a {% url article_list %}>Unavailable</a></div>
-            <div class="accordion-inner"><a {% url article_list %}>Available</a></div>
-            <div class="accordion-inner"><a {% url article_list %}>Assigned</a></div>
-            <div class="accordion-inner"><a {% url article_list %}>Claimed</a></div>
-            <div class="accordion-inner"><a {% url article_list %}>Submitted</a></div>
-            <div class="accordion-inner"><a {% url article_list %}>Approved</a></div>
-            <div class="accordion-inner"><a {% url article_list %}>Rejected</a></div>
-            <div class="accordion-inner"><a {% url article_list %}>Published</a></div>
+            <div class="accordion-inner"><a href="{% url article_list %}">All Articles</a></div>
+            <div class="accordion-inner"><xxxa href="{% url article_list %}">Unavailable</a></div>
+            <div class="accordion-inner"><a href="{% url article_list %}?status=Released">Available</a></div>
+            <div class="accordion-inner"><a href="{% url article_list %}?status=Assigned+to+Writer">Assigned</a></div>
+            <div class="accordion-inner"><xxxa href="{% url article_list %}?status=Assigned+to+Writer">Claimed</a></div>
+            <div class="accordion-inner"><a href="{% url article_list %}?last_action=Submitted">Submitted</a></div>
+            <div class="accordion-inner"><a href="{% url article_list %}?last_action=Approved">Approved</a></div>
+            <div class="accordion-inner"><a href="{% url article_list %}?last_action=Rejected">Rejected</a></div>
+            <div class="accordion-inner"><a href="{% url article_list %}?status=Published">Published</a></div>
         </div>
     </div>
     <div class="accordion-group">
