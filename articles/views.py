@@ -264,7 +264,7 @@ class ArticleUpdate(FormWithUserMixin, LoginRequiredMixin, UpdateWithInlinesView
             return WriteArticleForm
     def forms_valid(self, form, inlines):
         results = super(ArticleUpdate, self).forms_valid(form, inlines)
-        if 'saveandsubmit' in self.request.POST: self.object.submit(self.request.user)
+        if 'saveandsubmit' in self.request.POST: self.object.submit(self.request)
         print "'saveandapprove' in self.request.POST = %s" % str('saveandapprove' in self.request.POST)
         if 'saveandapprove' in self.request.POST: 
             print "approving"
@@ -407,12 +407,9 @@ class PostActionsView(TemplateResponseMixin, View):
             if self.action_qs: return self.action_qs
         except AttributeError: pass
         qs=self.get_requested_objects()
-        print "qs = %s" % str(qs)
         self.initial_action_qty=len(qs)
         if self.initial_action_qty:
             qs=self.filter_action_queryset(qs)
-            print "qs = %s" % str(qs)
-            # self.pks = list(qs.values_list('id', flat=True))
             self.final_action_qty=qs.count()
             return qs
         else:
@@ -486,7 +483,6 @@ class AssignWriterToArticles(AssignArticles):
         return qs.filter(writer__isnull=True)
     def update_articles(self, qs, action):
         super(AssignWriterToArticles, self).update_articles(qs, action)
-        print "self.action_form.cleaned_data['user'] = %s" % str(self.action_form.cleaned_data['user'])
         qs.update(writer=self.action_form.cleaned_data['user'])
 class AssignReviewerToArticles(AssignArticles):
     action_type=ACT_ASSIGN_REVIEWER
@@ -510,11 +506,9 @@ class RejectArticles(PostActionsView):
             code=ACT_REJECT, 
             comment=self.action_form.cleaned_data['reason'],
         )
-        print "----------------action = %s" % str(action)
         return action
     def update_articles(self, qs, action):
         super(RejectArticles, self).update_articles(qs, action)
-        print "len(qs) = %s" % str(len(qs))
         qs= Article.objects.filter(pk__in=list(qs.values_list('id', flat=True)))
         qs.update(submitted=None)
         qs.update(approved=None)
@@ -543,6 +537,9 @@ class SubmitArticles(PostActionsView):
     next_status = STATUS_SUBMITTED
     def filter_action_queryset(self, qs):
         qs=qs.filter(submitted__isnull=True)
+        print "qs = %s" % str(qs)
+        qs=Article.filter_valid(qs, self.request)
+        print "qs = %s" % str(qs)
         return self.filter_by_writer(qs, self.request.user)
     def create_action(self):
         return ArticleAction.objects.create(

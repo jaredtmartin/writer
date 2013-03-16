@@ -1,5 +1,6 @@
 from django.contrib import admin
-from articles.models import Article, ArticleType, ArticleAction, Keyword, Project, Relationship, UserProfile, PublishingOutlet, PublishingOutletConfiguration
+from articles.models import Article, ArticleType, ArticleAction, Keyword, Project, Relationship, \
+UserProfile, PublishingOutlet, PublishingOutletConfiguration, ValidationPlugin
 from django.contrib import messages
 
 class KeywordInline(admin.TabularInline):
@@ -72,4 +73,5 @@ admin.site.register(Project)
 admin.site.register(Relationship)
 admin.site.register(UserProfile)
 admin.site.register(PublishingOutlet)
+admin.site.register(ValidationPlugin)
 admin.site.register(PublishingOutletConfiguration)

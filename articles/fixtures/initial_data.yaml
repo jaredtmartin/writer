@@ -37,3 +37,11 @@
 - fields: {class_name: FacebookOutlet, module_name: facebook, title: Facebook}
   model: articles.publishingoutlet
   pk: 1
+- fields: {class_name: MinMaxWordsValidator, module_name: standard, title: Minimum
+      and Maximum Words}
+  model: articles.validationplugin
+  pk: 1
+- fields: {class_name: ContainsKeywordsValidator, module_name: standard, title: Contains
+      Keywords}
+  model: articles.validationplugin
+  pk: 2

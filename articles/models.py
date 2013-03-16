@@ -1,10 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
+from django.contrib import messages
 # from django.db.models import Q
 # from validation_plugins import *
 # from plugin_manager import PluginManager
 # from django.conf import settings
+from HTMLParser import HTMLParser
 import facebook
 import re
 from django.template import Context
@@ -90,6 +92,17 @@ class PublishingOutlet(PluginModel):
         return self.plugin.get_button_url(context)
     def __unicode__(self): return self.title
 
+class ValidationPlugin(PluginModel):
+    package_name = "articles.validation_plugins"
+    title = models.CharField(max_length=256)
+    
+    def do_action(self):
+        return self.plugin.do_action()
+    def get_button_url(self, context=Context()):
+        context.update({'title':self.title})
+        return self.plugin.get_button_url(context)
+    def __unicode__(self): return self.title
+
 class UserConfigBaseModel(PluginBaseMixin, models.Model):
     class Meta:
         abstract = True
@@ -159,11 +172,26 @@ class PluginMount(type):
             cls.plugins = {}
         else:
             cls.plugins[cls.name]=cls
-            
+
+class MLStripper(HTMLParser):
+    def __init__(self):
+        self.reset()
+        self.fed = []
+    def handle_data(self, d):
+        self.fed.append(d)
+    def get_data(self):
+        return ''.join(self.fed)
+
 class ValidationProvider(object):
     __metaclass__ = PluginMount
-    def is_valid(self, article):
+
+    def is_valid(self, article, request):
         raise NotImplemented
+
+    def strip_tags(self, html):
+        s = MLStripper()
+        s.feed(html)
+        return s.get_data()
 
 class ArticleType(models.Model):
     name = models.CharField(max_length=16)
@@ -284,6 +312,18 @@ class NotDeletedManager(models.Manager):
     def get_query_set(self):
         return super(NotDeletedManager, self).get_query_set().filter(deleted=False)
 
+class ArticleManager(NotDeletedManager):
+    def filter_valid(self, request):
+        qs = super(ArticleManager, self).get_query_set()
+        article_pk_list = list(Article.objects.all().values_list('id', flat=True))
+        print "article_pk_list = %s" % str(article_pk_list)
+        for validation in ValidationPlugin.objects.all():
+            for article in qs:
+                if not validation.plugin.is_valid(article, request): 
+                    try: article_pk_list.remove(article.pk)
+                    except ValueError:pass
+        return Article.objects.filter(pk__in=article_pk_list)
+
 class Article(ValidationModelMixin, models.Model):
     def __unicode__(self): return self.name
     minimum     = models.IntegerField(default=100)
@@ -312,15 +352,29 @@ class Article(ValidationModelMixin, models.Model):
     description = models.TextField(max_length=256, blank=True, default="")
     article_notes = models.CharField(max_length=128, blank=True, default="")
     review_notes = models.CharField(max_length=128, blank=True, default="")
-    objects = NotDeletedManager()
+    objects = ArticleManager()
     all_objects = models.Manager()
-    def submit(self, user):
-        if not self.submitted and user == self.writer: 
-            action = ArticleAction.objects.create(user=user, author=user, code=ACT_SUBMIT)
-            self.last_action=action
-            self.submitted = action
-            self.status = STATUS_SUBMITTED
-            self.save()
+
+    @classmethod
+    def filter_valid(self, qs, request):
+        article_pk_list = list(qs.values_list('id', flat=True))
+        for article in qs:
+            if not article.is_valid(request): article_pk_list.remove(article.pk)
+        return Article.objects.filter(pk__in=article_pk_list)
+
+    def is_valid(self, request):
+        for validation in ValidationPlugin.objects.all():
+            if not validation.plugin.is_valid(self, request): return False
+        return True
+    def submit(self, request):
+        if not self.submitted and request.user == self.writer: 
+            if self.is_valid(request):
+                action = ArticleAction.objects.create(user=request.user, author=request.user, code=ACT_SUBMIT)
+                self.last_action=action
+                self.submitted = action
+                self.status = STATUS_SUBMITTED
+                self.save()
+            else: messages.error(request, "We were unable to submit the article due to the errors encountered")
     def approve(self, user):
         print "Approving ----"
         if self.submitted and (user==self.owner or user==self.reviewer) and not self.approved: 
@@ -423,6 +477,11 @@ class Article(ValidationModelMixin, models.Model):
     @models.permalink
     def get_delete_url(self):
         return ('article_delete', [self.id,])
+
+class ArticleMessage(models.Model):
+    msg         = models.CharField(max_length=256)
+    article     = models.ForeignKey(Article, related_name='messages')
+    # is_sticky   = models.BooleanField(default=False, blank=True)
 
 class Keyword(models.Model):
     article = models.ForeignKey(Article)

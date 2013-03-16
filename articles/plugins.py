@@ -20,7 +20,7 @@ class PluginModel(models.Model):
     module_name = models.CharField(max_length=128)
     module=None
     plugin_class=None
-#    plugin=None
+    _plugin=None
     def __init__(self, *args, **kwargs):
         super(PluginModel, self).__init__(*args, **kwargs)
         try:
@@ -28,19 +28,21 @@ class PluginModel(models.Model):
             self.module = __import__("%s.%s" % (self.package_name, self.module_name), fromlist=['a'])
             # Now get the plugins class
             self.plugin_class = self.get_plugin_class()
-#            # Now create an instance of the plugin
+            # Now create an instance of the plugin
 #            self.plugin = self.get_plugin()
         except ImportError as e: print "There was an ImportError loading the plugin: %s" % e
-        
-#    def get_plugin(self):
-#        # Creates an instance of the plugin
-#        return self.plugin_class()
           
     def get_plugin_class(self):
         # fetches the plugins class from the module
-        print "eval: " + str("self.module.%s" % self.class_name) 
-        try: return eval("self.module.%s" % self.class_name)
-        except: return None
+        # print "eval: " + str("self.module.%s" % self.class_name) 
+        if self.class_name: return eval("self.module.%s" % self.class_name)
+        else: return None
+
+    @property
+    def plugin(self):
+        if not self._plugin: self._plugin = self.plugin_class()
+        return self._plugin
+
 
 class PluginBaseMixin(object):
     plugin_foreign_key_name='plugin'
