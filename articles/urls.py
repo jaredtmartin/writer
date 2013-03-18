@@ -40,5 +40,6 @@ urlpatterns = patterns('',
 
     url(r'^dashboard/$', direct_to_template, {'template': 'dashboard.html'},    name='dashboard'),
     
+    url(r'^spellcheck/$', spellcheck, name="spellcheck"), 
 
 )

@@ -45,3 +45,6 @@
       Keywords}
   model: articles.validationplugin
   pk: 2
+- fields: {confirmed: true, created_by: 1, requester: 1, reviewer: 1, writer: 1}
+  model: articles.relationship
+  pk: 1

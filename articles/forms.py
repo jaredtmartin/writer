@@ -20,10 +20,6 @@ class FormWithLookupsMixin(object):
     def clean_lookup(self, name, model, by_pk=False, title=None, auto_create=False):
         if not title: title=name
         data = self.cleaned_data[name]
-        print "data = %s" % str(data)
-        print "name = %s" % str(name)
-        print "self.fields[name].required = %s" % str(self.fields[name].required)
-        print "self.fields['project'].required = %s" % str(self.fields['project'].required)
         if (not data) and (not self.fields[name].required): return None
         try: return self.fetch_object_from_lookup(data, name, model)
         except model.MultipleObjectsReturned: 

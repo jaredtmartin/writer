@@ -15,6 +15,12 @@ ACT_ASSIGN_WRITER, ACT_ASSIGN_REVIEWER, ACT_CLAIM_REVIEWER, ACT_RELEASE, ACT_PUB
 ACT_REMOVE_REVIEWER, ACT_REMOVE_WRITER, ACT_CLAIM_WRITER, UserModeForm, \
 STATUS_NEW, STATUS_RELEASED, STATUS_ASSIGNED, STATUS_SUBMITTED, STATUS_APPROVED, \
 STATUS_PUBLISHED, WriteArticleForm
+
+from django.http import HttpResponse
+from django.utils import simplejson
+import httplib
+GOOGLE_URL = "www.google.com"
+
 #from django_actions.views import ActionViewMixin
 import pickle
 # from datetime import datetime
@@ -785,3 +791,16 @@ class ConfirmRelationship(AjaxRowTemplateResponseMixin, UpdateView):
             messages.error(self.request, 'You are not the recipient of this invitation.')
             return self.form_invalid(self.get_form(self.get_form_class()))
         return super(ConfirmRelationship, self).post(request, *args, **kwargs)
+
+
+def spellcheck(request):
+    if request.method == 'POST':
+        lang = request.GET.get("lang", "en")
+        data = request.raw_post_data
+        con = httplib.HTTPSConnection(GOOGLE_URL)
+        con.request("POST", "/tbproxy/spell?lang=%s" % lang, data)
+        response = con.getresponse()
+        r_text = response.read()
+        con.close()
+        return HttpResponse(r_text, mimetype='text/javascript')
+

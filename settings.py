@@ -61,14 +61,13 @@ MEDIA_ROOT = os.path.join(DIRNAME, 'media/')
 # trailing slash.
 # Examples: "http://media.lawrence.com/media/", "http://example.com/media/"
 MEDIA_URL = '/media/'
-
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
 
 STATIC_ROOT = os.path.join(DIRNAME, 'static/')
-
+CKEDITOR_UPLOAD_PATH = os.path.join(STATIC_ROOT, 'ckeditor_uploads/')
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
 STATIC_URL = '/static/'
@@ -164,6 +163,7 @@ INSTALLED_APPS = (
     'django_facebook',
     #'forms',
     'articles',
+    'ckeditor',
     # 'common',
     #'django_actions',
 

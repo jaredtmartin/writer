@@ -28,34 +28,34 @@
     <script type="text/javascript" src="/static/js/fancybox/jquery.fancybox.pack.js"></script>
     <script>
     $(function() {
-    var stop = false;
-    $("#accordion h3").click(function( event ) {
-        if ( stop ) {
-            event.stopImmediatePropagation();
-            event.preventDefault();
-            stop = false;
-        }
-    });
-
-    $("#accordion")
-        .accordion({
-            header: "> div > h3",
-            autoHeight: false,
-            changestart:
-              function(event, ui){
-                ui.newHeader.parent().prependTo(this);
-              }
-        })
-        .sortable({
-            axis: "y",
-            handle: "h3",
-            stop: function() {
-                stop = true;
+        var stop = false;
+        $("#accordion h3").click(function( event ) {
+            if ( stop ) {
+                event.stopImmediatePropagation();
+                event.preventDefault();
+                stop = false;
             }
         });
 
-});
-  </script>
+        $("#accordion")
+            .accordion({
+                header: "> div > h3",
+                autoHeight: false,
+                changestart:
+                  function(event, ui){
+                    ui.newHeader.parent().prependTo(this);
+                  }
+            })
+            .sortable({
+                axis: "y",
+                handle: "h3",
+                stop: function() {
+                    stop = true;
+                }
+            });
+
+        });
+    </script>
     {% block js %}{% endblock js %}
     {% block css %}{% endblock css %}
     {% block head %}{% endblock head %}
