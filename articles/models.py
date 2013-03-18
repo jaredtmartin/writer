@@ -376,18 +376,12 @@ class Article(ValidationModelMixin, models.Model):
                 self.save()
             else: messages.error(request, "We were unable to submit the article due to the errors encountered")
     def approve(self, user):
-        print "Approving ----"
         if self.submitted and (user==self.owner or user==self.reviewer) and not self.approved: 
-            print "making approval"
             action = ArticleAction.objects.create(user=user, author=self.writer, code=ACT_APPROVE)
             self.last_action=action
             self.approved = action
             self.status = STATUS_APPROVED
             self.save()
-            print "self.pk = %s" % str(self.pk)
-            print "self.last_action = %s" % str(self.last_action)
-            print "action = %s" % str(action)
-            print "self.status = %s" % str(self.status)
     def get_tags(self):
         return self.tags.split(',')
     def set_tags(self, value):
@@ -415,14 +409,12 @@ class Article(ValidationModelMixin, models.Model):
                 actions += [ACT_REMOVE_WRITER, ACT_SUBMIT]
             elif not self.writer and self.released:
                 actions += [ACT_CLAIM_WRITER]
-            print "actions1 = %s" % str(actions)
         elif user.mode == REQUESTER_MODE and user==self.owner:
             if   status == STATUS_APPROVED:     actions.append(ACT_PUBLISH)
             elif status == STATUS_SUBMITTED:    actions += [ACT_REJECT, ACT_APPROVE]
             elif status == STATUS_ASSIGNED:     actions.append(ACT_REMOVE_WRITER)
             elif status == STATUS_RELEASED:     actions.append(ACT_ASSIGN_WRITER)
             else:                               actions.append(ACT_RELEASE)
-            print "actions2 = %s" % str(actions)
             if not self.approved:
                 actions += [ACT_DELETE]
                 if self.reviewer:
@@ -430,13 +422,10 @@ class Article(ValidationModelMixin, models.Model):
                 else:
                     actions += [ACT_ASSIGN_REVIEWER]
             actions += (ACT_TAG, )
-            print "actions3 = %s" % str(actions)
         elif user.mode == REVIEWER_MODE:
             if self.reviewer == user and status == STATUS_SUBMITTED:
                 actions += [ACT_REMOVE_REVIEWER, ACT_REJECT, ACT_APPROVE]
             elif not self.reviewer: actions += [ACT_CLAIM_REVIEWER]
-            print "actions4 = %s" % str(actions)
-        print "actions5 = %s" % str(actions)
         return actions
             
     @property

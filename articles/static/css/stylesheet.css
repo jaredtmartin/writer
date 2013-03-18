@@ -1,5 +1,8 @@
 @import "bootstrap.css";
 @import "bootstrap-responsive.css";
+li.alert{
+    list-style: None;
+}
 #login-button:active{
     background:none;
     border-style: none;
@@ -98,7 +101,7 @@
 .input-label{
     text-align: right;
 }
-#content{
+#content, #messages{
     margin-right: 50px;
 }
 .notes{

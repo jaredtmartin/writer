@@ -15,12 +15,6 @@ ACT_ASSIGN_WRITER, ACT_ASSIGN_REVIEWER, ACT_CLAIM_REVIEWER, ACT_RELEASE, ACT_PUB
 ACT_REMOVE_REVIEWER, ACT_REMOVE_WRITER, ACT_CLAIM_WRITER, UserModeForm, \
 STATUS_NEW, STATUS_RELEASED, STATUS_ASSIGNED, STATUS_SUBMITTED, STATUS_APPROVED, \
 STATUS_PUBLISHED, WriteArticleForm
-
-from django.http import HttpResponse
-from django.utils import simplejson
-import httplib
-GOOGLE_URL = "www.google.com"
-
 #from django_actions.views import ActionViewMixin
 import pickle
 # from datetime import datetime
@@ -177,7 +171,7 @@ class AjaxDeleteRowView(DeleteView):
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object()
         self.object.delete()
-        messages.info(self.request, 'The '+ self.object._meta.verbose_name+' has been created successfully.')
+        messages.success(self.request, 'The '+ self.object._meta.verbose_name+' has been created successfully.')
         return self.render_to_response(self.get_context_data())
 
 class AjaxRowTemplateResponseMixin(object):
@@ -194,7 +188,7 @@ class AjaxRowTemplateResponseMixin(object):
     def form_valid(self, form):
         self.object = form.save()
         print "self.object: " + str(self.object) 
-        messages.info(self.request, self.get_success_message())
+        messages.success(self.request, self.get_success_message())
         return self.render_to_response(self.get_context_data(form=form))
     def form_invalid(self, form):
         messages.error(self.request, self.get_failure_message())
@@ -203,7 +197,7 @@ class AjaxRowTemplateResponseMixin(object):
 class AjaxUpdateMixin(object):
     def form_valid(self, form):
         self.object = form.save()
-        messages.info(self.request, 'The '+ self.object._meta.verbose_name+' has been updated successfully.')
+        messages.success(self.request, 'The '+ self.object._meta.verbose_name+' has been updated successfully.')
         return self.render_to_response(self.get_context_data(form=form))
 
 class ProjectCreate(FormWithUserMixin, AjaxUpdateMixin, CreateView):
@@ -326,7 +320,7 @@ class ArticleActionFormView(ArticleActionView, FormMixin):
         context = self.get_context_data(object=self.object)
         return self.render_to_response(context)
     def form_invalid(self, form):
-        messages.info(self.request, self.form_invalid_msg)
+        messages.error(self.request, self.form_invalid_msg)
         return self.render_to_response(self.get_context_data(form=form))
     def post(self, request, *args, **kwargs):
         # This is an exact copy of BaseFormView's post method, but due to multiple inheritance, 
@@ -345,7 +339,7 @@ class TagArticle(ArticleActionFormView):
     def do_action(self):
         self.object.tags = self.form.cleaned_data['_tags']
         self.object.save()
-        messages.info(self.request, 'The article has been tagged successfully.')
+        messages.success(self.request, 'The article has been tagged successfully.')
 
 ################################################################################
 #                               Actions                                        #
@@ -442,7 +436,7 @@ class PostActionsView(TemplateResponseMixin, View):
             messages.error(self.request, 'You did not select a valid value to complete this action.')
         elif self.final_action_qty < self.initial_action_qty:
             messages.warning(self.request, 'Only %i of the articles selected have been %s. Please verify the operation and that you have authority to make this change on the remaining articles.' % (self.final_action_qty, self.get_past_tense_action_verb()))
-        else: messages.info(self.request, 'All (%s) of the articles have been %s sucessfully' % (self.final_action_qty, self.get_past_tense_action_verb()))
+        else: messages.success(self.request, 'All (%s) of the articles have been %s sucessfully' % (self.final_action_qty, self.get_past_tense_action_verb()))
     def post(self, request, *args, **kwargs):
         self.action_qs = self.get_action_queryset()
         form_class=self.get_action_form_class()
@@ -682,7 +676,7 @@ class UserUpdateView(UpdateView):
         if user_profile_form.is_valid():
             user_profile_form.save()
             self.request.session['tz'] = user_profile_form.cleaned_data['timezone']
-            messages.info(self.request, 'The changes to your profile have been made successfully.')
+            messages.success(self.request, 'The changes to your profile have been made successfully.')
             return super(UserUpdateView, self).form_valid(form)
         else:
             return self.render_to_response(self.get_context_data(form=form, user_profile_form=user_profile_form))
@@ -791,16 +785,3 @@ class ConfirmRelationship(AjaxRowTemplateResponseMixin, UpdateView):
             messages.error(self.request, 'You are not the recipient of this invitation.')
             return self.form_invalid(self.get_form(self.get_form_class()))
         return super(ConfirmRelationship, self).post(request, *args, **kwargs)
-
-
-def spellcheck(request):
-    if request.method == 'POST':
-        lang = request.GET.get("lang", "en")
-        data = request.raw_post_data
-        con = httplib.HTTPSConnection(GOOGLE_URL)
-        con.request("POST", "/tbproxy/spell?lang=%s" % lang, data)
-        response = con.getresponse()
-        r_text = response.read()
-        con.close()
-        return HttpResponse(r_text, mimetype='text/javascript')
-

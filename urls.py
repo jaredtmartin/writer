@@ -16,20 +16,12 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
     url(r'^knowledge/', include('knowledge.urls')),
-#    url(r'^feedback/', include('feedback.urls')),
     url(r'^forms/', include('forms.urls')),
     url(r'^articles/', include('articles.urls')),
-#    url(r'^feedback/', include('feedback.urls')),
-#    (r'^facebook/', include('django_facebook.urls')),
-#    (r'^accounts/', include('django_facebook.auth_urls')),
     url(r'^accounts/login/$', 'django.contrib.auth.views.login', {'template_name': 'login.html'}, name='login'),
     url(r'^accounts/logout/$', 'django.contrib.auth.views.logout_then_login', {'login_url': '/accounts/login/'}, name='logout'),
-#    url(r'^accounts/login/$', login(template_name="login.html"), name='login'),
     url(r'^users/', include('articles.user_urls')),
     url(r'^$', redirect_to, {'url': '/articles/articles/'}),
-    # url(r'^$','articles.ArticleList.as_view()',name="root"),
-    # url(r'^$', redirect_to, {'url': '/articles/articles/'}),
-    # url(r'^ckeditor/', include('ckeditor.urls')),
 )
 
 if settings.DEBUG:

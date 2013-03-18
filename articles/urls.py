@@ -39,7 +39,6 @@ urlpatterns = patterns('',
     url(r'^relationship/(?P<pk>\d+)/confirm/$', ConfirmRelationship.as_view(),  name='relationship_confirm'),
 
     url(r'^dashboard/$', direct_to_template, {'template': 'dashboard.html'},    name='dashboard'),
-    
-    url(r'^spellcheck/$', spellcheck, name="spellcheck"), 
+
 
 )
