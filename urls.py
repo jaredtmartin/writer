@@ -29,7 +29,7 @@ urlpatterns = patterns('',
     url(r'^$', redirect_to, {'url': '/articles/articles/'}),
     # url(r'^$','articles.ArticleList.as_view()',name="root"),
     # url(r'^$', redirect_to, {'url': '/articles/articles/'}),
-    url(r'^ckeditor/', include('ckeditor.urls')),
+    # url(r'^ckeditor/', include('ckeditor.urls')),
 )
 
 if settings.DEBUG:
