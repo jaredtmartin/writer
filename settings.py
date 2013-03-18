@@ -163,7 +163,6 @@ INSTALLED_APPS = (
     'django_facebook',
     #'forms',
     'articles',
-    'ckeditor',
     # 'common',
     #'django_actions',
 

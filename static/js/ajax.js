@@ -22,17 +22,17 @@ function runCode(){
         codeForRows[x]();
     }
 }
-function ajaxUpdateRow(data){
+function ajaxUpdateRow(data){                                               // Get last transaction id
     d=saveDataInCache(data);
     updateMessages(d);                                                                  // Add new messages
     addRows(d);
     runCode();
 }
 function updateClasses(data){
-    var i, x, class, results, result;
+    var i, x, cls, results, result;
     for (i = 0; i < window.classesToUpdate.length; ++i) {
-        class = window.classesToUpdate[i];
-        results=$('.'+class, data);
+        cls = window.classesToUpdate[i];
+        results=$('.'+cls, data);
         for (x = 0; x < window.classesToUpdate.length; ++x) {
             result=results[x];
             if ($('#'+result.id+":visible").length>0){ // See if the item already exists on the page
@@ -51,4 +51,11 @@ function updatePage(data){
 }
 function sendAjaxPost(url, data){
     jQuery.post(url, data, success=ajaxUpdateRow);
+}
+function removeDeletedRows(data){
+    results=$('.deleted', data);
+    results.each(function(i){
+        elmt_id=$(this).attr('code-delete-id');
+        $('#'+elmt_id).remove();
+    });
 }
