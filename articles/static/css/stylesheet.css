@@ -103,6 +103,7 @@ li.alert{
 }
 #content, #messages{
     margin-right: 50px;
+    margin-left: 0;
 }
 .notes{
     width:100%;
