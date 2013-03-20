@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.contrib import messages
-# from django.db.models import Q
+from django.db.models import Q
 # from validation_plugins import *
 # from plugin_manager import PluginManager
 # from django.conf import settings

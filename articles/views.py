@@ -18,7 +18,7 @@ STATUS_PUBLISHED, WriteArticleForm
 #from django_actions.views import ActionViewMixin
 import pickle
 # from datetime import datetime
-from django.db.models import Q
+from django.db.models import Q, F
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.core.urlresolvers import reverse_lazy
@@ -738,23 +738,72 @@ class UserList(SearchableListView):
     model=User
     search_fields = ['username','first_name','last_name']
     template_name = "articles/user_list.html"
+    user_group = ''
     def get_context_data(self, **kwargs):
-        if 'q' in self.request.GET and self.request.GET['q']: 
-            kwargs['title'] = "%s called '%s'" % (self.user_group, self.request.GET['q'] )
-        else:
-            kwargs['title'] = 'Available %s' % self.user_group
+        if 'status' in self.request.GET and self.request.GET['status']: 
+            kwargs['status']=self.request.GET['status']
+        #     if self.request.GET['status'] == 'mine':        kwargs['title'] = "My %s" % self.user_group
+        #     if self.request.GET['status'] == 'unconfirmed': kwargs['title'] = "Unconfirmed %s" % self.user_group
+        #     if self.request.GET['status'] == 'other':       kwargs['title'] = "Other %s" % self.user_group
+        # else:                                               kwargs['title'] = "All %s" % self.user_group
+        # if 'q' in self.request.GET and self.request.GET['q']: 
+        #     kwargs['title'] += " called '%s'" % self.request.GET['q']
         kwargs['user_group'] = self.user_group
         return super(UserList, self).get_context_data(**kwargs)
-    
+    def get_queryset(self): 
+        self.user = self.request.user
+        if 'status' in self.request.GET: 
+            if self.request.GET['status'] == 'mine': qs = self.get_mine()
+            elif self.request.GET['status'] == 'unconfirmed': qs = self.get_unconfirmed()
+            elif self.request.GET['status'] == 'other': qs = self.get_other()
+        else: qs = self.get_all()
+        if 'q' in self.request.GET and self.request.GET['q']:
+            qs.filter(username__icontains=self.request.GET['q'])
+        return qs
+
 class WriterList(UserList):
-    def get_queryset(self):
-        return User.objects.filter(Q(userprofile__preferred_mode=3)|Q(userprofile__preferred_mode=1)).exclude(requester_relationships__requester=self.request.user).exclude(pk=self.request.user.pk)
     user_group='Writers'
+    def get_all(self):
+        return User.objects.filter(relationships_as_writer__writer__isnull=False).exclude(pk=self.user.pk)
+    def get_mine(self):
+        return User.objects.filter(relationships_as_writer__requester=self.user).filter(relationships_as_writer__confirmed = True)
+    def get_unconfirmed(self):
+        return User.objects.filter(relationships_as_writer__requester=self.user).filter(relationships_as_writer__confirmed = False)
+    def get_other(self):
+        return User.objects.filter(relationships_as_writer__writer__isnull=False).exclude(relationships_as_writer__requester=self.user)
     
 class RequesterList(UserList):
-    def get_queryset(self):
-        return User.objects.filter(userprofile__preferred_mode__gte=2).exclude(requester_relationships__requester=self.request.user).exclude(pk=self.request.user.pk)
     user_group='Requesters'
+    def get_all(self):
+        return User.objects.filter(relationships_as_requester__requester__isnull=False).exclude(pk=self.user.pk)
+    def get_mine(self):
+        if self.request.user.mode == WRITER_MODE:
+            return User.objects.filter(relationships_as_requester__writer=self.user).filter(relationships_as_requester__confirmed = True)
+        else:
+            return User.objects.filter(relationships_as_requester__reviewer=self.user).filter(relationships_as_requester__confirmed = True)
+    def get_unconfirmed(self):
+        if self.request.user.mode == WRITER_MODE:
+            return User.objects.filter(relationships_as_requester__writer=self.user).filter(relationships_as_requester__confirmed = False)
+        else:
+            return User.objects.filter(relationships_as_requester__reviewer=self.user).filter(relationships_as_requester__confirmed = False)
+    def get_other(self):
+        if self.request.user.mode == WRITER_MODE:
+            return User.objects.filter(relationships_as_requester__requester__isnull=False).exclude(relationships_as_writer__requester=self.user)
+        else:
+            return User.objects.filter(relationships_as_requester__requester__isnull=False).exclude(relationships_as_reviewer__requester=self.user)
+        
+
+class ReviewerList(UserList):
+    user_group='Reviewers'
+    def get_all(self):
+        return User.objects.filter(relationships_as_reviewer__reviewer__isnull=False).exclude(pk=self.user.pk)
+    def get_mine(self):
+        return User.objects.filter(relationships_as_reviewer__requester=self.user).filter(relationships_as_reviewer__confirmed = True)
+    def get_unconfirmed(self):
+        return User.objects.filter(relationships_as_reviewer__requester=self.user).filter(relationships_as_reviewer__confirmed = False)
+    def get_other(self):
+        return User.objects.filter(relationships_as_reviewer__reviewer__isnull=False).exclude(relationships_as_reviewer__requester=self.user)
+    
 
 class DeleteRelationship(AjaxDeleteRowView):
     model=Relationship

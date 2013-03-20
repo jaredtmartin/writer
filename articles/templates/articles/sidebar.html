@@ -21,22 +21,34 @@
             <div class="aaccordion-inner"><a href="{% url article_list %}?status=Published">Published</a></div>
         </div>
     </div>
-    <div class="group">
-        <h3>Writers</h3>
-        <div class="aaccordion-body">
-            <div class="aaccordion-inner">All Writers</div>
-            <div class="aaccordion-inner">My Writers</div>
-            <div class="aaccordion-inner">Unconfirmed Writers</div>
-            <div class="aaccordion-inner">Other Writers</div>
+    {% if user.mode == 2 %}
+        <div class="group">
+            <h3>Writers</h3>
+            <div class="aaccordion-body">
+                <div class="aaccordion-inner"><a href="{% url writer_list %}">All Writers</a></div>
+                <div class="aaccordion-inner"><a href="{% url writer_list %}?status=mine">My Writers</a></div>
+                <div class="aaccordion-inner"><a href="{% url writer_list %}?status=unconfirmed">Unconfirmed Writers</a></div>
+                <div class="aaccordion-inner"><a href="{% url writer_list %}?status=other">Other Writers</a></div>
+            </div>
         </div>
-    </div>
-    <div class="group">
-        <h3>Requesters</h3>
-        <div class="aaccordion-body">
-            <div class="aaccordion-inner">All Requesters</div>
-            <div class="aaccordion-inner">My Requesters</div>
-            <div class="aaccordion-inner">Unconfirmed Requesters</div>
-            <div class="aaccordion-inner">Other Requesters</div>
+        <div class="group">
+            <h3>Reviewers</h3>
+            <div class="aaccordion-body">
+                <div class="aaccordion-inner"><a href="{% url reviewer_list %}">All Reviewers</a></div>
+                <div class="aaccordion-inner"><a href="{% url reviewer_list %}?status=mine">My Reviewers</a></div>
+                <div class="aaccordion-inner"><a href="{% url reviewer_list %}?status=unconfirmed">Unconfirmed Reviewers</a></div>
+                <div class="aaccordion-inner"><a href="{% url reviewer_list %}?status=other">Other Reviewers</a></div>
+            </div>
         </div>
-    </div>
+    {% else %}
+        <div class="group">
+            <h3>Requesters</h3>
+            <div class="aaccordion-body">
+                <div class="aaccordion-inner"><a href="{% url requester_list %}">All Requesters</a></div>
+                <div class="aaccordion-inner"><a href="{% url requester_list %}?status=mine">My Requesters</a></div>
+                <div class="aaccordion-inner"><a href="{% url requester_list %}?status=unconfirmed">Unconfirmed Requesters</a></div>
+                <div class="aaccordion-inner"><a href="{% url requester_list %}?status=other">Other Requesters</a></div>
+            </div>
+        </div>
+    {% endif %}
 </div>

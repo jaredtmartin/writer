@@ -1,0 +1,30 @@
+{% extends 'writeaid_base.html' %}
+{% load static %}
+{% load list_block %}
+{% block head %}
+    <link href="{% static "css/writersaxis.css" %}" rel="stylesheet" type="text/css" />
+{% endblock %}   
+{% block content %}   
+<script>
+    function confirmDelete(li,url){
+        window.id_of_row_to_remove = li;
+        window.delete_url = url;
+        $('#delete-link').click();
+    }
+</script>
+<div id="content-main">
+    {% if not q %}
+        {% if user.writers %}
+            {% list_block title="My Writers" headings="Username, Full Name, Confirmed" object_list=user.writers row_template="articles/relationship_list_row.html" table_id="writers" row_id="writer" row_actions='True' %}
+        {% endif %}
+        {% if user.requesters %}
+            {% list_block title="My Requesters" headings="Username, Full Name, Confirmed" object_list=user.requesters row_template="articles/relationship_list_row.html" table_id="requesters" row_id="requester" row_actions='True' %}
+        {% endif %}
+    {% endif %}
+    {% if user_group == 'Writers'%}
+        {% list_block title=title headings="Username, Full Name" object_list=object_list row_template="articles/user_list_row.html" table_id="users" row_id="available-writer" row_actions='True' searchbar='True' %}
+    {% else %}
+        {% list_block title=title headings="Username, Full Name" object_list=object_list row_template="articles/user_list_row.html" table_id="users" row_id="available-requester" row_actions='True' searchbar='True' %}
+    {% endif %}
+</div>{% include "articles/confirm_delete_row.html" with object_type="relationship" %}
+{% endblock %}   

@@ -1,5 +1,8 @@
 @import "bootstrap.css";
 @import "bootstrap-responsive.css";
+#action_bar{
+    padding: 5px;
+}
 li.alert{
     list-style: None;
 }

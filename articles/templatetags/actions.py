@@ -6,13 +6,15 @@ def show_actions(context):
 	user = context['request'].user
 	if 'article' in context:
 		article = context['article']
+	elif 'object' in context:
+		obj = context['object']
 	else:pass
 		# article = Article()
-	if article: actions = article.get_available_actions(user)
+	if obj: actions = obj.get_available_actions(user)
 	else: actions=[]
 	if 'btn_size' in context: btn_size=context['btn_size']
 	else: btn_size=""
-	return {'request':context['request'], 'actions':actions, 'article':article, 'user':user,'STATIC_URL':context['STATIC_URL'],'btn_size':btn_size}
+	return {'request':context['request'], 'actions':actions, 'object':obj, 'article':obj, 'user':user,'STATIC_URL':context['STATIC_URL'],'btn_size':btn_size}
 
 
 @register.inclusion_tag('articles/actions.html', takes_context = True)
