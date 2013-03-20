@@ -764,45 +764,45 @@ class UserList(SearchableListView):
 class WriterList(UserList):
     user_group='Writers'
     def get_all(self):
-        return User.objects.filter(relationships_as_writer__writer__isnull=False).exclude(pk=self.user.pk)
+        return User.objects.filter(relationships_as_writer__writer__isnull=False).exclude(pk=self.user.pk).distinct()
     def get_mine(self):
-        return User.objects.filter(relationships_as_writer__requester=self.user).filter(relationships_as_writer__confirmed = True)
+        return User.objects.filter(relationships_as_writer__requester=self.user).filter(relationships_as_writer__confirmed = True).distinct()
     def get_unconfirmed(self):
-        return User.objects.filter(relationships_as_writer__requester=self.user).filter(relationships_as_writer__confirmed = False)
+        return User.objects.filter(relationships_as_writer__requester=self.user).filter(relationships_as_writer__confirmed = False).distinct()
     def get_other(self):
-        return User.objects.filter(relationships_as_writer__writer__isnull=False).exclude(relationships_as_writer__requester=self.user)
+        return User.objects.filter(relationships_as_writer__writer__isnull=False).exclude(relationships_as_writer__requester=self.user).distinct()
     
 class RequesterList(UserList):
     user_group='Requesters'
     def get_all(self):
-        return User.objects.filter(relationships_as_requester__requester__isnull=False).exclude(pk=self.user.pk)
+        return User.objects.filter(relationships_as_requester__requester__isnull=False).exclude(pk=self.user.pk).distinct()
     def get_mine(self):
         if self.request.user.mode == WRITER_MODE:
-            return User.objects.filter(relationships_as_requester__writer=self.user).filter(relationships_as_requester__confirmed = True)
+            return User.objects.filter(relationships_as_requester__writer=self.user).filter(relationships_as_requester__confirmed = True).distinct()
         else:
-            return User.objects.filter(relationships_as_requester__reviewer=self.user).filter(relationships_as_requester__confirmed = True)
+            return User.objects.filter(relationships_as_requester__reviewer=self.user).filter(relationships_as_requester__confirmed = True).distinct()
     def get_unconfirmed(self):
         if self.request.user.mode == WRITER_MODE:
-            return User.objects.filter(relationships_as_requester__writer=self.user).filter(relationships_as_requester__confirmed = False)
+            return User.objects.filter(relationships_as_requester__writer=self.user).filter(relationships_as_requester__confirmed = False).distinct()
         else:
-            return User.objects.filter(relationships_as_requester__reviewer=self.user).filter(relationships_as_requester__confirmed = False)
+            return User.objects.filter(relationships_as_requester__reviewer=self.user).filter(relationships_as_requester__confirmed = False).distinct()
     def get_other(self):
         if self.request.user.mode == WRITER_MODE:
-            return User.objects.filter(relationships_as_requester__requester__isnull=False).exclude(relationships_as_writer__requester=self.user)
+            return User.objects.filter(relationships_as_requester__requester__isnull=False).exclude(relationships_as_writer__requester=self.user).distinct()
         else:
-            return User.objects.filter(relationships_as_requester__requester__isnull=False).exclude(relationships_as_reviewer__requester=self.user)
+            return User.objects.filter(relationships_as_requester__requester__isnull=False).exclude(relationships_as_reviewer__requester=self.user).distinct()
         
 
 class ReviewerList(UserList):
     user_group='Reviewers'
     def get_all(self):
-        return User.objects.filter(relationships_as_reviewer__reviewer__isnull=False).exclude(pk=self.user.pk)
+        return User.objects.filter(relationships_as_reviewer__reviewer__isnull=False).exclude(pk=self.user.pk).distinct()
     def get_mine(self):
-        return User.objects.filter(relationships_as_reviewer__requester=self.user).filter(relationships_as_reviewer__confirmed = True)
+        return User.objects.filter(relationships_as_reviewer__requester=self.user).filter(relationships_as_reviewer__confirmed = True).distinct()
     def get_unconfirmed(self):
-        return User.objects.filter(relationships_as_reviewer__requester=self.user).filter(relationships_as_reviewer__confirmed = False)
+        return User.objects.filter(relationships_as_reviewer__requester=self.user).filter(relationships_as_reviewer__confirmed = False).distinct()
     def get_other(self):
-        return User.objects.filter(relationships_as_reviewer__reviewer__isnull=False).exclude(relationships_as_reviewer__requester=self.user)
+        return User.objects.filter(relationships_as_reviewer__reviewer__isnull=False).exclude(relationships_as_reviewer__requester=self.user).distinct()
     
 
 class DeleteRelationship(AjaxDeleteRowView):
