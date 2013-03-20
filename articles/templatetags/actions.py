@@ -5,7 +5,7 @@ register = template.Library()
 def show_actions(context):
 	user = context['request'].user
 	if 'article' in context:
-		article = context['article']
+		obj = context['article']
 	elif 'object' in context:
 		obj = context['object']
 	else:pass
