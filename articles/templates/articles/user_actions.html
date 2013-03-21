@@ -1,0 +1,27 @@
+{% for action in actions %}
+  {% if action == "hire_user" %}
+    <button class="btn {{btn_size}}" onclick="" >Hire {{user_group}}</button>
+  {% elif action == "remove_user" %}
+    <button class="btn {{btn_size}}" onclick="" >Remove {{user_group}}</button>
+  {% elif action == "accept_user" %}
+    <button class="btn {{btn_size}}" onclick="" >Accept as {{user_group}}</button>
+  {% elif action == "reject_user" %}
+    <button class="btn {{btn_size}}" onclick="" >Reject as {{user_group}}</button>
+  {% elif action == "request_to_write" %}
+    <button class="btn {{btn_size}}" onclick="" >Apply to Write</button>
+  {% elif action == "stop_writing" %}
+    <button class="btn {{btn_size}}" onclick="" >Stop Writing</button>
+  {% elif action == "accept_writing" %}
+    <button class="btn {{btn_size}}" onclick="" >Agree to Write</button>
+  {% elif action == "reject_writing" %}
+    <button class="btn {{btn_size}}" onclick="" >Refuse to Write</button>
+  {% elif action == "request_to_review" %}
+    <button class="btn {{btn_size}}" onclick="" >Apply to Review</button>
+  {% elif action == "stop_reviewing" %}
+    <button class="btn {{btn_size}}" onclick="" >Stop Review</button>
+  {% elif action == "accept_reviewing" %}
+    <button class="btn {{btn_size}}" onclick="" >Agree to Review</button>
+  {% elif action == "reject_reviewing" %}
+    <button class="btn {{btn_size}}" onclick="" >Refuse to Review</button>
+  {% endif %}
+{% endfor %}

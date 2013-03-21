@@ -46,7 +46,7 @@ def get_action_string(relationship, me, obj, request_str='hire_user', remove_str
 		print "me = %s" % str(me)
 		print "obj = %s" % str(obj)
 		raise NotImplemented
-@register.inclusion_tag('articles/actions.html', takes_context = True)
+@register.inclusion_tag('articles/user_actions.html', takes_context = True)
 def show_user_actions(context):
 	me = context['request'].user
 	user_group = context['user_group']
