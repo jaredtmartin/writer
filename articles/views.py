@@ -14,7 +14,7 @@ TagForm, RelationshipForm, ProjectForm, ACT_SUBMIT, ACT_REJECT, ACT_APPROVE, \
 ACT_ASSIGN_WRITER, ACT_ASSIGN_REVIEWER, ACT_CLAIM_REVIEWER, ACT_RELEASE, ACT_PUBLISH, ACT_COMMENT, \
 ACT_REMOVE_REVIEWER, ACT_REMOVE_WRITER, ACT_CLAIM_WRITER, UserModeForm, \
 STATUS_NEW, STATUS_RELEASED, STATUS_ASSIGNED, STATUS_SUBMITTED, STATUS_APPROVED, \
-STATUS_PUBLISHED, WriteArticleForm
+STATUS_PUBLISHED, WriteArticleForm, WRITER_MODE, REVIEWER_MODE
 #from django_actions.views import ActionViewMixin
 import pickle
 # from datetime import datetime
@@ -740,8 +740,11 @@ class UserList(SearchableListView):
     template_name = "articles/user_list.html"
     user_group = ''
     def get_context_data(self, **kwargs):
+        kwargs['mine'] = None
         if 'status' in self.request.GET and self.request.GET['status']: 
             kwargs['status']=self.request.GET['status']
+            if self.request.GET['status'] == 'other': kwargs['mine'] = self.get_mine()
+        else: kwargs['status']='all'
         #     if self.request.GET['status'] == 'mine':        kwargs['title'] = "My %s" % self.user_group
         #     if self.request.GET['status'] == 'unconfirmed': kwargs['title'] = "Unconfirmed %s" % self.user_group
         #     if self.request.GET['status'] == 'other':       kwargs['title'] = "Other %s" % self.user_group
@@ -759,10 +762,11 @@ class UserList(SearchableListView):
         else: qs = self.get_all()
         if 'q' in self.request.GET and self.request.GET['q']:
             qs.filter(username__icontains=self.request.GET['q'])
+        # for user in qs: user.actions=self.actions_function(user)
         return qs
 
 class WriterList(UserList):
-    user_group='Writers'
+    user_group='Writer'
     def get_all(self):
         return User.objects.filter(relationships_as_writer__writer__isnull=False).exclude(pk=self.user.pk).distinct()
     def get_mine(self):
@@ -771,9 +775,17 @@ class WriterList(UserList):
         return User.objects.filter(relationships_as_writer__requester=self.user).filter(relationships_as_writer__confirmed = False).distinct()
     def get_other(self):
         return User.objects.filter(relationships_as_writer__writer__isnull=False).exclude(relationships_as_writer__requester=self.user).distinct()
+    # def my_writers_actions(self, user):
+    #     return ["remove"]
+    # def my_unconfirmed_writers_actions(self, user):
+    #     return ["cancel hire"]
+    # def requests(self, user):
+    #     return ['accept','reject']
+    # def other_writers_actions(self, user):
+    #     return ['hire']
     
 class RequesterList(UserList):
-    user_group='Requesters'
+    user_group='Requester'
     def get_all(self):
         return User.objects.filter(relationships_as_requester__requester__isnull=False).exclude(pk=self.user.pk).distinct()
     def get_mine(self):
@@ -794,7 +806,7 @@ class RequesterList(UserList):
         
 
 class ReviewerList(UserList):
-    user_group='Reviewers'
+    user_group='Reviewer'
     def get_all(self):
         return User.objects.filter(relationships_as_reviewer__reviewer__isnull=False).exclude(pk=self.user.pk).distinct()
     def get_mine(self):

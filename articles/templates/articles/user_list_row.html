@@ -1,14 +1,11 @@
+{% load actions %}
 <tr id="{{row_id}}-{{object.id}}" class="user parent even" style="background-color: rgb(251, 251, 251);">
-  <td class="q_desc">{{object.username}}</td>
+  <td class="q_desc">{{object.username}}{{status}}</td>
   <td>{{object.full_name}}</td>
   <td> Unknown </td>
   <td align="right" style="text-align: right;">
-    <ul align="right" class="priority">
-        {% if row_id == 'available-requester' %}
-            <a href="#" onclick="sendAjaxPost('{% url requester_add %}', { requester:{{object.pk}},'writer':{{user.pk}} });return false;"><li title="" class="blue-keyword">Add</li></a>
-        {% else %}
-            <a href="#" onclick="sendAjaxPost('{% url writer_add %}', {requester:{{user.pk}},'writer':{{object.pk}} });return false;"><li title="" class="blue-keyword">Add</li></a>
-        {% endif %}
-    </ul>
+    <div class="btn-group">
+      {% show_user_actions %}
+    </div>
   </td>
 </tr>

@@ -241,13 +241,9 @@ class ArticleAction(models.Model):
     def __unicode__(self): 
         return self.get_code_display() + " by " + self.user.get_full_name()
         
-class ConfirmedRelationshipManager(models.Manager):
-    def get_query_set(self):
-        return super(ConfirmedRelationshipManager, self).get_query_set().filter(confirmed=True)
-        
-class UnconfirmedRelationshipManager(models.Manager):
-    def get_query_set(self):
-        return super(UnconfirmedRelationshipManager, self).get_query_set().filter(confirmed=False)
+#####################################################################################################
+#                                     User Properties                                               #
+#####################################################################################################
 def user_full_name(self):
     return "%s %s" % (self.first_name,self.last_name)
 User.full_name = property(user_full_name)
@@ -261,12 +257,12 @@ def user_reviewers(self):
     return self.relationships_as_requester.filter(confirmed=True, reviewer__isnull=False)
 User.reviewers = property(user_reviewers)
 
-def is_requester(self): return self.get_profile().is_requester
-def is_writer(self): return self.get_profile().is_writer
-def is_reviewer(self): return self.get_profile().is_reviewer
-User.is_requester=property(is_requester)
-User.is_writer=property(is_writer)
-User.is_reviewer=property(is_reviewer)
+# def is_requester(self): return self.get_profile().is_requester
+# def is_writer(self): return self.get_profile().is_writer
+# def is_reviewer(self): return self.get_profile().is_reviewer
+# User.is_requester=property(is_requester)
+# User.is_writer=property(is_writer)
+# User.is_reviewer=property(is_reviewer)
 
 def get_user_mode(self):
     return self.get_profile().preferred_mode
@@ -280,6 +276,9 @@ def get_user_mode_display(self):
     return self.get_profile().get_preferred_mode_display()
 User.mode_display = property(get_user_mode_display)
 
+#####################################################################################################
+#                                     Relationships                                                 #
+#####################################################################################################
 class Relationship(ValidationModelMixin, models.Model):
     requester = models.ForeignKey(User, related_name='relationships_as_requester')
     writer = models.ForeignKey(User, related_name='relationships_as_writer', null=True, blank=True)
@@ -287,8 +286,6 @@ class Relationship(ValidationModelMixin, models.Model):
     created_by = models.ForeignKey(User, related_name='friend_requests')
     confirmed = models.BooleanField(default=False, blank=True)
     objects = models.Manager()
-    pending_objects = UnconfirmedRelationshipManager()
-    confirmed_objects = ConfirmedRelationshipManager()
     @property
     def worker(self):
         if self.writer: return self.writer
@@ -308,6 +305,11 @@ class Relationship(ValidationModelMixin, models.Model):
     @models.permalink
     def get_delete_url(self):
         return ('relationship_delete', [self.id,])
+
+
+#####################################################################################################
+#                                     Articles                                                      #
+#####################################################################################################
 class NotDeletedManager(models.Manager):
     def get_query_set(self):
         return super(NotDeletedManager, self).get_query_set().filter(deleted=False)
