@@ -27,17 +27,21 @@ urlpatterns = patterns('',
     url(r'^articles/tag/$',                     TagArticles.as_view(),          name='tag_articles'),
     url(r'^articles/delete/$',                  DeleteArticles.as_view(),       name='delete_articles'),
 
-    
     url(r'^user/mode/$',                        ChangeModeView.as_view(),       name='change_user_mode'),
+
+    url(r'^user/hire/$',                        CreateRelationship.as_view(),   name='hire_user'),
+    url(r'^user/apply/$',                       CreateRelationship.as_view(),   name='apply_user'),
+    url(r'^user/reject/$',                      DeleteRelationship.as_view(),   name='reject_user'),
+    url(r'^user/accept/$',                      ConfirmRelationship.as_view(),  name='accept_user'),
     
-    url(r'^requester/add/$',                    AddRequester.as_view(),         name='requester_add'),
-    url(r'^writer/add/$',                       AddWriter.as_view(),            name='writer_add'),
+    # url(r'^requester/add/$',                    AddRequester.as_view(),         name='requester_add'),
+    # url(r'^writer/add/$',                       AddWriter.as_view(),            name='writer_add'),
     url(r'^writers/$',                          WriterList.as_view(),           name='writer_list'),
     url(r'^requesters/$',                       RequesterList.as_view(),        name='requester_list'),
     url(r'^reviewers/$',                        ReviewerList.as_view(),         name='reviewer_list'),
 
-    url(r'^relationship/(?P<pk>\d+)/delete/$', DeleteRelationship.as_view(),    name='relationship_delete'),
-    url(r'^relationship/(?P<pk>\d+)/confirm/$', ConfirmRelationship.as_view(),  name='relationship_confirm'),
+    # url(r'^relationship/(?P<pk>\d+)/delete/$', DeleteRelationship.as_view(),    name='relationship_delete'),
+    # url(r'^relationship/(?P<pk>\d+)/confirm/$', ConfirmRelationship.as_view(),  name='relationship_confirm'),
 
     url(r'^dashboard/$', direct_to_template, {'template': 'dashboard.html'},    name='dashboard'),
 

@@ -1,9 +1,9 @@
 {% load actions %}
-<tr id="{{row_id}}-{{object.id}}" class="user parent even" style="background-color: rgb(251, 251, 251);">
-  <td class="q_desc">{{object.username}}{{status}}</td>
+<tr id="user-{{object.id}}" class="user parent even" style="background-color: rgb(251, 251, 251);">
+  <td class="q_desc">{{object.username}}</td>
   <td>{{object.full_name}}</td>
   <td> Unknown </td>
-  <td align="right" style="text-align: right;">
+  <td>
     <div class="btn-group">
       {% show_user_actions %}
     </div>

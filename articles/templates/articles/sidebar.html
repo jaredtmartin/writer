@@ -27,6 +27,7 @@
             <div class="aaccordion-body">
                 <div class="aaccordion-inner"><a href="{% url writer_list %}">All Writers</a></div>
                 <div class="aaccordion-inner"><a href="{% url writer_list %}?status=mine">My Writers</a></div>
+                <div class="aaccordion-inner"><a href="{% url writer_list %}?status=requested">Writer Requests</a></div>
                 <div class="aaccordion-inner"><a href="{% url writer_list %}?status=unconfirmed">Unconfirmed Writers</a></div>
                 <div class="aaccordion-inner"><a href="{% url writer_list %}?status=other">Other Writers</a></div>
             </div>
@@ -36,6 +37,7 @@
             <div class="aaccordion-body">
                 <div class="aaccordion-inner"><a href="{% url reviewer_list %}">All Reviewers</a></div>
                 <div class="aaccordion-inner"><a href="{% url reviewer_list %}?status=mine">My Reviewers</a></div>
+                <div class="aaccordion-inner"><a href="{% url reviewer_list %}?status=requested">Reviewer Requests</a></div>
                 <div class="aaccordion-inner"><a href="{% url reviewer_list %}?status=unconfirmed">Unconfirmed Reviewers</a></div>
                 <div class="aaccordion-inner"><a href="{% url reviewer_list %}?status=other">Other Reviewers</a></div>
             </div>
@@ -46,6 +48,11 @@
             <div class="aaccordion-body">
                 <div class="aaccordion-inner"><a href="{% url requester_list %}">All Requesters</a></div>
                 <div class="aaccordion-inner"><a href="{% url requester_list %}?status=mine">My Requesters</a></div>
+                {% if user.mode == 1 %}
+                    <div class="aaccordion-inner"><a href="{% url requester_list %}?status=requested">Requests for Writer</a></div>
+                {% else %}
+                    <div class="aaccordion-inner"><a href="{% url requester_list %}?status=requested">Requests for Reviewer</a></div>
+                {% endif %}
                 <div class="aaccordion-inner"><a href="{% url requester_list %}?status=unconfirmed">Unconfirmed Requesters</a></div>
                 <div class="aaccordion-inner"><a href="{% url requester_list %}?status=other">Other Requesters</a></div>
             </div>

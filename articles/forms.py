@@ -1,11 +1,11 @@
 from articles.models import *
-from django.forms import ModelForm, DateField, ValidationError, ChoiceField, \
-    IntegerField, Form, ModelChoiceField, CharField, ModelMultipleChoiceField, \
-    widgets
+from django.forms import ModelForm, DateField, ValidationError, ChoiceField, IntegerField, Form, \
+    ModelChoiceField, CharField, ModelMultipleChoiceField, widgets
 from extra_views import InlineFormSet
 from articles.widgets import SelectWithFlexibleOptionLabels
 from django.utils.encoding import smart_unicode
 import pytz
+from titlecase import titlecase
 
 class FormWithLookupsMixin(object):
     lookup_field_names={}
@@ -48,6 +48,9 @@ class ArticleForm(FormWithLookupsMixin, ModelForm):
         # Recieves user from request
         self.user = kwargs.pop('user')
         super(ArticleForm, self).__init__(*args, **kwargs)
+    def clean_title(self):
+        data = self.cleaned_data['title']
+        return titlecase(data)
         
 class WriteArticleForm(ModelForm):
     class Meta:
@@ -58,6 +61,7 @@ class WriteArticleForm(ModelForm):
         super(WriteArticleForm, self).__init__(*args, **kwargs)
 class KeywordInlineFormSet(InlineFormSet):
     model = Keyword
+    extra = 1
 
 class KeywordInlineForm(Form):
     num = IntegerField(min_value=0)
@@ -111,7 +115,7 @@ class TagArticleForm(ModelForm):
 class RelationshipForm(ModelForm):
     class Meta:
         model = Relationship
-        fields = ('requester','writer')
+        fields = ('requester','writer','reviewer')
 class ConfirmRelationshipForm(ModelForm):
     class Meta:
         model = Relationship

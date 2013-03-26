@@ -1,5 +1,11 @@
 @import "bootstrap.css";
 @import "bootstrap-responsive.css";
+#cke_id_body{
+    width:100% !important;
+}
+.legend-note{
+    font-size:14px;
+}
 #action_bar{
     padding: 5px;
 }

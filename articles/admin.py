@@ -58,6 +58,9 @@ def reject_and_release(modeladmin, request, queryset):
         except Article.ArticleWorkflowException, err: messages.add_message(request, messages.ERROR, err)
 reject_and_release.short_description = "Reject and release selected articles"
 
+class RelationshipAdmin(admin.ModelAdmin):
+    list_display = ('requester','writer','reviewer','created_by','confirmed')
+
 class ArticleAdmin(admin.ModelAdmin):
     list_display = ('name','last_action','writer','reviewer','submitted','approved','published','released')
 #    list_filter = ('assigned','submitted','approved','published')
@@ -70,7 +73,7 @@ admin.site.register(Article, ArticleAdmin)
 admin.site.register(ArticleType)
 admin.site.register(ArticleAction)
 admin.site.register(Project)
-admin.site.register(Relationship)
+admin.site.register(Relationship, RelationshipAdmin)
 admin.site.register(UserProfile)
 admin.site.register(PublishingOutlet)
 admin.site.register(ValidationPlugin)

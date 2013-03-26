@@ -50,12 +50,16 @@ def get_action_string(relationship, me, obj, request_str='hire_user', remove_str
 def show_user_actions(context):
 	me = context['request'].user
 	user_group = context['user_group']
+	print "me = %s" % str(me)
+	print "user_group = %s" % str(user_group)
 	if 'object' in context:
 		user = context['object']
 	else:user = None
+	print "user = %s" % str(user)
 	try:
 		status = context['status'] or 'all'
 	except: status = 'all'
+	print "status = %s" % str(status)
 	if status == 'mine' or status == 'unconfirmed': actions = ['remove_user']
 	elif status == 'other': actions = ['hire_user']
 	elif status == 'requested': actions = ['accept_user','reject_user']
@@ -81,7 +85,6 @@ def show_user_actions(context):
 		'user_group':user_group,
 		}
 
-
 @register.inclusion_tag('articles/actions.html', takes_context = True)
 def show_edit_page_actions(context):
 	context = show_actions(context)
@@ -97,6 +100,7 @@ def show_edit_page_actions(context):
 	else:context['actions'] += ['Save']
 	print "context = %s" % str(context)
 	return context
+
 @register.inclusion_tag('articles/actions.html', takes_context = True)
 def all_actions(context):
 	context = show_actions(context)

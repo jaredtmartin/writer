@@ -4,7 +4,7 @@ from django.http import HttpResponseRedirect
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormMixin#, ModelFormMixin
-from django.views.generic.detail import DetailView# , SingleObjectMixin
+from django.views.generic.detail import DetailView, BaseDetailView# , SingleObjectMixin
 from django.views.generic import FormView #, TemplateView, 
 from articles.models import Article, Keyword, Project, ArticleAction, ACTIONS, Relationship
 from django.views.generic.base import View, TemplateResponseMixin
@@ -16,6 +16,7 @@ ACT_REMOVE_REVIEWER, ACT_REMOVE_WRITER, ACT_CLAIM_WRITER, UserModeForm, \
 STATUS_NEW, STATUS_RELEASED, STATUS_ASSIGNED, STATUS_SUBMITTED, STATUS_APPROVED, \
 STATUS_PUBLISHED, WriteArticleForm, WRITER_MODE, REVIEWER_MODE
 #from django_actions.views import ActionViewMixin
+from django.http import Http404
 import pickle
 # from datetime import datetime
 from django.db.models import Q, F
@@ -187,7 +188,7 @@ class AjaxRowTemplateResponseMixin(object):
     def get_failure_message(self): return "We were unable to update the %s." % (self.object._meta.verbose_name,)
     def form_valid(self, form):
         self.object = form.save()
-        print "self.object: " + str(self.object) 
+        print "self.object: " + str(self.object)
         messages.success(self.request, self.get_success_message())
         return self.render_to_response(self.get_context_data(form=form))
     def form_invalid(self, form):
@@ -344,7 +345,7 @@ class TagArticle(ArticleActionFormView):
 ################################################################################
 #                               Actions                                        #
 ################################################################################
-class PostActionsView(TemplateResponseMixin, View):
+class ArticleActionsView(TemplateResponseMixin, View):
     template_name = "articles/ajax_article_list_row.html"
     model = Article
     next_status = None
@@ -384,22 +385,16 @@ class PostActionsView(TemplateResponseMixin, View):
     def get_action_form_class(self):
         return self.action_form_class
     def get_requested_objects(self):
-        print "self.pks = %s" % str(self.pks)
         if not self.pks:
-            print "A1"
             if 'select-across' in self.request.POST and self.request.POST['select-across'] == u'0':
                 # Building a empty queryset to load pickled data
                 qs = self.model.objects.all()#[:1]
                 qs.query = pickle.loads(self.request.session['serialized_qs'])
-                print "A2"
             else:
                 # select a specific set of items
                 qs = self.model.objects.filter(pk__in=(self.request.POST.getlist('action-select')))
-                print "A3"
             self.pks = list(qs.values_list('id', flat=True))
-            print "A4"
         else: qs=Article.all_objects.filter(pk__in=self.pks)
-        print "A5"
         return qs
 
     def get_action_queryset(self):
@@ -459,7 +454,7 @@ class PostActionsView(TemplateResponseMixin, View):
         return kwargs
 ############################### Assign Action ##################################
 
-class AssignArticles(PostActionsView):
+class AssignArticles(ArticleActionsView):
     action_form_class = AssignToForm
     action_verb="assign"
     def create_action(self):
@@ -493,7 +488,7 @@ class AssignReviewerToArticles(AssignArticles):
         qs.update(reviewer=self.action_form.cleaned_data['user'])
 ############################### Reject Actions ####################################
 
-class RejectArticles(PostActionsView):
+class RejectArticles(ArticleActionsView):
     action_verb="reject"
     action_form_class = RejectForm
     next_status = STATUS_RELEASED
@@ -517,7 +512,7 @@ class RejectArticles(PostActionsView):
         # print "qs[0].writer = %s" % str(qs[0].writer)
 ############################### Approve Actions ####################################
 
-class ApproveArticles(PostActionsView):
+class ApproveArticles(ArticleActionsView):
     action_verb="approve"
     action_property_name="approved"
     next_status = STATUS_APPROVED
@@ -531,7 +526,7 @@ class ApproveArticles(PostActionsView):
         )
 ############################### submit Actions ####################################
 
-class SubmitArticles(PostActionsView):
+class SubmitArticles(ArticleActionsView):
     action_verb="submit"
     action_property_name="submitted"
     next_status = STATUS_SUBMITTED
@@ -549,7 +544,7 @@ class SubmitArticles(PostActionsView):
         )
 ############################### delete Actions ####################################
 
-class DeleteArticles(PostActionsView):
+class DeleteArticles(ArticleActionsView):
     action_verb="delete"
     action_property_name="deleted"
     def filter_action_queryset(self, qs):
@@ -566,7 +561,7 @@ class DeleteArticles(PostActionsView):
         
 ############################### Release Actions ################################
 
-class ReleaseArticles(PostActionsView):
+class ReleaseArticles(ArticleActionsView):
     action_verb="release"
     past_tense_action_verb="released"
     def create_action(self):
@@ -606,7 +601,7 @@ class InitialRelease(ReleaseArticles):
         qs.update(released=True)
 
 ############################### Claim Actions ##################################
-class ClaimArticles(PostActionsView):
+class ClaimArticles(ArticleActionsView):
     action_verb="claim"
     def create_action(self):
         return ArticleAction.objects.create(
@@ -636,7 +631,7 @@ class ClaimArticlesAsReviewer(ClaimArticles):
         qs.update(reviewer=action.author)
         
 ############################### Tag Actions ####################################
-class TagArticles(PostActionsView):
+class TagArticles(ArticleActionsView):
     action_verb="tag"
     action_form_class = TagForm
     past_tense_action_verb = 'tagged'
@@ -706,34 +701,6 @@ class AjaxKeywordInlineForm(FormView):
         form=fs()._construct_form(id_form.cleaned_data['num'])
         return self.render_to_response(self.get_context_data(form=form))
 
-class AddRelationship(AjaxRowTemplateResponseMixin, CreateView):
-    model=Relationship
-    form_class = RelationshipForm
-    row_template="articles/relationship_list_row.html"
-    def form_valid(self, form):
-        self.object = form.save(commit=False)
-        self.object.created_by = self.request.user
-        return super(AddRelationship, self).form_valid(form)
-    def get_context_data(self, **kwargs):
-        user=self.get_user_to_display()
-        user.relationship=self.object
-        c= super(AddRelationship, self).get_context_data(**kwargs)
-        c['object']=user
-        c['user_group'] = self.user_group
-        return c
-    
-class AddRequester(AddRelationship):
-    row_id='requester'
-    user_group = "Requesters"
-    def get_user_to_display(self):
-        return self.object.requester
-    
-class AddWriter(AddRelationship):
-    row_id='writer'
-    user_group = "Writers"
-    def get_user_to_display(self):
-        return self.object.writer
-
 class UserList(SearchableListView):
     model=User
     search_fields = ['username','first_name','last_name']
@@ -745,24 +712,18 @@ class UserList(SearchableListView):
             kwargs['status']=self.request.GET['status']
             if self.request.GET['status'] == 'other': kwargs['mine'] = self.get_mine()
         else: kwargs['status']='all'
-        #     if self.request.GET['status'] == 'mine':        kwargs['title'] = "My %s" % self.user_group
-        #     if self.request.GET['status'] == 'unconfirmed': kwargs['title'] = "Unconfirmed %s" % self.user_group
-        #     if self.request.GET['status'] == 'other':       kwargs['title'] = "Other %s" % self.user_group
-        # else:                                               kwargs['title'] = "All %s" % self.user_group
-        # if 'q' in self.request.GET and self.request.GET['q']: 
-        #     kwargs['title'] += " called '%s'" % self.request.GET['q']
         kwargs['user_group'] = self.user_group
         return super(UserList, self).get_context_data(**kwargs)
     def get_queryset(self): 
         self.user = self.request.user
         if 'status' in self.request.GET: 
             if self.request.GET['status'] == 'mine': qs = self.get_mine()
+            if self.request.GET['status'] == 'requested': qs = self.get_requested()
             elif self.request.GET['status'] == 'unconfirmed': qs = self.get_unconfirmed()
             elif self.request.GET['status'] == 'other': qs = self.get_other()
         else: qs = self.get_all()
         if 'q' in self.request.GET and self.request.GET['q']:
             qs.filter(username__icontains=self.request.GET['q'])
-        # for user in qs: user.actions=self.actions_function(user)
         return qs
 
 class WriterList(UserList):
@@ -770,79 +731,152 @@ class WriterList(UserList):
     def get_all(self):
         return User.objects.filter(relationships_as_writer__writer__isnull=False).exclude(pk=self.user.pk).distinct()
     def get_mine(self):
-        return User.objects.filter(relationships_as_writer__requester=self.user).filter(relationships_as_writer__confirmed = True).distinct()
+        return User.objects.filter(relationships_as_writer__requester=self.user, relationships_as_writer__confirmed = True).distinct()
     def get_unconfirmed(self):
-        return User.objects.filter(relationships_as_writer__requester=self.user).filter(relationships_as_writer__confirmed = False).distinct()
+        return User.objects.filter(relationships_as_writer__requester=self.user, relationships_as_writer__confirmed = False, relationships_as_writer__created_by=self.user).distinct()
+    def get_requested(self):
+        return User.objects.filter(relationships_as_writer__requester=self.user, relationships_as_writer__confirmed = False).exclude(relationships_as_writer__created_by=self.user).distinct()
     def get_other(self):
         return User.objects.filter(relationships_as_writer__writer__isnull=False).exclude(relationships_as_writer__requester=self.user).distinct()
-    # def my_writers_actions(self, user):
-    #     return ["remove"]
-    # def my_unconfirmed_writers_actions(self, user):
-    #     return ["cancel hire"]
-    # def requests(self, user):
-    #     return ['accept','reject']
-    # def other_writers_actions(self, user):
-    #     return ['hire']
-    
+
 class RequesterList(UserList):
     user_group='Requester'
     def get_all(self):
         return User.objects.filter(relationships_as_requester__requester__isnull=False).exclude(pk=self.user.pk).distinct()
     def get_mine(self):
         if self.request.user.mode == WRITER_MODE:
-            return User.objects.filter(relationships_as_requester__writer=self.user).filter(relationships_as_requester__confirmed = True).distinct()
+            return User.objects.filter(relationships_as_requester__writer=self.user, relationships_as_requester__confirmed = True).distinct()
         else:
-            return User.objects.filter(relationships_as_requester__reviewer=self.user).filter(relationships_as_requester__confirmed = True).distinct()
+            return User.objects.filter(relationships_as_requester__reviewer=self.user, relationships_as_requester__confirmed = True).distinct()
     def get_unconfirmed(self):
         if self.request.user.mode == WRITER_MODE:
-            return User.objects.filter(relationships_as_requester__writer=self.user).filter(relationships_as_requester__confirmed = False).distinct()
+            print "Chow"
+            return User.objects.filter(relationships_as_requester__writer=self.user, relationships_as_requester__confirmed = False, relationships_as_requester__created_by=self.user).distinct()
         else:
-            return User.objects.filter(relationships_as_requester__reviewer=self.user).filter(relationships_as_requester__confirmed = False).distinct()
+            return User.objects.filter(relationships_as_requester__reviewer=self.user, relationships_as_requester__confirmed = False, relationships_as_requester__created_by=self.user).distinct()
+    def get_requested(self):
+        if self.request.user.mode == WRITER_MODE:
+            return User.objects.filter(relationships_as_requester__writer=self.user, relationships_as_requester__confirmed = False).exclude(relationships_as_requester__created_by=self.user).distinct()
+        else:
+            return User.objects.filter(relationships_as_requester__reviewer=self.user, relationships_as_requester__confirmed = False).exclude(relationships_as_requester__created_by=self.user).distinct()
     def get_other(self):
         if self.request.user.mode == WRITER_MODE:
             return User.objects.filter(relationships_as_requester__requester__isnull=False).exclude(relationships_as_writer__requester=self.user).distinct()
         else:
             return User.objects.filter(relationships_as_requester__requester__isnull=False).exclude(relationships_as_reviewer__requester=self.user).distinct()
         
-
 class ReviewerList(UserList):
-    user_group='Reviewer'
-    def get_all(self):
-        return User.objects.filter(relationships_as_reviewer__reviewer__isnull=False).exclude(pk=self.user.pk).distinct()
-    def get_mine(self):
-        return User.objects.filter(relationships_as_reviewer__requester=self.user).filter(relationships_as_reviewer__confirmed = True).distinct()
-    def get_unconfirmed(self):
-        return User.objects.filter(relationships_as_reviewer__requester=self.user).filter(relationships_as_reviewer__confirmed = False).distinct()
-    def get_other(self):
-        return User.objects.filter(relationships_as_reviewer__reviewer__isnull=False).exclude(relationships_as_reviewer__requester=self.user).distinct()
+  user_group='Reviewer'
+  def get_all(self):
+    return User.objects.filter(relationships_as_reviewer__reviewer__isnull=False).exclude(pk=self.user.pk).distinct()
+  def get_mine(self):
+    return User.objects.filter(relationships_as_reviewer__requester=self.user, relationships_as_reviewer__confirmed = True).distinct()
+  def get_unconfirmed(self):
+    return User.objects.filter(relationships_as_reviewer__requester=self.user, relationships_as_reviewer__confirmed = False, relationships_as_reviewer__created_by=self.user).distinct()
+  def get_requested(self):
+    return User.objects.filter(relationships_as_reviewer__requester=self.user, relationships_as_reviewer__confirmed = False).exclude(relationships_as_reviewer__created_by=self.user).distinct()
+  def get_other(self):
+    return User.objects.filter(relationships_as_reviewer__reviewer__isnull=False).exclude(relationships_as_reviewer__requester=self.user).distinct()
     
+class CreateRelationship(CreateView):
+  model = Relationship
+  form_class = RelationshipForm
+  template_name = "articles/ajax_user_list_row.html"
+  def form_valid(self, form):
+    self.form = form
+    self.object = self.form.save(commit=False)
+    self.object.created_by = self.request.user
+    self.object = self.form.save()
+    user = self.get_user_object()
+    user.relationship = self.object
+    context = self.get_context_data(form=form)
+    context['object'] = user
+    return self.render_to_response(context)
+  def send_messages_for_form_errors(self, form):
+    for field,error_list in form.errors.items():
+      for error in error_list:
+        messages.error(self.request, "%s: %s" % (field, error))
+  def form_invalid(self, form):
+    self.form = form
+    self.send_messages_for_form_errors(self.form)
+    messages.error(self.request, form.errors)
+    return self.render_to_response(self.get_context_data(form=form))
+  def get_user_object(self):
+    for f in ['Requester','Reviewer','Writer']:
+      if self.form.cleaned_data[f.lower()] and not self.form.cleaned_data[f.lower()] == self.request.user:
+        return self.form.cleaned_data[f.lower()]
+  def get_user_group(self):
+    for f in ['Requester','Reviewer','Writer']:
+      if self.form.cleaned_data[f.lower()] == self.request.user: return f
+  def get_context_data(self, **kwargs):
+    if 'user_group' in self.request.POST: kwargs['user_group'] = self.request.POST['user_group']
+    return super(CreateRelationship, self).get_context_data(**kwargs)
 
-class DeleteRelationship(AjaxDeleteRowView):
-    model=Relationship
+class DeleteRelationship(DeleteView):
+  model = Relationship
+  template_name = "articles/ajax_user_list_row.html"
+  def get_object(self, queryset=None):
+    self.requester_id = self.request.POST.get('requester')
+    self.writer_id = self.request.POST.get('writer')
+    self.reviewer_id = self.request.POST.get('reviewer')
+    self.user_group = self.request.POST.get('user_group')
+    try:
+      if self.writer_id: 
+        print "looking from writer_id"
+        return Relationship.objects.filter(requester_id=self.requester_id, writer_id=self.writer_id)[0]
+      else: 
+        print "looking from reviewer_id"
+        print "self.requester_id = %s" % str(self.requester_id)
+        print "self.reviewer_id = %s" % str(self.reviewer_id)
+        print "Relationship.objects.filter(requester_id=self.requester_id, reviewer_id=self.reviewer_id) = %s" % str(Relationship.objects.filter(requester_id=self.requester_id, reviewer_id=self.reviewer_id))
+        return Relationship.objects.filter(requester_id=self.requester_id, reviewer_id=self.reviewer_id)[0]
+    except IndexError: raise Http404("No Relationships found matching the query")
+  def get_user(self):
+    if not self.user_group in ['Writer', 'Reviewer']: pk = self.requester_id
+    else: pk = self.writer_id or self.reviewer_id
+    print "pk = %s" % str(pk)
+    print "User.objects.get(pk=pk) = %s" % str(User.objects.get(pk=pk))
+    return User.objects.get(pk=pk)
+  def post(self, request, *args, **kwargs):
+    self.object = self.get_object()
+    self.user = self.get_user()
+    self.object.delete()
+    self.object = self.user
+    context = self.get_context_data()
+    print "context = %s" % str(context)
+    return self.render_to_response(context)
+  def get_context_data(self, **kwargs):
+    kwargs['user_group'] = self.user_group
+    kwargs['object'] = self.object
+    print "kwargs = %s" % str(kwargs)
+    return super(DeleteRelationship, self).get_context_data(**kwargs)
     
-class ConfirmRelationship(AjaxRowTemplateResponseMixin, UpdateView):
-    model=Relationship
-    row_template="articles/relationship_list_row.html"
-    form_class = ConfirmRelationshipForm
-    def get_row_id(self): 
-        if self.object.requester == self.request.user: return "writer"
-        else: return "requester"
-    def get_user_to_display(self):
-        return self.object.writer
-        if self.object.requester == self.request.user: return self.object.writer
-        else: return self.object.requester
-    def get_context_data(self, **kwargs):
-        user=self.get_user_to_display()
-        user.relationship=Relationship.objects.get(pk=self.object.pk)
-        user.is_confirmed= user.relationship.confirmed
-        user.is_confirmable = not user.relationship.confirmed and not self.request.user == user.relationship.created_by
-        c=super(ConfirmRelationship, self).get_context_data(**kwargs)
-        c['object']=user
-        return c
-    def post(self, request, *args, **kwargs):
-        # Make sure we can only confirm if we are the reciever of the invitation.
-        self.object = self.get_object()
-        if not (self.request.user in [self.object.requester, self.object.writer]) or self.object.created_by == self.request.user:
-            messages.error(self.request, 'You are not the recipient of this invitation.')
-            return self.form_invalid(self.get_form(self.get_form_class()))
-        return super(ConfirmRelationship, self).post(request, *args, **kwargs)
+class ConfirmRelationship(TemplateResponseMixin, BaseDetailView):
+  model=Relationship
+  template_name = "articles/ajax_user_list_row.html"
+  def get_object(self, queryset=None):
+    self.requester_id = self.request.POST.get('requester')
+    self.writer_id = self.request.POST.get('writer')
+    self.reviewer_id = self.request.POST.get('reviewer')
+    self.user_group = self.request.POST.get('user_group')
+    try:
+      if self.writer_id: return Relationship.objects.filter(requester_id=self.requester_id, writer_id=self.writer_id)[0]
+      else: return Relationship.objects.filter(requester_id=self.requester_id, reviewer_id=self.reviewer_id)[0]
+    except IndexError: raise Http404("No Relationships found matching the query")
+  def get_user(self):
+    if not self.user_group in ['Writer', 'Reviewer']: pk = self.requester_id
+    else: pk = self.writer_id or self.reviewer_id
+    return User.objects.get(pk=pk)
+  def post(self, *args, **kwargs):
+    self.object = self.get_object()
+    self.object.confirmed = True
+    self.object.save()
+    self.user = self.get_user()
+    context = self.get_context_data()
+    print "context = %s" % str(context)
+    return self.render_to_response(context)
+  def get_context_data(self, **kwargs):
+    kwargs['user_group'] = self.user_group
+    kwargs['object'] = self.user
+    print "kwargs = %s" % str(kwargs)
+    return super(ConfirmRelationship, self).get_context_data(**kwargs)
