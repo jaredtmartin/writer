@@ -9,6 +9,10 @@
             // CKEDITOR.replace( 'editor1' );
             CKEDITOR.replace("id_body", {"filebrowserWindowWidth": 940, "width": 835, "filebrowserWindowHeight": 725, "filebrowserBrowseUrl": "/ckeditor/browse/", "filebrowserUploadUrl": "/ckeditor/upload/", "toolbar": "Full", "height": 291});
         });
+        function showSection(section_id){
+            $('#'+section_id).collapse('show');
+            
+        }
     </script>
 {% endblock %}
 {% block navbar %}
@@ -33,6 +37,16 @@
                     </div>
                 </div>
             </div>
+            <div class="row-fluid">
+                <div class="span4">
+                    More:
+                    <select>
+                        <option onclick="$('#limits_section').collapse('show');return false;">Limits</option>
+                        <option onclick="$('#category_section').collapse('show');return false;">Tags & Projects</option>
+                        <option onclick="$('#notes_section').collapse('show');return false;">Notes</option>
+                    </select>   
+                </div>
+            </div>
             {% if article.pk %}
                 <div class="row-fluid">
                     <div class="span2 input-label">Writer:</div>
@@ -53,11 +67,11 @@
                     {% endif %}
                 </div>
                 <div class = "collapse-group">
-                    <a data-toggle="collapse" data-target="#limits_section">
+                    <!--<a data-toggle="collapse" data-target="#limits_section">
                         <div class="row-fluid">
                             <div class="span12"><legend>Limits: <span class="legend-note">(Click here to expand)</span></legend></div>
                         </div>
-                    </a>
+                    </a> -->
                     <div class="collapse" id="limits_section">
                         <div class="row-fluid">
                             <div class="span2 input-label">Minimum:</div>
@@ -69,11 +83,11 @@
                 </div>
 
                 <div class = "collapse-group">
-                    <a data-toggle="collapse" data-target="#category_section">
+                    <!--<a data-toggle="collapse" data-target="#category_section">
                         <div class="row-fluid">
                             <div class="span12"><legend>Tags & Projects: <span class="legend-note">(Click here to expand)</span></legend></div>
                         </div>
-                    </a>
+                    </a>-->
                     <div class="collapse" id="category_section">
                         <div class="row-fluid">
                             <div class="span2 input-label">Project:</div>
@@ -88,11 +102,11 @@
                     </div>
                 </div>
                 <div class = "collapse-group">
-                    <a data-toggle="collapse" data-target="#notes_section">
+                    <!--<a data-toggle="collapse" data-target="#notes_section">
                         <div class="row-fluid">
                             <div class="span12"><legend>Notes: <span class="legend-note">(Click here to expand)</span></legend></div>
                         </div>
-                    </a>
+                    </a>-->
                     <div class="collapse" id="notes_section">
                         <div class="row-fluid">
                             <div class="span2 input-label">Description</div>
