@@ -46,18 +46,20 @@ class PluginModel(models.Model):
 
 class PluginBaseMixin(object):
     plugin_foreign_key_name='plugin'
+    _plugin = None
     def add_mixins(self, *mixins):
         class BareClass(object):pass
-        class TransactionWithPlugin(BareClass):pass
-        TransactionWithPlugin.__bases__ = mixins + (self.__class__,)
-        self.__class__ = TransactionWithPlugin
+        class ModelWithPlugin(BareClass):pass
+        ModelWithPlugin.__bases__ = mixins + (self.__class__,)
+        self.__class__ = ModelWithPlugin
     def load_plugin(self):
-#        try:
+        try:
             self._plugin = getattr(self, self.plugin_foreign_key_name)
-            if self._plugin:
-                # Create an instance of the plugin
-                self.plugin_class=self._plugin.plugin_class
-                self.add_mixins(self.plugin_class)
-#                self.__dict__.update(self.cache_vars.items())
-#        except: pass
+        except: pass
+        if self._plugin:
+            # Create an instance of the plugin
+            self.plugin_class=self._plugin.plugin_class
+            self.add_mixins(self.plugin_class)
+    #                self.__dict__.update(self.cache_vars.items())
+
         

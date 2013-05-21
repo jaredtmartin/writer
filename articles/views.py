@@ -6,11 +6,12 @@ from django.contrib import messages
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormMixin#, ModelFormMixin
 from django.views.generic.detail import DetailView, BaseDetailView# , SingleObjectMixin
 from django.views.generic import FormView #, TemplateView, 
-from articles.models import Article, Keyword, Project, ArticleAction, ACTIONS, Relationship
+from articles.models import Article, Keyword, Project, ArticleAction, ACTIONS, Contact, \
+PublishingOutlet, PublishingOutletConfiguration
 from django.views.generic.base import View, TemplateResponseMixin
-from articles.forms import RejectForm, ArticleForm, KeywordInlineFormSet, KeywordInlineForm, ConfirmRelationshipForm, \
+from articles.forms import RejectForm, ArticleForm, KeywordInlineFormSet, KeywordInlineForm, \
 TagArticleForm, ActionUserID, AssignToForm, UserForm, UserProfileForm, NoteForm,\
-TagForm, RelationshipForm, ProjectForm, ACT_SUBMIT, ACT_REJECT, ACT_APPROVE, \
+TagForm, ProjectForm, ACT_SUBMIT, ACT_REJECT, ACT_APPROVE, \
 ACT_ASSIGN_WRITER, ACT_ASSIGN_REVIEWER, ACT_CLAIM_REVIEWER, ACT_RELEASE, ACT_PUBLISH, ACT_COMMENT, \
 ACT_REMOVE_REVIEWER, ACT_REMOVE_WRITER, ACT_CLAIM_WRITER, UserModeForm, \
 STATUS_NEW, STATUS_RELEASED, STATUS_ASSIGNED, STATUS_SUBMITTED, STATUS_APPROVED, \
@@ -230,7 +231,6 @@ class ArticleCreate(FormWithUserMixin, LoginRequiredMixin, CreateWithInlinesView
     inlines = [KeywordInlineFormSet]
     success_url = reverse_lazy('article_list')
     def get_context_data(self, **kwargs):
-        print "YOOOOOO"
         kwargs['article']=self.object
         context = super(ArticleCreate, self).get_context_data(**kwargs)
         return context
@@ -259,9 +259,11 @@ class ArticleUpdate(FormWithUserMixin, LoginRequiredMixin, UpdateWithInlinesView
     success_url = reverse_lazy('article_list')
     def get_form_class(self):
         if self.request.user == self.object.owner: 
+            print "making an articleForm"
             return ArticleForm
         else: 
             self.inlines = []
+            print "making a WriteArticleForm"
             return WriteArticleForm
     def forms_valid(self, form, inlines):
         results = super(ArticleUpdate, self).forms_valid(form, inlines)
@@ -311,7 +313,25 @@ class ArticleActionView(DetailView):
         self.object = self.get_object()
         self.do_action()
         context = self.get_context_data(object=self.object)
-        return self.render_to_response(context)        
+        return self.render_to_response(context)
+
+class PublishArticle(ArticleActionView):
+    def do_action(self):
+        from django.utils.datastructures import MultiValueDictKeyError
+        try: outlet = PublishingOutlet.objects.get(pk=self.request.POST['outlet_id'])
+        except MultiValueDictKeyError: messages.error(self.request, 'Publishing outlet not specified.')
+        except PublishingOutlet.DoesNotExist: messages.error(self.request, 'Unable to find specified publishing outlet.')
+        else: 
+            print "outlet = %s" % str(outlet)
+            try: config = PublishingOutletConfiguration(outlet=outlet, user=self.request.user)
+            except PublishingOutletConfiguration.DoesNotExist: messages.error(self.request, 'Unable to find configuration for specified publishing outlet.')
+            else: 
+                # pd=config.pickled_data
+                # data = pickle.loads(str(config.pickled_data))
+                print "config = %s" % str(config)
+                print "config.pickled_data = %s" % str(config.pickled_data)
+                # outlet.do_action(config.data, self.object)
+                # messages.success(self.request, 'Article published successfully.')
 
 class ArticleActionFormView(ArticleActionView, FormMixin):
     form_invalid_msg = ""
@@ -778,105 +798,105 @@ class ReviewerList(UserList):
   def get_other(self):
     return User.objects.filter(relationships_as_reviewer__reviewer__isnull=False).exclude(relationships_as_reviewer__requester=self.user).distinct()
     
-class CreateRelationship(CreateView):
-  model = Relationship
-  form_class = RelationshipForm
-  template_name = "articles/ajax_user_list_row.html"
-  def form_valid(self, form):
-    self.form = form
-    self.object = self.form.save(commit=False)
-    self.object.created_by = self.request.user
-    self.object = self.form.save()
-    user = self.get_user_object()
-    user.relationship = self.object
-    context = self.get_context_data(form=form)
-    context['object'] = user
-    return self.render_to_response(context)
-  def send_messages_for_form_errors(self, form):
-    for field,error_list in form.errors.items():
-      for error in error_list:
-        messages.error(self.request, "%s: %s" % (field, error))
-  def form_invalid(self, form):
-    self.form = form
-    self.send_messages_for_form_errors(self.form)
-    messages.error(self.request, form.errors)
-    return self.render_to_response(self.get_context_data(form=form))
-  def get_user_object(self):
-    for f in ['Requester','Reviewer','Writer']:
-      if self.form.cleaned_data[f.lower()] and not self.form.cleaned_data[f.lower()] == self.request.user:
-        return self.form.cleaned_data[f.lower()]
-  def get_user_group(self):
-    for f in ['Requester','Reviewer','Writer']:
-      if self.form.cleaned_data[f.lower()] == self.request.user: return f
-  def get_context_data(self, **kwargs):
-    if 'user_group' in self.request.POST: kwargs['user_group'] = self.request.POST['user_group']
-    return super(CreateRelationship, self).get_context_data(**kwargs)
+# class CreateRelationship(CreateView):
+#   model = Relationship
+#   form_class = RelationshipForm
+#   template_name = "articles/ajax_user_list_row.html"
+#   def form_valid(self, form):
+#     self.form = form
+#     self.object = self.form.save(commit=False)
+#     self.object.created_by = self.request.user
+#     self.object = self.form.save()
+#     user = self.get_user_object()
+#     user.relationship = self.object
+#     context = self.get_context_data(form=form)
+#     context['object'] = user
+#     return self.render_to_response(context)
+#   def send_messages_for_form_errors(self, form):
+#     for field,error_list in form.errors.items():
+#       for error in error_list:
+#         messages.error(self.request, "%s: %s" % (field, error))
+#   def form_invalid(self, form):
+#     self.form = form
+#     self.send_messages_for_form_errors(self.form)
+#     messages.error(self.request, form.errors)
+#     return self.render_to_response(self.get_context_data(form=form))
+#   def get_user_object(self):
+#     for f in ['Requester','Reviewer','Writer']:
+#       if self.form.cleaned_data[f.lower()] and not self.form.cleaned_data[f.lower()] == self.request.user:
+#         return self.form.cleaned_data[f.lower()]
+#   def get_user_group(self):
+#     for f in ['Requester','Reviewer','Writer']:
+#       if self.form.cleaned_data[f.lower()] == self.request.user: return f
+#   def get_context_data(self, **kwargs):
+#     if 'user_group' in self.request.POST: kwargs['user_group'] = self.request.POST['user_group']
+#     return super(CreateRelationship, self).get_context_data(**kwargs)
 
-class DeleteRelationship(DeleteView):
-  model = Relationship
-  template_name = "articles/ajax_user_list_row.html"
-  def get_object(self, queryset=None):
-    self.requester_id = self.request.POST.get('requester')
-    self.writer_id = self.request.POST.get('writer')
-    self.reviewer_id = self.request.POST.get('reviewer')
-    self.user_group = self.request.POST.get('user_group')
-    try:
-      if self.writer_id: 
-        print "looking from writer_id"
-        return Relationship.objects.filter(requester_id=self.requester_id, writer_id=self.writer_id)[0]
-      else: 
-        print "looking from reviewer_id"
-        print "self.requester_id = %s" % str(self.requester_id)
-        print "self.reviewer_id = %s" % str(self.reviewer_id)
-        print "Relationship.objects.filter(requester_id=self.requester_id, reviewer_id=self.reviewer_id) = %s" % str(Relationship.objects.filter(requester_id=self.requester_id, reviewer_id=self.reviewer_id))
-        return Relationship.objects.filter(requester_id=self.requester_id, reviewer_id=self.reviewer_id)[0]
-    except IndexError: raise Http404("No Relationships found matching the query")
-  def get_user(self):
-    if not self.user_group in ['Writer', 'Reviewer']: pk = self.requester_id
-    else: pk = self.writer_id or self.reviewer_id
-    print "pk = %s" % str(pk)
-    print "User.objects.get(pk=pk) = %s" % str(User.objects.get(pk=pk))
-    return User.objects.get(pk=pk)
-  def post(self, request, *args, **kwargs):
-    self.object = self.get_object()
-    self.user = self.get_user()
-    self.object.delete()
-    self.object = self.user
-    context = self.get_context_data()
-    print "context = %s" % str(context)
-    return self.render_to_response(context)
-  def get_context_data(self, **kwargs):
-    kwargs['user_group'] = self.user_group
-    kwargs['object'] = self.object
-    print "kwargs = %s" % str(kwargs)
-    return super(DeleteRelationship, self).get_context_data(**kwargs)
+# class DeleteRelationship(DeleteView):
+#   model = Relationship
+#   template_name = "articles/ajax_user_list_row.html"
+#   def get_object(self, queryset=None):
+#     self.requester_id = self.request.POST.get('requester')
+#     self.writer_id = self.request.POST.get('writer')
+#     self.reviewer_id = self.request.POST.get('reviewer')
+#     self.user_group = self.request.POST.get('user_group')
+#     try:
+#       if self.writer_id: 
+#         print "looking from writer_id"
+#         return Relationship.objects.filter(requester_id=self.requester_id, writer_id=self.writer_id)[0]
+#       else: 
+#         print "looking from reviewer_id"
+#         print "self.requester_id = %s" % str(self.requester_id)
+#         print "self.reviewer_id = %s" % str(self.reviewer_id)
+#         print "Relationship.objects.filter(requester_id=self.requester_id, reviewer_id=self.reviewer_id) = %s" % str(Relationship.objects.filter(requester_id=self.requester_id, reviewer_id=self.reviewer_id))
+#         return Relationship.objects.filter(requester_id=self.requester_id, reviewer_id=self.reviewer_id)[0]
+#     except IndexError: raise Http404("No Relationships found matching the query")
+#   def get_user(self):
+#     if not self.user_group in ['Writer', 'Reviewer']: pk = self.requester_id
+#     else: pk = self.writer_id or self.reviewer_id
+#     print "pk = %s" % str(pk)
+#     print "User.objects.get(pk=pk) = %s" % str(User.objects.get(pk=pk))
+#     return User.objects.get(pk=pk)
+#   def post(self, request, *args, **kwargs):
+#     self.object = self.get_object()
+#     self.user = self.get_user()
+#     self.object.delete()
+#     self.object = self.user
+#     context = self.get_context_data()
+#     print "context = %s" % str(context)
+#     return self.render_to_response(context)
+#   def get_context_data(self, **kwargs):
+#     kwargs['user_group'] = self.user_group
+#     kwargs['object'] = self.object
+#     print "kwargs = %s" % str(kwargs)
+#     return super(DeleteRelationship, self).get_context_data(**kwargs)
     
-class ConfirmRelationship(TemplateResponseMixin, BaseDetailView):
-  model=Relationship
-  template_name = "articles/ajax_user_list_row.html"
-  def get_object(self, queryset=None):
-    self.requester_id = self.request.POST.get('requester')
-    self.writer_id = self.request.POST.get('writer')
-    self.reviewer_id = self.request.POST.get('reviewer')
-    self.user_group = self.request.POST.get('user_group')
-    try:
-      if self.writer_id: return Relationship.objects.filter(requester_id=self.requester_id, writer_id=self.writer_id)[0]
-      else: return Relationship.objects.filter(requester_id=self.requester_id, reviewer_id=self.reviewer_id)[0]
-    except IndexError: raise Http404("No Relationships found matching the query")
-  def get_user(self):
-    if not self.user_group in ['Writer', 'Reviewer']: pk = self.requester_id
-    else: pk = self.writer_id or self.reviewer_id
-    return User.objects.get(pk=pk)
-  def post(self, *args, **kwargs):
-    self.object = self.get_object()
-    self.object.confirmed = True
-    self.object.save()
-    self.user = self.get_user()
-    context = self.get_context_data()
-    print "context = %s" % str(context)
-    return self.render_to_response(context)
-  def get_context_data(self, **kwargs):
-    kwargs['user_group'] = self.user_group
-    kwargs['object'] = self.user
-    print "kwargs = %s" % str(kwargs)
-    return super(ConfirmRelationship, self).get_context_data(**kwargs)
+# class ConfirmRelationship(TemplateResponseMixin, BaseDetailView):
+#   model=Relationship
+#   template_name = "articles/ajax_user_list_row.html"
+#   def get_object(self, queryset=None):
+#     self.requester_id = self.request.POST.get('requester')
+#     self.writer_id = self.request.POST.get('writer')
+#     self.reviewer_id = self.request.POST.get('reviewer')
+#     self.user_group = self.request.POST.get('user_group')
+#     try:
+#       if self.writer_id: return Relationship.objects.filter(requester_id=self.requester_id, writer_id=self.writer_id)[0]
+#       else: return Relationship.objects.filter(requester_id=self.requester_id, reviewer_id=self.reviewer_id)[0]
+#     except IndexError: raise Http404("No Relationships found matching the query")
+#   def get_user(self):
+#     if not self.user_group in ['Writer', 'Reviewer']: pk = self.requester_id
+#     else: pk = self.writer_id or self.reviewer_id
+#     return User.objects.get(pk=pk)
+#   def post(self, *args, **kwargs):
+#     self.object = self.get_object()
+#     self.object.confirmed = True
+#     self.object.save()
+#     self.user = self.get_user()
+#     context = self.get_context_data()
+#     print "context = %s" % str(context)
+#     return self.render_to_response(context)
+#   def get_context_data(self, **kwargs):
+#     kwargs['user_group'] = self.user_group
+#     kwargs['object'] = self.user
+#     print "kwargs = %s" % str(kwargs)
+#     return super(ConfirmRelationship, self).get_context_data(**kwargs)

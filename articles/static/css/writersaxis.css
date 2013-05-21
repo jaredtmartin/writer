@@ -1,3 +1,6 @@
+.row-fluid{
+    margin-bottom: 10px;
+}
 #filterbar{
     float:right;
     width:100px;

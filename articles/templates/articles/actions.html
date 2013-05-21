@@ -51,3 +51,6 @@
     <button class="btn {{btn_size}}" onclick="showDeleteModal('{{article.id}}');return false;" >Delete</button>
   {% endif %}
 {% endfor %}
+{% for outlet in outlets %}
+    <button class="btn {{btn_size}}" onclick="publishArticle('{% url publish_article article.pk %}', '{{outlet.outlet.pk}}'); return false;" >{{outlet.outlet.title}}</button>
+{% endfor %}

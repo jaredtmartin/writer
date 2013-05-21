@@ -37,6 +37,11 @@ function assignArticles(url, writer, article_id){
     data = "&user=" + writer;
     doActionOnArticles(url, article_id, data);
 }
+function publishArticle(url, outlet){
+    data = "&outlet_id=" + outlet;
+    // data += "&as_row=" + 'True';
+    jQuery.post(url, data, success = ajaxUpdateRow);
+}
 function doActionOnArticles(url, article_id, extra){
     if (article_id == undefined){
         data = $('#actions-form').serialize();

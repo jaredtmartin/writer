@@ -1,25 +1,64 @@
 # Django settings for webservices project.
-import os
-DIRNAME = os.path.abspath(os.path.dirname(__file__))
+import os, sys
 
+DIRNAME = os.path.abspath(os.path.dirname(__file__))
+BASE_DIR = os.path.abspath(os.path.dirname(__file__)) + os.sep
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
+
+from pprint import pprint as pp
+# print "BASE_DIR = %s" % str(BASE_DIR) 
+extra_modules="%senv/lib/python2.7/site-packages/" % BASE_DIR
+# print "extra_modules = %s" % str(extra_modules)
+
+# print "+++++++++++++++++++++++++++++++++++ Before +++++++++++++++++++++++++++++++++++++++"
+# pp(sys.path)
+# print "+++++++++++++++++++++++++++++++++++ After  +++++++++++++++++++++++++++++++++++++++"
+sys.path+=[extra_modules]
+# pp(sys.path)
+
 
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
 )
 
 MANAGERS = ADMINS
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'webservices',                      # Or path to database file if using sqlite3.
-        'USER': 'root',                      # Not used with sqlite3.
-        'PASSWORD': 't1bur0n',                  # Not used with sqlite3.
-        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+#         'NAME': 'webservices',                      # Or path to database file if using sqlite3.
+#         'USER': 'root',                      # Not used with sqlite3.
+#         'PASSWORD': 't1bur0n',                  # Not used with sqlite3.
+#         'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
+#         'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+#     }
+# }
+
+
+if (os.getenv('SERVER_SOFTWARE', '').startswith('Google App Engine') or
+    os.getenv('SETTINGS_MODE') == 'prod'):
+    # Running on production App Engine, so use a Google Cloud SQL database.
+    DATABASES = {
+        'default': {
+            'ENGINE': 'google.appengine.ext.django.backends.rdbms',
+            'INSTANCE': 'writeraxis-python:writeraxis',
+            'NAME': 'writeraxis',
+        }
     }
-}
+else:
+    # Running in development, so use a local MySQL database
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'USER': 'root',
+            'PASSWORD': 't1bur0n',
+            'HOST': 'localhost',
+            'NAME': 'writeraxis',
+        }
+    }
+
+
+
 DEBUG_TOOLBAR_CONFIG = {
     'INTERCEPT_REDIRECTS': False,
 }
@@ -87,7 +126,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 
 AUTHENTICATION_BACKENDS = (
     #'django_facebook.auth_backends.FacebookBackend',
-    'auth.FacebookProfileBackend',
+    # 'auth.FacebookProfileBackend',
 #    'django_facebook.auth.FacebookBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
@@ -128,7 +167,7 @@ MIDDLEWARE_CLASSES = (
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
     #'django_facebook.middleware.FacebookMiddleware',
-    'middleware.FacebookMiddleware',
+    # 'middleware.FacebookMiddleware',
     'middleware.TimezoneMiddleware',
     
 )
@@ -160,7 +199,7 @@ INSTALLED_APPS = (
     'django.contrib.markup',
     # 'knowledge',
     'django_extensions',
-    'django_facebook',
+    # 'django_facebook',
     #'forms',
     'articles',
     # 'common',
@@ -209,13 +248,15 @@ FACEBOOK_CANVAS_PAGE = 'https://apps.facebook.com/%s/' % FACEBOOK_APP_ID
 FACEBOOK_SCOPE = ['manage_pages']
 
 # If manage.py test was called, use SQLite
-import sys
-if 'test' in sys.argv:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': ('test_sqlite.db')
-        }
-    }
-else:
-    INSTALLED_APPS=INSTALLED_APPS+('debug_toolbar',)
+# import sys
+# if 'test' in sys.argv:
+#     DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.db.backends.sqlite3',
+#             'NAME': ('test_sqlite.db')
+#         }
+#     }
+# else:
+#     INSTALLED_APPS=INSTALLED_APPS+('debug_toolbar',)
+
+

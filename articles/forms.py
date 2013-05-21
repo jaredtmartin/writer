@@ -2,7 +2,7 @@ from articles.models import *
 from django.forms import ModelForm, DateField, ValidationError, ChoiceField, IntegerField, Form, \
     ModelChoiceField, CharField, ModelMultipleChoiceField, widgets
 from extra_views import InlineFormSet
-from articles.widgets import SelectWithFlexibleOptionLabels
+from articles.widgets import SelectWithFlexibleOptionLabels, BootstrapDropdownWidget, BootstrapSplitDropdownWidget, BootstrapDropdownWidgetWithPlus
 from django.utils.encoding import smart_unicode
 import pytz
 from titlecase import titlecase
@@ -28,25 +28,32 @@ class FormWithLookupsMixin(object):
             if auto_create: return self.auto_create_related_object(data, name, model)
             else: raise ValidationError('Unable to find %s in the list of %ss.' % (data, title))
 
-class ArticleForm(FormWithLookupsMixin, ModelForm):
+class ArticleForm(ModelForm):
     class Meta:
         model = Article
-        fields = ('tags', 'minimum','maximum','article_type','project','title','body', 'owner','number_of_articles','article_notes','review_notes','description')
-    lookup_field_names = {'project':'name'}
-    project = CharField(required=False)
-    article_notes = CharField(widget=widgets.Textarea(attrs={'class':'notes'}), required=False)
-    review_notes = CharField(widget=widgets.Textarea(attrs={'class':'notes'}), required=False)
-    description = CharField(widget=widgets.Textarea(attrs={'class':'notes'}), required=False)
+        fields = ('language','style',  'purpose','price','referrals','expires','priority','category','tags', 'minimum','article_type','project','title','body', 'owner','number_of_articles','article_notes','review_notes','description')
+    # lookup_field_names = {'project':'name'}
+    # project = CharField(required=False)
+    article_notes   = CharField(widget=widgets.Textarea(attrs={'class':'notes'}), required=False)
+    review_notes    = CharField(widget=widgets.Textarea(attrs={'class':'notes'}), required=False)
+    description     = CharField(widget=widgets.Textarea(attrs={'class':'notes'}), required=False)
+    tags            = CharField(widget=widgets.TextInput(attrs={'style':'width:487px;height: 20px;'}), required=False)
     number_of_articles = IntegerField(required=False)
-    def clean_project(self):
-        # Looksup project by name and creates it if it doesnt exist
-        return self.clean_lookup('project', Project, auto_create=True)
-    def auto_create_related_object(self, data, field_name, model):
-        # creates the new project with the user as owner
-        return Project.objects.create(name=data, owner=self.user)
+    project         = ModelChoiceField(queryset=Project.objects.all(), widget=BootstrapDropdownWidget())
+    category        = ModelChoiceField(queryset=Category.objects.all(), widget=BootstrapDropdownWidget(), required=False)
+    article_type    = ModelChoiceField(queryset=ArticleType.objects.all(), widget=BootstrapDropdownWidget())
+    priority        = ChoiceField(choices = ARTICLE_PRIORITIES, widget=BootstrapDropdownWidget(), required=False)
+    # def clean_project(self):
+    #     # Looksup project by name and creates it if it doesnt exist
+    #     return self.clean_lookup('project', Project, auto_create=True)
+    # def auto_create_related_object(self, data, field_name, model):
+    #     # creates the new project with the user as owner
+    #     return Project.objects.create(name=data, owner=self.user)
     def __init__(self, *args, **kwargs):
         # Recieves user from request
         self.user = kwargs.pop('user')
+        # print "self.fields['project'] = %s" % str(self.fields['project'])
+        # print "self.fields['article_type'] = %s" % str(self.fields['article_type'])
         super(ArticleForm, self).__init__(*args, **kwargs)
     def clean_title(self):
         data = self.cleaned_data['title']
@@ -112,18 +119,18 @@ class TagArticleForm(ModelForm):
     class Meta:
         model = Article
         fields = ('tags',)
-class RelationshipForm(ModelForm):
-    class Meta:
-        model = Relationship
-        fields = ('requester','writer','reviewer')
-class ConfirmRelationshipForm(ModelForm):
-    class Meta:
-        model = Relationship
-        fields = ('confirmed',)
-    def save(self, commit=True):
-        super(ConfirmRelationshipForm, self).save(commit=False)
-        self.instance.confirmed=True
-        return super(ConfirmRelationshipForm, self).save(commit=True)
+# class RelationshipForm(ModelForm):
+#     class Meta:
+#         model = Relationship
+#         fields = ('requester','writer','reviewer')
+# class ConfirmRelationshipForm(ModelForm):
+#     class Meta:
+#         model = Relationship
+#         fields = ('confirmed',)
+#     def save(self, commit=True):
+#         super(ConfirmRelationshipForm, self).save(commit=False)
+#         self.instance.confirmed=True
+#         return super(ConfirmRelationshipForm, self).save(commit=True)
 class ProjectForm(ModelForm):
     class Meta:
         model = Project

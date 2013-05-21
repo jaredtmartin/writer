@@ -6,6 +6,7 @@ urlpatterns = patterns('',
     url(r'^articles/$',                         ArticleList.as_view(),          name='article_list'),
     url(r'^article/add/$',                      ArticleCreate.as_view(),        name='article_add'),
     url(r'^article/(?P<pk>\d+)/tag/$',          TagArticle.as_view(),           name='tag_article'),
+    url(r'^article/(?P<pk>\d+)/publish/$',      PublishArticle.as_view(),       name='publish_article'),
     url(r'^article/(?P<pk>\d+)/$',              ArticleUpdate.as_view(),        name='article_update'),
     url(r'^keyword/new/$',                      AjaxKeywordInlineForm.as_view(),name='new_keyword'),
 
@@ -29,10 +30,10 @@ urlpatterns = patterns('',
 
     url(r'^user/mode/$',                        ChangeModeView.as_view(),       name='change_user_mode'),
 
-    url(r'^user/hire/$',                        CreateRelationship.as_view(),   name='hire_user'),
-    url(r'^user/apply/$',                       CreateRelationship.as_view(),   name='apply_user'),
-    url(r'^user/reject/$',                      DeleteRelationship.as_view(),   name='reject_user'),
-    url(r'^user/accept/$',                      ConfirmRelationship.as_view(),  name='accept_user'),
+    # url(r'^user/hire/$',                        CreateRelationship.as_view(),   name='hire_user'),
+    # url(r'^user/apply/$',                       CreateRelationship.as_view(),   name='apply_user'),
+    # url(r'^user/reject/$',                      DeleteRelationship.as_view(),   name='reject_user'),
+    # url(r'^user/accept/$',                      ConfirmRelationship.as_view(),  name='accept_user'),
     
     # url(r'^requester/add/$',                    AddRequester.as_view(),         name='requester_add'),
     # url(r'^writer/add/$',                       AddWriter.as_view(),            name='writer_add'),

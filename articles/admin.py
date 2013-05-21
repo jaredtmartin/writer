@@ -1,6 +1,6 @@
 from django.contrib import admin
-from articles.models import Article, ArticleType, ArticleAction, Keyword, Project, Relationship, \
-UserProfile, PublishingOutlet, PublishingOutletConfiguration, ValidationPlugin
+from articles.models import Article, ArticleType, ArticleAction, Keyword, Project, Contact, \
+UserProfile, PublishingOutlet, PublishingOutletConfiguration, ValidationPlugin, Category
 from django.contrib import messages
 
 class KeywordInline(admin.TabularInline):
@@ -58,8 +58,8 @@ def reject_and_release(modeladmin, request, queryset):
         except Article.ArticleWorkflowException, err: messages.add_message(request, messages.ERROR, err)
 reject_and_release.short_description = "Reject and release selected articles"
 
-class RelationshipAdmin(admin.ModelAdmin):
-    list_display = ('requester','writer','reviewer','created_by','confirmed')
+class ContactAdmin(admin.ModelAdmin):
+    list_display = ('name',  'requester','worker','user_asked','position', 'confirmation')
 
 class ArticleAdmin(admin.ModelAdmin):
     list_display = ('name','last_action','writer','reviewer','submitted','approved','published','released')
@@ -73,7 +73,8 @@ admin.site.register(Article, ArticleAdmin)
 admin.site.register(ArticleType)
 admin.site.register(ArticleAction)
 admin.site.register(Project)
-admin.site.register(Relationship, RelationshipAdmin)
+admin.site.register(Category)
+admin.site.register(Contact, ContactAdmin)
 admin.site.register(UserProfile)
 admin.site.register(PublishingOutlet)
 admin.site.register(ValidationPlugin)

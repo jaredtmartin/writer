@@ -7,7 +7,7 @@ from django.db.models import Q
 # from plugin_manager import PluginManager
 # from django.conf import settings
 from HTMLParser import HTMLParser
-import facebook
+# import facebook
 import re
 from django.template import Context
 from plugins import PluginModel, PluginBaseMixin
@@ -53,6 +53,14 @@ ACTIONS = (
     (ACT_CLAIM_REVIEWER, 'Claimed by Reviewer'),
     (ACT_CLAIM_WRITER, 'Claimed by Writer'),
 )
+PRIORITY_LOW = 1
+PRIORITY_NORMAL = 5
+PRIORITY_HIGH = 10
+ARTICLE_PRIORITIES = (
+    (PRIORITY_LOW, 'Low'),
+    (PRIORITY_NORMAL, 'Normal'),
+    (PRIORITY_HIGH, 'High'),
+)
 STATUS_NEW = "New"
 STATUS_RELEASED = 'Released'
 STATUS_ASSIGNED = 'Assigned to Writer'
@@ -77,6 +85,12 @@ USER_MODES = (
     (REQUESTER_MODE, 'Requester'),
     (REVIEWER_MODE, 'Reviewer'),
 )
+WRITER_POSITION = 1
+REVIEWER_POSITION = 2
+WORKING_POSITIONS= (
+    (WRITER_POSITION, "Writer"),
+    (REVIEWER_POSITION, 'Reviewer'),
+)
         
 class TestOutlet(PluginModel):
     package_name="articles.pkg"
@@ -85,8 +99,8 @@ class PublishingOutlet(PluginModel):
     package_name = "articles.publishing_outlets"
     title = models.CharField(max_length=256)
     
-    def do_action(self):
-        return self.plugin.do_action()
+    def do_action(self, *args, **kwargs):
+        return self.plugin.do_action(*args, **kwargs)
     def get_button_url(self, context=Context()):
         context.update({'title':self.title})
         return self.plugin.get_button_url(context)
@@ -106,65 +120,36 @@ class ValidationPlugin(PluginModel):
 class UserConfigBaseModel(PluginBaseMixin, models.Model):
     class Meta:
         abstract = True
-    _data=None
-    def _get_data(self): 
-        if self._data: return self._data
-        import pickle
-        self._data = pickle.loads(self.pickled_data)
-        return self._data
-    def _set_data(self,value):
-        self._data = value
-        import pickle
-        self.pickled_data = pickle.dumps(value)
-    data = property(_get_data, _set_data)
-    def get_setting(self, setting):
-        return self.data[setting]
-    def set_setting(self, setting, value):
-        self.data[setting] = value
+    pickled_data = models.CharField(max_length=512, default="", blank=True)
+    # _data=None
+    # def _get_data(self): 
+    #     if self._data: return self._data
+    #     import pickle
+    #     import base64
+    #     self._data = pickle.loads(base64.b64decode(self.pickled_data))
+    #     return self._data
+    # def _set_data(self,value):
+    #     self._data = value
+    #     import pickle
+    #     import base64
+    #     self.pickled_data = base64.b64encode(pickle.dumps(value))
+    # data = property(_get_data, _set_data)
+    # def get_setting(self, setting):
+    #     return self.data[setting]
+    # def set_setting(self, setting, value):
+    #     self.data[setting] = value
     def __init__(self, *args, **kwargs):
         super(UserConfigBaseModel, self).__init__(*args, **kwargs)
         self.load_plugin()
         
+import pickle   
 class PublishingOutletConfiguration(UserConfigBaseModel):
     plugin_foreign_key_name='outlet'
     user = models.ForeignKey(User, related_name='publishing_outlets')
     outlet = models.ForeignKey(PublishingOutlet, related_name='users')
-    pickled_data = models.CharField(max_length=256, default="", blank=True)
-    
+
     def __unicode__(self): return "%s for %s" % (self.outlet.title, self.user.username)
     
-
-        
-#class PublishingOutletConfiguration(models.Model):
-#    user = models.ForeignKey(User, related_name='publishing_outlets')
-#    outlet = models.ForeignKey(PublishingOutlet, related_name='users')
-#    pickled_data = models.CharField(max_length=256, default="", blank=True)
-#    def _get_data(self): 
-#        if self._data: return self._data
-#        import pickle
-#        self._data = pickle.loads(self.pickled_data)
-#        return self._data
-#    def _set_data(self,value):
-#        self._data = value
-#        self.pickled_data = pickle.dumps(value)
-#    data = property(_get_data, _set_data)
-#    def get_setting(setting):
-#        return self.data[setting]
-#    def set_setting(setting, value):
-#        self.data[setting] = value
-#    def publish(self, article):
-#        pass
-#    def get_button_url(self, context=Context()):
-#        context.update({
-#            'username':self.username,
-#            'password':self.password,
-#            'user':self.user,
-#            'server':self.server,
-#        })
-#        return self.outlet.get_button_url(context=context)
-#    
-#    def __unicode__(self): return "%s for %s" % (self.outlet.title, self.user.username)
-
 class PluginMount(type):
     name="generic"
     def __init__(cls, name, bases, attrs):
@@ -248,21 +233,24 @@ def user_full_name(self):
     return "%s %s" % (self.first_name,self.last_name)
 User.full_name = property(user_full_name)
 def user_writers(self):
-    return self.relationships_as_requester.filter(confirmed=True, writer__isnull=False)
+    return self.contacts_as_requester.filter(confirmation=True, position=WRITER_POSITION)
 User.writers = property(user_writers)
 def user_requesters(self):
-    return Relationship.objects.filter((Q(writer=self)|Q(reviewer=self)) & Q(confirmed=True))
+    return self.contacts_as_worker.filter(confirmation=True)
 User.requesters = property(user_requesters)
+def user_writes_for(self):
+    return self.contacts_as_worker.filter(confirmation=True, position=WRITER_POSITION)
+User.writes_for = property(user_writes_for)
+def user_reviews_for(self):
+    return self.contacts_as_worker.filter(confirmation=True, position=REVIEWER_POSITION)
+User.reviews_for = property(user_reviews_for)
 def user_reviewers(self):
-    return self.relationships_as_requester.filter(confirmed=True, reviewer__isnull=False)
+    return self.contacts_as_requester.filter(confirmation=True, position=REVIEWER_POSITION)
 User.reviewers = property(user_reviewers)
 
-# def is_requester(self): return self.get_profile().is_requester
-# def is_writer(self): return self.get_profile().is_writer
-# def is_reviewer(self): return self.get_profile().is_reviewer
-# User.is_requester=property(is_requester)
-# User.is_writer=property(is_writer)
-# User.is_reviewer=property(is_reviewer)
+# def user_outlets(self):
+#     return self.relationships_as_requester.filter(confirmed=True, reviewer__isnull=False)
+# User.outlets = property(user_outlets)
 
 def get_user_mode(self):
     return self.get_profile().preferred_mode
@@ -277,35 +265,37 @@ def get_user_mode_display(self):
 User.mode_display = property(get_user_mode_display)
 
 #####################################################################################################
-#                                     Relationships                                                 #
+#                                     Contacts                                                      #
 #####################################################################################################
-class Relationship(ValidationModelMixin, models.Model):
-    requester = models.ForeignKey(User, related_name='relationships_as_requester')
-    writer = models.ForeignKey(User, related_name='relationships_as_writer', null=True, blank=True)
-    reviewer = models.ForeignKey(User, related_name='relationships_as_reviewer', null=True, blank=True)
-    created_by = models.ForeignKey(User, related_name='friend_requests')
-    confirmed = models.BooleanField(default=False, blank=True)
-    objects = models.Manager()
-    @property
-    def worker(self):
-        if self.writer: return self.writer
-        else: return self.reviewer
+class Contact(models.Model):
+    name = models.CharField(max_length=64)
+    requester = models.ForeignKey(User, related_name='contacts_as_requester')
+    worker = models.ForeignKey(User, related_name='contacts_as_worker')
+    user_asked = models.ForeignKey(User, related_name='contact_requests')
+    position = models.IntegerField(choices=WORKING_POSITIONS)
+    confirmation = models.NullBooleanField(default=None, blank=True)
     @property
     def verb(self):
-        if self.writer: return "writes"
-        else: return "reviews"
-    def __unicode__(self): 
-        if self.confirmed:
-            return "%s %s for %s" % (self.worker.full_name, self.verb, self.requester.full_name)
-        else:
-            if self.created_by==self.requester: 
-                return "%s requested %s to %s for him" % (self.created_by.full_name, self.verb, self.worker.full_name)
+        if self.position==WRITER_POSITION: return "write"
+        elif self.position==REVIEWER_POSITION: return "review"
+        else: return "works"
+    def __unicode__(self):
+        if self.confirmation:
+            if self.name == self.worker.full_name:
+                return "%s %ss for %s" % (self.worker.full_name, self.verb, self.requester.full_name)
             else:
-                return "%s requested to %s for %s" % (self.created_by.full_name, self.verb, self.requester.full_name)
-    @models.permalink
-    def get_delete_url(self):
-        return ('relationship_delete', [self.id,])
-
+                return "%s %ss for %s as %s" % (self.worker.full_name, self.verb, self.requester.full_name, self.name)
+        else:
+            if self.confirmation == None:
+                if self.user_asked==self.requester: 
+                    return "%s requested to %s for %s" % (self.worker.full_name, self.verb, self.requester.full_name)
+                else:
+                    return "%s requested %s to %s for him" % (self.requester.full_name, self.worker, self.verb)
+            else:
+                if self.user_asked==self.requester: 
+                    return "%s was not accepted to %s for %s" % (self.worker.full_name, self.verb, self.requester.full_name)
+                else:
+                    return "%s declined to %s for %s" % (self.worker.full_name, self.verb, self.requester.full_name)
 
 #####################################################################################################
 #                                     Articles                                                      #
@@ -326,14 +316,21 @@ class ArticleManager(NotDeletedManager):
                     except ValueError:pass
         return Article.objects.filter(pk__in=article_pk_list)
 
+class Category(models.Model):
+    name = models.CharField(max_length=64)
+    def __unicode__(self): 
+        return self.name
+
 class Article(ValidationModelMixin, models.Model):
     def __unicode__(self): return self.name
     minimum     = models.IntegerField(default=100)
+    priority    = models.IntegerField(default=PRIORITY_NORMAL, choices = ARTICLE_PRIORITIES)
     maximum     = models.IntegerField(default=0) # Use zero for no maximum
     body        = models.TextField(blank=True, default="")
     title       = models.CharField(max_length=256, blank=True, default="")
     article_type = models.ForeignKey(ArticleType, related_name='articles')
     project     = models.ForeignKey(Project, related_name='articles', null=True, blank=True)
+    category     = models.ForeignKey(Category, related_name='articles', null=True, blank=True)
     tags        = models.CharField(max_length=128, blank=True, default="")
     status      = models.CharField(max_length=32, blank=True, default=STATUS_NEW, choices=STATUSES)
     owner       = models.ForeignKey(User, related_name='articles_owned')
@@ -354,6 +351,11 @@ class Article(ValidationModelMixin, models.Model):
     description = models.TextField(max_length=256, blank=True, default="")
     article_notes = models.CharField(max_length=128, blank=True, default="")
     review_notes = models.CharField(max_length=128, blank=True, default="")
+    referrals = models.CharField(max_length=128, blank=True, default="")
+    purpose = models.CharField(max_length=128, blank=True, default="")
+    price = models.CharField(max_length=128, blank=True, default="")
+    language = models.CharField(max_length=64, blank=True, default="")
+    style = models.CharField(max_length=128, blank=True, default="")
     objects = ArticleManager()
     all_objects = models.Manager()
 
@@ -497,8 +499,8 @@ class UserProfile(models.Model):
     @property
     def is_reviewer(self):
         return self.preferred_mode == REVIEWER_MODE
-    @property
-    def graph(self): return facebook.GraphAPI(self.access_token)
+    # @property
+    # def graph(self): return facebook.GraphAPI(self.access_token)
 
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
