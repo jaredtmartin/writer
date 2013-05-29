@@ -61,14 +61,14 @@ ARTICLE_PRIORITIES = (
     (PRIORITY_NORMAL, 'Normal'),
     (PRIORITY_HIGH, 'High'),
 )
-STATUS_NEW = "New"
+STATUS_NEW = "Unassigned"
 STATUS_RELEASED = 'Released'
 STATUS_ASSIGNED = 'Assigned to Writer'
 STATUS_SUBMITTED = 'Submitted'
 STATUS_APPROVED = 'Approved'
 STATUS_PUBLISHED = 'Published'
 STATUSES = (
-    (STATUS_NEW, "New"),
+    (STATUS_NEW, "Unassigned"),
     (STATUS_RELEASED, 'Released'),
     (STATUS_ASSIGNED, 'Assigned to Writer'),
     (STATUS_SUBMITTED, 'Submitted'),
@@ -347,7 +347,7 @@ class Article(ValidationModelMixin, models.Model):
     
     expires = models.DateTimeField(blank=True, null=True)
     deleted = models.BooleanField(default=False, blank=True)
-    released = models.BooleanField(default=False, blank=True)
+    # released = models.BooleanField(default=False, blank=True)
     description = models.TextField(max_length=256, blank=True, default="")
     article_notes = models.CharField(max_length=128, blank=True, default="")
     review_notes = models.CharField(max_length=128, blank=True, default="")
@@ -356,6 +356,8 @@ class Article(ValidationModelMixin, models.Model):
     price = models.CharField(max_length=128, blank=True, default="")
     language = models.CharField(max_length=64, blank=True, default="")
     style = models.CharField(max_length=128, blank=True, default="")
+    writer_availability = models.CharField(max_length=64, blank=True, default="Nobody")
+    reviewer_availability = models.CharField(max_length=64, blank=True, default="Nobody")
     objects = ArticleManager()
     all_objects = models.Manager()
 
@@ -393,6 +395,10 @@ class Article(ValidationModelMixin, models.Model):
             self.tags=",".join(set(value))
         else: self.tags=value
     tags_as_list=property(get_tags, set_tags)
+    def make_available_to_writer(self, contact):
+        self.writer_availability = contact.name
+    def make_available_to_reviewer(self, contact):
+        self.reviewer_availability = contact.name
     # @property
     # def status(self): 
     #     if self.published: return STATUS_PUBLISHED
@@ -409,9 +415,10 @@ class Article(ValidationModelMixin, models.Model):
         actions=[]
         if not user.is_authenticated(): return []
         if user.mode == WRITER_MODE:
+            contact_names = [c.name for c in self.owner.writers.filter(worker=user)]
             if self.writer == user and not self.submitted:
                 actions += [ACT_REMOVE_WRITER, ACT_SUBMIT]
-            elif not self.writer and self.released:
+            elif not self.writer and (self.writer_availability in contact_names or not self.writer_availability):
                 actions += [ACT_CLAIM_WRITER]
         elif user.mode == REQUESTER_MODE and user==self.owner:
             if   status == STATUS_APPROVED:     actions.append(ACT_PUBLISH)
@@ -427,9 +434,12 @@ class Article(ValidationModelMixin, models.Model):
                     actions += [ACT_ASSIGN_REVIEWER]
             actions += (ACT_TAG, )
         elif user.mode == REVIEWER_MODE:
+            contact_names = [c.name for c in self.owner.reviewers.filter(worker=user)]
             if self.reviewer == user and status == STATUS_SUBMITTED:
                 actions += [ACT_REMOVE_REVIEWER, ACT_REJECT, ACT_APPROVE]
-            elif not self.reviewer: actions += [ACT_CLAIM_REVIEWER]
+            elif not self.reviewer and \
+            (self.reviewer_availability in contact_names or not self.reviewer_availability): 
+                actions += [ACT_CLAIM_REVIEWER]
         return actions
             
     @property

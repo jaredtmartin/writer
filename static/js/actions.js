@@ -37,6 +37,11 @@ function assignArticles(url, writer, article_id){
     data = "&user=" + writer;
     doActionOnArticles(url, article_id, data);
 }
+function publishArticle(url, outlet){
+    data = "&outlet_id=" + outlet;
+    // data += "&as_row=" + 'True';
+    jQuery.post(url, data, success = ajaxUpdateRow);
+}
 function doActionOnArticles(url, article_id, extra){
     if (article_id == undefined){
         data = $('#actions-form').serialize();
@@ -47,4 +52,12 @@ function doActionOnArticles(url, article_id, extra){
     data += "&as_row=" + 'True';
     if (extra != undefined){data += extra}
     jQuery.post(url, data, success = ajaxUpdateRow);
+}
+function doActionOnUser(url, requester, writer, reviewer, group){
+    jQuery.post(url, {
+        requester:requester, 
+        writer:writer, 
+        reviewer:reviewer, 
+        user_group:group
+    }, success = ajaxUpdateRow);
 }

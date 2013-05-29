@@ -62,7 +62,7 @@ class ContactAdmin(admin.ModelAdmin):
     list_display = ('name',  'requester','worker','user_asked','position', 'confirmation')
 
 class ArticleAdmin(admin.ModelAdmin):
-    list_display = ('name','last_action','writer','reviewer','submitted','approved','published','released')
+    list_display = ('name','last_action','writer','reviewer','submitted','approved','published','writer_availability','reviewer_availability')
 #    list_filter = ('assigned','submitted','approved','published')
     list_filter=('project','minimum')
     search_fields = ['project']

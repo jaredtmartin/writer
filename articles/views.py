@@ -484,7 +484,6 @@ class AssignArticles(ArticleActionsView):
     def update_articles(self, qs, action):
         if self.next_status: qs.update(status=self.next_status)
         qs.update(last_action=action)
-        qs.update(released=True)
     def create_action(self):
         return ArticleAction.objects.create(
             user=self.request.user, 
