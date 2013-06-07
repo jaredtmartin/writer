@@ -1,5 +1,5 @@
 <div id="action_bar" class="">    
-  {% if user.is_requester %}  
+  {% if user.get_profile.is_requester %}  
     <div class="btn-group">
       <button id="assign-writer-button" class="btn btn-small dropdown-toggle" data-toggle="dropdown">Assign Writer <span class="caret"></span></button>
       <ul class="dropdown-menu">

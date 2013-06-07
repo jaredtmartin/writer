@@ -1,3 +1,4 @@
+{% load help_icon %}
 <script type="text/javascript">
     function insertKeywordInlineForm(data, result){
         $('#keywords-title-row').after(data);
@@ -39,14 +40,15 @@
 {{ inline.management_form }}
 <table id="keywords-table" class="table block_content" width="100%" cellspacing="0" cellpadding="0" border="0" style="border: none; margin:0;">
     <tr id="keywords-title-row">
-        <th><h5>Keyword</h5></th>
-        <th><h5>Url</h5></th>
-        <th><h5>Frequency</h5></th>
+        <th><h5>Keyword {% help_icon "The keyword phrase the article(s) should be written about." %}</h5></th>
+        <th><h5>Url {% help_icon "If you want your keyword linked to a specific URL, please provide it here." %}</h5></th>
+        <th><h5>Frequency {% help_icon "Number of times the keyword should appear in the article(s)." %}</h5></th>
         <th><h5>Remove</h5></th>
     </tr>
     {% for form in inline %}
         {% include "articles/keyword_inline_form.html" %}
     {% endfor %}
 </table>
-<button onclick="getKeywordInlineForm();return false;" class="btn btn-small">Add Keyword</button>
+<a onclick="getKeywordInlineForm();return false;" class="btn btn-success btn-small"><i class="icon-plus icon-white"></i></a>
+
 

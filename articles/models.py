@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.contrib import messages
 from django.db.models import Q
+from django.conf.global_settings import LANGUAGES
 # from validation_plugins import *
 # from plugin_manager import PluginManager
 # from django.conf import settings
@@ -354,7 +355,7 @@ class Article(ValidationModelMixin, models.Model):
     referrals = models.CharField(max_length=128, blank=True, default="")
     purpose = models.CharField(max_length=128, blank=True, default="")
     price = models.CharField(max_length=128, blank=True, default="")
-    language = models.CharField(max_length=64, blank=True, default="")
+    language = models.CharField(max_length=7, choices=LANGUAGES, blank=True, default="en")
     style = models.CharField(max_length=128, blank=True, default="")
     writer_availability = models.CharField(max_length=64, blank=True, default="Nobody")
     reviewer_availability = models.CharField(max_length=64, blank=True, default="Nobody")

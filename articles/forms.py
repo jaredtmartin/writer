@@ -37,12 +37,13 @@ class ArticleForm(ModelForm):
     article_notes   = CharField(widget=widgets.Textarea(attrs={'class':'notes'}), required=False)
     review_notes    = CharField(widget=widgets.Textarea(attrs={'class':'notes'}), required=False)
     description     = CharField(widget=widgets.Textarea(attrs={'class':'notes'}), required=False)
-    tags            = CharField(widget=widgets.TextInput(attrs={'style':'width:487px;height: 20px;'}), required=False)
+    tags            = CharField(widget=widgets.TextInput(attrs={'style':'width:344px;height: 20px;'}), required=False)
     number_of_articles = IntegerField(required=False)
-    project         = ModelChoiceField(queryset=Project.objects.all(), widget=BootstrapDropdownWidget())
-    category        = ModelChoiceField(queryset=Category.objects.all(), widget=BootstrapDropdownWidget(), required=False)
-    article_type    = ModelChoiceField(queryset=ArticleType.objects.all(), widget=BootstrapDropdownWidget())
+    project         = ModelChoiceField(queryset=Project.objects.all(), widget=BootstrapDropdownWidget(), empty_label='Select a Project')
+    category        = ModelChoiceField(queryset=Category.objects.all(), widget=BootstrapDropdownWidget(), required=False, empty_label='Select a Category')
+    article_type    = ModelChoiceField(queryset=ArticleType.objects.all(), widget=BootstrapDropdownWidget(), empty_label='Select a Content Type')
     priority        = ChoiceField(choices = ARTICLE_PRIORITIES, widget=BootstrapDropdownWidget(), required=False)
+    
     # def clean_project(self):
     #     # Looksup project by name and creates it if it doesnt exist
     #     return self.clean_lookup('project', Project, auto_create=True)
@@ -66,11 +67,12 @@ class WriteArticleForm(ModelForm):
     def __init__(self, *args, **kwargs):  
         self.user = kwargs.pop('user')
         super(WriteArticleForm, self).__init__(*args, **kwargs)
+
 class KeywordInlineFormSet(InlineFormSet):
     model = Keyword
     extra = 1
 
-class KeywordInlineForm(Form):
+class QuantityForm(Form):
     num = IntegerField(min_value=0)
 
 class ActionUserID(Form):

@@ -9,7 +9,7 @@ from django.views.generic import FormView #, TemplateView,
 from articles.models import Article, Keyword, Project, ArticleAction, ACTIONS, Contact, \
 PublishingOutlet, PublishingOutletConfiguration
 from django.views.generic.base import View, TemplateResponseMixin
-from articles.forms import RejectForm, ArticleForm, KeywordInlineFormSet, KeywordInlineForm, \
+from articles.forms import RejectForm, ArticleForm, KeywordInlineFormSet, QuantityForm, \
 TagArticleForm, ActionUserID, AssignToForm, UserForm, UserProfileForm, NoteForm,\
 TagForm, ProjectForm, ACT_SUBMIT, ACT_REJECT, ACT_APPROVE, \
 ACT_ASSIGN_WRITER, ACT_ASSIGN_REVIEWER, ACT_CLAIM_REVIEWER, ACT_RELEASE, ACT_PUBLISH, ACT_COMMENT, \
@@ -709,7 +709,7 @@ class ChangeModeView(FormView, ArticleList):
 
 class AjaxKeywordInlineForm(FormView):
     template_name = "articles/keyword_inline_form.html"
-    form_class = KeywordInlineForm
+    form_class = QuantityForm
 
     def form_invalid(self, form):
         return self.render_to_response(self.get_context_data(form=form))
