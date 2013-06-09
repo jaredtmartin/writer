@@ -366,6 +366,8 @@ class Article(ValidationModelMixin, models.Model):
             return "Assigned to %s" % assigned.full_name
         elif availability == "Nobody":
             return "Unavailable"
+        elif availability=="":
+            return "Available"
         else:
             return "Available to %s" % availability
     @property

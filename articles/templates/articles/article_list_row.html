@@ -1,6 +1,4 @@
 {% load actions %}
-{% load can_edit %}
-{% load assignment %}
 <tr id="article-{{article.id}}" {% if article.deleted %}style="display:none;" {% endif %}class="article" onMouseOver="$('#article-{{article.id}}-actions').show();" onMouseOut="$('#article-{{article.id}}-actions').hide();">
 	<td><input <input type="checkbox" class="action-select" value="{{article.id}}" name="action-select" onClick="toggleRows($('#article-{{article.id}}'));"/></td>
 	<td class="project-column">{% if article.project %} <a href="{% url article_list %}?project={{article.project.name}}"> {{article.project.name.title}} </a>{% else %}None{% endif %}</td>
@@ -18,7 +16,4 @@
 	    	{% endif %}
 	    {% endfor %}
 	</td>
-	{% with btn_size='btn-small' %}
-		<td>{% show_actions %}</td>
-	{% endwith %}
 </tr>

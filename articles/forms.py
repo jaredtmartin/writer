@@ -78,6 +78,9 @@ class QuantityForm(Form):
 class ActionUserID(Form):
     user = ModelChoiceField(queryset=User.objects.all())
 
+class AvailabilityForm(Form):
+    name = CharField(max_length=64)
+
 class TagForm(Form):
     tags = CharField(max_length=128)
 

@@ -29,7 +29,20 @@
       </ul>                                                
     </div>
   </div> -->
-  {% include "articles/action_bar.html"%}
+  <div class="row-fluid">
+    {% include "articles/action_bar.html"%}
+    <div id="show-columns-selector" class="btn-group span2">
+      <a class="btn dropdown-toggle btn-small" data-toggle="dropdown">Show More <span class="caret"></span></a>
+      <ul class="dropdown-menu">
+        <li class="show-columns-option" id="reviewer-option"><a tabindex="-1" onclick="showColumn('reviewer');">Reviewer</a></li>
+        <li class="show-columns-option" id="type-option"><a tabindex="-1" onclick="showColumn('type');">Type</a></li>
+        <li class="show-columns-option" id="category-option"><a tabindex="-1" onclick="showColumn('category');">Category</a></li>
+        <li class="show-columns-option" id="length-option"><a tabindex="-1" onclick="showColumn('length');">Length</a></li>
+        <li class="show-columns-option" id="priority-option"><a tabindex="-1" onclick="showColumn('priority');">Priority</a></li>
+        <li class="show-columns-option" id="tags-option"><a tabindex="-1" onclick="showColumn('tags');">Tags</a></li>
+      </ul>
+    </div>
+  </div>
   <div class="block-fluid table-sorting" style="border:none; ">
     <form class="actions-form" id="actions-form" method="post" action="">{% csrf_token %}
       <table cellpadding="0" cellspacing="0" width="100%" class="table" id="articles">
@@ -44,21 +57,7 @@
             <th class="column-header category-column">Category</th>
             <th class="column-header length-column">Length</th>
             <th class="column-header priority-column">Priority</th>
-            <th class="column-header tags-column">Tags</th>
-            <th>
-              <div id="show-columns-selector" class="btn-group">
-                <a class="btn dropdown-toggle btn-small" data-toggle="dropdown">Show More <span class="caret"></span></a>
-                <ul class="dropdown-menu">
-                  <li class="show-columns-option" id="reviewer-option"><a tabindex="-1" onclick="showColumn('reviewer');">Reviewer</a></li>
-                  <li class="show-columns-option" id="type-option"><a tabindex="-1" onclick="showColumn('type');">Type</a></li>
-                  <li class="show-columns-option" id="category-option"><a tabindex="-1" onclick="showColumn('category');">Category</a></li>
-                  <li class="show-columns-option" id="length-option"><a tabindex="-1" onclick="showColumn('length');">Length</a></li>
-                  <li class="show-columns-option" id="priority-option"><a tabindex="-1" onclick="showColumn('priority');">Priority</a></li>
-                  <li class="show-columns-option" id="tags-option"><a tabindex="-1" onclick="showColumn('tags');">Tags</a></li>
-                </ul>
-              </div>
-
-            </th>         
+            <th class="column-header tags-column">Tags</th>       
           </tr>
         </thead>
         <tbody>
@@ -72,9 +71,16 @@
 
   <script>
     function showColumn(section_id){
+        var index = window.hidden_columns.indexOf(section_id);
+        window.hidden_columns.splice(index, 1);
         $('.'+section_id+'-column').show();
         $('#'+section_id+'-option').hide();
         if($('.show-columns-option:visible').length == 0){$('#show-columns-selector').hide();}
+    }
+    function hideColumns(){
+      for (var i = 0; i<window.hidden_columns.length; i++){
+        $('.'+ window.hidden_columns[i] + '-column').hide();
+      }
     }
     $(document).ready(function(){
       window.row_selector='.article';
@@ -82,13 +88,39 @@
       checked_rows = $('.article :checked');
       if (checked_rows.length>0){selectRows(checked_rows.parents('tr'));}
       $('.tag-popover').popover(html=true, content=$('#tag-popover-html'));
-      $('.category-column').hide();
-      $('.length-column').hide();
-      $('.priority-column').hide();
-      $('.tags-column').hide();
-      $('.type-column').hide();
-      $('.reviewer-column').hide();
+      window.hidden_columns = ['category','length','priority','tags','type','reviewer'];
+      hideColumns();
+      window.codeForRows=[hideColumns];
     });
+    function make_unavailable(assignment){
+      if (assignment=="writer"){
+        doActionOnArticles('{% url make_unavailable_to_writers %}');
+      }else{
+        doActionOnArticles('{% url make_unavailable_to_reviewers %}');
+      }
+    }
+    function make_available(assignment){
+      if (assignment=="writer"){
+        doActionOnArticles('{% url make_available_to_all_writers %}');
+      }else{
+        doActionOnArticles('{% url make_available_to_all_reviewers %}');
+      }
+    }
+    function make_available_to(assignment, name){
+      if (assignment=="writer"){
+        doActionOnArticles('{% url make_available_to_writer %}', undefined, "&name="+name);
+      }else{
+        doActionOnArticles('{% url make_available_to_reviewer %}', undefined, "&name="+name);
+      }
+    }
+    function assign_user(assignment, id, name){
+      if (assignment=="writer"){
+        doActionOnArticles('{% url assign_to_writer %}', undefined, "&user="+id);
+      }else{
+        doActionOnArticles('{% url assign_to_reviewer %}', undefined, "&user="+id);
+      }
+        
+    }
   </script>
   <div id="tag-modal" class="modal hide fade">
     <div class="modal-header">

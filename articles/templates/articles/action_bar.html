@@ -1,49 +1,15 @@
-<div id="action_bar" class="">    
-  {% if user.get_profile.is_requester %}  
-    <div class="btn-group">
-      <button id="assign-writer-button" class="btn btn-small dropdown-toggle" data-toggle="dropdown">Assign Writer <span class="caret"></span></button>
-      <ul class="dropdown-menu">
-        {% for writer_relationship in user.writers %}
-          {% with writer=writer_relationship.writer %}
-            <li>
-        		  <a tabindex="-1" href="#" onclick="assignArticles('{% url assign_writer %}', {{writer.id}}); return false;">{{writer.full_name}}</a>
-          	</li>
-          {% endwith %}
-        {% endfor %}
-      </ul>
-    </div>
+{% load assignment %}
+<div id="action_bar" class="span10">    
+  {% if user.get_profile.is_requester %} 
 
-    <div class="btn-group">
-      <button id="assign-reviewer-button" class="btn btn-small dropdown-toggle" data-toggle="dropdown">Assign Reviewer <span class="caret"></span></button>
-      <ul class="dropdown-menu">
-        {% for reviewer_relationship in user.reviewers %}
-          {% with reviewer=reviewer_relationship.reviewer %}
-            <li>
-              <a tabindex="-1" href="#" onclick="assignArticles('{% url assign_reviewer %}', {{reviewer.id}}); return false;">{{reviewer.full_name}}</a>
-            </li>
-          {% endwith %}
-        {% endfor %}
-      </ul>
-    </div>
-
-    <div class="btn-group">
+<!--      <div class="btn-group">
       <button id="tag-button" class="btn btn-small" onclick="showTagModal();return false;" >Tag</button>
-    </div>
-
+    </div> 
+-->
+    {% assignment_widget "writer" %}
+    {% assignment_widget "reviewer" %}
     <div class="btn-group">
       <button id="delete-button" class="btn btn-small" onclick="showDeleteModal();return false;" >Delete</button>
-    </div>
-
-    <div class="btn-group">
-      <button id="release-button" class="btn btn-small" onclick="doActionOnArticles('{% url initial_release_articles %}');return false;" >Release</button>
-    </div>
-
-    <div class="btn-group">
-      <button id="remove-writer-button" class="btn btn-small" onclick="doActionOnArticles('{% url release_writer %}');return false;" >Remove Writer</button>
-    </div>
-
-    <div class="btn-group">
-      <button id="remove-reviewer-button" class="btn btn-small" onclick="doActionOnArticles('{% url release_reviewer %}');return false;" >Remove Reviewer</button>
     </div>
   {% elif user.is_writer %}
 

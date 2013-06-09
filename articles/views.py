@@ -15,7 +15,7 @@ TagForm, ProjectForm, ACT_SUBMIT, ACT_REJECT, ACT_APPROVE, \
 ACT_ASSIGN_WRITER, ACT_ASSIGN_REVIEWER, ACT_CLAIM_REVIEWER, ACT_RELEASE, ACT_PUBLISH, ACT_COMMENT, \
 ACT_REMOVE_REVIEWER, ACT_REMOVE_WRITER, ACT_CLAIM_WRITER, UserModeForm, \
 STATUS_NEW, STATUS_RELEASED, STATUS_ASSIGNED, STATUS_SUBMITTED, STATUS_APPROVED, \
-STATUS_PUBLISHED, WriteArticleForm, WRITER_MODE, REVIEWER_MODE
+STATUS_PUBLISHED, WriteArticleForm, WRITER_MODE, REVIEWER_MODE, AvailabilityForm
 #from django_actions.views import ActionViewMixin
 from django.http import Http404
 import pickle
@@ -425,86 +425,48 @@ class ArticleActionsView(TemplateResponseMixin, View):
         self.initial_action_qty=len(qs)
         if self.initial_action_qty:
             qs=self.filter_action_queryset(qs)
-            self.final_action_qty=qs.count()
             return qs
         else:
-            self.final_action_qty=0
             return []
 
-    def create_action(self):
-        raise NotImplemented
-    def update_articles(self, qs, action):
-        # qs= self.model_class.objects.filter(pk__in=list(qs)) # This converts the queryset so objects will not 'slip out'
-        qs.update(**{'last_action':action})
-        if self.next_status: qs.update(status=self.next_status)
-        try:qs.update(**{self.get_action_property_name():action})
-        except :pass
+    def create_action(self):pass
+    def update_articles(self):
+        if self.action:
+            self.action_qs.update(**{'last_action':action})
+            if self.next_status: self.action_qs.update(status=self.next_status)
+            try:self.action_qs.update(**{self.get_action_property_name():action})
+            except :pass
     def get_action_verb(self):
         return self.action_verb
     def get_past_tense_action_verb(self):
         if self.past_tense_action_verb: return self.past_tense_action_verb
         return str(self.get_action_verb())+'ed'
     def send_result_messages(self):
-        if self.final_action_qty==0:
+        if len(self.action_qs)==0:
             messages.error(self.request, 'The articles selected are not ready to be %s or are not yours to %s.' % (self.get_past_tense_action_verb(), self.get_action_verb()))
         elif self.action_form and not self.action_form.is_valid():
             messages.error(self.request, 'You did not select a valid value to complete this action.')
-        elif self.final_action_qty < self.initial_action_qty:
-            messages.warning(self.request, 'Only %i of the articles selected have been %s. Please verify the operation and that you have authority to make this change on the remaining articles.' % (self.final_action_qty, self.get_past_tense_action_verb()))
-        else: messages.success(self.request, 'All (%s) of the articles have been %s sucessfully' % (self.final_action_qty, self.get_past_tense_action_verb()))
+        elif len(self.action_qs) < self.initial_action_qty:
+            messages.warning(self.request, 'Only %i of the articles selected have been %s. Please verify the operation and that you have authority to make this change on the remaining articles.' % (len(self.action_qs), self.get_past_tense_action_verb()))
+        else: messages.success(self.request, 'All (%s) of the articles have been %s sucessfully' % (len(self.action_qs), self.get_past_tense_action_verb()))
     def post(self, request, *args, **kwargs):
         self.action_qs = self.get_action_queryset()
         form_class=self.get_action_form_class()
-        if self.action_qs and self.final_action_qty > 0:
+        if self.action_qs and len(self.action_qs) > 0:
             if form_class: self.action_form=form_class(self.request.POST)
             else: self.action_form=None
             if (not self.action_form) or self.action_form.is_valid():
-                # qs=list(self.action_qs)  # Save it as a list so we don't lose track of the ones we change due to the filters
                 self.action=self.create_action()
-                if self.action:
-                    self.update_articles(self.action_qs, self.action)
-                    self.action_qs=self.get_requested_objects()
+                self.update_articles()
+                # self.action_qs=self.get_requested_objects()
         elif form_class: self.action_form=form_class()
         self.send_result_messages()
         context = self.get_context_data()
-        # print "context = %s" % str(context)
         return self.render_to_response(context)
     def get_context_data(self, **kwargs):
         kwargs.update({'as_row':True,'object_list':self.action_qs})
         return kwargs
-############################### Assign Action ##################################
 
-class AssignArticles(ArticleActionsView):
-    action_form_class = AssignToForm
-    action_verb="assign"
-    def create_action(self):
-        return self.request.user
-    def filter_action_queryset(self, qs):
-        return self.filter_by_owner(qs, self.request.user)
-    def update_articles(self, qs, action):
-        if self.next_status: qs.update(status=self.next_status)
-        qs.update(last_action=action)
-    def create_action(self):
-        return ArticleAction.objects.create(
-            user=self.request.user, 
-            code=self.action_type, 
-            author=self.action_form.cleaned_data['user'],
-        )
-class AssignWriterToArticles(AssignArticles):
-    action_type=ACT_ASSIGN_WRITER
-    next_status = STATUS_ASSIGNED
-    def filter_action_queryset(self, qs):
-        return qs.filter(writer__isnull=True)
-    def update_articles(self, qs, action):
-        super(AssignWriterToArticles, self).update_articles(qs, action)
-        qs.update(writer=self.action_form.cleaned_data['user'])
-class AssignReviewerToArticles(AssignArticles):
-    action_type=ACT_ASSIGN_REVIEWER
-    def filter_action_queryset(self, qs):
-        return qs.filter(reviewer__isnull=True)
-    def update_articles(self, qs, action):
-        super(AssignReviewerToArticles, self).update_articles(qs, action)
-        qs.update(reviewer=self.action_form.cleaned_data['user'])
 ############################### Reject Actions ####################################
 
 class RejectArticles(ArticleActionsView):
@@ -521,13 +483,13 @@ class RejectArticles(ArticleActionsView):
             comment=self.action_form.cleaned_data['reason'],
         )
         return action
-    def update_articles(self, qs, action):
+    def update_articles(self):
         super(RejectArticles, self).update_articles(qs, action)
         qs= Article.objects.filter(pk__in=list(qs.values_list('id', flat=True)))
-        qs.update(submitted=None)
-        qs.update(approved=None)
+        self.action_qs.update(submitted=None)
+        self.action_qs.update(approved=None)
         # print "qs[0].writer = %s" % str(qs[0].writer)
-        qs.update(writer=None)
+        self.action_qs.update(writer=None)
         # print "qs[0].writer = %s" % str(qs[0].writer)
 ############################### Approve Actions ####################################
 
@@ -543,7 +505,7 @@ class ApproveArticles(ArticleActionsView):
             user=self.request.user, 
             code=ACT_APPROVE
         )
-############################### submit Actions ####################################
+############################### Submit Actions ####################################
 
 class SubmitArticles(ArticleActionsView):
     action_verb="submit"
@@ -561,7 +523,7 @@ class SubmitArticles(ArticleActionsView):
             author=self.request.user, 
             code=ACT_SUBMIT, 
         )
-############################### delete Actions ####################################
+############################### Delete Actions ####################################
 
 class DeleteArticles(ArticleActionsView):
     action_verb="delete"
@@ -573,105 +535,194 @@ class DeleteArticles(ArticleActionsView):
         return qs
     def create_action(self):
         return True
-    def update_articles(self, qs, action):
+    def update_articles(self):
         l=list(qs.values_list('id', flat=True))
         self.action_qs=Article.all_objects.filter(pk__in=l)
         super(DeleteArticles, self).update_articles(qs, action)
         
-############################### Release Actions ################################
 
-class ReleaseArticles(ArticleActionsView):
+# ## TO BE REMOVED ##
+# class ReleaseArticles(ArticleActionsView):
+#     action_verb="release"
+#     past_tense_action_verb="released"
+#     def create_action(self):
+#         return ArticleAction.objects.create(
+#             user=self.request.user, 
+#             code=self.action_type, 
+#         )
+# ## TO BE REMOVED ##
+# class ReleaseWriter(ReleaseArticles):
+#     action_type=ACT_REMOVE_WRITER
+#     next_status = STATUS_RELEASED
+#     def filter_action_queryset(self, qs):
+#         qs = qs.filter(writer__isnull=False, submitted__isnull=True)
+#         return self.filter_by_owner_or_writer(qs, self.request.user)
+#     def update_articles(self):
+#         print "Redy to change status"
+#         print "self.next_status = %s" % str(self.next_status)
+#         if self.next_status: self.action_qs.update(status=self.next_status)
+#         self.action_qs.update(writer=None)
+
+# ## TO BE REMOVED ##
+# class ReleaseReviewer(ReleaseArticles):
+#     action_type=ACT_REMOVE_REVIEWER 
+#     def filter_action_queryset(self, qs):
+#         qs = qs.filter(reviewer__isnull=False, approved__isnull=True)
+#         return self.filter_by_owner_or_reviewer(qs, self.request.user)
+#     def update_articles(self):
+#         self.action_qs.update(reviewer=None)
+
+## TO BE REMOVED ##
+# class InitialRelease(ReleaseArticles):
+#     action_type=ACT_RELEASE
+#     next_status = STATUS_RELEASED
+#     action_property_name="released"
+#     def filter_action_queryset(self, qs):
+#         qs = qs.filter(released=False)
+#         return self.filter_by_owner(qs, self.request.user)
+#     def update_articles(self):
+#         if self.next_status: self.action_qs.update(status=self.next_status)
+#         self.action_qs.update(released=True)
+
+
+############################### Claim Actions ##################################
+class Claim(ArticleActionsView):
+    action_verb="claim"
+
+class ClaimAsWriter(Claim):
+    def update_articles(self):
+        self.action_qs.update(writer=self.request.user)
+    def filter_action_queryset(self, qs):
+        return qs.filter(writer__isnull=True)   ### Need to filter by availabilty
+
+class ClaimAsReviewer(Claim):
+    def update_articles(self):
+        self.action_qs.update(reviewer=self.request.user)
+    def filter_action_queryset(self, qs):
+        return qs.filter(writer__isnull=True)   ### Need to filter by availabilty
+############################### Release Actions ##################################
+class Release(ArticleActionsView):
     action_verb="release"
     past_tense_action_verb="released"
-    def create_action(self):
-        return ArticleAction.objects.create(
-            user=self.request.user, 
-            code=self.action_type, 
-        )
-class ReleaseWriter(ReleaseArticles):
-    action_type=ACT_REMOVE_WRITER
-    next_status = STATUS_RELEASED
+class ReleaseAsWriter(Release):
     def filter_action_queryset(self, qs):
         qs = qs.filter(writer__isnull=False, submitted__isnull=True)
         return self.filter_by_owner_or_writer(qs, self.request.user)
-    def update_articles(self, qs, action):
-        print "Redy to change status"
-        print "self.next_status = %s" % str(self.next_status)
-        if self.next_status: qs.update(status=self.next_status)
-        qs.update(writer=None)
-
-class ReleaseReviewer(ReleaseArticles):
-    action_type=ACT_REMOVE_REVIEWER 
+    def update_articles(self):
+        self.action_qs.update(writer=None)
+class ReleaseAsReviewer(Release):
     def filter_action_queryset(self, qs):
-        qs = qs.filter(reviewer__isnull=False, approved__isnull=True)
-        return self.filter_by_owner_or_reviewer(qs, self.request.user)
-    def update_articles(self, qs, action):
-        qs.update(reviewer=None)
+        qs = qs.filter(reviewer__isnull=False, submitted__isnull=True)
+        return self.filter_by_owner_or_writer(qs, self.request.user)
+    def update_articles(self):
+        self.action_qs.update(reviewer=None)
+############################### Available Actions ##################################
 
-class InitialRelease(ReleaseArticles):
-    action_type=ACT_RELEASE
-    next_status = STATUS_RELEASED
-    action_property_name="released"
+class MakeAvailable(ArticleActionsView):
+    action_verb="make available"
+    past_tense_action_verb="made available"
     def filter_action_queryset(self, qs):
-        qs = qs.filter(released=False)
         return self.filter_by_owner(qs, self.request.user)
-    def update_articles(self, qs, action):
-        if self.next_status: qs.update(status=self.next_status)
-        qs.update(released=True)
 
-############################### Claim Actions ##################################
-class ClaimArticles(ArticleActionsView):
-    action_verb="claim"
-    def create_action(self):
-        return ArticleAction.objects.create(
-            user=self.request.user, 
-            code=self.action_type, 
-            author=self.request.user,
-        )
-    def update_articles(self, qs, action):
-        if self.next_status: qs.update(status=self.next_status)
-        qs.update(last_action=action)
-class ClaimArticlesAsWriter(ClaimArticles):
-    action_property_name="writer"
-    action_type = ACT_CLAIM_WRITER
-    next_status = STATUS_ASSIGNED
+class MakeAvailableTo(MakeAvailable):
+    action_form_class = AvailabilityForm
+
+class MakeAvailableToAllWriters(MakeAvailable):
+    def update_articles(self):
+        self.action_qs.update(writer_availability="")
+        self.action_qs.update(writer=None)
+class MakeAvailableToWriter(MakeAvailableTo):
+    def update_articles(self):
+        self.action_qs.update(writer_availability=self.action_form.cleaned_data['name'])
+        self.action_qs.update(writer=None)
+
+class MakeAvailableToReviewer(MakeAvailableTo):
+    def update_articles(self):
+        self.action_qs.update(reviewer_availability=self.action_form.cleaned_data['name'])
+        self.action_qs.update(reviewer=None)
+class MakeAvailableToAllReviewers(MakeAvailable):
+    def update_articles(self):
+        self.action_qs.update(reviewer_availability="")
+        self.action_qs.update(reviewer=None)
+############################### Unavailable Actions ##################################
+class MakeUnavailable(ArticleActionsView):
+    action_verb="make unavailable"
+    past_tense_action_verb="made unavailable"
     def filter_action_queryset(self, qs):
-        return qs.filter(writer__isnull=True, released = True)
-    def update_articles(self, qs, action):
-        super(ClaimArticlesAsWriter, self).update_articles(qs, action)
-        qs.update(writer=action.author)
-class ClaimArticlesAsReviewer(ClaimArticles):
-    action_property_name="reviewer"
-    action_type = ACT_CLAIM_REVIEWER
+        return self.filter_by_owner(qs, self.request.user)
+class MakeUnavailableToWriters(MakeUnavailable):
+    def update_articles(self):
+        self.action_qs.update(writer_availability="Nobody")
+        self.action_qs.update(writer=None)
+class MakeUnavailableToReviewers(MakeUnavailable):
+    def update_articles(self):
+        self.action_qs.update(reviewer_availability="Nobody")
+        self.action_qs.update(reviewer=None)
+############################### Assign Actions ##################################
+class Assign(ArticleActionsView):
+    action_form_class = AssignToForm
+    action_verb="assign"
     def filter_action_queryset(self, qs):
-        return qs.filter(reviewer__isnull=True, released = True)
-    def update_articles(self, qs, action):
-        super(ClaimArticlesAsReviewer, self).update_articles(qs, action)
-        qs.update(reviewer=action.author)
+        return self.filter_by_owner(qs, self.request.user)
+class AssignToWriter(Assign):
+    def update_articles(self):
+        self.action_qs.update(writer=self.action_form.cleaned_data['user'])
+class AssignToReviewer(Assign):
+    def update_articles(self):
+        self.action_qs.update(reviewer=self.action_form.cleaned_data['user'])
+
+
+
+# ## TO BE REMOVED ##
+# class ClaimArticles(ArticleActionsView):
+#     action_verb="claim"
+#     def create_action(self):
+#         return ArticleAction.objects.create(
+#             user=self.request.user, 
+#             code=self.action_type, 
+#             author=self.request.user,
+#         )
+#     def update_articles(self):
+#         if self.next_status: self.action_qs.update(status=self.next_status)
+#         self.action_qs.update(last_action=action)
+# ## TO BE REMOVED ##
+# class ClaimArticlesAsWriter(ClaimArticles):
+#     action_property_name="writer"
+#     action_type = ACT_CLAIM_WRITER
+#     next_status = STATUS_ASSIGNED
+#     def filter_action_queryset(self, qs):
+#         return qs.filter(writer__isnull=True, released = True)
+#     def update_articles(self):
+#         super(ClaimArticlesAsWriter, self).update_articles(qs, action)
+#         self.action_qs.update(writer=action.author)
+# ## TO BE REMOVED ##
+# class ClaimArticlesAsReviewer(ClaimArticles):
+#     action_property_name="reviewer"
+#     action_type = ACT_CLAIM_REVIEWER
+#     def filter_action_queryset(self, qs):
+#         return qs.filter(reviewer__isnull=True, released = True)
+#     def update_articles(self):
+#         super(ClaimArticlesAsReviewer, self).update_articles(qs, action)
+#         self.action_qs.update(reviewer=action.author)
         
-############################### Tag Actions ####################################
-class TagArticles(ArticleActionsView):
-    action_verb="tag"
-    action_form_class = TagForm
-    past_tense_action_verb = 'tagged'
-    def filter_action_queryset(self, qs):
-        # Make sure user has permission to tag articles
-        return self.filter_by_owner(qs, self.request.user)
-    def create_action(self):
-        # if self.request.POST['append'] == 'true': tags=self.object._tags+self.action_form.cleaned_data['tags']
-        # else: tags=self.action_form.cleaned_data['tags']
-        return self.action_form.cleaned_data['tags']
-    def update_articles(self, qs, action):
-        for article in qs:
-            if self.request.POST['append']=='True': tags=article.tags
-            else: tags=[]
-            tags.append(action)
-            article.tags = tags
-            article.save()
-        # else:
-        #     qs.update(_tags=action)
-            #.add(*[x.pk for x in action]) # action actual is a list of tags, this will add them all at once.
-
+# ############################### Tag Actions ####################################
+# class TagArticles(ArticleActionsView):
+#     action_verb="tag"
+#     action_form_class = TagForm
+#     past_tense_action_verb = 'tagged'
+#     def filter_action_queryset(self, qs):
+#         # Make sure user has permission to tag articles
+#         return self.filter_by_owner(qs, self.request.user)
+#     def create_action(self):
+#         return self.action_form.cleaned_data['tags']
+#     def update_articles(self):
+#         for article in qs:
+#             if self.request.POST['append']=='True': tags=article.tags
+#             else: tags=[]
+#             tags.append(action)
+#             article.tags = tags
+#             article.save()
+       
 
 
 ################################################################################

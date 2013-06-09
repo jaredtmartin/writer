@@ -1,5 +1,6 @@
 @import "bootstrap.css";
 @import "bootstrap-responsive.css";
+#show-columns-selector{float:right;padding:5px;}
 [name$="DELETE"] { display: none; }
 .hidden-cell{
     display: none;

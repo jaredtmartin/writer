@@ -20,6 +20,24 @@
             $('#'+section_id+'-option').hide();
             if($('.add-details-option:visible').length == 0){$('#add-details-selector').hide();}
         }
+        function change_availability(group, value, status){
+            $('#id_'+group+"_availability").val(value);
+            $('#id_'+group+'-status').html(status);
+            $('#id_'+group).val("");
+        }
+        function make_unavailable(assignment){
+            change_availability(assignment, "Nobody", "Unavailable");
+        }
+        function make_available(assignment){
+            change_availability(assignment, "", "Available");
+        }
+        function make_available_to(assignment, name){
+            change_availability(assignment, name, "Available to "+name);
+        }
+        function assign_user(group, id, name){
+            $('#id_'+group).val(id);
+            $('#id_'+group+'-status').html("Assigned to "+name);
+        }
     </script>
     
 {% endblock %}
