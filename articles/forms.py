@@ -31,7 +31,7 @@ class FormWithLookupsMixin(object):
 class ArticleForm(ModelForm):
     class Meta:
         model = Article
-        fields = ('language','style',  'purpose','price','referrals','expires','priority','category','tags', 'minimum','article_type','project','title','body', 'owner','number_of_articles','article_notes','review_notes','description')
+        fields = ('writer','reviewer','writer_availability','reviewer_availability', 'language', 'style',  'purpose','price','referrals','expires','priority','category','tags', 'minimum','article_type','project','title','body', 'owner','number_of_articles','article_notes','review_notes','description')
     # lookup_field_names = {'project':'name'}
     # project = CharField(required=False)
     article_notes   = CharField(widget=widgets.Textarea(attrs={'class':'notes'}), required=False)

@@ -7,7 +7,7 @@
 	<script type='text/javascript' src='{{STATIC_URL}}js/actions.js'></script>
   <script type='text/javascript' src='{{STATIC_URL}}js/ajax.js'></script>
 {% endblock js %}
-{% block content %}   
+{% block content %}
   <!--  <div class="span2 filteroptions" style="border:none;background-color:#F9F9F9; height:100%;">
     <div class="block-fluid" style="border:none; height:100%;">
       <ul class="sList" style="border:none; height:355px;">
@@ -36,12 +36,29 @@
         <thead>
           <tr class="table-header-row">
             <th width="3%"><input type="checkbox" id="checkall" name="checkall" onClick="toggleMaster();" /></th>
-            <th class="column-header">Project</th>
-            <th class="column-header">Keywords</th>
-            <th class="column-header">Writer</th>
-            <th class="column-header">Tags</th>
-            <th class="column-header">Status</th>  
-            <th></th>         
+            <th class="column-header project-column">Project</th>
+            <th class="column-header keyword-column">Keywords</th>
+            <th class="column-header writer-column">Writer</th>
+            <th class="column-header reviewer-column">Reviewer</th>
+            <th class="column-header type-column">Type</th>
+            <th class="column-header category-column">Category</th>
+            <th class="column-header length-column">Length</th>
+            <th class="column-header priority-column">Priority</th>
+            <th class="column-header tags-column">Tags</th>
+            <th>
+              <div id="show-columns-selector" class="btn-group">
+                <a class="btn dropdown-toggle btn-small" data-toggle="dropdown">Show More <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li class="show-columns-option" id="reviewer-option"><a tabindex="-1" onclick="showColumn('reviewer');">Reviewer</a></li>
+                  <li class="show-columns-option" id="type-option"><a tabindex="-1" onclick="showColumn('type');">Type</a></li>
+                  <li class="show-columns-option" id="category-option"><a tabindex="-1" onclick="showColumn('category');">Category</a></li>
+                  <li class="show-columns-option" id="length-option"><a tabindex="-1" onclick="showColumn('length');">Length</a></li>
+                  <li class="show-columns-option" id="priority-option"><a tabindex="-1" onclick="showColumn('priority');">Priority</a></li>
+                  <li class="show-columns-option" id="tags-option"><a tabindex="-1" onclick="showColumn('tags');">Tags</a></li>
+                </ul>
+              </div>
+
+            </th>         
           </tr>
         </thead>
         <tbody>
@@ -54,13 +71,24 @@
   </div>
 
   <script>
-      $(document).ready(function(){
-          window.row_selector='.article';
-          showOrHideActionBar();
-          checked_rows = $('.article :checked');
-          if (checked_rows.length>0){selectRows(checked_rows.parents('tr'));}
-          $('.tag-popover').popover(html=true, content=$('#tag-popover-html'));
-      });
+    function showColumn(section_id){
+        $('.'+section_id+'-column').show();
+        $('#'+section_id+'-option').hide();
+        if($('.show-columns-option:visible').length == 0){$('#show-columns-selector').hide();}
+    }
+    $(document).ready(function(){
+      window.row_selector='.article';
+      showOrHideActionBar();
+      checked_rows = $('.article :checked');
+      if (checked_rows.length>0){selectRows(checked_rows.parents('tr'));}
+      $('.tag-popover').popover(html=true, content=$('#tag-popover-html'));
+      $('.category-column').hide();
+      $('.length-column').hide();
+      $('.priority-column').hide();
+      $('.tags-column').hide();
+      $('.type-column').hide();
+      $('.reviewer-column').hide();
+    });
   </script>
   <div id="tag-modal" class="modal hide fade">
     <div class="modal-header">

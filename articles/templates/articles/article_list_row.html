@@ -1,17 +1,23 @@
 {% load actions %}
+{% load can_edit %}
+{% load assignment %}
 <tr id="article-{{article.id}}" {% if article.deleted %}style="display:none;" {% endif %}class="article" onMouseOver="$('#article-{{article.id}}-actions').show();" onMouseOut="$('#article-{{article.id}}-actions').hide();">
 	<td><input <input type="checkbox" class="action-select" value="{{article.id}}" name="action-select" onClick="toggleRows($('#article-{{article.id}}'));"/></td>
-	<td>{% if article.project %} <a href="{% url article_list %}?project={{article.project.name}}"> {{article.project.name.title}} </a>{% else %}None{% endif %}</td>
-	<td><a href="{{article.get_absolute_url}}">{{article.keywords}}</a></td>
-	<td>{{article.writer.full_name}}</td>
-	<td id="tag-cell-{{article.pk}}">
+	<td class="project-column">{% if article.project %} <a href="{% url article_list %}?project={{article.project.name}}"> {{article.project.name.title}} </a>{% else %}None{% endif %}</td>
+	<td class="keyword-column"><a href="{{article.get_absolute_url}}">{{article.keywords}}</a></td>
+	<td class="writer-column">{{article.writer_status}}</td>
+	<td class="reviewer-column">{{article.reviewer_status}}</td>
+	<td class="type-column">{{article.type}}</td>
+	<td class="category-column">{{article.category}}</td>
+	<td class="length-column">{{article.length}}</td>
+	<td class="priority-column">{{article.priority}}</td>
+	<td class="tags-column" id="tag-cell-{{article.pk}}">
 	    {% for tag in article.tags_as_list %}
 	    	{% if tag %}
 				<a class="badge badge-small btn-tag" href="{% url article_list %}?q={{tag}}" title="Click here to see all articles with this tag">{{tag}}</a>
 	    	{% endif %}
 	    {% endfor %}
 	</td>
-	<td><span class="status-{{article.status.lower}}">{{article.status}}</span></td>
 	{% with btn_size='btn-small' %}
 		<td>{% show_actions %}</td>
 	{% endwith %}

@@ -361,6 +361,23 @@ class Article(ValidationModelMixin, models.Model):
     reviewer_availability = models.CharField(max_length=64, blank=True, default="Nobody")
     objects = ArticleManager()
     all_objects = models.Manager()
+    def get_assignment_status(self, assigned, availability):
+        if assigned:
+            return "Assigned to %s" % assigned.full_name
+        elif availability == "Nobody":
+            return "Unavailable"
+        else:
+            return "Available to %s" % availability
+    @property
+    def can_edit(self, user):
+        if (user.is_staff or user == self.owner) and self.submitted ==False: return True
+        if user == self.writer and not self.approved and not self.rejected: return True
+        if user == self.reviewer and self.submitted: return True
+        return False
+    @property
+    def writer_status(self): return self.get_assignment_status(self.writer, self.writer_availability)
+    @property
+    def reviewer_status(self): return self.get_assignment_status(self.reviewer, self.reviewer_availability)
 
     @classmethod
     def filter_valid(self, qs, request):
@@ -419,21 +436,22 @@ class Article(ValidationModelMixin, models.Model):
             contact_names = [c.name for c in self.owner.writers.filter(worker=user)]
             if self.writer == user and not self.submitted:
                 actions += [ACT_REMOVE_WRITER, ACT_SUBMIT]
+                actions += [ACT_SUBMIT]
             elif not self.writer and (self.writer_availability in contact_names or not self.writer_availability):
                 actions += [ACT_CLAIM_WRITER]
         elif user.mode == REQUESTER_MODE and user==self.owner:
             if   status == STATUS_APPROVED:     actions.append(ACT_PUBLISH)
             elif status == STATUS_SUBMITTED:    actions += [ACT_REJECT, ACT_APPROVE]
-            elif status == STATUS_ASSIGNED:     actions.append(ACT_REMOVE_WRITER)
-            elif status == STATUS_RELEASED:     actions.append(ACT_ASSIGN_WRITER)
-            else:                               actions.append(ACT_RELEASE)
+            # elif status == STATUS_ASSIGNED:     actions.append(ACT_REMOVE_WRITER)
+            # elif status == STATUS_RELEASED:     actions.append(ACT_ASSIGN_WRITER)
+            # else:                               actions.append(ACT_RELEASE)
             if not self.approved:
                 actions += [ACT_DELETE]
-                if self.reviewer:
-                    actions += [ACT_REMOVE_REVIEWER]
-                else:
-                    actions += [ACT_ASSIGN_REVIEWER]
-            actions += (ACT_TAG, )
+                # if self.reviewer:
+                #     actions += [ACT_REMOVE_REVIEWER]
+                # else:
+                #     actions += [ACT_ASSIGN_REVIEWER]
+            # actions += (ACT_TAG, )
         elif user.mode == REVIEWER_MODE:
             contact_names = [c.name for c in self.owner.reviewers.filter(worker=user)]
             if self.reviewer == user and status == STATUS_SUBMITTED:

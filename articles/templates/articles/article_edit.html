@@ -2,6 +2,7 @@
 {% load actions %}
 {% load project_list %}
 {% load can_edit %}
+{% load assignment %}
 {% load help_icon %}
 {% block head %}
     <script src="{{STATIC_URL}}js/ckeditor/ckeditor.js"></script>
@@ -53,60 +54,12 @@
                 <div class="row-fluid">
                     <div class="span1 input-label">Writer:</div>
                     <div class="span3">
-                        <div class="btn-group">
-                            <a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">
-                                {% if article.writer %}{{article.writer.full_name}}{% else %}{{article.status}}{% endif %} <span class="caret"></span>
-                            </a>
-                            <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu">
-                                <li><a tabindex="-1" href="#">Unavailable</a></li>
-                                <li><a tabindex="-1" href="#">Available</a></li>
-                                <li class="dropdown-submenu">
-                                    <a tabindex="-1" href="#">Make Available to</a>
-                                    <ul class="dropdown-menu">
-                                        {% for writer in user.writers %}
-                                            <li><a tabindex="-1" href="#">{{writer.writer.full_name}}</a></li>
-                                        {% endfor %}
-                                    </ul>
-                                </li>
-                                <li class="dropdown-submenu">
-                                    <a tabindex="-1" href="#">Assign to</a>
-                                    <ul class="dropdown-menu">
-                                        {% for writer in user.writers %}
-                                            <li><a tabindex="-1" href="#">{{writer.writer.full_name}}</a></li>
-                                        {% endfor %}
-                                    </ul>
-                                </li>
-                            </ul>
-                        </div>
+                        {% assignment_widget "writer" %}
                         {% help_icon "Select to which writers the article(s) is/are assigned." %}
                     </div>
                     <div class="span1 input-label">Reviewer:</div>
                     <div class="span3">
-                        <div class="btn-group">
-                            <a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">
-                                Available to Taiye's Group <span class="caret"></span>
-                            </a>
-                            <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu">
-                                <li><a tabindex="-1" href="#">Unavailable</a></li>
-                                <li><a tabindex="-1" href="#">Available</a></li>
-                                <li class="dropdown-submenu">
-                                    <a tabindex="-1" href="#">Make Available to</a>
-                                    <ul class="dropdown-menu">
-                                        {% for reviewer in user.reviewers %}
-                                            <li><a tabindex="-1" href="#">{{reviewer.reviewer.full_name}}</a></li>
-                                        {% endfor %}
-                                    </ul>
-                                </li>
-                                <li class="dropdown-submenu">
-                                    <a tabindex="-1" href="#">Assign to</a>
-                                    <ul class="dropdown-menu">
-                                        {% for reviewer in user.reviewers %}
-                                            <li><a tabindex="-1" href="#">{{reviewer.reviewer.full_name}}</a></li>
-                                        {% endfor %}
-                                    </ul>
-                                </li>
-                            </ul>
-                        </div>
+                        {% assignment_widget "reviewer" %}
                         {% help_icon "Select to which reviewers the article(s) is/are assigned." %}
                     </div>
                     <div class="span1 input-label">Priority:</div>
