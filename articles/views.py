@@ -425,6 +425,7 @@ class ArticleActionsView(TemplateResponseMixin, View):
         self.initial_action_qty=len(qs)
         if self.initial_action_qty:
             qs=self.filter_action_queryset(qs)
+            self.final_qty = qs.count()
             return qs
         else:
             return []
@@ -442,23 +443,23 @@ class ArticleActionsView(TemplateResponseMixin, View):
         if self.past_tense_action_verb: return self.past_tense_action_verb
         return str(self.get_action_verb())+'ed'
     def send_result_messages(self):
-        if len(self.action_qs)==0:
+        if self.final_qty==0:
             messages.error(self.request, 'The articles selected are not ready to be %s or are not yours to %s.' % (self.get_past_tense_action_verb(), self.get_action_verb()))
         elif self.action_form and not self.action_form.is_valid():
             messages.error(self.request, 'You did not select a valid value to complete this action.')
-        elif len(self.action_qs) < self.initial_action_qty:
-            messages.warning(self.request, 'Only %i of the articles selected have been %s. Please verify the operation and that you have authority to make this change on the remaining articles.' % (len(self.action_qs), self.get_past_tense_action_verb()))
-        else: messages.success(self.request, 'All (%s) of the articles have been %s sucessfully' % (len(self.action_qs), self.get_past_tense_action_verb()))
+        elif self.final_qty < self.initial_action_qty:
+            messages.warning(self.request, 'Only %i of the articles selected have been %s. Please verify the operation and that you have authority to make this change on the remaining articles.' % (self.final_qty, self.get_past_tense_action_verb()))
+        else: messages.success(self.request, 'All (%s) of the articles have been %s sucessfully' % (self.final_qty, self.get_past_tense_action_verb()))
     def post(self, request, *args, **kwargs):
         self.action_qs = self.get_action_queryset()
         form_class=self.get_action_form_class()
-        if self.action_qs and len(self.action_qs) > 0:
+        if self.action_qs and self.final_qty > 0:
             if form_class: self.action_form=form_class(self.request.POST)
             else: self.action_form=None
             if (not self.action_form) or self.action_form.is_valid():
                 self.action=self.create_action()
                 self.update_articles()
-                # self.action_qs=self.get_requested_objects()
+                self.action_qs=self.get_requested_objects()
         elif form_class: self.action_form=form_class()
         self.send_result_messages()
         context = self.get_context_data()
@@ -593,13 +594,14 @@ class ClaimAsWriter(Claim):
     def update_articles(self):
         self.action_qs.update(writer=self.request.user)
     def filter_action_queryset(self, qs):
-        return qs.filter(writer__isnull=True)   ### Need to filter by availabilty
+        return qs.filter(Q(writer_availability__in=self.request.user.writing_contacts)|Q(writer_availability=""))
 
 class ClaimAsReviewer(Claim):
     def update_articles(self):
         self.action_qs.update(reviewer=self.request.user)
     def filter_action_queryset(self, qs):
-        return qs.filter(writer__isnull=True)   ### Need to filter by availabilty
+        return qs.filter(Q(reviewer_availability__in=self.request.user.reviewing_contacts)|Q(reviewer_availability=""))
+
 ############################### Release Actions ##################################
 class Release(ArticleActionsView):
     action_verb="release"

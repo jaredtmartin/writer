@@ -1,8 +1,13 @@
+{% load can_do %}
 {% for action in actions %}
   {% if action == "Claimed by Writer" %}
-    <button class="btn {{btn_size}}" onclick="doActionOnArticles('{% url claim_articles_as_writer %}',{{article.id}});return false;" >Claim</button>
+    {% if user|can_claim_to_write:article %}
+      <button class="btn {{btn_size}}" onclick="doActionOnArticles('{% url claim_as_writer %}',{{article.id}});return false;" >Claim</button>
+    {% endif %}
   {% elif action == "Claimed by Reviewer" %}
-    <button class="btn {{btn_size}}" onclick="doActionOnArticles('{% url claim_articles_as_reviewer %}',{{article.id}});return false;" >Claim</button>
+    {% if user|can_claim_to_review:article %}
+      <button class="btn {{btn_size}}" onclick="doActionOnArticles('{% url claim_as_reviewer %}',{{article.id}});return false;" >Claim</button>
+    {% endif %}
   {% elif action == "Assigned to Writer" %}
     <div class="btn-group">
       <button class="btn  {{btn_size}} dropdown-toggle" data-toggle="dropdown">Assign Writer <span class="caret"></span></button>
@@ -38,9 +43,9 @@
   {% elif action == "Released" %}
     <button class="btn {{btn_size}}" onclick="doActionOnArticles('{% url initial_release_articles %}',{{article.id}});return false;" >Release</button>
   {% elif action == 'Removed Writer' %}
-    <button class="btn {{btn_size}}" onclick="doActionOnArticles('{% url release_writer %}',{{article.id}});return false;" >Remove Writer</button>
+    <button class="btn {{btn_size}}" onclick="doActionOnArticles('{% url release_as_writer %}',{{article.id}});return false;" >Release</button>
   {% elif action == 'Removed Reviewer' %}
-    <button class="btn {{btn_size}}" onclick="doActionOnArticles('{% url release_reviewer %}',{{article.id}});return false;" >Remove Reviewer</button>
+    <button class="btn {{btn_size}}" onclick="doActionOnArticles('{% url release_as_reviewer %}',{{article.id}});return false;" >Release</button>
   {% elif action == 'Approved' %}
     <button class="btn {{btn_size}}" onclick="doActionOnArticles('{% url approve_articles %}',{{article.id}});return false;" >Approve</button>
   {% elif action == 'Rejected' %}

@@ -248,7 +248,27 @@ User.reviews_for = property(user_reviews_for)
 def user_reviewers(self):
     return self.contacts_as_requester.filter(confirmation=True, position=REVIEWER_POSITION)
 User.reviewers = property(user_reviewers)
-
+def user_writing_contacts(self):
+    return list(set([c.name for c in self.contacts_as_worker.filter(position=WRITER_POSITION)]))
+User.writing_contacts = property(user_writing_contacts)
+def user_reviewing_contacts(self):
+    return list(set([c.name for c in self.contacts_as_worker.filter(position=REVIEWER_POSITION)]))
+User.reviewing_contacts = property(user_reviewing_contacts)
+def user_articles_available_to_write(self):
+    return Article.objects.filter(Q(writer_availability__in=self.writing_contacts)|Q(writer_availability=""))
+User.articles_available_to_write = property(user_articles_available_to_write)
+def user_articles_available_to_review(self):
+    return Article.objects.filter(Q(reviewer_availability__in=self.reviewing_contacts)|Q(reviewer_availability=""))
+User.articles_available_to_review = property(user_articles_available_to_review)
+def user_in_writing_mode(self):
+    if self.mode == WRITER_MODE:return True
+User.in_writing_mode = property(user_in_writing_mode) 
+def user_in_reviewing_mode(self):
+    if self.mode == REVIEWER_MODE:return True
+User.in_reviewing_mode = property(user_in_reviewing_mode) 
+def user_in_requester_mode(self):
+    if self.mode == REQUESTER_MODE:return True
+User.in_requester_mode = property(user_in_requester_mode) 
 # def user_outlets(self):
 #     return self.relationships_as_requester.filter(confirmed=True, reviewer__isnull=False)
 # User.outlets = property(user_outlets)
@@ -447,8 +467,8 @@ class Article(ValidationModelMixin, models.Model):
             # elif status == STATUS_ASSIGNED:     actions.append(ACT_REMOVE_WRITER)
             # elif status == STATUS_RELEASED:     actions.append(ACT_ASSIGN_WRITER)
             # else:                               actions.append(ACT_RELEASE)
-            if not self.approved:
-                actions += [ACT_DELETE]
+            # if not self.approved:
+                # actions += [ACT_DELETE]
                 # if self.reviewer:
                 #     actions += [ACT_REMOVE_REVIEWER]
                 # else:
