@@ -1,5 +1,7 @@
 @import "bootstrap.css";
 @import "bootstrap-responsive.css";
+#show-columns-selector{float:right;padding:5px;}
+[name$="DELETE"] { display: none; }
 .hidden-cell{
     display: none;
 }
@@ -140,7 +142,7 @@ li.alert{
     margin-left: 0;
 }
 .notes{
-    width:100%;
+    width:90%;
     height:30px;
 }
 .btn-success{

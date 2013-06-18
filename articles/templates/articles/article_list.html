@@ -145,6 +145,8 @@
     <div class="modal-body">
       <p>Please provide a brief explanation for rejecting the article.</p>
       <input id="reject_input">
+      <p><input type="checkbox" name="return_to_writer" id="id_return_to_writer" /> Return the article to the writer? Otherwise the content will be erased and the article will be made available to other writers.</p>
+      
     </div>
     <div class="modal-footer">
       <a href="#" class="btn btn-primary" onclick="rejectArticle('{% url reject_articles%}', window.article_id);return false;">Save</a>

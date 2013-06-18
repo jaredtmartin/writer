@@ -17,8 +17,8 @@ function deselectRows(rows){
     showOrHideActionBar();
 }
 function showOrHideActionBar(){
-    if ($(window.row_selector+' :checked').length>0){$('#action_bar').slideDown();}
-    else {$('#action_bar').slideUp();}
+    if ($(window.row_selector+' :checked').length>0){$('#action_bar').show();}
+    else {$('#action_bar').hide();}
 }
 function updateMasterCheckbox(){
     value=($(window.row_selector+' :checkbox:not(:checked)').length==0);

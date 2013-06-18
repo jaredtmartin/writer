@@ -1,5 +1,5 @@
 from articles.models import *
-from django.forms import ModelForm, DateField, ValidationError, ChoiceField, IntegerField, Form, \
+from django.forms import ModelForm, DateField, ValidationError, BooleanField, ChoiceField, IntegerField, Form, \
     ModelChoiceField, CharField, ModelMultipleChoiceField, widgets
 from extra_views import InlineFormSet
 from articles.widgets import SelectWithFlexibleOptionLabels, BootstrapDropdownWidget, BootstrapSplitDropdownWidget, BootstrapDropdownWidgetWithPlus
@@ -86,6 +86,7 @@ class TagForm(Form):
 
 class RejectForm(Form):
     reason = CharField(max_length=128)
+    return_to_writer = BooleanField()
 
 class NoteForm(Form):
     note = CharField(max_length=128)

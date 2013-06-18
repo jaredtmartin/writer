@@ -458,7 +458,7 @@ class Article(ValidationModelMixin, models.Model):
             contact_names = [c.name for c in self.owner.writers.filter(worker=user)]
             if self.writer == user and not self.submitted:
                 actions += [ACT_REMOVE_WRITER, ACT_SUBMIT]
-                actions += [ACT_SUBMIT]
+
             elif not self.writer and (self.writer_availability in contact_names or not self.writer_availability):
                 actions += [ACT_CLAIM_WRITER]
         elif user.mode == REQUESTER_MODE and user==self.owner:

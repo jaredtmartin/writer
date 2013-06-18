@@ -9,7 +9,7 @@
     <script type="text/javascript">
         $().ready(function() {
             $( "#id_expires" ).datepicker();
-            {% if user|can_edit:article %}
+            {% if article.pk and user|can_edit:article %}
                 CKEDITOR.replace("id_body", {"filebrowserWindowWidth": 940, "width": 835, "filebrowserWindowHeight": 725, "filebrowserBrowseUrl": "/ckeditor/browse/", "filebrowserUploadUrl": "/ckeditor/upload/", "toolbar": "Full", "height": 291});
             {% endif %} 
             $('.help').tooltip()
@@ -192,12 +192,14 @@
                     <div class="span1 input-label">Length:</div>
                     <div class="span3">{{ article.minimum }}</div>
                 </div>
-                {% for keyword in article.keyword_set.all %}
-                    <div class="row-fluid">
-                        <div class="span1 input-label">Keyword:</div>
-                        <div class="span2">{{keyword.keyword}} (x{{ keyword.times }})</div>
+
+                <div class="row-fluid">
+                    <div class="span12">
+                        {% with inlines.0 as inline %}
+                            {% include "articles/edit_article_keywords_form.html" %}
+                        {% endwith %}
                     </div>
-                {% endfor %}
+                </div>
                 {% if user == article.writer and article.article_notes%}
                     <div class="row-fluid">
                         <div class="span1 input-label">Notes to Writer</div>
@@ -259,7 +261,7 @@
                     {% show_edit_page_actions %}
                 </div>
             </div>
-            {% if user|can_edit:article %}
+            {% if article.pk and user|can_edit:article %}
                 <div class="row-fluid">
                     <div class="span12"><legend>Content:</legend></div>
                 </div>

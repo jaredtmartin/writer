@@ -25,19 +25,22 @@ def assignment_widget(context, group):
 		else:
 			status = "Unavailable"
 			assigned_to = None
-			available_to = ""
+			available_to = "Nobody"
 	else:
 		assignee_list = get_assignee_list(user.reviewers)
 		available_list = get_available_list(user.reviewers)
 		if article:
 			assigned_to = article.reviewer
 			available_to = article.reviewer_availability
+			print "available_to(1) = %s" % str(available_to)
 			status = article.reviewer_status
 		else:
 			status = "Unavailable"
 			assigned_to = None
-			available_to = ""
+			available_to = "Nobody"
+			print "available_to(2) = %s" % str(available_to)
 	if as_list: status=group.title()
+	print "available_to = %s" % str(available_to)
 	return {
 		'assignee_list':assignee_list, 
 		'user':user, 

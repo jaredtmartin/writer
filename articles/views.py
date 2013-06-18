@@ -258,7 +258,7 @@ class ArticleUpdate(FormWithUserMixin, LoginRequiredMixin, UpdateWithInlinesView
     inlines = [KeywordInlineFormSet]
     success_url = reverse_lazy('article_list')
     def get_form_class(self):
-        if self.request.user == self.object.owner: 
+        if self.request.user == self.object.owner and self.request.user.in_requester_mode: 
             print "making an articleForm"
             return ArticleForm
         else: 
@@ -433,9 +433,9 @@ class ArticleActionsView(TemplateResponseMixin, View):
     def create_action(self):pass
     def update_articles(self):
         if self.action:
-            self.action_qs.update(**{'last_action':action})
+            self.action_qs.update(**{'last_action':self.action})
             if self.next_status: self.action_qs.update(status=self.next_status)
-            try:self.action_qs.update(**{self.get_action_property_name():action})
+            try:self.action_qs.update(**{self.get_action_property_name():self.action})
             except :pass
     def get_action_verb(self):
         return self.action_verb
@@ -474,23 +474,34 @@ class RejectArticles(ArticleActionsView):
     action_verb="reject"
     action_form_class = RejectForm
     next_status = STATUS_RELEASED
+    action_property_name = "XXX" # This is to disable automatic assigning of property. We'll do this ourself.
     def filter_action_queryset(self, qs):
         qs=qs.filter(submitted__isnull=False, approved__isnull=True)
         return self.filter_by_owner_or_reviewer(qs, self.request.user)
     def create_action(self):
-        action = ArticleAction.objects.create(
-            user=self.request.user, 
-            code=ACT_REJECT, 
-            comment=self.action_form.cleaned_data['reason'],
-        )
-        return action
+        self.authors = [User.objects.get(pk=w) for w in self.action_qs.values_list('writer', flat=True)]
+        print "self.authors = %s" % str(self.authors)
+        for author in self.authors:
+            action = ArticleAction.objects.create(
+                user=self.request.user, 
+                code=ACT_REJECT, 
+                comment=self.action_form.cleaned_data['reason'],
+                author=author,
+            )
+            self.action_qs.filter(writer=author).update(rejected=action)
     def update_articles(self):
-        super(RejectArticles, self).update_articles(qs, action)
-        qs= Article.objects.filter(pk__in=list(qs.values_list('id', flat=True)))
+        super(RejectArticles, self).update_articles()
+        self.action_qs = Article.objects.filter(pk__in=list(self.action_qs.values_list('id', flat=True)))
         self.action_qs.update(submitted=None)
         self.action_qs.update(approved=None)
         # print "qs[0].writer = %s" % str(qs[0].writer)
-        self.action_qs.update(writer=None)
+        if self.action_form.cleaned_data['return_to_writer']: 
+            pass
+        else:
+            self.action_qs.update(writer=None)
+            self.action_qs.update(content="")
+            self.action_qs.update(title="")
+
         # print "qs[0].writer = %s" % str(qs[0].writer)
 ############################### Approve Actions ####################################
 
@@ -592,12 +603,14 @@ class Claim(ArticleActionsView):
 
 class ClaimAsWriter(Claim):
     def update_articles(self):
+        super(ClaimAsWriter, self).update_articles()
         self.action_qs.update(writer=self.request.user)
     def filter_action_queryset(self, qs):
         return qs.filter(Q(writer_availability__in=self.request.user.writing_contacts)|Q(writer_availability=""))
 
 class ClaimAsReviewer(Claim):
     def update_articles(self):
+        super(ClaimAsReviewer, self).update_articles()
         self.action_qs.update(reviewer=self.request.user)
     def filter_action_queryset(self, qs):
         return qs.filter(Q(reviewer_availability__in=self.request.user.reviewing_contacts)|Q(reviewer_availability=""))
@@ -606,17 +619,20 @@ class ClaimAsReviewer(Claim):
 class Release(ArticleActionsView):
     action_verb="release"
     past_tense_action_verb="released"
+    next_status = STATUS_RELEASED
 class ReleaseAsWriter(Release):
     def filter_action_queryset(self, qs):
         qs = qs.filter(writer__isnull=False, submitted__isnull=True)
         return self.filter_by_owner_or_writer(qs, self.request.user)
     def update_articles(self):
+        super(ReleaseAsWriter, self).update_articles()
         self.action_qs.update(writer=None)
 class ReleaseAsReviewer(Release):
     def filter_action_queryset(self, qs):
         qs = qs.filter(reviewer__isnull=False, submitted__isnull=True)
         return self.filter_by_owner_or_writer(qs, self.request.user)
     def update_articles(self):
+        super(ReleaseAsReviewer, self).update_articles()
         self.action_qs.update(reviewer=None)
 ############################### Available Actions ##################################
 
@@ -631,19 +647,23 @@ class MakeAvailableTo(MakeAvailable):
 
 class MakeAvailableToAllWriters(MakeAvailable):
     def update_articles(self):
+        super(MakeAvailableToAllWriters, self).update_articles()
         self.action_qs.update(writer_availability="")
         self.action_qs.update(writer=None)
 class MakeAvailableToWriter(MakeAvailableTo):
     def update_articles(self):
+        super(MakeAvailableToWriter, self).update_articles()
         self.action_qs.update(writer_availability=self.action_form.cleaned_data['name'])
         self.action_qs.update(writer=None)
 
 class MakeAvailableToReviewer(MakeAvailableTo):
     def update_articles(self):
+        super(MakeAvailableToReviewer, self).update_articles()
         self.action_qs.update(reviewer_availability=self.action_form.cleaned_data['name'])
         self.action_qs.update(reviewer=None)
 class MakeAvailableToAllReviewers(MakeAvailable):
     def update_articles(self):
+        super(MakeAvailableToAllReviewers, self).update_articles()
         self.action_qs.update(reviewer_availability="")
         self.action_qs.update(reviewer=None)
 ############################### Unavailable Actions ##################################
@@ -654,10 +674,12 @@ class MakeUnavailable(ArticleActionsView):
         return self.filter_by_owner(qs, self.request.user)
 class MakeUnavailableToWriters(MakeUnavailable):
     def update_articles(self):
+        super(MakeUnavailableToWriters, self).update_articles()
         self.action_qs.update(writer_availability="Nobody")
         self.action_qs.update(writer=None)
 class MakeUnavailableToReviewers(MakeUnavailable):
     def update_articles(self):
+        super(MakeUnavailableToReviewers, self).update_articles()
         self.action_qs.update(reviewer_availability="Nobody")
         self.action_qs.update(reviewer=None)
 ############################### Assign Actions ##################################
@@ -668,9 +690,11 @@ class Assign(ArticleActionsView):
         return self.filter_by_owner(qs, self.request.user)
 class AssignToWriter(Assign):
     def update_articles(self):
+        super(AssignToWriter, self).update_articles()
         self.action_qs.update(writer=self.action_form.cleaned_data['user'])
 class AssignToReviewer(Assign):
     def update_articles(self):
+        super(AssignToReviewer, self).update_articles()
         self.action_qs.update(reviewer=self.action_form.cleaned_data['user'])
 
 

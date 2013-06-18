@@ -1,6 +1,6 @@
 <div class="btn-group">
     <a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">
-        <span id="id_{{group}}-status">{{status}}</span> <span class="caret"></span>
+        <span id="id_{{group}}-status">{{status}} </span> <span class="caret"></span>
     </a>
     <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu">
         <li><a tabindex="-1" id="{{group}}-unavailable-option" onclick="make_unavailable('{{group}}');return false;">Unavailable</a></li>
@@ -23,5 +23,5 @@
         </li>
     </ul>
 </div>
-<input id="id_{{group}}" name="{{group}}" type="hidden" value="2">
-<input id="id_{{group}}_availability" name="{{group}}_availability" type="hidden" value="2">
+<input id="id_{{group}}" name="{{group}}" type="hidden" value="{{assigned_to|default:""}}">
+<input id="id_{{group}}_availability" name="{{group}}_availability" type="hidden" value="{{available_to}}">

@@ -31,6 +31,7 @@ function showDeleteModal(article_id){
 function rejectArticle(url, article_id){
     $('#reject-modal').modal('hide');
     data = "&reason=" + $('#reject_input').val();
+    data += "&return_to_writer=" + $('#id_return_to_writer').val();
     doActionOnArticles(url, article_id, data);
 }
 function assignArticles(url, writer, article_id){
