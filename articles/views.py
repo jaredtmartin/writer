@@ -376,7 +376,6 @@ class ArticleActionsView(TemplateResponseMixin, View):
     pks=[]
     def filter_by_owner(self, qs, user):
         if not user.is_authenticated(): return qs.none()
-        user= user.pk
         if not self.request.user.is_staff: return qs.filter(owner_id=user.pk)
         else: return qs
     def filter_by_writer(self, qs, user):
