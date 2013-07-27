@@ -22,9 +22,12 @@ urlpatterns = patterns('',
     url(r'^accounts/logout/$', 'django.contrib.auth.views.logout_then_login', {'login_url': '/accounts/login/'}, name='logout'),
     url(r'^users/', include('articles.user_urls')),
     url(r'^$', redirect_to, {'url': '/articles/articles/'}),
+
 )
 
 if settings.DEBUG:
     urlpatterns += patterns('',
         (r'^media/(?P<path>.*)$', 'django.views.static.serve', {
         'document_root': settings.MEDIA_ROOT}))
+
+handler500 = 'articles.views.test500'

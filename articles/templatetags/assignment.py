@@ -16,8 +16,8 @@ def assignment_widget(context, group):
 		as_list=True
 		article=None
 	if group == 'writer':
-		assignee_list = get_assignee_list(user.writers)
-		available_list = get_available_list(user.writers)
+		assignee_list = get_assignee_list(user.writer_contacts)
+		available_list = get_available_list(user.writer_contacts)
 		if article:
 			assigned_to = article.writer
 			available_to = article.writer_availability
@@ -27,8 +27,8 @@ def assignment_widget(context, group):
 			assigned_to = None
 			available_to = "Nobody"
 	else:
-		assignee_list = get_assignee_list(user.reviewers)
-		available_list = get_available_list(user.reviewers)
+		assignee_list = get_assignee_list(user.reviewer_contacts)
+		available_list = get_available_list(user.reviewer_contacts)
 		if article:
 			assigned_to = article.reviewer
 			available_to = article.reviewer_availability
@@ -55,8 +55,8 @@ def assignment_widget(context, group):
 def assignment_list_widget(context, group):
 	user = context['request'].user
 	if group == 'writer':
-		assignee_list = get_assignee_list(user.writers)
-		available_list = get_available_list(user.writers)
+		assignee_list = get_assignee_list(user.writer_contacts)
+		available_list = get_available_list(user.writer_contacts)
 		if article:
 			assigned_to = article.writer
 			available_to = article.writer_availability
@@ -66,8 +66,8 @@ def assignment_list_widget(context, group):
 			assigned_to = None
 			available_to = ""
 	else:
-		assignee_list = get_assignee_list(user.reviewers)
-		available_list = get_available_list(user.reviewers)
+		assignee_list = get_assignee_list(user.reviewer_contacts)
+		available_list = get_available_list(user.reviewer_contacts)
 		if article:
 			assigned_to = article.reviewer
 			available_to = article.reviewer_availability

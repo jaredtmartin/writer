@@ -3,10 +3,6 @@
 {% block navbar %}
   <li><a href="{% url article_add %}">Add Article</a></li>
 {% endblock %}
-{% block js %}
-	<script type='text/javascript' src='{{STATIC_URL}}js/actions.js'></script>
-  <script type='text/javascript' src='{{STATIC_URL}}js/ajax.js'></script>
-{% endblock js %}
 {% block content %}
   <!--  <div class="span2 filteroptions" style="border:none;background-color:#F9F9F9; height:100%;">
     <div class="block-fluid" style="border:none; height:100%;">
@@ -69,7 +65,54 @@
       </table>
     </form>
   </div>
-
+  <div id="tag-modal" class="modal hide fade">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+      <h3>Change Tags</h3>
+    </div>
+    <div class="modal-body">
+      <p>List the tags for this article separated by commas.</p>
+      <input id="tag_input" name="tags" value="{{article.tags_as_str}}">
+    </div>
+    <div class="modal-footer">
+      <a href="#" class="btn btn-primary" onclick="saveTags();return false;">Save</a>
+      <a href="#" class="btn btn-primary" onclick="$('#tag-modal').modal('hide');">Cancel</a>
+    </div>
+  </div>
+  <div id="reject-modal" class="modal hide fade">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+      <h3>Reject Article</h3>
+    </div>
+    <div class="modal-body">
+      <p>Please provide a brief explanation for rejecting the article.</p>
+      <input id="reject_input">
+      <p><input type="checkbox" name="return_to_writer" id="id_return_to_writer" /> Return the article to the writer? Otherwise the content will be erased and the article will be made available to other writers.</p>
+      
+    </div>
+    <div class="modal-footer">
+      <a href="#" class="btn btn-primary" onclick="rejectArticle('{% url reject_articles%}', window.article_id);return false;">Save</a>
+      <a href="#" class="btn btn-primary" onclick="$('#reject-modal').modal('hide');">Cancel</a>
+    </div>
+  </div>
+  <div id="delete-modal" class="modal hide fade">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+      <h3>Delete Article</h3>
+    </div>
+    <div class="modal-body">
+      <p>Are you sure you want to delete this article?</p>
+    </div>
+    <div class="modal-footer">
+      <a href="#" class="btn btn-primary" onclick="$('#delete-modal').modal('hide');doActionOnArticles('{% url delete_articles %}');return false;">Yes</a>
+      <a href="#" class="btn btn-primary" onclick="$('#delete-modal').modal('hide');">No</a>
+    </div>
+  </div>
+{% endblock %}
+{% block js %}
+  <script type='text/javascript' src='{{STATIC_URL}}js/actions.js'></script>
+  <script type='text/javascript' src='{{STATIC_URL}}js/ajax.js'></script>
+    <script type = "text/javascript" src='{{STATIC_URL}}js/checkboxes.js'></script>
   <script>
     function showColumn(section_id){
         var index = window.hidden_columns.indexOf(section_id);
@@ -123,47 +166,4 @@
         
     }
   </script>
-  <div id="tag-modal" class="modal hide fade">
-    <div class="modal-header">
-      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-      <h3>Change Tags</h3>
-    </div>
-    <div class="modal-body">
-      <p>List the tags for this article separated by commas.</p>
-      <input id="tag_input" name="tags" value="{{article.tags_as_str}}">
-    </div>
-    <div class="modal-footer">
-      <a href="#" class="btn btn-primary" onclick="saveTags();return false;">Save</a>
-      <a href="#" class="btn btn-primary" onclick="$('#tag-modal').modal('hide');">Cancel</a>
-    </div>
-  </div>
-  <div id="reject-modal" class="modal hide fade">
-    <div class="modal-header">
-      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-      <h3>Reject Article</h3>
-    </div>
-    <div class="modal-body">
-      <p>Please provide a brief explanation for rejecting the article.</p>
-      <input id="reject_input">
-      <p><input type="checkbox" name="return_to_writer" id="id_return_to_writer" /> Return the article to the writer? Otherwise the content will be erased and the article will be made available to other writers.</p>
-      
-    </div>
-    <div class="modal-footer">
-      <a href="#" class="btn btn-primary" onclick="rejectArticle('{% url reject_articles%}', window.article_id);return false;">Save</a>
-      <a href="#" class="btn btn-primary" onclick="$('#reject-modal').modal('hide');">Cancel</a>
-    </div>
-  </div>
-  <div id="delete-modal" class="modal hide fade">
-    <div class="modal-header">
-      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-      <h3>Delete Article</h3>
-    </div>
-    <div class="modal-body">
-      <p>Are you sure you want to delete this article?</p>
-    </div>
-    <div class="modal-footer">
-      <a href="#" class="btn btn-primary" onclick="$('#delete-modal').modal('hide');doActionOnArticles('{% url delete_articles %}');return false;">Yes</a>
-      <a href="#" class="btn btn-primary" onclick="$('#delete-modal').modal('hide');">No</a>
-    </div>
-  </div>
-{% endblock %}
+{% endblock js %}

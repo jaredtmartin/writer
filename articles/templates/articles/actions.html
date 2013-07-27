@@ -12,7 +12,7 @@
     <div class="btn-group">
       <button class="btn  {{btn_size}} dropdown-toggle" data-toggle="dropdown">Assign Writer <span class="caret"></span></button>
       <ul class="dropdown-menu">
-        {% for writer_relationship in user.writers %}
+        {% for writer_relationship in user.writer_contracts %}
           {% with writer=writer_relationship.writer %}
             <li><a tabindex="-1" href="#" onclick="assignArticles('{% url assign_writer %}', {{writer.id}},{{article.id}}); return false;">{{writer}}</a></li>
           {% endwith %}
@@ -23,7 +23,7 @@
     <div class="btn-group">
       <button class="btn  {{btn_size}} dropdown-toggle" data-toggle="dropdown">Assign Reviewer <span class="caret"></span></button>
       <ul class="dropdown-menu">
-        {% for reviewer_relationship in user.reviewers %}
+        {% for reviewer_relationship in user.reviewer_contacts %}
           {% with reviewer=reviewer_relationship.reviewer %}
             <li><a tabindex="-1" href="#" onclick="assignArticles('{% url assign_reviewer %}', {{reviewer.id}},{{article.id}}); return false;">{{reviewer}}</a></li>
           {% endwith %}

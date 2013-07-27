@@ -234,20 +234,26 @@ def user_full_name(self):
     return "%s %s" % (self.first_name,self.last_name)
 User.full_name = property(user_full_name)
 def user_writers(self):
-    return self.contacts_as_requester.filter(confirmation=True, position=WRITER_POSITION)
+    return User.objects.filter(contacts_as_worker__position=WRITER_POSITION, contacts_as_worker__requester=self, contacts_as_worker__confirmation=True).distinct()
 User.writers = property(user_writers)
-def user_requesters(self):
+def user_writer_contacts(self):
+    return self.contacts_as_requester.filter(confirmation=True, position=WRITER_POSITION)
+User.writer_contacts = property(user_writer_contacts)
+def user_reviewers(self):
+    return User.objects.filter(contacts_as_worker__position=REVIEWER_POSITION, contacts_as_worker__requester=self, contacts_as_worker__confirmation=True).distinct()
+User.reviewers = property(user_reviewers)
+def user_requester_contacts(self):
     return self.contacts_as_worker.filter(confirmation=True)
-User.requesters = property(user_requesters)
+User.requester_contacts = property(user_requester_contacts)
 def user_writes_for(self):
     return self.contacts_as_worker.filter(confirmation=True, position=WRITER_POSITION)
 User.writes_for = property(user_writes_for)
 def user_reviews_for(self):
     return self.contacts_as_worker.filter(confirmation=True, position=REVIEWER_POSITION)
 User.reviews_for = property(user_reviews_for)
-def user_reviewers(self):
+def user_reviewer_contacts(self):
     return self.contacts_as_requester.filter(confirmation=True, position=REVIEWER_POSITION)
-User.reviewers = property(user_reviewers)
+User.reviewer_contacts = property(user_reviewer_contacts)
 def user_writing_contacts(self):
     return list(set([c.name for c in self.contacts_as_worker.filter(position=WRITER_POSITION)]))
 User.writing_contacts = property(user_writing_contacts)
@@ -269,6 +275,15 @@ User.in_reviewing_mode = property(user_in_reviewing_mode)
 def user_in_requester_mode(self):
     if self.mode == REQUESTER_MODE:return True
 User.in_requester_mode = property(user_in_requester_mode) 
+
+# def get_writers(self):
+#     return self.objects.filter(contacts_as_worker__position=WRITER_POSITION, contacts_as_worker__confirmation=True).distinct()
+# User.writers = property(get_writers) 
+# def get_reviewers(self):
+#     return self.objects.filter(contacts_as_worker__position=REVIEWER_POSITION, contacts_as_worker__confirmation=True).distinct()
+# User.reviewers = property(get_reviewers) 
+
+
 # def user_outlets(self):
 #     return self.relationships_as_requester.filter(confirmed=True, reviewer__isnull=False)
 # User.outlets = property(user_outlets)
@@ -455,7 +470,7 @@ class Article(ValidationModelMixin, models.Model):
         actions=[]
         if not user.is_authenticated(): return []
         if user.mode == WRITER_MODE:
-            contact_names = [c.name for c in self.owner.writers.filter(worker=user)]
+            contact_names = [c.name for c in self.owner.writer_contacts.filter(worker=user)]
             if self.writer == user and not self.submitted:
                 actions += [ACT_REMOVE_WRITER, ACT_SUBMIT]
 

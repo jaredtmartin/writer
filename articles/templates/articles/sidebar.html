@@ -1,61 +1,22 @@
 {% load addparam %}
-<form class="search_form" action="" method="GET">                 
-    <input type="text" placeholder="Search" class="search-query" value="{{q}}" name="q" id="search-input">
-    <a href="#" onclick="$('#search_form').submit();">
-        <i class="icon-remove"></i>
-    </a>
+<form class="navbar-search">
+  <div class="input-append">
+    <input type="text" class="span2 search-query search-query-rounded" placeholder="Search" id="search-query-1">
+    <button type="submit" class="btn" id="search-button"><span class="fui-search"></span></button>
+  </div>
 </form>
-<div class="accordion" id="accordion">
-    <h3><a class="aaccordion-toggle collapsed" data-parent="#aaccordion" href="#collapseOne">Dashboard</a> </h3>
-    <div class="group">
-        <h3>Articles</h3>
-        <div class="aaccordion-body">
-            <div class="aaccordion-inner"><a href="{% url article_list %}">All Articles</a></div>
-            <div class="aaccordion-inner"><xxxa href="{% url article_list %}">Unavailable</a></div>
-            <div class="aaccordion-inner"><a href="{% url article_list %}?status=Released">Available</a></div>
-            <div class="aaccordion-inner"><a href="{% url article_list %}?status=Assigned+to+Writer">Assigned</a></div>
-            <div class="aaccordion-inner"><xxxa href="{% url article_list %}?status=Assigned+to+Writer">Claimed</a></div>
-            <div class="aaccordion-inner"><a href="{% url article_list %}?last_action=Submitted">Submitted</a></div>
-            <div class="aaccordion-inner"><a href="{% url article_list %}?last_action=Approved">Approved</a></div>
-            <div class="aaccordion-inner"><a href="{% url article_list %}?last_action=Rejected">Rejected</a></div>
-            <div class="aaccordion-inner"><a href="{% url article_list %}?status=Published">Published</a></div>
-        </div>
-    </div>
-    {% if user.mode == 2 %}
-        <div class="group">
-            <h3>Writers</h3>
-            <div class="aaccordion-body">
-                <div class="aaccordion-inner"><a href="{% url writer_list %}">All Writers</a></div>
-                <div class="aaccordion-inner"><a href="{% url writer_list %}?status=mine">My Writers</a></div>
-                <div class="aaccordion-inner"><a href="{% url writer_list %}?status=requested">Writer Requests</a></div>
-                <div class="aaccordion-inner"><a href="{% url writer_list %}?status=unconfirmed">Unconfirmed Writers</a></div>
-                <div class="aaccordion-inner"><a href="{% url writer_list %}?status=other">Other Writers</a></div>
-            </div>
-        </div>
-        <div class="group">
-            <h3>Reviewers</h3>
-            <div class="aaccordion-body">
-                <div class="aaccordion-inner"><a href="{% url reviewer_list %}">All Reviewers</a></div>
-                <div class="aaccordion-inner"><a href="{% url reviewer_list %}?status=mine">My Reviewers</a></div>
-                <div class="aaccordion-inner"><a href="{% url reviewer_list %}?status=requested">Reviewer Requests</a></div>
-                <div class="aaccordion-inner"><a href="{% url reviewer_list %}?status=unconfirmed">Unconfirmed Reviewers</a></div>
-                <div class="aaccordion-inner"><a href="{% url reviewer_list %}?status=other">Other Reviewers</a></div>
-            </div>
-        </div>
-    {% else %}
-        <div class="group">
-            <h3>Requesters</h3>
-            <div class="aaccordion-body">
-                <div class="aaccordion-inner"><a href="{% url requester_list %}">All Requesters</a></div>
-                <div class="aaccordion-inner"><a href="{% url requester_list %}?status=mine">My Requesters</a></div>
-                {% if user.mode == 1 %}
-                    <div class="aaccordion-inner"><a href="{% url requester_list %}?status=requested">Requests for Writer</a></div>
-                {% else %}
-                    <div class="aaccordion-inner"><a href="{% url requester_list %}?status=requested">Requests for Reviewer</a></div>
-                {% endif %}
-                <div class="aaccordion-inner"><a href="{% url requester_list %}?status=unconfirmed">Unconfirmed Requesters</a></div>
-                <div class="aaccordion-inner"><a href="{% url requester_list %}?status=other">Other Requesters</a></div>
-            </div>
-        </div>
-    {% endif %}
-</div>
+
+<ul class="nav nav-list">
+  <li class="nav-header"><a href="#">Dashboard</a></li>
+  <li class="nav-header"><a href="#">Articles</a></li>
+  <li class="active"><a href="#">All Articles<span class="nav-counter">??</span></a></li>
+  <li><a href="#">Assigned<span class="nav-counter">??</span></a></li>
+  <li><a href="#">Available<span class="nav-counter">??</span></a></li>
+  <li><a href="#">Unavailable<span class="nav-counter">??</span></a></li>
+  <li><a href="#">Submitted<span class="nav-counter">??</span></a></li>
+  <li><a href="#">Rejected<span class="nav-counter">??</span></a></li>
+  <li><a href="#">Approved<span class="nav-counter">??</span></a></li>
+  <li><a href="#">Published<span class="nav-counter">??</span></a></li>
+  <li class="nav-header"><a href="#">Writers</a></li>
+  <li class="nav-header"><a href="#">Reviewers</a></li>
+</ul>

@@ -39,10 +39,10 @@ urlpatterns = patterns('',
 
     url(r'^user/mode/$',                        ChangeModeView.as_view(),       name='change_user_mode'),
 
-    # url(r'^user/hire/$',                        CreateRelationship.as_view(),   name='hire_user'),
-    # url(r'^user/apply/$',                       CreateRelationship.as_view(),   name='apply_user'),
-    # url(r'^user/reject/$',                      DeleteRelationship.as_view(),   name='reject_user'),
-    # url(r'^user/accept/$',                      ConfirmRelationship.as_view(),  name='accept_user'),
+    url(r'^user/hire/$',                        WriterList.as_view(),   name='hire_user'),
+    url(r'^user/apply/$',                       WriterList.as_view(),   name='apply_user'),
+    url(r'^user/reject/$',                      WriterList.as_view(),   name='reject_user'),
+    url(r'^user/accept/$',                      WriterList.as_view(),  name='accept_user'),
     
     # url(r'^requester/add/$',                    AddRequester.as_view(),         name='requester_add'),
     # url(r'^writer/add/$',                       AddWriter.as_view(),            name='writer_add'),

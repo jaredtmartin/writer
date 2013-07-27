@@ -6,21 +6,36 @@ Replace this with more appropriate tests for your application.
 """
 
 from django.test import TestCase, LiveServerTestCase
+from django.test.client import Client as TestClient
 from articles.models import Article, User, PublishingOutlet, PublishingOutletConfiguration, ArticleType, ArticleAction
 from django.template import Context
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.ui import Select
+from selenium.webdriver.support.ui import Select, WebDriverWait
+import os   
+import time
 # from selenium.webdriver.firefox.webdriver import WebDriver
 
 class BaseFunctionalTest(LiveServerTestCase):
     fixtures = ['initial_data.yaml', 'test_data.yaml']
     def setUp(self):
-        # self.browser = WebDriver()
         self.browser = webdriver.Firefox()
         self.browser.implicitly_wait(3)
+        # self.wait = WebDriverWait(self.browser, 10)
     def tearDown(self):
         self.browser.quit()
+    # def wait_for_jquery(self):
+    #     self.wait.until(self.browser.execute_script('return jQuery.active == 0'))
+    def login(self):
+        self.browser.get(self.live_server_url+'/accounts/login/')
+        # He fills in his username and password and hits return
+        self.browser.find_element_by_name('username').send_keys('requester')
+        password_field=self.browser.find_element_by_name('password')
+        password_field.send_keys('pass')
+        password_field.send_keys(Keys.RETURN)
+        # He sees the friendly welcome message in the top right corner with his name.
+        body = self.browser.find_element_by_tag_name('body')
+        self.assertIn('Hi Joe Requester!', body.text)
 
 class AdminTest(BaseFunctionalTest):
     def test_can_create_new_poll_via_admin_site(self):
@@ -123,7 +138,7 @@ class LoginTest(BaseFunctionalTest):
         self.browser.get(self.live_server_url)
         # He is greeted and gets the articles list
         body = self.browser.find_element_by_tag_name('body')
-        self.assertIn('Articles List', body.text)
+        self.assertIn('All Articles', body.text)
         # He sees a link to 'add' a new poll, so he clicks it
         login_link = self.browser.find_element_by_link_text('Log in')
         login_link.click()
@@ -136,10 +151,29 @@ class LoginTest(BaseFunctionalTest):
         password_field.send_keys('pass')
         password_field.send_keys(Keys.RETURN)
         # self.browser.find_element_by_id('login-submit').click()
-    def test_with_bad_username(self):
-        self.fail('Finish this test')
-    def test_with_bad_password(self):
-        self.fail('Finish this test')
+        body = self.browser.find_element_by_tag_name('body')
+        self.assertIn('Hi Joe Requester!', body.text)
+    # def test_with_bad_username(self):
+    #     self.fail('Finish this test')
+    # def test_with_bad_password(self):
+    #     self.fail('Finish this test')
+
+class ActionWorkflowTest(TestCase):
+    fixtures = ['initial_data.yaml', 'test_data.yaml']
+    def setUp(self):
+        self.testclient = TestClient()
+        response = self.testclient.post('/accounts/login/', {'username': 'requester', 'password': 'pass'})
+        self.fred=User.objects.get(username='fred')
+        self.writer= User.objects.get(username='writer')
+        self.requester= User.objects.get(username='requester')
+        self.article1 = Article.objects.get(pk=1)
+        self.article2 = Article.objects.get(pk=2)
+    def test_make_available(self):
+        self.assertTrue(True)
+        response = self.client.get(reverse('make_available_to_writer'))
+        
+
+
 # Keywords:
 # Fill keyword with "Austin Plumber"
 # Fill URL with "www.austinplumber.com"
@@ -245,7 +279,6 @@ class PublishingOutletTests(TestCase):
         self.assertEqual(list(self.fred.publishing_outlets.all()),[outlet1, outlet2, outlet3])
     # def fetch_the_module_for_an_outlet_and_run_action(self):
     #     outlet1=PublishingOutletConfiguration.objects.create(user=self.fred, outlet=self.facebook_outlet)
-        
 class ArticleTests(TestCase):
     fixtures = ['initial_data.yaml', 'test_data.yaml'] 
     def setUp(self):
@@ -354,4 +387,3 @@ class UserPropertiesTests(TestCase):
         self.assertEqual(self.requester.writers, [self.writer, self.fred])
     def test_requesters_property(self):
         self.assertEqual(self.writer.requesters, [self.requester])
-        

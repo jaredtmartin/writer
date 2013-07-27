@@ -21,10 +21,10 @@ def get_contact(position, me, user):
 	# Returns contact of the given type between the users or None is there is none.
 	# If position is Requester, it returns a tuple of contacts, the first for writer, second for reviewer
 	if position == 'Writer': 
-		try: return me.writers.filter(worker=user)[0]
+		try: return me.writer_contacts.filter(worker=user)[0]
 		except IndexError: return None
 	elif position == 'Reviewer':
-		try: return me.reviewers.filter(worker=user)[0]
+		try: return me.reviewer_contacts.filter(worker=user)[0]
 		except IndexError: return None
 	elif position == 'Requester':
 		if me.mode == WRITER_MODE:

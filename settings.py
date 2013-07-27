@@ -248,14 +248,15 @@ FACEBOOK_CANVAS_PAGE = 'https://apps.facebook.com/%s/' % FACEBOOK_APP_ID
 FACEBOOK_SCOPE = ['manage_pages']
 
 # If manage.py test was called, use SQLite
-# import sys
-# if 'test' in sys.argv:
-#     DATABASES = {
-#         'default': {
-#             'ENGINE': 'django.db.backends.sqlite3',
-#             'NAME': ('test_sqlite.db')
-#         }
-#     }
+import sys
+if 'test' in sys.argv:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': ('test_sqlite.db')
+        }
+    }
+    DEBUG = True
 # else:
 #     INSTALLED_APPS=INSTALLED_APPS+('debug_toolbar',)
 

@@ -7,7 +7,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormMi
 from django.views.generic.detail import DetailView, BaseDetailView# , SingleObjectMixin
 from django.views.generic import FormView #, TemplateView, 
 from articles.models import Article, Keyword, Project, ArticleAction, ACTIONS, Contact, \
-PublishingOutlet, PublishingOutletConfiguration
+PublishingOutlet, PublishingOutletConfiguration, WRITER_POSITION, REVIEWER_POSITION
 from django.views.generic.base import View, TemplateResponseMixin
 from articles.forms import RejectForm, ArticleForm, KeywordInlineFormSet, QuantityForm, \
 TagArticleForm, ActionUserID, AssignToForm, UserForm, UserProfileForm, NoteForm,\
@@ -17,7 +17,9 @@ ACT_REMOVE_REVIEWER, ACT_REMOVE_WRITER, ACT_CLAIM_WRITER, UserModeForm, \
 STATUS_NEW, STATUS_RELEASED, STATUS_ASSIGNED, STATUS_SUBMITTED, STATUS_APPROVED, \
 STATUS_PUBLISHED, WriteArticleForm, WRITER_MODE, REVIEWER_MODE, AvailabilityForm
 #from django_actions.views import ActionViewMixin
-from django.http import Http404
+from django.http import Http404, HttpResponseServerError
+from django.template import loader, Context
+import sys
 import pickle
 # from datetime import datetime
 from django.db.models import Q, F
@@ -28,6 +30,7 @@ from extra_views import UpdateWithInlinesView, CreateWithInlinesView
 import django_filters
 # from actions import *
 # from django import template
+from django.conf import settings
 
 VALID_STRING_LOOKUPS = ('exact','isnull','iexact', 'contains', 'icontains', 'startswith', 'istartswith', 'endswith', 'iendswith', 'search', 'regex', 'iregex')
 class LoginRequiredMixin(object):
@@ -159,7 +162,7 @@ class ArticleList(GetActionsMixin, SearchableListView):
     def get_context_data(self, **kwargs):
         kwargs['selected_tab']='articles'
         context = super(ArticleList, self).get_context_data(**kwargs)
-        print "context!!!!! = %s" % str(context)
+        # print "context!!!!! = %s" % str(context)
         return context
     def get_queryset(self):
         qs=super(ArticleList, self).get_queryset()
@@ -824,54 +827,53 @@ class UserList(SearchableListView):
 class WriterList(UserList):
     user_group='Writer'
     def get_all(self):
-        return User.objects.filter(relationships_as_writer__writer__isnull=False).exclude(pk=self.user.pk).distinct()
+        return User.objects.filter(Q(contacts_as_worker__position=WRITER_POSITION, contacts_as_worker__confirmation=True)|Q(userprofile__preferred_mode=WRITER_MODE)).exclude(pk=self.user.pk).distinct()
     def get_mine(self):
-        return User.objects.filter(relationships_as_writer__requester=self.user, relationships_as_writer__confirmed = True).distinct()
+        return User.objects.filter(contacts_as_worker__requester=self.user, contacts_as_worker__position=WRITER_POSITION, contacts_as_worker__confirmation = True).distinct()
     def get_unconfirmed(self):
-        return User.objects.filter(relationships_as_writer__requester=self.user, relationships_as_writer__confirmed = False, relationships_as_writer__created_by=self.user).distinct()
+        return User.objects.filter(contacts_as_worker__requester=self.user, contacts_as_worker__position=WRITER_POSITION, contacts_as_worker__confirmation = False, contacts_as_worker__created_by=self.user).distinct()
     def get_requested(self):
-        return User.objects.filter(relationships_as_writer__requester=self.user, relationships_as_writer__confirmed = False).exclude(relationships_as_writer__created_by=self.user).distinct()
+        return User.objects.filter(contacts_as_worker__requester=self.user, contacts_as_worker__confirmation = False).exclude(contacts_as_worker__created_by=self.user).distinct()
     def get_other(self):
-        return User.objects.filter(relationships_as_writer__writer__isnull=False).exclude(relationships_as_writer__requester=self.user).distinct()
+        return User.objects.filter(Q(contacts_as_worker__worker__isnull=False).exclude(contacts_as_worker__requester=self.user)|Q(userprofile__preferred_mode=WRITER_MODE)).distinct()
 
 class RequesterList(UserList):
     user_group='Requester'
     def get_all(self):
-        return User.objects.filter(relationships_as_requester__requester__isnull=False).exclude(pk=self.user.pk).distinct()
+        return User.objects.filter(contacts_as_requester__requester__isnull=False).exclude(pk=self.user.pk).distinct()
     def get_mine(self):
         if self.request.user.mode == WRITER_MODE:
-            return User.objects.filter(relationships_as_requester__writer=self.user, relationships_as_requester__confirmed = True).distinct()
+            return User.objects.filter(contacts_as_requester__worker=self.user, contacts_as_requester__confirmation = True).distinct()
         else:
-            return User.objects.filter(relationships_as_requester__reviewer=self.user, relationships_as_requester__confirmed = True).distinct()
+            return User.objects.filter(contacts_as_requester__reviewer=self.user, contacts_as_requester__confirmation = True).distinct()
     def get_unconfirmed(self):
         if self.request.user.mode == WRITER_MODE:
-            print "Chow"
-            return User.objects.filter(relationships_as_requester__writer=self.user, relationships_as_requester__confirmed = False, relationships_as_requester__created_by=self.user).distinct()
+            return User.objects.filter(contacts_as_requester__worker=self.user, contacts_as_requester__confirmation = False, contacts_as_requester__created_by=self.user).distinct()
         else:
-            return User.objects.filter(relationships_as_requester__reviewer=self.user, relationships_as_requester__confirmed = False, relationships_as_requester__created_by=self.user).distinct()
+            return User.objects.filter(contacts_as_requester__reviewer=self.user, contacts_as_requester__confirmation = False, contacts_as_requester__created_by=self.user).distinct()
     def get_requested(self):
         if self.request.user.mode == WRITER_MODE:
-            return User.objects.filter(relationships_as_requester__writer=self.user, relationships_as_requester__confirmed = False).exclude(relationships_as_requester__created_by=self.user).distinct()
+            return User.objects.filter(contacts_as_requester__worker=self.user, contacts_as_requester__confirmation = False).exclude(contacts_as_requester__created_by=self.user).distinct()
         else:
-            return User.objects.filter(relationships_as_requester__reviewer=self.user, relationships_as_requester__confirmed = False).exclude(relationships_as_requester__created_by=self.user).distinct()
+            return User.objects.filter(contacts_as_requester__reviewer=self.user, contacts_as_requester__confirmation = False).exclude(contacts_as_requester__created_by=self.user).distinct()
     def get_other(self):
         if self.request.user.mode == WRITER_MODE:
-            return User.objects.filter(relationships_as_requester__requester__isnull=False).exclude(relationships_as_writer__requester=self.user).distinct()
+            return User.objects.filter(contacts_as_requester__requester__isnull=False).exclude(contacts_as_worker__requester=self.user).distinct()
         else:
-            return User.objects.filter(relationships_as_requester__requester__isnull=False).exclude(relationships_as_reviewer__requester=self.user).distinct()
+            return User.objects.filter(contacts_as_requester__requester__isnull=False).exclude(contacts_as_reviewer__requester=self.user).distinct()
         
 class ReviewerList(UserList):
   user_group='Reviewer'
   def get_all(self):
-    return User.objects.filter(relationships_as_reviewer__reviewer__isnull=False).exclude(pk=self.user.pk).distinct()
+    return User.objects.filter(Q(contacts_as_worker__position=REVIEWER_POSITION, contacts_as_worker__confirmation=True)|Q(userprofile__preferred_mode=REVIEWER_MODE)).exclude(pk=self.user.pk).distinct()
   def get_mine(self):
-    return User.objects.filter(relationships_as_reviewer__requester=self.user, relationships_as_reviewer__confirmed = True).distinct()
+    return User.objects.filter(contacts_as_worker__requester=self.user, contacts_as_worker__position=REVIEWER_POSITION, contacts_as_worker__confirmation = True).distinct()
   def get_unconfirmed(self):
-    return User.objects.filter(relationships_as_reviewer__requester=self.user, relationships_as_reviewer__confirmed = False, relationships_as_reviewer__created_by=self.user).distinct()
+    return User.objects.filter(contacts_as_worker__requester=self.user, contacts_as_worker__position=REVIEWER_POSITION, contacts_as_worker__confirmation = False, contacts_as_worker__created_by=self.user).distinct()
   def get_requested(self):
-    return User.objects.filter(relationships_as_reviewer__requester=self.user, relationships_as_reviewer__confirmed = False).exclude(relationships_as_reviewer__created_by=self.user).distinct()
+    return User.objects.filter(contacts_as_worker__position=REVIEWER_POSITION, contacts_as_worker__requester=self.user, contacts_as_worker__confirmation = False).exclude(contacts_as_worker__created_by=self.user).distinct()
   def get_other(self):
-    return User.objects.filter(relationships_as_reviewer__reviewer__isnull=False).exclude(relationships_as_reviewer__requester=self.user).distinct()
+    return User.objects.filter(Q(contacts_as_worker__position=REVIEWER_POSITION).exclude(contacts_as_worker__requester=self.user)|Q(userprofile__preferred_mode=REVIEWER_MODE)).distinct()
     
 # class CreateRelationship(CreateView):
 #   model = Relationship
@@ -975,3 +977,17 @@ class ReviewerList(UserList):
 #     kwargs['object'] = self.user
 #     print "kwargs = %s" % str(kwargs)
 #     return super(ConfirmRelationship, self).get_context_data(**kwargs)
+
+def test500(request, template_name='admin/500.html'):
+    """
+    500 error handler.
+
+    Templates: `500.html`
+    Context: sys.exc_info() results
+     """
+    t = loader.get_template(template_name) # You need to create a 500.html template.
+    ltype,lvalue,ltraceback = sys.exc_info()
+    sys.exc_clear() #for fun, and to point out I only -think- this hasn't happened at 
+                    #this point in the process already
+    if settings.DEBUG == False: settings.DEBUG = True
+    return HttpResponseServerError(t.render(Context({'type':ltype,'value':lvalue,'traceback':ltraceback})))
