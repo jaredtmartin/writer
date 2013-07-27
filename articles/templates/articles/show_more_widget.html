@@ -1,0 +1,8 @@
+<div id="show-columns-selector" class="btn-group">
+  <button type="button" class="btn btn-primary btn-small dropdown-toggle pull-right" data-toggle="dropdown"> Show More <span class="caret"></span></button>
+  <ul class="dropdown-menu">
+    {% for column in hidden_columns %}
+      <li class="show-columns-option" id="{{column|slugify}}-option"><a onclick="showColumn('{{column|slugify}}');">{{column}}</a></li>
+    {% endfor %}
+  </ul>
+</div>
