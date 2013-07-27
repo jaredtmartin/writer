@@ -36,6 +36,8 @@
     <button class="btn {{btn_size}} btn-primary" type="submit" name="saveandsubmit" >Submit</button>
   {% elif action == 'Approve&Save' %}
     <button class="btn {{btn_size}} btn-primary" type="submit" name="saveandapprove" >Approve</button>
+    fui-cross
+
   {% elif action == 'Save' %}
     <button class="btn {{btn_size}} btn-primary" type="submit">Save</button>
   {% elif action == "Published" %}
@@ -47,9 +49,9 @@
   {% elif action == 'Removed Reviewer' %}
     <button class="btn {{btn_size}}" onclick="doActionOnArticles('{% url release_as_reviewer %}',{{article.id}});return false;" >Release</button>
   {% elif action == 'Approved' %}
-    <button class="btn {{btn_size}}" onclick="doActionOnArticles('{% url approve_articles %}',{{article.id}});return false;" >Approve</button>
+    <a class="fui-check" href="#" onclick="doActionOnArticles('{% url approve_articles %}',{{article.id}});return false;" ></a>
   {% elif action == 'Rejected' %}
-    <button class="btn {{btn_size}}" onclick="window.article_id={{article.id}}; $('#reject-modal').modal('show');return false;" >Reject</button>
+    <a class="fui-cross" href="#" onclick="window.article_id={{article.id}}; $('#reject-modal').modal('show');return false;"></a>
   {% elif action == "Tag" %}
     <button class="btn {{btn_size}}" onclick="showTagModal('{{article.id}}', '{{article.tags_as_str}}');return false;" >Tag</button>
   {% elif action == "Delete" %}

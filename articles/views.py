@@ -159,10 +159,13 @@ class ArticleList(GetActionsMixin, SearchableListView):
     #     'last_action':StatusFilter(name='last_action', model=Article, display_attr='code'),
     #     'status':django_filters.CharFilter(name='status'),
     # }
+    def get_hidden_columns(self):
+        return ['Reviewer','Type','Category','Length','Priority','Tags']
     def get_context_data(self, **kwargs):
         kwargs['selected_tab']='articles'
+        kwargs['hidden_columns']=self.get_hidden_columns()
+        kwargs['filters']=['Sample: Green Door','Another: Blue']
         context = super(ArticleList, self).get_context_data(**kwargs)
-        # print "context!!!!! = %s" % str(context)
         return context
     def get_queryset(self):
         qs=super(ArticleList, self).get_queryset()

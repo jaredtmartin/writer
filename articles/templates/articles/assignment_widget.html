@@ -11,7 +11,7 @@
       <a href="#">Make Available to</a>
       <ul class="dropdown-submenu">
         {% for contact in available_list %}
-          <li><a id="{{group}}-available-to-option" onclick="make_available_to('{{group}}','{{contact}}');return false;">{{contact}}</a></li>
+          <li><input type="checkbox" data-toggle="checkbox"><a id="{{group}}-available-to-option" onclick="make_available_to('{{group}}','{{contact}}');return false;">{{contact}}</a></li>
         {% endfor %}
       </ul>
     </li>
