@@ -1,16 +1,8 @@
-{% load assignment %}
-<div id="action_bar" class="span10">    
+{% load assignment %} 
   {% if user.get_profile.is_requester %} 
-
-<!--      <div class="btn-group">
-      <button id="tag-button" class="btn btn-small" onclick="showTagModal();return false;" >Tag</button>
-    </div> 
--->
     {% assignment_widget "writer" %}
     {% assignment_widget "reviewer" %}
-    <div class="btn-group">
-      <button id="delete-button" class="btn btn-small" onclick="showDeleteModal();return false;" >Delete</button>
-    </div>
+    <li id="delete-button" class="multiaction"><a onclick="showDeleteModal();return false;">Delete</a></li>
   {% elif user.is_writer %}
 
     <div class="btn-group">
@@ -44,4 +36,4 @@
     </div>
 
   {% endif %}
-</div>
+</span>

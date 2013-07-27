@@ -410,7 +410,7 @@ textarea {
   font-size: 14px;
 }
 a {
-  color: #2980b9;
+  color: #16a085;
   text-decoration: none;
   -webkit-transition: 0.25s;
   -moz-transition: 0.25s;
@@ -419,7 +419,7 @@ a {
   -webkit-backface-visibility: hidden;
 }
 a:hover {
-  color: #3498db;
+  color: #1abc9c;
   text-decoration: none;
 }
 h1,
@@ -3083,7 +3083,7 @@ input.search-query {
 }
 .checkbox.checked,
 .radio.checked {
-  color: #2980b9;
+  color: #16a085;
 }
 .checkbox.checked .icons,
 .radio.checked .icons {
@@ -3138,7 +3138,7 @@ input.search-query {
 }
 .checkbox.primary.checked,
 .radio.primary.checked {
-  color: #2980b9;
+  color: #16a085;
 }
 .checkbox.primary.checked .icons,
 .radio.primary.checked .icons {
@@ -4907,7 +4907,7 @@ input.search-query {
   border-color: #e2e9ee;
 }
 .alert-success a {
-  color: #2980b9;
+  color: #16a085;
 }
 .alert-info {
   background-color: #f7f9fa;

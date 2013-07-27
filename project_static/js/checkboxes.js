@@ -17,8 +17,10 @@ function deselectRows(rows){
     showOrHideActionBar();
 }
 function showOrHideActionBar(){
-    if ($(window.row_selector+' :checked').length>0){$('#action_bar').show();}
-    else {$('#action_bar').hide();}
+    // if ($(window.row_selector+' :checked').length>0){$('#action_bar').show();}
+    // else {$('#action_bar').hide();}
+    if ($(window.row_selector+' :checked').length>0){$('.multiaction').show();}
+    else {$('.multiaction').hide();}
 }
 function updateMasterCheckbox(){
     value=($(window.row_selector+' :checkbox:not(:checked)').length==0);

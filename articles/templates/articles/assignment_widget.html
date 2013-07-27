@@ -1,27 +1,38 @@
-<div class="btn-group">
-    <a id="{{group}}-dropdown" class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">
-        <span id="id_{{group}}-status">{{status}} </span> <span class="caret"></span>
-    </a>
-    <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu">
-        <li><a tabindex="-1" id="{{group}}-unavailable-option" onclick="make_unavailable('{{group}}');return false;">Unavailable</a></li>
-        <li><a tabindex="-1" id="{{group}}-available-option" onclick="make_available('{{group}}');return false;">Available</a></li>
-        <li class="dropdown-submenu">
-            <a tabindex="-1" href="#">Make Available to</a>
-            <ul class="dropdown-menu">
-                {% for contact in available_list %}
-                    <li><a tabindex="-1" id="{{group}}-available-to-option" onclick="make_available_to('{{group}}','{{contact}}');return false;">{{contact}}</a></li>
-                {% endfor %}
-            </ul>        </li>
+<li class="dropdown multiaction">
+  <a data-toggle="dropdown" id="{{group}}-dropdown" class="dropdown-toggle" href="#">
+    <span id="id_{{group}}-status">{{status}} </span> <b class="caret"></b>
+  </a>
+  <ul class="dropdown-menu">
+    <li><a id="{{group}}-unavailable-option" onclick="make_unavailable('{{group}}');return false;">Make Unavailable</a></li>
+    <li><a id="{{group}}-available-option" onclick="make_available('{{group}}');return false;">Make Available To All</a></li>
+    <li class="divider"></li>
+    <li class="dropdown-header">Dropdown header</li>
+    <li>
+      <a href="#">Make Available to</a>
+      <ul class="dropdown-submenu">
+        {% for contact in available_list %}
+          <li><a id="{{group}}-available-to-option" onclick="make_available_to('{{group}}','{{contact}}');return false;">{{contact}}</a></li>
+        {% endfor %}
+      </ul>
+    </li>
 
-        <li class="dropdown-submenu">
-            <a tabindex="-1" href="#">Assign to</a>
-            <ul class="dropdown-menu">
-                {% for user in assignee_list %}
-                    <li><a tabindex="-1" id="{{group}}-assign-to-option" onclick="assign_user('{{group}}',{{user.pk}},'{{user.full_name}}');return false;">{{user.full_name}}</a></li>
-                {% endfor %}
-            </ul>
-        </li>
-    </ul>
-</div>
-<input id="id_{{group}}" name="{{group}}" type="hidden" value="{{assigned_to|default:""}}">
-<input id="id_{{group}}_availability" name="{{group}}_availability" type="hidden" value="{{available_to}}">
+    <li>
+      <a href="#">Assign to</a>
+      <ul class="dropdown-submenu">
+        {% for user in assignee_list %}
+          <li><a id="{{group}}-assign-to-option" onclick="assign_user('{{group}}',{{user.pk}},'{{user.full_name}}');return false;">{{user.full_name}}</a></li>
+        {% endfor %}
+      </ul>
+    </li>
+  </ul>
+  <input id="id_{{group}}" name="{{group}}" type="hidden" value="{{assigned_to|default:""}}">
+  <input id="id_{{group}}_availability" name="{{group}}_availability" type="hidden" value="{{available_to}}">
+</li>
+
+
+
+
+
+
+
+
