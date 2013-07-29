@@ -30,10 +30,16 @@
         <div class="navbar-inner">
           <div class="container">
             <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target="#nav-collapse-01"></button>
-            <a class="brand" href="#">Writer Axis</a>
 
             <div class="nav-collapse collapse" id="nav-collapse-01">
+
               <ul class="nav">
+                <li class="logo-space">
+
+              <div id="logo-positioner" href="#">
+                <img id="logo" src="{{STATIC_URL}}img/logo.gif">&nbsp;
+              </div>
+                </li>
                 {% block multiactions %}{% endblock multiactions %}
               </ul>
               <ul class="nav pull-right">
@@ -73,7 +79,7 @@
     <script src="{{STATIC_URL}}js/jquery-1.8.3.min.js"></script>
     <script src="{{STATIC_URL}}js/jquery-ui-1.10.3.custom.min.js"></script>
     <script src="{{STATIC_URL}}js/jquery.ui.touch-punch.min.js"></script>
-    <script src="{{STATIC_URL}}js/bootstrap.min.js"></script>
+    <script src="{{STATIC_URL}}js/bootstrap.js"></script>
     <script src="{{STATIC_URL}}js/bootstrap-select.js"></script>
     <script src="{{STATIC_URL}}js/bootstrap-switch.js"></script>
     <script src="{{STATIC_URL}}js/flatui-checkbox.js"></script>

@@ -1,10 +1,53 @@
-.navbar .nav > li.pull-right {
-    float: right;
+@import "config";
+
+// The following is to make the search bar in the sidebar size correctly responsively
+// Normal Screen
+input.search-query {
+  width:85px; // 140-55
 }
-input.span2.search-query {
-	width:115px;
+@media (max-width: 767px) { // Phone Screen
+  input.search-query {
+    width:100%;
+  }
+}
+@media (min-width: 768px) and (max-width: 979px) { // Tablet Screen
+  input.search-query {
+    width:49px; // 104-55
+  }
+}
+@media (min-width: 1200px) { //Big Screen
+  input.search-query {
+    width:115px; // 170-55
+  }
 }
 
+// The Following is for the logo
+#logo{
+  position:absolute;
+  top:0px;
+}
+// #logo{
+// position: fixed; 
+//   top: 0px; 
+// }
+#logo-positioner{
+  position:relative;
+  left:20px;
+}
+li.logo-space{
+  width:319px;
+}
+
+// // The following is for checkboxes in submenus
+// .dropdown-submenu label.checkbox{
+//   color:white;
+//   padding: 6px 8px 8px 36px;
+// }
+// .dropdown-submenu label.checkbox .icons{
+//   position:absolute;
+//   top:8px;
+//   left:8px;
+// }
 /* The following lines were copied from flat-ui but modified to apply to navbar-search instead of form-search */
 .navbar-search button#search-button {
 	padding-top:5px;

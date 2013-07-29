@@ -2,8 +2,8 @@
 {% load actions %}
 {% load show_more %}
 {% block multiactions %}
-  {% include "articles/action_bar.html"%}
   <li><a href="{% url article_add %}">Add Article</a></li>
+  {% include "articles/action_bar.html"%}
 {% endblock multiactions %}
 {% block content %}
   <div class="row-fluid">
@@ -106,6 +106,9 @@
       }
     }
     $(document).ready(function(){
+      $('.dropdown-menu .dropdown-submenu').click(function(e) {
+          // e.stopPropagation();
+      });
       window.row_selector='.article';
       showOrHideActionBar();
       checked_rows = $('.article :checked');
