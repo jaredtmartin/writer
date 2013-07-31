@@ -1,6 +1,5 @@
 {% extends 'articles/base.html' %}
 {% load actions %}
-{% load show_more %}
 {% block multiactions %}
   <li><a href="{% url article_add %}">Add Article</a></li>
   {% include "articles/action_bar.html"%}

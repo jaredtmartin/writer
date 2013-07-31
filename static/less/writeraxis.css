@@ -1,0 +1,38 @@
+.navbar .nav > li.pull-right {
+  float: right;
+}
+input.span2.search-query {
+  width: 115px;
+}
+/* The following lines were copied from flat-ui but modified to apply to navbar-search instead of form-search */
+.navbar-search button#search-button {
+  padding-top: 5px;
+  padding-bottom: 6px;
+}
+.navbar-search .input-append .search-query.search-query-rounded + .btn {
+  -webkit-border-radius: 0 20px 20px 0;
+  -moz-border-radius: 0 20px 20px 0;
+  border-radius: 0 20px 20px 0;
+  padding-left: 4px;
+}
+.navbar-search .btn {
+  border: 2px solid #bdc3c7;
+  background-color: white;
+  color: #bdc3c7;
+  line-height: 18px;
+  padding: 9px 12px 10px 6px;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+}
+.navbar-search .input-append .search-query.search-query-rounded {
+  -webkit-border-radius: 20px 0 0 20px;
+  -moz-border-radius: 20px 0 0 20px;
+  border-radius: 20px 0 0 20px;
+  text-indent: 9px;
+  padding-right: 4px;
+}
+.navbar-search .input-append input {
+  border-right-width: 0;
+}
+/* End of stuff copied from flat-ui to work on navbar-search */
