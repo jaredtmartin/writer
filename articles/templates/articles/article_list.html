@@ -24,10 +24,10 @@
               <label class="checkbox" for="checkall"><input type="checkbox" value="" id="checkall" data-toggle="checkbox" onChange="toggleMaster();"</label>
             </th>
             <th class="column-header project-column">Project</th>
-            <th class="column-header keyword-column">Keywords</th>
+            <th class="column-header keywords-column">Keywords</th>
             <th class="column-header writer-column">Writer</th>
             <th class="column-header reviewer-column">Reviewer</th>
-            <th class="column-header type-column">Type</th>
+            <th class="column-header status-column">Status</th>
             <th class="column-header category-column">Category</th>
             <th class="column-header length-column">Length</th>
             <th class="column-header priority-column">Priority</th>
@@ -92,28 +92,40 @@
   <script type='text/javascript' src='{{STATIC_URL}}js/ajax.js'></script>
     <script type = "text/javascript" src='{{STATIC_URL}}js/checkboxes.js'></script>
   <script>
-    function showColumn(section_id){
-        var index = window.hidden_columns.indexOf(section_id);
-        window.hidden_columns.splice(index, 1);
-        $('.'+section_id+'-column').show();
-        $('#'+section_id+'-option').hide();
-        if($('.show-columns-option:visible').length == 0){$('#show-columns-selector').hide();}
-    }
+    // function showColumn(section_id){
+    //     var index = window.hidden_columns.indexOf(section_id);
+    //     window.hidden_columns.splice(index, 1);
+    //     $('.'+section_id+'-column').show();
+    //     $('#'+section_id+'-option').hide();
+    //     if($('.show-columns-option:visible').length == 0){$('#show-columns-selector').hide();}
+    // }
     function hideColumns(){
-      for (var i = 0; i<window.hidden_columns.length; i++){
-        $('.'+ window.hidden_columns[i] + '-column').hide();
+      // $('input.show_more').each({
+      //   [name="value"]
+      //   if ($('.'+$(this).id+'-column').show(); $(this).prop('checked'))
+      // });
+
+      for (var i = 0; i<window.writeraxis_columns.length; i++){
+        var column_id = window.writeraxis_columns[i];
+        if (!$('input#'+column_id+'-showmore-checkbox').prop("checked")){
+          $('.'+ column_id + '-column').hide();
+        }
       }
     }
+    function toggleColumn(section_id){
+      $('.'+section_id+'-column').toggle();
+    }
     $(document).ready(function(){
-      $('.dropdown-menu .dropdown-submenu').click(function(e) {
-          // e.stopPropagation();
-      });
       window.row_selector='.article';
       showOrHideActionBar();
       checked_rows = $('.article :checked');
       if (checked_rows.length>0){selectRows(checked_rows.parents('tr'));}
-      $('.tag-popover').popover(html=true, content=$('#tag-popover-html'));
-      window.hidden_columns = ['category','length','priority','tags','type','reviewer'];
+      // $('.tag-popover').popover(html=true, content=$('#tag-popover-html'));
+      window.writeraxis_columns = [
+        {% for column in all_columns %}
+          '{{column|slugify}}'{% if column.last %}{% else %},{% endif %}
+        {% endfor %}
+      ];
       hideColumns();
       window.codeForRows=[hideColumns];
     });

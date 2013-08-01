@@ -6,10 +6,10 @@
 	</td>
 
 	<td class="project-column">{% if article.project %} <a href="{% url article_list %}?project={{article.project.name}}"> {{article.project.name.title}} </a>{% else %}None{% endif %}</td>
-	<td class="keyword-column"><a href="{{article.get_absolute_url}}">{{article.keywords}}</a></td>
+	<td class="keywords-column"><a href="{{article.get_absolute_url}}">{{article.keywords}}</a></td>
 	<td id="status-{{article.pk}}" class="writer-column">{% if user.in_requester_mode %}{{article.writer_status}}{% else %}{{article|writing_availability:user}}{% endif %}</td>
 	<td class="reviewer-column">{% if user.in_requester_mode %}{{article.reviewer_status}}{% else %}{{article|reviewing_availability:user}}{% endif %}</td>
-	<td class="type-column">{{article.type}}</td>
+	<td class="status-column">{{article.type}}</td>
 	<td class="category-column">{{article.category}}</td>
 	<td class="length-column">{{article.length}}</td>
 	<td class="priority-column">{{article.priority}}</td>
