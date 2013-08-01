@@ -5,9 +5,14 @@ function toggleRows(rows){
     updateMasterCheckbox();
 }
 function selectRows(rows){
+    // This highlights the rows
     rows.addClass('selected-row');
     // This is necisary for when we click on the master checkbox at the top
-    rows.find(':checkbox').prop("checked", true); 
+    // This checks the actual checkbox
+    rows.find(':checkbox').prop("checked", "checked"); 
+    // This checks FlatUI's checkbox
+    rows.find('label.checkbox').addClass('checked');
+
     showOrHideActionBar();
 }
 function deselectRows(rows){
@@ -15,6 +20,8 @@ function deselectRows(rows){
     // This is necisary for when we click on the master checkbox at the top
     rows.find(':checkbox').prop("checked", false); 
     showOrHideActionBar();
+    // This checks FlatUI's checkbox
+    rows.find('label.checkbox').removeClass('checked');
 }
 function showOrHideActionBar(){
     // if ($(window.row_selector+' :checked').length>0){$('#action_bar').show();}
@@ -25,6 +32,11 @@ function showOrHideActionBar(){
 function updateMasterCheckbox(){
     value=($(window.row_selector+' :checkbox:not(:checked)').length==0);
     $('#checkall').prop("checked", value);
+    if(value){
+        $('#checkall').parent().addClass("checked");
+    }else{
+        $('#checkall').parent().removeClass("checked");
+    }
     checkHidden(value);
 }
 function checkHidden(value){

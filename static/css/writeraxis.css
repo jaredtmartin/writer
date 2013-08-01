@@ -1,8 +1,37 @@
-.navbar .nav > li.pull-right {
-  float: right;
+/* 62px */
+/* 52px */
+/* 40px */
+/* 29px */
+/* 28px */
+/* 24px */
+input.search-query {
+  width: 85px;
 }
-input.span2.search-query {
-  width: 115px;
+@media (max-width: 767px) {
+  input.search-query {
+    width: 100%;
+  }
+}
+@media (min-width: 768px) and (max-width: 979px) {
+  input.search-query {
+    width: 49px;
+  }
+}
+@media (min-width: 1200px) {
+  input.search-query {
+    width: 115px;
+  }
+}
+#logo {
+  position: absolute;
+  top: 0px;
+}
+#logo-positioner {
+  position: relative;
+  left: 20px;
+}
+li.logo-space {
+  width: 319px;
 }
 /* The following lines were copied from flat-ui but modified to apply to navbar-search instead of form-search */
 .navbar-search button#search-button {
