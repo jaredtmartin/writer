@@ -2,14 +2,12 @@
   <button type="button" class="btn btn-primary btn-small dropdown-toggle pull-right" data-toggle="dropdown"> Show More <span class="caret"></span></button>
   <ul class="dropdown-menu">
     {% for column in all_columns %}
-
-    <li class="show-columns-option">
-    	<label class="checkbox" for="check-{{article.id}}">
-    		<input class="show_more" {% if column in hidden_columns %}{%else%}checked='checked'{% endif %} type="checkbox" id="{{column|slugify}}-showmore-checkbox" value="" data-toggle="checkbox" onChange="toggleColumn('{{column|slugify}}');">
-    		{{column}}
-    	</label>
-		</li>
-    
+      <li class="show-columns-option">
+      	<label class="checkbox" for="check-{{article.id}}">
+      		<input class="show_more" {% if column in hidden_columns %}{%else%}checked='checked'{% endif %} type="checkbox" id="{{column|slugify}}-showmore-checkbox" value="" data-toggle="checkbox" onChange="toggleColumn('{{column|slugify}}');">
+      		{{column}}
+      	</label>
+  		</li>
     {% endfor %}
   </ul>
 </div>
