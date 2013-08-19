@@ -1,45 +1,6 @@
 {% load help_icon %}
 {{ inline.management_form }}
 {% if user = article.owner or not article.pk%}
-    <script type="text/javascript">
-        function insertKeywordInlineForm(data, result){
-            $('#keywords-title-row').after(data);
-            numKeywords=parseInt($('#id_keyword_set-TOTAL_FORMS').val());
-            $('#id_keyword_set-TOTAL_FORMS').val(numKeywords+1);
-        }
-        function getKeywordInlineForm() {
-            jQuery("#last_id").val("None");
-            $.ajax({
-                url: "/articles/keyword/new/",
-                type:'POST',
-                data:{
-                    num: $('#id_keyword_set-TOTAL_FORMS').val(),
-                },
-                success: insertKeywordInlineForm
-            });
-        }
-        function hideRow(){
-            $(this).closest('tr').slideUp();
-        }
-        $(document).ready(function($) {
-            // $("#add_keyword").click(getKeywordInlineForm);
-            $('[name$="DELETE"]').click(hideRow);
-            $(".popup").fancybox({
-                transitionIn : 'elastic',
-                transitionOut : 'elastic',
-                titleShow : false,
-                width : 680,
-                height : 375,
-                autoDimensions : true,
-                /*centerOnScroll : true,*/
-                autoScale : false,
-                /*'scrolling' : 'no',*/
-                'overlayOpacity' : '0.6',
-                'overlayColor' : '#000'
-            }); 
-        });
-    </script>
-
     <table id="keywords-table" class="table block_content" width="100%" cellspacing="0" cellpadding="0" border="0" style="border: none; margin:0;">
         <tr id="keywords-title-row">
             <th><h5>Keyword {% help_icon "The keyword phrase the article(s) should be written about." %}</h5></th>

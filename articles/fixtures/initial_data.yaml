@@ -22,7 +22,7 @@
     username: jared
   model: auth.user
   pk: 1
-- fields: {access_token: '', preferred_mode: 2, timezone: Africa/Tunis, user: 1}
+- fields: {access_token: '', mode: 2, timezone: Africa/Tunis, user: 1}
   model: articles.userprofile
   pk: 1
 - fields: {class_name: FacebookOutlet, module_name: facebook, title: 'Post on Facebook'}

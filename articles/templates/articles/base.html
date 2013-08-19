@@ -25,20 +25,19 @@
     {% block head %}{% endblock head %}
   </head>
   <body>
-    <div class="container">
+    <div class="container-fluid">
       <div class="navbar navbar-inverse">
         <div class="navbar-inner">
-          <div class="container">
+          <div class="container-fluid">
             <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target="#nav-collapse-01"></button>
 
             <div class="nav-collapse collapse" id="nav-collapse-01">
 
               <ul class="nav">
                 <li class="logo-space">
-
-              <div id="logo-positioner" href="#">
-                <img id="logo" src="{{STATIC_URL}}img/logo.gif">&nbsp;
-              </div>
+                  <div id="logo-positioner" href="#">
+                    <img id="logo" src="{{STATIC_URL}}img/logo.gif">&nbsp;
+                  </div>
                 </li>
                 {% block multiactions %}{% endblock multiactions %}
               </ul>
@@ -46,14 +45,14 @@
                 {% if user.is_authenticated %}
                   <li><a href="#">Hi {{user.full_name}}!</a></li>
                 {% else %}
-                  <li><a href="#">Welcome, guest.</a></li>
+                  <li><a href="{% url login %}">Welcome, guest.</a></li>
                 {% endif %}
               </ul>
             </div>
           </div>
         </div>
       </div>
-      <div class="row">
+      <div class="row-fluid">
         <div class="span2">
           {% include "articles/sidebar.html" %}
         </div>
@@ -87,6 +86,8 @@
     <script src="{{STATIC_URL}}js/jquery.tagsinput.js"></script>
     <script src="{{STATIC_URL}}js/jquery.placeholder.js"></script>
     <script src="{{STATIC_URL}}js/jquery.stacktable.js"></script>
-    {% block js %}{% endblock js %}
+    {% block js %}
+
+    {% endblock js %}
   </body>
 </html>

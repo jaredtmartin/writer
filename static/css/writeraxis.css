@@ -22,6 +22,12 @@ input.search-query {
     width: 115px;
   }
 }
+.btn-group.select {
+  margin: 0;
+}
+.btn-small.dropdown-toggle .caret {
+  margin-left: 5px;
+}
 #logo {
   position: absolute;
   top: 0px;
@@ -60,12 +66,13 @@ li.logo-space {
   border-radius: 20px 0 0 20px;
   text-indent: 9px;
   padding-right: 4px;
+  height: 21px;
 }
 .navbar-search .input-append input {
   border-right-width: 0;
 }
 /* End of stuff copied from flat-ui to work on navbar-search */
-.nav li.dropdown ul.dropdown-submenu li:HOVER ul {
+li.dropdown ul.dropdown-submenu li:HOVER ul {
   display: block;
   position: absolute;
   left: 100%;
@@ -73,7 +80,7 @@ li.logo-space {
   -moz-border-radius: 3px;
   border-radius: 3px;
 }
-.nav li.dropdown ul.dropdown-submenu ul {
+li.dropdown ul.dropdown-submenu ul {
   display: none;
   float: right;
   position: relative;

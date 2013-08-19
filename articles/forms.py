@@ -2,7 +2,7 @@ from articles.models import *
 from django.forms import ModelForm, DateField, ValidationError, BooleanField, ChoiceField, IntegerField, Form, \
     ModelChoiceField, CharField, ModelMultipleChoiceField, widgets
 from extra_views import InlineFormSet
-from articles.widgets import SelectWithFlexibleOptionLabels, BootstrapDropdownWidget, BootstrapSplitDropdownWidget, BootstrapDropdownWidgetWithPlus
+from articles.widgets import BootstrapDropdown, BootstrapDropdownPlus
 from django.utils.encoding import smart_unicode
 import pytz
 from titlecase import titlecase
@@ -34,15 +34,15 @@ class ArticleForm(ModelForm):
         fields = ('writer','reviewer','writer_availability','reviewer_availability', 'language', 'style',  'purpose','price','referrals','expires','priority','category','tags', 'minimum','article_type','project','title','body', 'owner','number_of_articles','article_notes','review_notes','description')
     # lookup_field_names = {'project':'name'}
     # project = CharField(required=False)
-    article_notes   = CharField(widget=widgets.Textarea(attrs={'class':'notes'}), required=False)
-    review_notes    = CharField(widget=widgets.Textarea(attrs={'class':'notes'}), required=False)
-    description     = CharField(widget=widgets.Textarea(attrs={'class':'notes'}), required=False)
-    tags            = CharField(widget=widgets.TextInput(attrs={'style':'width:344px;height: 20px;'}), required=False)
+    article_notes   = CharField(widget=widgets.Textarea(attrs={'class':'notes boxsizingBorder','placeholder':'Notes to writer...'}), required=False)
+    review_notes    = CharField(widget=widgets.Textarea(attrs={'class':'notes boxsizingBorder','placeholder':'Notes to reviewer...'}), required=False)
+    description     = CharField(widget=widgets.Textarea(attrs={'class':'notes boxsizingBorder','placeholder':'Add description...'}), required=False)
     number_of_articles = IntegerField(required=False)
-    project         = ModelChoiceField(queryset=Project.objects.all(), widget=BootstrapDropdownWidget(), empty_label='Select a Project')
-    category        = ModelChoiceField(queryset=Category.objects.all(), widget=BootstrapDropdownWidget(), required=False, empty_label='Select a Category')
-    article_type    = ModelChoiceField(queryset=ArticleType.objects.all(), widget=BootstrapDropdownWidget(), empty_label='Select a Content Type')
-    priority        = ChoiceField(choices = ARTICLE_PRIORITIES, widget=BootstrapDropdownWidget(), required=False)
+    project         = ModelChoiceField(queryset=Project.objects.all(), empty_label="Project", widget=BootstrapDropdownPlus(plus_url="www.google.com", help_text='Select a project or start a new one.'), required=False)
+    category        = ModelChoiceField(queryset=Category.objects.all(), empty_label="Category", widget=BootstrapDropdownPlus(plus_url="www.google.com", help_text='Select a category for your article(s).'), required=False)
+    article_type    = ModelChoiceField(queryset=ArticleType.objects.all(), widget=BootstrapDropdownPlus(plus_url="www.google.com", help_text='Select the type of content you want written.'))
+    priority        = ChoiceField(choices = ARTICLE_PRIORITIES, widget=BootstrapDropdown(help_text='How urgent is/are the article(s)?'), required=False)
+    minimum         = IntegerField(initial="", widget=widgets.TextInput(attrs={'class':'high-input', 'placeholder':'Length:100'}))
     
     # def clean_project(self):
     #     # Looksup project by name and creates it if it doesnt exist
@@ -119,7 +119,7 @@ class UserForm(ModelForm):
 class UserProfileForm(ModelForm):
     class Meta:
         model = UserProfile
-        fields = ('preferred_mode','timezone')
+        fields = ('mode','timezone')
     timezone = ChoiceField(choices=get_timezone_choices())
 class TagArticleForm(ModelForm):
     class Meta:

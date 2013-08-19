@@ -58,9 +58,9 @@ PRIORITY_LOW = 1
 PRIORITY_NORMAL = 5
 PRIORITY_HIGH = 10
 ARTICLE_PRIORITIES = (
-    (PRIORITY_LOW, 'Low'),
-    (PRIORITY_NORMAL, 'Normal'),
-    (PRIORITY_HIGH, 'High'),
+    (PRIORITY_LOW, 'Low Priority'),
+    (PRIORITY_NORMAL, 'Normal Priority'),
+    (PRIORITY_HIGH, 'High Priority'),
 )
 STATUS_NEW = "Unassigned"
 STATUS_RELEASED = 'Released'
@@ -289,15 +289,15 @@ User.in_requester_mode = property(user_in_requester_mode)
 # User.outlets = property(user_outlets)
 
 def get_user_mode(self):
-    return self.get_profile().preferred_mode
+    return self.get_profile().mode
 def set_user_mode(self, value):
     p = self.get_profile()
-    p.preferred_mode = value
+    p.mode = value
     p.save()
 User.mode=property(get_user_mode, set_user_mode)
 
 def get_user_mode_display(self):
-    return self.get_profile().get_preferred_mode_display()
+    return self.get_profile().get_mode_display()
 User.mode_display = property(get_user_mode_display)
 
 #####################################################################################################
@@ -380,7 +380,8 @@ class Article(ValidationModelMixin, models.Model):
     # assigned    = models.ForeignKey(ArticleAction, null=True, blank=True, related_name='assigned_articles')
     rejected    = models.ForeignKey(ArticleAction, null=True, blank=True, related_name='rejected_articles')
     # released    = models.ForeignKey(ArticleAction, null=True, blank=True, related_name='released_articles')
-    
+    was_claimed = models.BooleanField(default=False)
+
     expires = models.DateTimeField(blank=True, null=True)
     deleted = models.BooleanField(default=False, blank=True)
     # released = models.BooleanField(default=False, blank=True)
@@ -553,24 +554,24 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User)
     timezone = models.CharField(max_length=32, default='America/Chicago')
     access_token = models.TextField(blank=True, help_text='Facebook token for offline access', null=True)
-    preferred_mode = models.IntegerField(choices=USER_MODES)
+    mode = models.IntegerField(choices=USER_MODES)
     def __unicode__(self): return self.user.username+"'s profile"
 
     @property
     def is_requester(self):
-        return self.preferred_mode == REQUESTER_MODE
+        return self.mode == REQUESTER_MODE
     @property
     def is_writer(self):
-        return self.preferred_mode == WRITER_MODE
+        return self.mode == WRITER_MODE
     @property
     def is_reviewer(self):
-        return self.preferred_mode == REVIEWER_MODE
+        return self.mode == REVIEWER_MODE
     # @property
     # def graph(self): return facebook.GraphAPI(self.access_token)
 
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
-        UserProfile.objects.create(user=instance, preferred_mode=WRITER_MODE)
+        UserProfile.objects.create(user=instance, mode=WRITER_MODE)
 
 post_save.connect(create_user_profile, sender=User)
 

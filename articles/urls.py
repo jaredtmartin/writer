@@ -4,6 +4,13 @@ from django.views.generic.simple import direct_to_template
 
 urlpatterns = patterns('',
     url(r'^articles/$',                         ArticleList.as_view(),          name='article_list'),
+    url(r'^articles/approved/$',                Approved.as_view(),             name='approved'),
+    url(r'^articles/assigned/$',                Assigned.as_view(),             name='assigned'),
+    url(r'^articles/available/$',               Available.as_view(),            name='available'),
+    url(r'^articles/submitted/$',               Submitted.as_view(),            name='submitted'),
+    url(r'^articles/rejected/$',                Rejected.as_view(),             name='rejected'),
+    url(r'^articles/claimed/$',                 Claimed.as_view(),              name='claimed'),
+    url(r'^articles/unavailable/$',             Unavailable.as_view(),          name='unavailable'),
     url(r'^article/add/$',                      ArticleCreate.as_view(),        name='article_add'),
     url(r'^article/(?P<pk>\d+)/tag/$',          TagArticle.as_view(),           name='tag_article'),
     url(r'^article/(?P<pk>\d+)/publish/$',      PublishArticle.as_view(),       name='publish_article'),

@@ -1,5 +1,16 @@
 @import "config";
-
+// The following is to make the Split dropdowns in the top bar work right.
+// .navbar .nav > li.split-dropdown > a.split-label{
+//   float:left;
+//   padding-right: 5px;
+// }
+// .navbar-inverse .nav > li.split-dropdown > a.dropdown-toggle{
+//   padding: 16px 0 15px;
+//   float:left;
+// }
+// .navbar-inverse .nav > li.split-dropdown > a.dropdown-toggle > b.caret{
+//   margin:5px;
+// }
 // The following is to make the search bar in the sidebar size correctly responsively
 // Normal Screen
 input.search-query {
@@ -20,6 +31,18 @@ input.search-query {
     width:115px; // 170-55
   }
 }
+
+// The following is to make selects line up wth the rest of a btn-group
+.btn-group.select{
+  margin:0;
+}
+
+
+// The following is to separate the caret from text in dropdown boxes
+  .btn-small.dropdown-toggle .caret{
+    margin-left: 5px;
+  }
+
 
 // The Following is for the logo
 #logo{
@@ -78,6 +101,7 @@ li.logo-space{
   border-radius: 20px 0 0 20px;
   text-indent: 9px;
   padding-right: 4px;
+  height: 21px;
 }
 .navbar-search .input-append input {
   border-right-width: 0;
@@ -85,7 +109,7 @@ li.logo-space{
 /* End of stuff copied from flat-ui to work on navbar-search */
 
 // This is here to enable submenus from dropdowns which are really a no-no. but....
-.nav li.dropdown ul.dropdown-submenu li:HOVER ul {
+ li.dropdown ul.dropdown-submenu li:HOVER ul {
 display:block;
 position:absolute;
 left:100%;
@@ -93,7 +117,7 @@ left:100%;
 -moz-border-radius: 3px;
 border-radius: 3px;
 }
-.nav li.dropdown ul.dropdown-submenu ul {
+ li.dropdown ul.dropdown-submenu ul {
 display: none;
 float:right;
 position: relative;

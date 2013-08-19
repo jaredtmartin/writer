@@ -1,10 +1,27 @@
 {% load assignment %} 
   {% if user.get_profile.is_requester %} 
-    {% assignment_widget "writer" %}
-    {% assignment_widget "reviewer" %}
+
+  {% if header = "Submitted Articles" or header = "Approved Articles" %}
+    <li id="reject-button" class="multiaction"><a onclick="window.article_id=undefined; $('#reject-modal').modal('show');return false;">Reject</a></li>
+  {% elif header = "Available Articles" or "Unavailable Articles" %}
+    <li class="dropdown multiaction">
+      <a data-toggle="dropdown" id="{{group}}-dropdown" class="dropdown-toggle" href="#">
+        <span id="id_{{group}}-status">Available To </span> <b class="caret"></b>
+      </a>
+      <ul class="dropdown-menu">
+        <li><a id="available-option" onclick="make_available('writer');return false;">Everybody</a></li>
+        <li><a id="unavailable-option" onclick="make_unavailable('writer');return false;">Nobody</a></li>
+        {% if available_list %}
+          <li class="divider"></li>
+        {% endif %}
+        {% for contact in available_list %}
+          <li><a id="{{group}}-available-to-option" onclick="make_available_to('{{group}}','{{contact}}');return false;">{{contact}}</a></li>
+        {% endfor %}
+      </ul>
+    </li>
+  {% endif %}
     <li id="delete-button" class="multiaction"><a onclick="showDeleteModal();return false;">Delete</a></li>
   {% elif user.is_writer %}
-
     <div class="btn-group">
       <button id="writer-claim-button" class="btn btn-small" onclick="doActionOnArticles('{% url claim_articles_as_writer %}');return false;" >Claim</button>
     </div>
