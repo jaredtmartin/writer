@@ -5,6 +5,7 @@ class MinMaxWordsValidator(ValidationProvider):
     description = u"Requires that the article body contatins th"
     
     def count_words(self, text):
+        print "len(text.split()) = %s" % str(len(text.split()))
         return len(text.split()) + 1
     def is_valid(self, article, request):
         text = self.strip_tags(article.body)

@@ -14,9 +14,9 @@ from articles.forms import RejectForm, ArticleForm, KeywordInlineFormSet, Quanti
 TagArticleForm, ActionUserID, AssignToForm, UserForm, UserProfileForm, NoteForm,\
 TagForm, ProjectForm, ACT_SUBMIT, ACT_REJECT, ACT_APPROVE, \
 ACT_ASSIGN_WRITER, ACT_ASSIGN_REVIEWER, ACT_CLAIM_REVIEWER, ACT_RELEASE, ACT_PUBLISH, ACT_COMMENT, \
-ACT_REMOVE_REVIEWER, ACT_REMOVE_WRITER, ACT_CLAIM_WRITER, UserModeForm, \
+ACT_REMOVE_REVIEWER, ACT_REMOVE_WRITER, ACT_CLAIM_WRITER, UserModeForm, PublishForm, \
 STATUS_NEW, STATUS_RELEASED, STATUS_ASSIGNED, STATUS_SUBMITTED, STATUS_APPROVED, \
-STATUS_PUBLISHED, WriteArticleForm, WRITER_MODE, REVIEWER_MODE, REQUESTER_MODE, AvailabilityForm
+STATUS_PUBLISHED, WriteArticleForm, WRITER_MODE, REVIEWER_MODE, REQUESTER_MODE, AvailabilityForm, CreateArticleForm
 #from django_actions.views import ActionViewMixin
 from django.http import Http404, HttpResponseServerError
 from django.template import loader, Context
@@ -157,6 +157,7 @@ class ArticleList(GetActionsMixin, SearchableListView):
     search_fields = ['tags', 'project__name', 'keyword__keyword']
     hidden_columns = ['Reviewer','Status','Category','Length','Priority','Tags']
     name = "All"
+    reverse_url=None
     # filter_fields={
     #     'minimum':FilterWithChoicesFromModel(name='minimum', model=Article),
     #     'project':RelatedFilter(name='project', model=Article, display_attr='name'),
@@ -167,6 +168,9 @@ class ArticleList(GetActionsMixin, SearchableListView):
         return self.name.title()+ " Articles"
     def get_hidden_columns(self):
         return self.hidden_columns
+    def get_reverse_url(self):
+        if self.reverse_url: return self.reverse_url
+        else: return self.name.lower()
     def get_context_data(self, **kwargs):
         kwargs['selected_tab']=self.name
 
@@ -175,6 +179,12 @@ class ArticleList(GetActionsMixin, SearchableListView):
         kwargs['header']=self.get_view_header()
         context = super(ArticleList, self).get_context_data(**kwargs)
         return context
+    def get(self, request, *args, **kwargs):
+        response = super(ArticleList, self).get(request, *args, **kwargs)
+        user_profile=self.request.user.get_profile()
+        user_profile.article_list_view = self.get_reverse_url()
+        user_profile.save()
+        return response
     # def get_queryset(self):
     #     qs=super(ArticleList, self).get_queryset()
     #     # if 'last_action' in self.request.GET:
@@ -182,20 +192,52 @@ class ArticleList(GetActionsMixin, SearchableListView):
     #     if 'status' in self.request.GET:
     #         qs=qs.filter(status=self.request.GET['status'])
     #     return qs
+class AvailablilityView(ArticleList):
+    # Adds in code to put together dropdowns for assigning articles and making articles available
+    def get_available_list(self, group):
+        return list(set([c.name for c in group]))
+    def get_assignee_list(self, group):
+        return list(set([contact.worker for contact in group]))
+    def get_context_data(self, **kwargs):
+        print "self.request.user.writer_contacts = %s" % str(self.request.user.writer_contacts)
+        kwargs['writer_availability_list']  = self.get_available_list(self.request.user.writer_contacts)
+        kwargs['reviewer_availability_list']= self.get_available_list(self.request.user.reviewer_contacts)
+        kwargs['writer_assignment_list']    = self.get_assignee_list(self.request.user.writer_contacts)
+        kwargs['reviewer_assignment_list']  = self.get_assignee_list(self.request.user.reviewer_contacts)
+        print "kwargs = %s" % str(kwargs)
+        context = super(AvailablilityView, self).get_context_data(**kwargs)
+        return context
 
+class MyArticles(ArticleList):
+    name = "My"
+    reverse_url = 'my_articles'
+    def get_queryset(self):
+        qs=super(MyArticles, self).get_queryset()
+        qs=qs.filter(writer=self.request.user).exclude(status=STATUS_SUBMITTED)
+        return qs
 class Approved(ArticleList):
     name = "Approved"
+    def get_context_data(self, **kwargs):
+        kwargs['publishing_outlet_configs']=self.request.user.publishing_outlets
+        print "kwargs = %s" % str(kwargs)
+        context = super(Approved, self).get_context_data(**kwargs)
+        print "context = %s" % str(context)
+        return context
     def get_queryset(self):
         qs=super(Approved, self).get_queryset()
         qs=qs.filter(status=STATUS_APPROVED)
         return qs
-class Assigned(ArticleList):
+class Assigned(AvailablilityView):
     name = "Assigned"
     def get_queryset(self):
         qs=super(Assigned, self).get_queryset()
-        qs=qs.filter(status=STATUS_ASSIGNED)
+        user=self.request.user
+        if user.mode==WRITER_MODE:
+            qs=qs.filter(writer=user, was_claimed=False, status=STATUS_ASSIGNED)
+        elif user.mode==REQUESTER_MODE:
+            qs=qs.filter(writer__isnull=False, was_claimed=False, status=STATUS_ASSIGNED)
         return qs
-class Available(ArticleList):
+class Available(AvailablilityView):
     name = "Available"
     def get_queryset(self):
         qs=super(Available, self).get_queryset()
@@ -212,11 +254,15 @@ class Available(ArticleList):
         # This is for available to writer
         # 
         return qs
-class Claimed(ArticleList):
+class Claimed(AvailablilityView):
     name = "Claimed"
     def get_queryset(self):
         qs=super(Claimed, self).get_queryset()
-        qs=qs.filter(was_claimed=True)
+        user=self.request.user
+        if user.mode==WRITER_MODE:
+            qs=qs.filter(writer=user, was_claimed=True, status=STATUS_ASSIGNED)
+        elif user.mode==REQUESTER_MODE:
+            qs=qs.filter(was_claimed=True, status=STATUS_ASSIGNED)
         return qs
 class Rejected(ArticleList):
     name = "Rejected"
@@ -224,17 +270,29 @@ class Rejected(ArticleList):
         qs=super(Rejected, self).get_queryset()
         qs=qs.filter(rejected__isnull=False)
         return qs
-class Submitted(ArticleList):
+class Published(ArticleList):
+    name = "Published"
+    def get_queryset(self):
+        qs=super(Published, self).get_queryset()
+        qs=qs.filter(status=STATUS_PUBLISHED)
+        return qs
+class Submitted(AvailablilityView):
     name = "Submitted"
+
     def get_queryset(self):
         qs=super(Submitted, self).get_queryset()
-        qs=qs.filter(status=STATUS_SUBMITTED,submitted__isnull=False, approved__isnull=True)
+        user=self.request.user
+        if user.mode==WRITER_MODE:
+            qs=qs.filter(writer=user, status=STATUS_SUBMITTED,submitted__isnull=False, approved__isnull=True)
+        elif user.mode==REQUESTER_MODE:
+            qs=qs.filter(status=STATUS_SUBMITTED,submitted__isnull=False, approved__isnull=True)
         return qs
-class Unavailable(ArticleList):
+
+class Unavailable(AvailablilityView):
     name = "Unavailable"
     def get_queryset(self):
         qs=super(Unavailable, self).get_queryset()
-        qs=qs.filter(Q(writer_availability="Nobody"))
+        qs=qs.filter(writer_availability="Nobody", status__in=[STATUS_NEW, STATUS_RELEASED])
         return qs
 
 class AjaxDeleteRowView(DeleteView):
@@ -294,7 +352,7 @@ class ProjectList(FilterableListView):
 class ArticleCreate(FormWithUserMixin, LoginRequiredMixin, CreateWithInlinesView):
     template_name = 'articles/article_edit.html'
     model = Article
-    form_class=ArticleForm
+    form_class=CreateArticleForm
     context_object_name = 'article'
     inlines = [KeywordInlineFormSet]
     success_url = reverse_lazy('article_list')
@@ -303,6 +361,7 @@ class ArticleCreate(FormWithUserMixin, LoginRequiredMixin, CreateWithInlinesView
         context = super(ArticleCreate, self).get_context_data(**kwargs)
         return context
     def forms_valid(self, form, inlines):
+        # print "form.cleaned_data = %s" % str(form.cleaned_data)
         response = super(ArticleCreate, self).forms_valid(form, inlines)
         # If number_of_articles was specified, clone the model that many times
         if 'number_of_articles' in form.cleaned_data and form.cleaned_data['number_of_articles']:
@@ -316,6 +375,13 @@ class ArticleCreate(FormWithUserMixin, LoginRequiredMixin, CreateWithInlinesView
                     keyword.article = self.object
                     keyword.save()
         return response
+    def get_success_url(self):
+        try:
+            user=self.request.user
+            user_profile=self.request.user.get_profile()
+            return reverse_lazy(user_profile.article_list_view)
+        except: return super(ArticleCreate, self).get_success_url()
+        
 
 class ArticleUpdate(FormWithUserMixin, LoginRequiredMixin, UpdateWithInlinesView):
     template_name = 'articles/article_edit.html'
@@ -325,6 +391,12 @@ class ArticleUpdate(FormWithUserMixin, LoginRequiredMixin, UpdateWithInlinesView
     max_num = 1
     inlines = [KeywordInlineFormSet]
     success_url = reverse_lazy('article_list')
+    def get_success_url(self):
+        try:
+            user=self.request.user
+            user_profile=self.request.user.get_profile()
+            return reverse_lazy(user_profile.article_list_view)
+        except: return super(ArticleCreate, self).get_success_url()
     def get_form_class(self):
         if self.request.user == self.object.owner and self.request.user.in_requester_mode: 
             print "making an articleForm"
@@ -499,10 +571,12 @@ class ArticleActionsView(TemplateResponseMixin, View):
             return []
 
     def create_action(self):pass
+    def update_status(self):
+        if self.next_status: self.action_qs.update(status=self.next_status)
     def update_articles(self):
+        self.update_status()
         if self.action:
             self.action_qs.update(**{'last_action':self.action})
-            if self.next_status: self.action_qs.update(status=self.next_status)
             try:self.action_qs.update(**{self.get_action_property_name():self.action})
             except :pass
     def get_action_verb(self):
@@ -520,7 +594,6 @@ class ArticleActionsView(TemplateResponseMixin, View):
         else: messages.success(self.request, 'All (%s) of the articles have been %s sucessfully' % (self.final_qty, self.get_past_tense_action_verb()))
     def post(self, request, *args, **kwargs):
         self.action_qs = self.get_action_queryset()
-
         form_class=self.get_action_form_class()
         if self.action_qs and self.final_qty > 0:
             if form_class: self.action_form=form_class(self.request.POST)
@@ -545,7 +618,7 @@ class RejectArticles(ArticleActionsView):
     next_status = STATUS_RELEASED
     action_property_name = "XXX" # This is to disable automatic assigning of property. We'll do this ourself.
     def filter_action_queryset(self, qs):
-        qs=qs.filter(submitted__isnull=False, approved__isnull=True)
+        qs=qs.filter(submitted__isnull=False)
         return self.filter_by_owner_or_reviewer(qs, self.request.user)
     def create_action(self):
         self.authors = [User.objects.get(pk=w) for w in self.action_qs.values_list('writer', flat=True)]
@@ -558,14 +631,18 @@ class RejectArticles(ArticleActionsView):
                 author=author,
             )
             self.action_qs.filter(writer=author).update(rejected=action)
+    def update_status(self):
+        print "self.action_form.cleaned_data['return_to_writer'] = %s" % str(self.action_form.cleaned_data['return_to_writer'])
+        if self.action_form.cleaned_data['return_to_writer']: self.next_status = STATUS_ASSIGNED
+        else: self.next_status = STATUS_RELEASED
+        super(RejectArticles, self).update_status()
     def update_articles(self):
         super(RejectArticles, self).update_articles()
         self.action_qs = Article.objects.filter(pk__in=list(self.action_qs.values_list('id', flat=True)))
         self.action_qs.update(submitted=None, approved=None)
         # print "qs[0].writer = %s" % str(qs[0].writer)
-        if self.action_form.cleaned_data['return_to_writer']: 
-            pass
-        else:
+        print "self.action_form.cleaned_data['return_to_writer'] = %s" % str(self.action_form.cleaned_data['return_to_writer'])
+        if not self.action_form.cleaned_data['return_to_writer']: 
             self.action_qs.update(writer=None)
             self.action_qs.update(content="")
             self.action_qs.update(title="")
@@ -585,6 +662,20 @@ class ApproveArticles(ArticleActionsView):
             user=self.request.user, 
             code=ACT_APPROVE
         )
+############################### Publish Articles ####################################
+class MarkArticlesAsPublished(ArticleActionsView):
+    next_status = STATUS_PUBLISHED
+    def filter_action_queryset(self, qs):
+        qs=qs.filter(approved__isnull=False)
+        return self.filter_by_owner(qs, self.request.user)
+
+class PublishArticles(MarkArticlesAsPublished):
+    action_form_class = PublishForm
+    next_status = STATUS_PUBLISHED
+    def create_action(self):
+        outlet = self.action_form.cleaned_data['outlet']
+        outlet.do_action(self.action_qs)
+        
 ############################### Submit Actions ####################################
 
 class SubmitArticles(ArticleActionsView):
@@ -670,6 +761,7 @@ class Claim(ArticleActionsView):
     action_verb="claim"
 
 class ClaimAsWriter(Claim):
+    next_status = STATUS_ASSIGNED
     def update_articles(self):
         super(ClaimAsWriter, self).update_articles()
         self.action_qs.update(writer=self.request.user, was_claimed=True)
@@ -704,6 +796,8 @@ class ReleaseAsReviewer(Release):
         self.action_qs.update(reviewer=None, was_claimed=False)
 ############################### Available Actions ##################################
 
+
+
 class MakeAvailable(ArticleActionsView):
     action_verb="make available"
     past_tense_action_verb="made available"
@@ -714,11 +808,13 @@ class MakeAvailableTo(MakeAvailable):
     action_form_class = AvailabilityForm
 
 class MakeAvailableToAllWriters(MakeAvailable):
+    next_status = STATUS_RELEASED
     def update_articles(self):
         super(MakeAvailableToAllWriters, self).update_articles()
         self.action_qs.update(writer_availability="")
         self.action_qs.update(writer=None, was_claimed=False)
 class MakeAvailableToWriter(MakeAvailableTo):
+    next_status = STATUS_RELEASED
     def update_articles(self):
         super(MakeAvailableToWriter, self).update_articles()
         self.action_qs.update(writer_availability=self.action_form.cleaned_data['name'])
@@ -741,6 +837,7 @@ class MakeUnavailable(ArticleActionsView):
     def filter_action_queryset(self, qs):
         return self.filter_by_owner(qs, self.request.user)
 class MakeUnavailableToWriters(MakeUnavailable):
+    next_status = STATUS_NEW
     def update_articles(self):
         super(MakeUnavailableToWriters, self).update_articles()
         self.action_qs.update(writer_availability="Nobody")
@@ -757,6 +854,7 @@ class Assign(ArticleActionsView):
     def filter_action_queryset(self, qs):
         return self.filter_by_owner(qs, self.request.user)
 class AssignToWriter(Assign):
+    next_status = STATUS_ASSIGNED
     def update_articles(self):
         super(AssignToWriter, self).update_articles()
         self.action_qs.update(writer=self.action_form.cleaned_data['user'], was_claimed=False)

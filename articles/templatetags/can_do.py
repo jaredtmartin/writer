@@ -35,7 +35,7 @@ register.filter('can_claim_to_review', can_claim_to_review)
 
 def writing_availability(article, user):
   if article.writer == user: 
-    if article.rejected and article.rejected.author == user: return "Rejected"
+    # if article.status == STATUS_REJECTED and article.rejected.author == user: return "Rejected"
     return "Me"
   if (can_claim_to_write(user, article)): return "Available"
   else: return "Unavailable"

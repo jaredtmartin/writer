@@ -3,14 +3,17 @@ from articles.views import *
 from django.views.generic.simple import direct_to_template
 
 urlpatterns = patterns('',
-    url(r'^articles/$',                         ArticleList.as_view(),          name='article_list'),
+    url(r'^articles/$',                         Available.as_view(),            name='article_list'),
     url(r'^articles/approved/$',                Approved.as_view(),             name='approved'),
     url(r'^articles/assigned/$',                Assigned.as_view(),             name='assigned'),
     url(r'^articles/available/$',               Available.as_view(),            name='available'),
     url(r'^articles/submitted/$',               Submitted.as_view(),            name='submitted'),
     url(r'^articles/rejected/$',                Rejected.as_view(),             name='rejected'),
+    url(r'^articles/published/$',               Published.as_view(),            name='published'),
     url(r'^articles/claimed/$',                 Claimed.as_view(),              name='claimed'),
     url(r'^articles/unavailable/$',             Unavailable.as_view(),          name='unavailable'),
+    url(r'^articles/mine/$',                    MyArticles.as_view(),           name='my_articles'),
+
     url(r'^article/add/$',                      ArticleCreate.as_view(),        name='article_add'),
     url(r'^article/(?P<pk>\d+)/tag/$',          TagArticle.as_view(),           name='tag_article'),
     url(r'^article/(?P<pk>\d+)/publish/$',      PublishArticle.as_view(),       name='publish_article'),
@@ -26,6 +29,9 @@ urlpatterns = patterns('',
     url(r'^articles/claim-as-reviewer/$',       ClaimAsReviewer.as_view(),      name='claim_as_reviewer'),
     url(r'^articles/release-as-writer/$',       ReleaseAsWriter.as_view(),      name='release_as_writer'),
     url(r'^articles/release-as-reviewer/$',     ReleaseAsReviewer.as_view(),    name='release_as_reviewer'),
+
+    url(r'^articles/publish/$',                 PublishArticles.as_view(),      name='publish'),
+    url(r'^articles/mark-as-published/$',       MarkArticlesAsPublished.as_view(), name='mark_as_published'),
 
     url(r'^articles/make-available-to-writer/$',  MakeAvailableToWriter.as_view(),      name='make_available_to_writer'),
     url(r'^articles/make-available-to-all-writers/$',  MakeAvailableToAllWriters.as_view(),      name='make_available_to_all_writers'),

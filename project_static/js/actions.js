@@ -31,14 +31,15 @@ function showDeleteModal(article_id){
 function rejectArticle(url, article_id){
     $('#reject-modal').modal('hide');
     data = "&reason=" + $('#reject_input').val();
-    data += "&return_to_writer=" + $('#id_return_to_writer').val();
+    if ($('#id_return_to_writer').is(':checked')) {data += "&return_to_writer=on"}
+
     doActionOnArticles(url, article_id, data);
 }
 function assignArticles(url, writer, article_id){
     data = "&user=" + writer;
     doActionOnArticles(url, article_id, data);
 }
-function publishArticle(url, outlet){
+function publishArticles(url, outlet){
     data = "&outlet_id=" + outlet;
     // data += "&as_row=" + 'True';
     jQuery.post(url, data, success = ajaxUpdateRow);

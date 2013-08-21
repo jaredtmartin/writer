@@ -11,6 +11,7 @@
   <li class="nav-header"><a href="{% url article_add %}">New Article</a></li>
   <li class="nav-header"><a href="#">Dashboard</a></li>
   <li class="nav-header">Articles</li>
+  {% if user.get_profile.is_requester %}
   <li{% if header = 'Unavailable Articles' %} class="active"{% endif %}>
     <a href="{% url unavailable %}">Unavailable<span class="nav-counter">??</span></a>
   </li>
@@ -32,6 +33,32 @@
   <li{% if header = 'Rejected Articles' %} class="active"{% endif %}>
     <a href="{% url rejected %}">Rejected<span class="nav-counter">??</span></a>
   </li>
+  <li{% if header = 'Published Articles' %} class="active"{% endif %}>
+    <a href="{% url published %}">Published<span class="nav-counter">??</span></a>
+  </li>
+  {% elif user.get_profile.is_writer %}
+    <li{% if header = 'Available Articles' %} class="active"{% endif %}>
+      <a href="{% url available %}">Available<span class="nav-counter">??</span></a>
+    </li>
+    <li{% if header = 'My Articles' %} class="active"{% endif %}>
+      <a href="{% url my_articles %}">Mine<span class="nav-counter">??</span></a>
+    </li>
+    <li{% if header = 'Assigned Articles' %} class="active"{% endif %}>
+      <a href="{% url assigned %}">Assigned<span class="nav-counter">??</span></a>
+    </li>
+    <li{% if header = 'Claimed Articles' %} class="active"{% endif %}>
+      <a href="{% url claimed %}">Claimed<span class="nav-counter">??</span></a>
+    </li>
+    <li{% if header = 'Submitted Articles' %} class="active"{% endif %}>
+      <a href="{% url submitted %}">Submitted<span class="nav-counter">??</span></a>
+    </li>
+  <li{% if header = 'Approved Articles' %} class="active"{% endif %}>
+    <a href="{% url approved %}">Approved<span class="nav-counter">??</span></a>
+  </li>
+  <li{% if header = 'Rejected Articles' %} class="active"{% endif %}>
+    <a href="{% url rejected %}">Rejected<span class="nav-counter">??</span></a>
+  </li>
+  {% endif %}
   <li class="nav-header">Writers</li>
   <li{% if header = 'My Writers' %} class="active"{% endif %}><a href="#">My Writers<span class="nav-counter">??</span></a></li>
   <li{% if header = 'unavailable' %} class="active"{% endif %}><a href="#">Available Writers<span class="nav-counter">??</span></a></li>

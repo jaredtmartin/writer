@@ -1,38 +1,101 @@
 {% load assignment %} 
   {% if user.get_profile.is_requester %} 
+    {# Reject #}
+    {% if header = "Submitted Articles" or header = "Approved Articles" %}
+      <li id="reject-button" class="multiaction"><a onclick="window.article_id=undefined; $('#reject-modal').modal('show');return false;">Reject</a></li>
+    {% endif %}
 
-  {% if header = "Submitted Articles" or header = "Approved Articles" %}
-    <li id="reject-button" class="multiaction"><a onclick="window.article_id=undefined; $('#reject-modal').modal('show');return false;">Reject</a></li>
-  {% elif header = "Available Articles" or "Unavailable Articles" %}
-    <li class="dropdown multiaction">
-      <a data-toggle="dropdown" id="{{group}}-dropdown" class="dropdown-toggle" href="#">
-        <span id="id_{{group}}-status">Available To </span> <b class="caret"></b>
-      </a>
-      <ul class="dropdown-menu">
-        <li><a id="available-option" onclick="make_available('writer');return false;">Everybody</a></li>
-        <li><a id="unavailable-option" onclick="make_unavailable('writer');return false;">Nobody</a></li>
-        {% if available_list %}
-          <li class="divider"></li>
-        {% endif %}
-        {% for contact in available_list %}
-          <li><a id="{{group}}-available-to-option" onclick="make_available_to('{{group}}','{{contact}}');return false;">{{contact}}</a></li>
+    {# Approve #}
+    {% if header = "Submitted Articles" or header = "Rejected Articles" %}
+      <li id="accept-button" class="multiaction"><a onclick="doActionOnArticles('{% url approve_articles %}');return false;">Approve</a></li>
+    {% endif %}
+
+    {# Publish #}
+    {% if header = "Approved Articles" %}
+      <li class="dropdown multiaction">
+        <a data-toggle="dropdown" id="publish-dropdown" class="dropdown-toggle" href="#">Publish <b class="caret"></b></a>
+        <ul class="dropdown-menu">
+          <li><a id="publish-option-{{outlet.pk}}" onclick="doActionOnArticles('{% url mark_as_published %}');return false;">Mark as Published</a></li>
+          {% if publishing_outlets %}
+            <li class="divider"></li>
+          {% endif %}
+          {% for config in publishing_outlet_configs.all %}
+            <li><a id="publish-to{{config.outlet|slugify}}-option-{{config.outlet.pk}}" onclick="publish_articles({{config.outlet.pk}});return false;">{{config.outlet.title}}</a></li>
+          {% endfor %}
+        </ul>
+      </li>
+    {% endif %}
+
+    {# Make Available for Writers #}
+    {% if header = "Available Articles" or header = "Unavailable Articles" %}
+      <li class="dropdown multiaction">
+        <a data-toggle="dropdown" id="writer-availablity-dropdown" class="dropdown-toggle" href="#">Available To <b class="caret"></b></a>
+        <ul class="dropdown-menu">
+          <li><a id="available-option" onclick="make_available('writer');return false;">Everybody</a></li>
+          <li><a id="unavailable-option" onclick="make_unavailable('writer');return false;">Nobody</a></li>
+          {% if writer_availability_list %}
+            <li class="divider"></li>
+          {% endif %}
+          {% for contact in writer_availability_list %}
+            <li><a id="writer-available-to-option-{{contact.pk}}" onclick="make_available_to('writer','{{contact}}');return false;">{{contact}}</a></li>
+          {% endfor %}
+        </ul>
+      </li>
+    {% endif %}
+
+
+    {# Make Available for Reviewers #}
+    {% if header = "Submitted Articles" %}
+      <li class="dropdown multiaction">
+        <a data-toggle="dropdown" id="reviewer-availablity-dropdown" class="dropdown-toggle" href="#">Available To <b class="caret"></b></a>
+        <ul class="dropdown-menu">
+          <li><a id="available-option" onclick="make_available('reviewer');return false;">All Reviewers</a></li>
+          <li><a id="unavailable-option" onclick="make_unavailable('reviewer');return false;">Nobody</a></li>
+          {% if reviewer_availability_list %}
+            <li class="divider"></li>
+          {% endif %}
+          {% for contact in reviewer_availability_list %}
+            <li><a id="reviewer-available-to-option-{{contact.pk}}" onclick="make_available_to('reviewer','{{contact}}');return false;">{{contact}}</a></li>
+          {% endfor %}
+        </ul>
+      </li>
+    {% endif %}
+
+    {# Assign #}
+    {% if header = "Available Articles" or header = "Unavailable Articles" or header = "Assigned Articles" %}
+      <li class="dropdown multiaction">
+        <a data-toggle="dropdown" id="assign-writer-dropdown" class="dropdown-toggle" href="#">Assign To <b class="caret"></b></a>
+        <ul class="dropdown-menu">
+        {% for user in writer_assignment_list %}
+          <li><a id="assign-writer-option-{{user.pk}}" onclick="assign_user('writer',{{user.pk}},'{{user.full_name}}');return false;">{{user.full_name}}</a></li>
         {% endfor %}
-      </ul>
-    </li>
-  {% endif %}
-    <li id="delete-button" class="multiaction"><a onclick="showDeleteModal();return false;">Delete</a></li>
-  {% elif user.is_writer %}
-    <div class="btn-group">
-      <button id="writer-claim-button" class="btn btn-small" onclick="doActionOnArticles('{% url claim_articles_as_writer %}');return false;" >Claim</button>
-    </div>
+        </ul>
+      </li>
+    {% endif %}
 
-    <div class="btn-group">
-      <button id="submit-button" class="btn btn-small" onclick="doActionOnArticles('{% url submit_articles %}');return false;" >Submit</button>
-    </div>
+    {# Assign Reviewer #}
+    {% if header = "Submitted Articles" %}
+      <li class="dropdown multiaction">
+        <a data-toggle="dropdown" id="assign-reviewer-dropdown" class="dropdown-toggle" href="#">Assign Reviewer <b class="caret"></b></a>
+        <ul class="dropdown-menu">
+        {% for user in reviewer_assignment_list %}
+          <li><a id="assign-reviewer-option-{{user.pk}}" onclick="assign_user('reviewer',{{user.pk}},'{{user.full_name}}');return false;">{{user.full_name}}</a></li>
+        {% endfor %}
+        </ul>
+      </li>
+    {% endif %}
 
-    <div class="btn-group">
-      <button id="writer-release-button" class="btn btn-small" onclick="doActionOnArticles('{% url release_writer %}');return false;" >Release</button>
-    </div>
+  {% elif user.get_profile.is_writer %}
+    {# Claim #}
+    {% if header = "Available Articles" %}
+      <li id="claim-button" class="multiaction"><a onclick="doActionOnArticles('{% url claim_as_writer %}');return false;">Claim</a></li>
+    {% endif %}
+    {# Release & Submit #}
+    {% if header = "My Articles" %}
+      <li id="submit-button" class="multiaction"><a onclick="doActionOnArticles('{% url submit_articles %}');return false;">Submit</a></li>
+      <li id="claim-button" class="multiaction"><a onclick="doActionOnArticles('{% url release_as_writer %}');return false;">Release</a></li>
+    {% endif %}
+
 
   {% elif user.is_reviewer %}
 
@@ -52,5 +115,19 @@
       <button id="reviewer-release-button" class="btn btn-small" onclick="doActionOnArticles('{% url release_reviewer %}');return false;" >Release</button>
     </div>
 
+  {% endif %}
+  {% if never %}
+
+    <div class="btn-group">
+      <button id="writer-claim-button" class="btn btn-small" onclick="doActionOnArticles('{% url claim_as_writer %}');return false;" >Claim</button>
+    </div>
+
+    <div class="btn-group">
+      <button id="submit-button" class="btn btn-small" onclick="doActionOnArticles('{% url submit_articles %}');return false;" >Submit</button>
+    </div>
+
+    <div class="btn-group">
+      <button id="writer-release-button" class="btn btn-small" onclick="doActionOnArticles('{% url release_as_writer %}');return false;" >Release</button>
+    </div>
   {% endif %}
 </span>

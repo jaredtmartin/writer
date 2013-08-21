@@ -70,7 +70,7 @@ STATUS_APPROVED = 'Approved'
 STATUS_PUBLISHED = 'Published'
 STATUSES = (
     (STATUS_NEW, "Unassigned"),
-    (STATUS_RELEASED, 'Released'),
+    (STATUS_RELEASED, 'Available'),
     (STATUS_ASSIGNED, 'Assigned to Writer'),
     (STATUS_SUBMITTED, 'Submitted'),
     (STATUS_APPROVED, 'Approved'),
@@ -403,7 +403,7 @@ class Article(ValidationModelMixin, models.Model):
         elif availability == "Nobody":
             return "Unavailable"
         elif availability=="":
-            return "Available"
+            return "Available to Everybody"
         else:
             return "Available to %s" % availability
     @property
@@ -555,6 +555,7 @@ class UserProfile(models.Model):
     timezone = models.CharField(max_length=32, default='America/Chicago')
     access_token = models.TextField(blank=True, help_text='Facebook token for offline access', null=True)
     mode = models.IntegerField(choices=USER_MODES)
+    article_list_view = models.CharField(max_length=32, blank=True, default='')
     def __unicode__(self): return self.user.username+"'s profile"
 
     @property

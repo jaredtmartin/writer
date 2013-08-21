@@ -27,11 +27,10 @@ class FormWithLookupsMixin(object):
         except model.DoesNotExist: 
             if auto_create: return self.auto_create_related_object(data, name, model)
             else: raise ValidationError('Unable to find %s in the list of %ss.' % (data, title))
-
-class ArticleForm(ModelForm):
+class CreateArticleForm(ModelForm):
     class Meta:
         model = Article
-        fields = ('writer','reviewer','writer_availability','reviewer_availability', 'language', 'style',  'purpose','price','referrals','expires','priority','category','tags', 'minimum','article_type','project','title','body', 'owner','number_of_articles','article_notes','review_notes','description')
+        fields = ('language', 'style', 'purpose','price','referrals','expires','priority','category','tags', 'minimum','article_type','project','title','body', 'owner','number_of_articles','article_notes','review_notes','description')
     # lookup_field_names = {'project':'name'}
     # project = CharField(required=False)
     article_notes   = CharField(widget=widgets.Textarea(attrs={'class':'notes boxsizingBorder','placeholder':'Notes to writer...'}), required=False)
@@ -40,26 +39,36 @@ class ArticleForm(ModelForm):
     number_of_articles = IntegerField(required=False)
     project         = ModelChoiceField(queryset=Project.objects.all(), empty_label="Project", widget=BootstrapDropdownPlus(plus_url="www.google.com", help_text='Select a project or start a new one.'), required=False)
     category        = ModelChoiceField(queryset=Category.objects.all(), empty_label="Category", widget=BootstrapDropdownPlus(plus_url="www.google.com", help_text='Select a category for your article(s).'), required=False)
-    article_type    = ModelChoiceField(queryset=ArticleType.objects.all(), widget=BootstrapDropdownPlus(plus_url="www.google.com", help_text='Select the type of content you want written.'))
+    article_type    = ModelChoiceField(queryset=ArticleType.objects.all(), widget=BootstrapDropdownPlus(plus_url="www.google.com", help_text='Select the type of content you want written.'), initial='0')
     priority        = ChoiceField(choices = ARTICLE_PRIORITIES, widget=BootstrapDropdown(help_text='How urgent is/are the article(s)?'), required=False)
-    minimum         = IntegerField(initial="", widget=widgets.TextInput(attrs={'class':'high-input', 'placeholder':'Length:100'}))
-    
+    minimum         = CharField(initial="", widget=widgets.TextInput(attrs={'class':'high-input', 'placeholder':'Length:100'}), required=False)
     # def clean_project(self):
     #     # Looksup project by name and creates it if it doesnt exist
     #     return self.clean_lookup('project', Project, auto_create=True)
     # def auto_create_related_object(self, data, field_name, model):
     #     # creates the new project with the user as owner
     #     return Project.objects.create(name=data, owner=self.user)
+    def clean_minimum(self):
+        if self.cleaned_data.get('minimum'):
+            try:
+                return int(self.cleaned_data['minimum'].strip())
+            except ValueError:
+                raise ValidationError("Invalid number")
+        return 100
     def __init__(self, *args, **kwargs):
         # Recieves user from request
         self.user = kwargs.pop('user')
         # print "self.fields['project'] = %s" % str(self.fields['project'])
         # print "self.fields['article_type'] = %s" % str(self.fields['article_type'])
-        super(ArticleForm, self).__init__(*args, **kwargs)
+        super(CreateArticleForm, self).__init__(*args, **kwargs)
     def clean_title(self):
         data = self.cleaned_data['title']
         return titlecase(data)
-        
+class ArticleForm(CreateArticleForm):
+    class Meta:
+        model = Article
+        fields = ('writer','reviewer','language', 'style',  'purpose','price','referrals','expires','priority','category','tags', 'minimum','article_type','project','title','body', 'owner','number_of_articles','article_notes','review_notes','description')
+    
 class WriteArticleForm(ModelForm):
     class Meta:
         model = Article
@@ -86,7 +95,10 @@ class TagForm(Form):
 
 class RejectForm(Form):
     reason = CharField(max_length=128)
-    return_to_writer = BooleanField()
+    return_to_writer = BooleanField(required=False)
+
+class PublishForm(Form):
+    outlet = ModelChoiceField(queryset=PublishingOutlet.objects.all())
 
 class NoteForm(Form):
     note = CharField(max_length=128)

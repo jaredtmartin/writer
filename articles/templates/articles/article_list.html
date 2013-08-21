@@ -2,9 +2,6 @@
 {% load actions %}
 {% load assignment %}
 {% block multiactions %}
-  {% if header != "Unavailable Articles" %}
-    <li><a id="make-unavailable" onclick="make_unavailable('{{group}}');return false;">Make Unavailable</a>
-  {% endif %}
   {% include "articles/action_bar.html"%}
 {% endblock multiactions %}
 {% block content %}
@@ -161,6 +158,9 @@
         doActionOnArticles('{% url assign_to_reviewer %}', undefined, "&user="+id);
       }
         
+    }
+    function publish_articles(id){
+        doActionOnArticles('{% url publish %}', undefined, "&outlet="+id);
     }
   </script>
 {% endblock js %}
