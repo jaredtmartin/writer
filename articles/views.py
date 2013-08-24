@@ -141,8 +141,8 @@ class FormWithUserMixin(object):
         kwargs.update({'user': self.request.user})
         return kwargs
 
-class FilterableActionListView(GetActionsMixin, FilterableListView):
-    pass
+# class FilterableActionListView(GetActionsMixin, FilterableListView):
+
             
 class SearchableListView(SearchableListMixin, ListView):
     # adds context "q" for searching and mixes in search
@@ -152,41 +152,115 @@ class SearchableListView(SearchableListMixin, ListView):
         return context
 
 # class ArticleList(GetActionsMixin, FilterableListView):
-class ArticleList(GetActionsMixin, SearchableListView):
+class SidebarContextMixin(object):
+    def filter_approved(self, qs, user):
+        return qs.filter(status=STATUS_APPROVED)
+    def filter_assigned(self, qs, user):
+        if user.mode==WRITER_MODE:
+            return qs.filter(writer=user, was_claimed=False, status=STATUS_ASSIGNED)
+        elif user.mode==REQUESTER_MODE:
+            return qs.filter(writer__isnull=False, was_claimed=False, status=STATUS_ASSIGNED)
+    def filter_available(self, qs, user):
+        if user.mode==WRITER_MODE:
+            return qs.filter(writer=None).filter(Q(writer_availability="")|Q(writer_availability__in=self.request.user.writing_contacts))
+        elif user.mode==REQUESTER_MODE:
+            return qs.filter(writer=None).exclude(writer_availability="Nobody")
+        elif user.mode==REVIEWER_MODE:
+            return qs.filter(reviewer=None,submitted__isnull=False).filter(Q(reviewer_availability="")|Q(reviewer_availability__in=self.request.user.reviewing_contacts))
+    def filter_claimed(self, qs, user):
+        if user.mode==WRITER_MODE:
+            return qs.filter(writer=user, was_claimed=True, status=STATUS_ASSIGNED)
+        elif user.mode==REQUESTER_MODE:
+            return qs.filter(was_claimed=True, status=STATUS_ASSIGNED)
+    def filter_rejected(self, qs, user):
+        return qs.filter(rejected__isnull=False)
+    def filter_published(self, qs, user):
+        return qs.filter(status=STATUS_PUBLISHED)
+    def filter_submitted(self, qs, user):
+        if user.mode==WRITER_MODE:
+            return qs.filter(writer=user, status=STATUS_SUBMITTED,submitted__isnull=False, approved__isnull=True)
+        elif user.mode==REQUESTER_MODE:
+            return qs.filter(status=STATUS_SUBMITTED,submitted__isnull=False, approved__isnull=True)
+    def filter_unavailable(self, qs, user):
+        return qs.filter(writer_availability="Nobody", status__in=[STATUS_NEW, STATUS_RELEASED])
+    def get_filters(self, user):
+        if user.mode==WRITER_MODE:
+            return {
+                'Available':self.filter_available,
+                'Assigned':self.filter_assigned,
+                'Claimed':self.filter_claimed,
+                'Submitted':self.filter_submitted,
+                'Approved':self.filter_approved,
+                'Rejected':self.filter_rejected,
+                'order':['Available','Assigned','Claimed','Submitted','Approved','Rejected']
+            }
+        elif user.mode==REQUESTER_MODE:
+            return {
+                'Unavailable':self.filter_unavailable,
+                'Available':self.filter_available,
+                'Assigned':self.filter_assigned,
+                'Claimed':self.filter_claimed,
+                'Submitted':self.filter_submitted,
+                'Approved':self.filter_approved,
+                'Rejected':self.filter_rejected,
+                'Published':self.filter_published,
+                'order':['Unavailable','Available','Assigned','Claimed','Submitted','Approved','Rejected','Published']
+            }
+        elif user.mode==REVIEWER_MODE:
+            return {
+                'Available':self.filter_available,
+                'Approved':self.filter_approved,
+                'Rejected':self.filter_rejected,
+                'order':['Available','Approved','Rejected']
+            }
+    def get_sidebar_context(self):
+        filters = self.get_filters(self.request.user)
+        return [[f,reverse_lazy(f.lower()),filters[f](Article.objects.all(), self.request.user).count()] for f in filters['order']]
+
+    def get_context_data(self, **kwargs):
+        kwargs['view_filters']=self.get_sidebar_context()
+        return super(SidebarContextMixin, self).get_context_data(**kwargs)
+    
+class ArticleList(SidebarContextMixin, GetActionsMixin, SearchableListView):
     model = Article
     search_fields = ['tags', 'project__name', 'keyword__keyword']
     hidden_columns = ['Reviewer','Status','Category','Length','Priority','Tags']
     name = "All"
     reverse_url=None
-    # filter_fields={
-    #     'minimum':FilterWithChoicesFromModel(name='minimum', model=Article),
-    #     'project':RelatedFilter(name='project', model=Article, display_attr='name'),
-    #     'last_action':StatusFilter(name='last_action', model=Article, display_attr='code'),
-    #     'status':django_filters.CharFilter(name='status'),
-    # }
+    
     def get_view_header(self):
-        return self.name.title()+ " Articles"
+        return self.current_filter.title()+ " Articles"
     def get_hidden_columns(self):
         return self.hidden_columns
     def get_reverse_url(self):
         if self.reverse_url: return self.reverse_url
         else: return self.name.lower()
     def get_context_data(self, **kwargs):
+        # kwargs['view_filters']=self.get_sidebar_context()
+        kwargs['current_filter'] = self.current_filter
         kwargs['selected_tab']=self.name
-
         kwargs['hidden_columns']=self.get_hidden_columns()
         kwargs['all_columns']=['Project','Keywords','Writer','Reviewer','Status','Category','Length','Priority','Tags']
         kwargs['header']=self.get_view_header()
         context = super(ArticleList, self).get_context_data(**kwargs)
         return context
     def get(self, request, *args, **kwargs):
+        try: self.request.user.mode
+        except: self.request.user.mode = None
         response = super(ArticleList, self).get(request, *args, **kwargs)
-        user_profile=self.request.user.get_profile()
-        user_profile.article_list_view = self.get_reverse_url()
-        user_profile.save()
+        try:
+            user_profile=self.request.user.get_profile()
+            user_profile.article_list_view = self.get_reverse_url()
+            user_profile.save()
+        except AttributeError:pass
         return response
-    # def get_queryset(self):
-    #     qs=super(ArticleList, self).get_queryset()
+    def get_queryset(self):
+        self.current_filter = self.request.GET.get('view', 'Available')
+        if not self.current_filter in self.get_filters(self.request.user).keys(): self.current_filter = 'Available'
+        view_filter = self.get_filters(self.request.user).get(self.current_filter,None)
+        qs=super(ArticleList, self).get_queryset()
+        if view_filter: qs=view_filter(qs, self.request.user)
+        return qs
     #     # if 'last_action' in self.request.GET:
     #     #     qs=qs.filter(last_action__code=self.request.GET['last_action'])
     #     if 'status' in self.request.GET:
@@ -199,12 +273,14 @@ class AvailablilityView(ArticleList):
     def get_assignee_list(self, group):
         return list(set([contact.worker for contact in group]))
     def get_context_data(self, **kwargs):
-        print "self.request.user.writer_contacts = %s" % str(self.request.user.writer_contacts)
-        kwargs['writer_availability_list']  = self.get_available_list(self.request.user.writer_contacts)
-        kwargs['reviewer_availability_list']= self.get_available_list(self.request.user.reviewer_contacts)
-        kwargs['writer_assignment_list']    = self.get_assignee_list(self.request.user.writer_contacts)
-        kwargs['reviewer_assignment_list']  = self.get_assignee_list(self.request.user.reviewer_contacts)
-        print "kwargs = %s" % str(kwargs)
+        # print "self.request.user.writer_contacts = %s" % str(self.request.user.writer_contacts)
+        try:
+            kwargs['writer_availability_list']  = self.get_available_list(self.request.user.writer_contacts)
+            kwargs['reviewer_availability_list']= self.get_available_list(self.request.user.reviewer_contacts)
+            kwargs['writer_assignment_list']    = self.get_assignee_list(self.request.user.writer_contacts)
+            kwargs['reviewer_assignment_list']  = self.get_assignee_list(self.request.user.reviewer_contacts)
+        except AttributeError: pass
+        # print "kwargs = %s" % str(kwargs)
         context = super(AvailablilityView, self).get_context_data(**kwargs)
         return context
 
@@ -392,11 +468,18 @@ class ArticleUpdate(FormWithUserMixin, LoginRequiredMixin, UpdateWithInlinesView
     inlines = [KeywordInlineFormSet]
     success_url = reverse_lazy('article_list')
     def get_success_url(self):
+        print "get_success_url"
         try:
             user=self.request.user
+            print "user = %s" % str(user)
             user_profile=self.request.user.get_profile()
-            return reverse_lazy(user_profile.article_list_view)
-        except: return super(ArticleCreate, self).get_success_url()
+            print "user_profile = %s" % str(user_profile)
+            url= reverse_lazy(user_profile.article_list_view)
+            print "url = %s" % str(url)
+        except: 
+            print "hit error"
+            url= super(ArticleUpdate, self).get_success_url()
+        return url
     def get_form_class(self):
         if self.request.user == self.object.owner and self.request.user.in_requester_mode: 
             print "making an articleForm"

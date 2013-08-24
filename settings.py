@@ -237,7 +237,7 @@ LOGGING = {
 }
 #LOGIN_URL='https://www.facebook.com/dialog/oauth?client_id=YOUR_APP_ID&redirect_uri=YOUR_REDIRECT_URI&state=SOME_ARBITRARY_BUT_UNIQUE_STRING'
 LOGIN_URL='/accounts/login/'
-LOGIN_REDIRECT_URL = "/articles/articles/"
+LOGIN_REDIRECT_URL = "/articles/"
 ################### Facebook Integration Settings ################### 
 FACEBOOK_APP_ID = '519129288106424'
 FACEBOOK_APP_SECRET = '93c96e8759a2a91bd13336d32e398795'
