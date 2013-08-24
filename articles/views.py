@@ -220,8 +220,26 @@ class SidebarContextMixin(object):
     def get_context_data(self, **kwargs):
         kwargs['view_filters']=self.get_sidebar_context()
         return super(SidebarContextMixin, self).get_context_data(**kwargs)
-    
-class ArticleList(SidebarContextMixin, GetActionsMixin, SearchableListView):
+class AvailablilityMixin(object):
+    # Adds in code to put together dropdowns for assigning articles and making articles available
+    def get_available_list(self, group):
+        return list(set([c.name for c in group]))
+    def get_assignee_list(self, group):
+        return list(set([contact.worker for contact in group]))
+    def get_context_data(self, **kwargs):
+        # print "self.request.user.writer_contacts = %s" % str(self.request.user.writer_contacts)
+        try:
+            kwargs['writer_availability_list']  = self.get_available_list(self.request.user.writer_contacts)
+            kwargs['reviewer_availability_list']= self.get_available_list(self.request.user.reviewer_contacts)
+            kwargs['writer_assignment_list']    = self.get_assignee_list(self.request.user.writer_contacts)
+            kwargs['reviewer_assignment_list']  = self.get_assignee_list(self.request.user.reviewer_contacts)
+        except AttributeError: pass
+        # print "kwargs = %s" % str(kwargs)
+        context = super(AvailablilityMixin, self).get_context_data(**kwargs)
+        return context    
+
+
+class ArticleList(AvailablilityMixin, SidebarContextMixin, GetActionsMixin, SearchableListView):
     model = Article
     search_fields = ['tags', 'project__name', 'keyword__keyword']
     hidden_columns = ['Reviewer','Status','Category','Length','Priority','Tags']
@@ -266,110 +284,110 @@ class ArticleList(SidebarContextMixin, GetActionsMixin, SearchableListView):
     #     if 'status' in self.request.GET:
     #         qs=qs.filter(status=self.request.GET['status'])
     #     return qs
-class AvailablilityView(ArticleList):
-    # Adds in code to put together dropdowns for assigning articles and making articles available
-    def get_available_list(self, group):
-        return list(set([c.name for c in group]))
-    def get_assignee_list(self, group):
-        return list(set([contact.worker for contact in group]))
-    def get_context_data(self, **kwargs):
-        # print "self.request.user.writer_contacts = %s" % str(self.request.user.writer_contacts)
-        try:
-            kwargs['writer_availability_list']  = self.get_available_list(self.request.user.writer_contacts)
-            kwargs['reviewer_availability_list']= self.get_available_list(self.request.user.reviewer_contacts)
-            kwargs['writer_assignment_list']    = self.get_assignee_list(self.request.user.writer_contacts)
-            kwargs['reviewer_assignment_list']  = self.get_assignee_list(self.request.user.reviewer_contacts)
-        except AttributeError: pass
-        # print "kwargs = %s" % str(kwargs)
-        context = super(AvailablilityView, self).get_context_data(**kwargs)
-        return context
+# class AvailablilityView(ArticleList):
+#     # Adds in code to put together dropdowns for assigning articles and making articles available
+#     def get_available_list(self, group):
+#         return list(set([c.name for c in group]))
+#     def get_assignee_list(self, group):
+#         return list(set([contact.worker for contact in group]))
+#     def get_context_data(self, **kwargs):
+#         # print "self.request.user.writer_contacts = %s" % str(self.request.user.writer_contacts)
+#         try:
+#             kwargs['writer_availability_list']  = self.get_available_list(self.request.user.writer_contacts)
+#             kwargs['reviewer_availability_list']= self.get_available_list(self.request.user.reviewer_contacts)
+#             kwargs['writer_assignment_list']    = self.get_assignee_list(self.request.user.writer_contacts)
+#             kwargs['reviewer_assignment_list']  = self.get_assignee_list(self.request.user.reviewer_contacts)
+#         except AttributeError: pass
+#         # print "kwargs = %s" % str(kwargs)
+#         context = super(AvailablilityView, self).get_context_data(**kwargs)
+#         return context
 
-class MyArticles(ArticleList):
-    name = "My"
-    reverse_url = 'my_articles'
-    def get_queryset(self):
-        qs=super(MyArticles, self).get_queryset()
-        qs=qs.filter(writer=self.request.user).exclude(status=STATUS_SUBMITTED)
-        return qs
-class Approved(ArticleList):
-    name = "Approved"
-    def get_context_data(self, **kwargs):
-        kwargs['publishing_outlet_configs']=self.request.user.publishing_outlets
-        print "kwargs = %s" % str(kwargs)
-        context = super(Approved, self).get_context_data(**kwargs)
-        print "context = %s" % str(context)
-        return context
-    def get_queryset(self):
-        qs=super(Approved, self).get_queryset()
-        qs=qs.filter(status=STATUS_APPROVED)
-        return qs
-class Assigned(AvailablilityView):
-    name = "Assigned"
-    def get_queryset(self):
-        qs=super(Assigned, self).get_queryset()
-        user=self.request.user
-        if user.mode==WRITER_MODE:
-            qs=qs.filter(writer=user, was_claimed=False, status=STATUS_ASSIGNED)
-        elif user.mode==REQUESTER_MODE:
-            qs=qs.filter(writer__isnull=False, was_claimed=False, status=STATUS_ASSIGNED)
-        return qs
-class Available(AvailablilityView):
-    name = "Available"
-    def get_queryset(self):
-        qs=super(Available, self).get_queryset()
-        user=self.request.user
-        if user.mode==WRITER_MODE:
-            qs=qs.filter(writer=None).filter(Q(writer_availability="")|Q(writer_availability__in=self.request.user.writing_contacts))
-        elif user.mode==REQUESTER_MODE:
-            qs=qs.filter(writer=None).exclude(writer_availability="Nobody")
-        elif user.mode==REVIEWER_MODE:
-            qs=qs.filter(reviewer=None,submitted__isnull=False).filter(Q(reviewer_availability="")|Q(reviewer_availability__in=self.request.user.reviewing_contacts))
-        # This is for available from requesters viewpoint
+# class MyArticles(ArticleList):
+#     name = "My"
+#     reverse_url = 'my_articles'
+#     def get_queryset(self):
+#         qs=super(MyArticles, self).get_queryset()
+#         qs=qs.filter(writer=self.request.user).exclude(status=STATUS_SUBMITTED)
+#         return qs
+# class Approved(ArticleList):
+#     name = "Approved"
+#     def get_context_data(self, **kwargs):
+#         kwargs['publishing_outlet_configs']=self.request.user.publishing_outlets
+#         print "kwargs = %s" % str(kwargs)
+#         context = super(Approved, self).get_context_data(**kwargs)
+#         print "context = %s" % str(context)
+#         return context
+#     def get_queryset(self):
+#         qs=super(Approved, self).get_queryset()
+#         qs=qs.filter(status=STATUS_APPROVED)
+#         return qs
+# class Assigned(AvailablilityView):
+#     name = "Assigned"
+#     def get_queryset(self):
+#         qs=super(Assigned, self).get_queryset()
+#         user=self.request.user
+#         if user.mode==WRITER_MODE:
+#             qs=qs.filter(writer=user, was_claimed=False, status=STATUS_ASSIGNED)
+#         elif user.mode==REQUESTER_MODE:
+#             qs=qs.filter(writer__isnull=False, was_claimed=False, status=STATUS_ASSIGNED)
+#         return qs
+# class Available(AvailablilityView):
+#     name = "Available"
+#     def get_queryset(self):
+#         qs=super(Available, self).get_queryset()
+#         user=self.request.user
+#         if user.mode==WRITER_MODE:
+#             qs=qs.filter(writer=None).filter(Q(writer_availability="")|Q(writer_availability__in=self.request.user.writing_contacts))
+#         elif user.mode==REQUESTER_MODE:
+#             qs=qs.filter(writer=None).exclude(writer_availability="Nobody")
+#         elif user.mode==REVIEWER_MODE:
+#             qs=qs.filter(reviewer=None,submitted__isnull=False).filter(Q(reviewer_availability="")|Q(reviewer_availability__in=self.request.user.reviewing_contacts))
+#         # This is for available from requesters viewpoint
 
 
-        # This is for available to writer
-        # 
-        return qs
-class Claimed(AvailablilityView):
-    name = "Claimed"
-    def get_queryset(self):
-        qs=super(Claimed, self).get_queryset()
-        user=self.request.user
-        if user.mode==WRITER_MODE:
-            qs=qs.filter(writer=user, was_claimed=True, status=STATUS_ASSIGNED)
-        elif user.mode==REQUESTER_MODE:
-            qs=qs.filter(was_claimed=True, status=STATUS_ASSIGNED)
-        return qs
-class Rejected(ArticleList):
-    name = "Rejected"
-    def get_queryset(self):
-        qs=super(Rejected, self).get_queryset()
-        qs=qs.filter(rejected__isnull=False)
-        return qs
-class Published(ArticleList):
-    name = "Published"
-    def get_queryset(self):
-        qs=super(Published, self).get_queryset()
-        qs=qs.filter(status=STATUS_PUBLISHED)
-        return qs
-class Submitted(AvailablilityView):
-    name = "Submitted"
+#         # This is for available to writer
+#         # 
+#         return qs
+# class Claimed(AvailablilityView):
+#     name = "Claimed"
+#     def get_queryset(self):
+#         qs=super(Claimed, self).get_queryset()
+#         user=self.request.user
+#         if user.mode==WRITER_MODE:
+#             qs=qs.filter(writer=user, was_claimed=True, status=STATUS_ASSIGNED)
+#         elif user.mode==REQUESTER_MODE:
+#             qs=qs.filter(was_claimed=True, status=STATUS_ASSIGNED)
+#         return qs
+# class Rejected(ArticleList):
+#     name = "Rejected"
+#     def get_queryset(self):
+#         qs=super(Rejected, self).get_queryset()
+#         qs=qs.filter(rejected__isnull=False)
+#         return qs
+# class Published(ArticleList):
+#     name = "Published"
+#     def get_queryset(self):
+#         qs=super(Published, self).get_queryset()
+#         qs=qs.filter(status=STATUS_PUBLISHED)
+#         return qs
+# class Submitted(AvailablilityView):
+#     name = "Submitted"
 
-    def get_queryset(self):
-        qs=super(Submitted, self).get_queryset()
-        user=self.request.user
-        if user.mode==WRITER_MODE:
-            qs=qs.filter(writer=user, status=STATUS_SUBMITTED,submitted__isnull=False, approved__isnull=True)
-        elif user.mode==REQUESTER_MODE:
-            qs=qs.filter(status=STATUS_SUBMITTED,submitted__isnull=False, approved__isnull=True)
-        return qs
+#     def get_queryset(self):
+#         qs=super(Submitted, self).get_queryset()
+#         user=self.request.user
+#         if user.mode==WRITER_MODE:
+#             qs=qs.filter(writer=user, status=STATUS_SUBMITTED,submitted__isnull=False, approved__isnull=True)
+#         elif user.mode==REQUESTER_MODE:
+#             qs=qs.filter(status=STATUS_SUBMITTED,submitted__isnull=False, approved__isnull=True)
+#         return qs
 
-class Unavailable(AvailablilityView):
-    name = "Unavailable"
-    def get_queryset(self):
-        qs=super(Unavailable, self).get_queryset()
-        qs=qs.filter(writer_availability="Nobody", status__in=[STATUS_NEW, STATUS_RELEASED])
-        return qs
+# class Unavailable(AvailablilityView):
+#     name = "Unavailable"
+#     def get_queryset(self):
+#         qs=super(Unavailable, self).get_queryset()
+#         qs=qs.filter(writer_availability="Nobody", status__in=[STATUS_NEW, STATUS_RELEASED])
+#         return qs
 
 class AjaxDeleteRowView(DeleteView):
     def delete(self, request, *args, **kwargs):
