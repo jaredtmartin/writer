@@ -381,8 +381,10 @@ class ArticleList(AvailablilityMixin, GetActionsMixin, ArticleFilterMixin, ListV
     #     return qs
     
     def get_view_header(self):
-      return self.filters['view'].value.title()+ " Articles"
-      return self.current_filter.title()+ " Articles"
+      header=self.filters['view'].value
+      if header: return header.title()+ " Articles"
+      else: return "Available Articles"
+      # return self.current_filter.title()+ " Articles"
     def get_hidden_columns(self):
         return self.hidden_columns
     def get_reverse_url(self):
