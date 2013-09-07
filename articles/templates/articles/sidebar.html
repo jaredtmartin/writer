@@ -1,17 +1,16 @@
 {% load addparam %}
-
-
 <ul class="nav nav-list">
   <li><form class="navbar-search">
   <div class="input-append">
-    <input type="text" class="search-query search-query-rounded" placeholder="Search" id="search-query-1">
+    <input type="text" class="search-query search-query-rounded" placeholder="Search" id="search-query-1" value="{{filters.search.value|default:""}}">
+    <input type="hidden" id="search-input" value="{{filters.search.value}}">
     <button type="submit" class="btn" id="search-button"><span class="fui-search"></span></button>
   </div>
 </form></li>
   <li class="nav-header"><a href="{% url article_add %}">New Article</a></li>
   <li class="nav-header"><a href="#">Dashboard</a></li>
   <li class="nav-header">Articles</li>
-    {% for filter in view_filters %}
+    {% for filter in filters.view.context %}
       {% with name=filter.0 url=filter.1 count=filter.2 %}
       <li{% if current_filter = name %} class="active"{% endif %}>
         <a href="{{url}}">{{name|capfirst}}{% if count %}<span class="nav-counter">{{count}}</span>{% endif %}</a>

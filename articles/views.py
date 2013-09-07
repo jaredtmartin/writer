@@ -45,8 +45,8 @@ class Filter(object):
   value=None
   user_profile=None
   def __init__(self, **kwargs):
-    self.request = kwargs.pop('request', None)
-    if self.request: self.value=self.get_value_from_request()
+    request = kwargs.pop('request', None)
+    if request: self.save_request(request)
     self.model=kwargs.pop('model', None)                # Ex: Project
     self.choices=kwargs.pop('choices',self.build_choices())
     self.query_list=kwargs.pop('query_list', None)
@@ -61,6 +61,7 @@ class Filter(object):
     self.null_query=kwargs.pop('null_query', None) # query string to use to look for null values
     if not self.null_query: self.null_query = self.base_attr_name+'__isnull'
   def save_filter_values_from_request(self, request):
+    self.save_request(request)
     args = (request.GET or request.POST)
     print "args = %s" % str(args)
     print "self.request_keyword = %s" % str(self.request_keyword)
@@ -90,7 +91,10 @@ class Filter(object):
     if x and y: return x | y
     elif x: return x
     elif y: return y
-  def filter(self, qs, value=None):
+  def save_request(self, request):
+    self.request = request
+  def filter(self, qs, value=None, request=None):
+    if request: self.save_request(request)
     if not value: value=self.value
     if not value: return qs
     if not type(self.query_list)== list: self.query_list=[self.query_list]
@@ -105,11 +109,83 @@ class Filter(object):
       print "qs.filter(q) = %s" % str(qs.filter(q))
     qs=qs.filter(q)
     return qs
-class SearchFilter(Filter):
-  def build_choices(self): return {}
-  def __init__(self, **kwargs):
+class ViewFilter(Filter):
+  def get_context(self):
+    return [[f,reverse_lazy(f.lower()),self.filters[f](Article.objects.all()).count()] for f in self.filters['order']]
 
-    super(SearchFilter, self).__init__(**kwargs)
+  def save_request(self, request):
+    self.request = request
+    self.filters=self.get_filters()
+    self.context=self.get_context()
+  def filter_approved(self, qs):
+      return qs.filter(status=STATUS_APPROVED)
+  def filter_assigned(self, qs):
+      if self.user_mode==WRITER_MODE:
+          return qs.filter(writer=self.request.user, was_claimed=False, status=STATUS_ASSIGNED)
+      elif self.user_mode==REQUESTER_MODE:
+          return qs.filter(writer__isnull=False, was_claimed=False, status=STATUS_ASSIGNED)
+  def filter_available(self, qs):
+      if self.user_mode==WRITER_MODE:
+          return qs.filter(writer=None).filter(Q(writer_availability="")|Q(writer_availability__in=self.request.user.writing_contacts))
+      elif self.user_mode==REQUESTER_MODE:
+          return qs.filter(writer=None).exclude(writer_availability="Nobody")
+      elif self.user_mode==REVIEWER_MODE:
+          return qs.filter(reviewer=None,submitted__isnull=False).filter(Q(reviewer_availability="")|Q(reviewer_availability__in=self.request.user.reviewing_contacts))
+  def filter_claimed(self, qs):
+      if self.user_mode==WRITER_MODE:
+          return qs.filter(writer=self.request.user, was_claimed=True, status=STATUS_ASSIGNED)
+      elif self.user_mode==REQUESTER_MODE:
+          return qs.filter(was_claimed=True, status=STATUS_ASSIGNED)
+  def filter_rejected(self, qs):
+      return qs.filter(rejected__isnull=False)
+  def filter_published(self, qs):
+      return qs.filter(status=STATUS_PUBLISHED)
+  def filter_submitted(self, qs):
+      if self.user_mode==WRITER_MODE:
+          return qs.filter(writer=self.request.user, status=STATUS_SUBMITTED,submitted__isnull=False, approved__isnull=True)
+      elif self.user_mode==REQUESTER_MODE:
+          return qs.filter(status=STATUS_SUBMITTED,submitted__isnull=False, approved__isnull=True)
+  def filter_unavailable(self, qs):
+      return qs.filter(writer_availability="Nobody", status__in=[STATUS_NEW, STATUS_RELEASED])
+  def get_filters(self):
+    self.user_mode=self.request.user.mode
+    if self.user_mode==WRITER_MODE:
+        return {
+            'Available':self.filter_available,
+            'Assigned':self.filter_assigned,
+            'Claimed':self.filter_claimed,
+            'Submitted':self.filter_submitted,
+            'Approved':self.filter_approved,
+            'Rejected':self.filter_rejected,
+            'order':['Available','Assigned','Claimed','Submitted','Approved','Rejected']
+        }
+    elif self.user_mode==REQUESTER_MODE:
+        return {
+            'Unavailable':self.filter_unavailable,
+            'Available':self.filter_available,
+            'Assigned':self.filter_assigned,
+            'Claimed':self.filter_claimed,
+            'Submitted':self.filter_submitted,
+            'Approved':self.filter_approved,
+            'Rejected':self.filter_rejected,
+            'Published':self.filter_published,
+            'order':['Unavailable','Available','Assigned','Claimed','Submitted','Approved','Rejected','Published']
+        }
+    elif self.user_mode==REVIEWER_MODE:
+        return {
+            'Available':self.filter_available,
+            'Approved':self.filter_approved,
+            'Rejected':self.filter_rejected,
+            'order':['Available','Approved','Rejected']
+        }
+  # def save_filter_values_from_request(self, request):
+  #   super(ViewFilter, self).save_filter_values_from_request(request)
+  #   self.filters=self.get_filters()
+  def filter(self, qs, value=None, request=None):
+    if request: self.request=request
+    if not value: value=self.value
+    if not value: return qs
+    return self.filters[value](qs)
 class GetActionsMixin(object):
     def get_context_data(self, *args, **kwargs):
         object_list_displayed = kwargs['object_list']
@@ -140,74 +216,74 @@ class SearchableListView(SearchableListMixin, ListView):
         return context
 
 # class ArticleList(GetActionsMixin, FilterableListView):
-class SidebarContextMixin(object):
-    def filter_approved(self, qs, user):
-        return qs.filter(status=STATUS_APPROVED)
-    def filter_assigned(self, qs, user):
-        if user.mode==WRITER_MODE:
-            return qs.filter(writer=user, was_claimed=False, status=STATUS_ASSIGNED)
-        elif user.mode==REQUESTER_MODE:
-            return qs.filter(writer__isnull=False, was_claimed=False, status=STATUS_ASSIGNED)
-    def filter_available(self, qs, user):
-        if user.mode==WRITER_MODE:
-            return qs.filter(writer=None).filter(Q(writer_availability="")|Q(writer_availability__in=self.request.user.writing_contacts))
-        elif user.mode==REQUESTER_MODE:
-            return qs.filter(writer=None).exclude(writer_availability="Nobody")
-        elif user.mode==REVIEWER_MODE:
-            return qs.filter(reviewer=None,submitted__isnull=False).filter(Q(reviewer_availability="")|Q(reviewer_availability__in=self.request.user.reviewing_contacts))
-    def filter_claimed(self, qs, user):
-        if user.mode==WRITER_MODE:
-            return qs.filter(writer=user, was_claimed=True, status=STATUS_ASSIGNED)
-        elif user.mode==REQUESTER_MODE:
-            return qs.filter(was_claimed=True, status=STATUS_ASSIGNED)
-    def filter_rejected(self, qs, user):
-        return qs.filter(rejected__isnull=False)
-    def filter_published(self, qs, user):
-        return qs.filter(status=STATUS_PUBLISHED)
-    def filter_submitted(self, qs, user):
-        if user.mode==WRITER_MODE:
-            return qs.filter(writer=user, status=STATUS_SUBMITTED,submitted__isnull=False, approved__isnull=True)
-        elif user.mode==REQUESTER_MODE:
-            return qs.filter(status=STATUS_SUBMITTED,submitted__isnull=False, approved__isnull=True)
-    def filter_unavailable(self, qs, user):
-        return qs.filter(writer_availability="Nobody", status__in=[STATUS_NEW, STATUS_RELEASED])
-    def get_filters(self, user):
-        if user.mode==WRITER_MODE:
-            return {
-                'Available':self.filter_available,
-                'Assigned':self.filter_assigned,
-                'Claimed':self.filter_claimed,
-                'Submitted':self.filter_submitted,
-                'Approved':self.filter_approved,
-                'Rejected':self.filter_rejected,
-                'order':['Available','Assigned','Claimed','Submitted','Approved','Rejected']
-            }
-        elif user.mode==REQUESTER_MODE:
-            return {
-                'Unavailable':self.filter_unavailable,
-                'Available':self.filter_available,
-                'Assigned':self.filter_assigned,
-                'Claimed':self.filter_claimed,
-                'Submitted':self.filter_submitted,
-                'Approved':self.filter_approved,
-                'Rejected':self.filter_rejected,
-                'Published':self.filter_published,
-                'order':['Unavailable','Available','Assigned','Claimed','Submitted','Approved','Rejected','Published']
-            }
-        elif user.mode==REVIEWER_MODE:
-            return {
-                'Available':self.filter_available,
-                'Approved':self.filter_approved,
-                'Rejected':self.filter_rejected,
-                'order':['Available','Approved','Rejected']
-            }
-    def get_sidebar_context(self):
-        filters = self.get_filters(self.request.user)
-        return [[f,reverse_lazy(f.lower()),filters[f](Article.objects.all(), self.request.user).count()] for f in filters['order']]
+# class SidebarContextMixin(object):
+#     def filter_approved(self, qs, user):
+#         return qs.filter(status=STATUS_APPROVED)
+#     def filter_assigned(self, qs, user):
+#         if user.mode==WRITER_MODE:
+#             return qs.filter(writer=user, was_claimed=False, status=STATUS_ASSIGNED)
+#         elif user.mode==REQUESTER_MODE:
+#             return qs.filter(writer__isnull=False, was_claimed=False, status=STATUS_ASSIGNED)
+#     def filter_available(self, qs, user):
+#         if user.mode==WRITER_MODE:
+#             return qs.filter(writer=None).filter(Q(writer_availability="")|Q(writer_availability__in=self.request.user.writing_contacts))
+#         elif user.mode==REQUESTER_MODE:
+#             return qs.filter(writer=None).exclude(writer_availability="Nobody")
+#         elif user.mode==REVIEWER_MODE:
+#             return qs.filter(reviewer=None,submitted__isnull=False).filter(Q(reviewer_availability="")|Q(reviewer_availability__in=self.request.user.reviewing_contacts))
+#     def filter_claimed(self, qs, user):
+#         if user.mode==WRITER_MODE:
+#             return qs.filter(writer=user, was_claimed=True, status=STATUS_ASSIGNED)
+#         elif user.mode==REQUESTER_MODE:
+#             return qs.filter(was_claimed=True, status=STATUS_ASSIGNED)
+#     def filter_rejected(self, qs, user):
+#         return qs.filter(rejected__isnull=False)
+#     def filter_published(self, qs, user):
+#         return qs.filter(status=STATUS_PUBLISHED)
+#     def filter_submitted(self, qs, user):
+#         if user.mode==WRITER_MODE:
+#             return qs.filter(writer=user, status=STATUS_SUBMITTED,submitted__isnull=False, approved__isnull=True)
+#         elif user.mode==REQUESTER_MODE:
+#             return qs.filter(status=STATUS_SUBMITTED,submitted__isnull=False, approved__isnull=True)
+#     def filter_unavailable(self, qs, user):
+#         return qs.filter(writer_availability="Nobody", status__in=[STATUS_NEW, STATUS_RELEASED])
+#     def get_filters(self, user):
+#         if user.mode==WRITER_MODE:
+#             return {
+#                 'Available':self.filter_available,
+#                 'Assigned':self.filter_assigned,
+#                 'Claimed':self.filter_claimed,
+#                 'Submitted':self.filter_submitted,
+#                 'Approved':self.filter_approved,
+#                 'Rejected':self.filter_rejected,
+#                 'order':['Available','Assigned','Claimed','Submitted','Approved','Rejected']
+#             }
+#         elif user.mode==REQUESTER_MODE:
+#             return {
+#                 'Unavailable':self.filter_unavailable,
+#                 'Available':self.filter_available,
+#                 'Assigned':self.filter_assigned,
+#                 'Claimed':self.filter_claimed,
+#                 'Submitted':self.filter_submitted,
+#                 'Approved':self.filter_approved,
+#                 'Rejected':self.filter_rejected,
+#                 'Published':self.filter_published,
+#                 'order':['Unavailable','Available','Assigned','Claimed','Submitted','Approved','Rejected','Published']
+#             }
+#         elif user.mode==REVIEWER_MODE:
+#             return {
+#                 'Available':self.filter_available,
+#                 'Approved':self.filter_approved,
+#                 'Rejected':self.filter_rejected,
+#                 'order':['Available','Approved','Rejected']
+#             }
+#     def get_sidebar_context(self):
+#         filters = self.get_filters(self.request.user)
+#         return [[f,reverse_lazy(f.lower()),filters[f](Article.objects.all(), self.request.user).count()] for f in filters['order']]
 
-    def get_context_data(self, **kwargs):
-        kwargs['view_filters']=self.get_sidebar_context()
-        return super(SidebarContextMixin, self).get_context_data(**kwargs)
+#     def get_context_data(self, **kwargs):
+#         kwargs['view_filters']=self.get_sidebar_context()
+#         return super(SidebarContextMixin, self).get_context_data(**kwargs)
 class AvailablilityMixin(object):
     # Adds in code to put together dropdowns for assigning articles and making articles available
     def get_available_list(self, group):
@@ -282,9 +358,10 @@ class ArticleFilterMixin(FilterMixin):
       {'name':'project', 'model':Project, 'field_filter':Filter, 'query_list':'project__name__in'}, 
       {'name':'search', 'base_attr_name':'q', 'query_list':['tags__icontains','project__name__icontains','keyword__keyword__icontains']},
       {'name':'writer', 'model':User, 'field_filter':Filter,'base_attr_name':'writer', 'query_list':["writer__username__in","writer__first_name__in","writer__last_name__in"]},
+      {'name':'view','field_filter':ViewFilter, 'base_attr_name':'view',},
     ]
 
-class ArticleList(AvailablilityMixin, SidebarContextMixin, GetActionsMixin, ArticleFilterMixin, ListView):
+class ArticleList(AvailablilityMixin, GetActionsMixin, ArticleFilterMixin, ListView):
     model = Article
     # search_fields = ['tags', 'project__name', 'keyword__keyword']
     hidden_columns = ['Reviewer','Status','Category','Length','Priority','Tags']
@@ -295,16 +372,17 @@ class ArticleList(AvailablilityMixin, SidebarContextMixin, GetActionsMixin, Arti
     #         'project':ProjectFilter(model=Project, base=Article, user=self.request.user),
     #         'writer':Filter(base=Article, model=User, display_attr='username'),
     #     }
-    def get_queryset(self):
-        self.current_filter = self.request.GET.get('view', 'Available')
-        if not self.current_filter in self.get_filters(self.request.user).keys(): self.current_filter = 'Available'
-        view_filter = self.get_filters(self.request.user).get(self.current_filter,None)
-        qs=super(SidebarContextMixin, self).get_queryset()
-        if view_filter: qs=view_filter(qs, self.request.user)
-        return qs
+    # def get_queryset(self):
+    #     self.current_filter = self.request.GET.get('view', 'Available')
+    #     if not self.current_filter in self.get_filters(self.request.user).keys(): self.current_filter = 'Available'
+    #     view_filter = self.get_filters(self.request.user).get(self.current_filter,None)
+    #     qs=super(SidebarContextMixin, self).get_queryset()
+    #     if view_filter: qs=view_filter(qs, self.request.user)
+    #     return qs
     
     def get_view_header(self):
-        return self.current_filter.title()+ " Articles"
+      return self.filters['view'].value.title()+ " Articles"
+      return self.current_filter.title()+ " Articles"
     def get_hidden_columns(self):
         return self.hidden_columns
     def get_reverse_url(self):
@@ -312,7 +390,7 @@ class ArticleList(AvailablilityMixin, SidebarContextMixin, GetActionsMixin, Arti
         else: return self.name.lower()
     def get_context_data(self, **kwargs):
         # kwargs['view_filters']=self.get_sidebar_context()
-        kwargs['current_filter'] = self.current_filter
+        # kwargs['current_filter'] = self.current_filter
         kwargs['selected_tab']=self.name
         kwargs['hidden_columns']=self.get_hidden_columns()
         kwargs['all_columns']=['Project','Keywords','Writer','Reviewer','Status','Category','Length','Priority','Tags']
@@ -894,7 +972,7 @@ class AjaxKeywordInlineForm(FormView):
         form=fs()._construct_form(id_form.cleaned_data['num'])
         return self.render_to_response(self.get_context_data(form=form))
 
-class UpdateFilters(ArticleFilterMixin, SidebarContextMixin, ListView):
+class UpdateFilters(ArticleFilterMixin, ListView):
     template_name = "articles/ajax_article_list_row.html"
     model = Article
 

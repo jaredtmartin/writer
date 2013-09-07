@@ -148,9 +148,9 @@
       for (i = 0; i < tag_list.length; ++i) {
         s=tag_list[i].split(': ');
         if (filters[s[0]]== undefined){
-          filters[s[0]]=s[1];
+          filters[s[0]]=s[1]+",";
         }else{
-          filters[s[0]]+=","+s[1];
+          filters[s[0]]+=s[1]+",";
         }
       }
       return filters
@@ -163,7 +163,7 @@
       for(var key in filters){
         data+="&" + key.toLowerCase() +'=' + filters[key];
       }
-      data+="&view={{header}}"
+      data+="&view=" + '{{header}}'.split(' ')[0]
       $('.article').remove();
       jQuery.get('{% url update_filters %}', data, success = updatePage);
     }
