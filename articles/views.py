@@ -15,7 +15,7 @@ TagArticleForm, ActionUserID, AssignToForm, UserForm, UserProfileForm, NoteForm,
 TagForm, ProjectForm, ACT_SUBMIT, ACT_REJECT, ACT_APPROVE, \
 ACT_ASSIGN_WRITER, ACT_ASSIGN_REVIEWER, ACT_CLAIM_REVIEWER, ACT_RELEASE, ACT_PUBLISH, ACT_COMMENT, \
 ACT_REMOVE_REVIEWER, ACT_REMOVE_WRITER, ACT_CLAIM_WRITER, UserModeForm, PublishForm, \
-STATUS_NEW, STATUS_RELEASED, STATUS_ASSIGNED, STATUS_SUBMITTED, STATUS_APPROVED, \
+STATUS_NEW, STATUS_RELEASED, STATUS_ASSIGNED, STATUS_SUBMITTED, STATUS_APPROVED, FiltersForm, \
 STATUS_PUBLISHED, WriteArticleForm, WRITER_MODE, REVIEWER_MODE, REQUESTER_MODE, AvailabilityForm, CreateArticleForm
 #from django_actions.views import ActionViewMixin
 from django.http import Http404, HttpResponseServerError
@@ -32,6 +32,7 @@ import django_filters
 # from actions import *
 # from django import template
 from django.conf import settings
+from articles.models import UserProfile
 
 VALID_STRING_LOOKUPS = ('exact','isnull','iexact', 'contains', 'icontains', 'startswith', 'istartswith', 'endswith', 'iendswith', 'search', 'regex', 'iregex')
 class LoginRequiredMixin(object):
@@ -40,88 +41,284 @@ class LoginRequiredMixin(object):
     def dispatch(self, *args, **kwargs):
         return super(LoginRequiredMixin, self).dispatch(*args, **kwargs)
 
-class Choice(object):
-    def __init__(self, **kwargs):
-        self.label = kwargs.pop('label')
-        self.base = kwargs.pop('base')
-        self.value = kwargs.pop('value', self.label)
-        self.lookup = kwargs.pop('lookup', 'icontains')
-    def filter(self, qs):
-        print "%s__%s % (self.base, self.lookup): " + str("%s__%s" % (self.base, self.lookup)) 
-        print "self.value: " + str(self.value) 
-        return qs.filter(**{"%s__%s" % (self.base, self.lookup):self.value}) 
+# class Choice(object):
+#   def __init__(self, **kwargs):
+#     # self.label = kwargs.pop('label')
+#     self.display_attr = kwargs.pop('display_attr', 'name')
+#     self.obj = kwargs.pop('obj')
+#     self.lookup = kwargs.pop('lookup', 'icontains')
+#     super(Choice, self).__init__(**kwargs)
+#   def filter(self, qs):
+#     # print "'%s__%s__%s' % (self.obj._meta.object_name, self.display_attr, self.lookup) = %s" % str("%s__%s__%s" % (self.obj._meta.object_name.lower(), self.display_attr, self.lookup))
+#     return qs.filter(**{"%s__%s__%s" % (self.obj._meta.object_name.lower(), self.display_attr, self.lookup):self.obj}) 
         
+# class Filter(object):
+#     def get_model_name(self):
+#         try: return self.model._meta.object_name
+#         except: pass
+#     def __init__(self, **kwargs):
+#       self.base = kwargs.pop('base')                      # EX: Article
+#       self.base_name=self.base._meta.object_name          
+#       self.model=kwargs.pop('model', None)                # Ex: Project
+#       self.model_name = kwargs.pop('model_name', self.get_model_name())
+#       self.display_attr=kwargs.pop('display_attr', 'name')
+#       self.lookup=kwargs.pop('lookup', 'icontains')
+#       self.choices=kwargs.pop('choices',self.build_choices())
+#     def apply_filter(self, qs, selection):
+#       print "self.choices[selection] = %s" % str(self.choices[selection])
+#       print "self.choices[selection].filter(qs) = %s" % str(self.choices[selection].filter(qs))
+#       return self.choices[selection].filter(qs)
+#     def get_choice_key(self, choice):
+#       return unicode(choice)
+#     def build_choice(self, choice):
+#       return Choice(obj=choice, display_attr=self.display_attr, lookup=self.lookup)
+#     def build_choices(self):
+#       choices={}
+#       for choice in self.get_choice_list():
+#           choices[self.get_choice_key(choice)] = self.build_choice(choice)
+#       return choices
+#     def filter_choices(self, qs):
+#       return qs
+#     def get_choice_list(self):
+#         choices=self.filter_choices(self.model.objects.all())
+#         return choices.distinct().order_by(self.display_attr).values_list(self.display_attr, flat=True)
+        
+# class ProjectFilter(Filter):
+#     def __init__(self, **kwargs):
+#         self.user = kwargs.pop('user')
+#         super(ProjectFilter, self).__init__(**kwargs)
+#     def filter_choices(self, qs):
+#         return qs.filter(owner=self.user)
+# class FilterWithChoicesFromModel(Filter):
+#     def __init__(self, **kwargs):
+#         self.model=kwargs.pop('model')
+#         super(FilterWithChoicesFromModel, self).__init__(**kwargs)
+#     def filter_choices(self, qs):
+#         return qs
+#     def get_choice_list(self):
+#         choices=self.filter_choices(self.model.objects.all())
+#         return choices.distinct().order_by(self.name).values_list(self.name, flat=True)
+
+# class RelatedFilter(FilterWithChoicesFromModel):
+#     choice_filter = None
+#     def __init__(self, **kwargs):
+#         self.display_attr = kwargs.pop('display_attr','')
+#         super(RelatedFilter, self).__init__(**kwargs)
+#     def build_choice(self, choice):
+#     	    return Choice(label=unicode(choice), base=self.name, lookup=self.display_attr)
+#     def filter_choices(self, qs):
+#         return qs
+#     def get_choice_list(self):
+#         attr="%s__%s" % (self.name,self.display_attr)
+#         choices=self.filter_choices(self.model.objects.all())
+#         return choices.distinct().order_by(attr).values_list(attr, flat=True)
+
+#     def filter(self, qs, selection):
+#         try: return self.choices[selection].filter(qs)
+#         except KeyError: return qs.none()
+#     def build_choices(self):
+#         choices = super(RelatedFilter, self).build_choices()
+#         if 'None' in choices.keys(): choices['None'].lookup = 'isnull'
+#         return choices
+# class StatusFilter(RelatedFilter):
+#     def __init__(self, **kwargs):
+#         self.codes={}
+#         for code, name in ACTIONS: self.codes[code]=name
+#         super(StatusFilter, self).__init__(**kwargs)
+#         self.display_name="Status"
+
+#     def build_choice(self, choice):
+#         if not choice: return Choice(label=unicode('New'), base=self.name, lookup=self.display_attr, value=choice)
+#         return Choice(label=unicode(self.codes[choice]), base=self.name, lookup=self.display_attr, value=choice)
+# class Choice(object):
+#   def __init__(self, **kwargs):
+#     # self.label = kwargs.pop('label')
+#     self.q=kwargs.pop('q')
+#     # self.display_attr = kwargs.pop('display_attr', 'name')
+#     # self.obj = kwargs.pop('obj')
+#     # self.lookup = kwargs.pop('lookup', 'icontains')
+#     super(Choice, self).__init__(**kwargs)
+#   def return_or(x,y=None):
+#     return x or y
+#   def filter(self, qs):
+    
+#     if type(self.q) == list:
+#       q=None
+#       for i in self.q:
+#         q=return_or(Q(**{i:val}), q)
+#     else: q=self.q
+#     qs = qs.filter(q) 
+#     return qs
 class Filter(object):
-    def __init__(self, **kwargs):
-        self.name = kwargs.pop('name')
-        self.display_name=kwargs.pop('display_name', self.name)
-        self.lookup=kwargs.pop('lookup', 'icontains')
-        self.choices=kwargs.pop('choices',self.build_choices())
-    def filter(self, qs, selection):
-        return self.choices[selection].filter(qs)
-    def get_choice_key(self, choice):
-    	    return unicode(choice)
-    def build_choice(self, choice):
-    	    return Choice(label=unicode(choice), base=self.name)
-    def build_choices(self):
-        choices={}
-        for choice in self.get_choice_list():
-            choices[self.get_choice_key(choice)] = self.build_choice(choice)
-        return choices
-        
-class FilterWithChoicesFromModel(Filter):
-    def __init__(self, **kwargs):
-        self.model=kwargs.pop('model')
-        super(FilterWithChoicesFromModel, self).__init__(**kwargs)
-    def get_choice_list(self):
-    	    return self.model.objects.all().distinct().order_by(self.name).values_list(self.name, flat=True)
+  value=None
+  user_profile=None
+  def __init__(self, **kwargs):
+    print "kwargs = %s" % str(kwargs)
+    self.request = kwargs.pop('request', None)
+    if self.request: self.value=self.get_value_from_request()
+    self.model=kwargs.pop('model', None)                # Ex: Project
+    self.choices=kwargs.pop('choices',self.build_choices())
+    self.query_list=kwargs.pop('query_list', None)
+    self.base_attr_name=kwargs.pop('base_attr_name', None) # Attribute name to use to caluclate other attributes below
+    if not self.base_attr_name: self.base_attr_name = self.model._meta.module_name
+    self.attr_name=kwargs.pop('attr_name', None) # Attribute on profile where filter value is stored
+    if not self.attr_name: self.attr_name = self.base_attr_name+'_filter_value'
+    self.request_keyword=kwargs.pop('request_keyword', None) # keyword to look for in request data
+    if not self.request_keyword: self.request_keyword = self.base_attr_name
+    self.null_query=kwargs.pop('null_query', None) # query string to use to look for null values
+    if not self.null_query: self.null_query = self.base_attr_name+'__isnull'
+  def save_filter_values_from_request(self, request):
+    args = (request.GET or request.POST)
+    print "args = %s" % str(args)
+    print "self.request_keyword = %s" % str(self.request_keyword)
+    print "self.request_keyword in args = %s" % str(self.request_keyword in args)
+    if self.request_keyword in args: self.value= args[self.request_keyword]
+    return None
+  def get_user_profile(self, request):
+    if not self.user_profile: 
+      try: self.user_profile = request.user.get_profile()
+      except: return None
+    return self.user_profile
+  # def get_value_from_user_profile(self, request):
+  #   user_profile=self.get_user_profile(request)
+  #   if user_profile: return getattr(user_profile, self.attr_name)
+  #   else: return None
+  # def get_value(self, request):
+  #   value = self.get_value_from_request(request)
+  #   if value: return self.get_value_from_user_profile(request)
+  # def save_value_to_profile(self, request):
+  #   request_value = self.get_value_from_request(request)
+  #   # profile_value = self.get_value_from_user_profile(request)
+  #   print "request_value = %s" % str(request_value)
+  #   # print "profile_value = %s" % str(profile_value)
+  #   # self.value = request_value or profile_value
+  #   self.value = request_value
+  #   # if self.user_profile and request_value and not request_value == profile_value:
+  #   #   setattr(self.user_profile, self.attr_name, request_value)
+  #   #   self.user_profile.save()
+  def get_choice_key(self, choice):
+    return unicode(choice)
+  def filter_choices(self, qs):
+    return qs
+  def get_choice_list(self):
+    choices=self.filter_choices(self.model.objects.all())
+    return choices.distinct()
+  def build_choices(self):
+    choices = {}
+    # print "self.get_choice_list() = %s" % str(self.get_choice_list())
+    for choice in self.get_choice_list():
+      choices[self.get_choice_key(choice)] = choice
+    return choices
+  def return_or(self, x,y=None):
+    return x or y
+  def filter(self, qs, value=None):
+    if not value: value=self.value
+    if not value: return qs
+    if not type(self.query_list)== list: self.query_list=[self.query_list]
+    value_list=value.split(',')
+    q=None
+    for query in self.query_list:
+      new_q = Q(**{query:value_list})
+      q=self.return_or(q, new_q)
+    qs=qs.filter(q)
+    return qs
+# class Filter(object):
+#   def __init__(self, **kwargs):
+#     self.user=kwargs.pop('user',None)
+#     self.base = kwargs.pop('base')                      # EX: Article
+#     self.base_name=self.base._meta.object_name          
+#     self.model=kwargs.pop('model', None)                # Ex: Project
+#     self.model_name = kwargs.pop('model_name', self.model._meta.object_name)
+#     self.display_attr=kwargs.pop('display_attr', 'name')
+#     self.lookup=kwargs.pop('lookup', 'icontains')
+#     self.choices=kwargs.pop('choices',self.build_choices())
+#     super(Filter, self).__init__(**kwargs)
 
-class RelatedFilter(FilterWithChoicesFromModel):
-    def __init__(self, **kwargs):
-        self.display_attr = kwargs.pop('display_attr','')
-        super(RelatedFilter, self).__init__(**kwargs)
-    def build_choice(self, choice):
-    	    return Choice(label=unicode(choice), base=self.name, lookup=self.display_attr)
-    def get_choice_list(self):
-        attr="%s__%s" % (self.name,self.display_attr)
-        return self.model.objects.all().distinct().order_by(attr).values_list(attr, flat=True)
-    def filter(self, qs, selection):
-        try: return self.choices[selection].filter(qs)
-        except KeyError: return qs.none()
-    def build_choices(self):
-        choices = super(RelatedFilter, self).build_choices()
-        if 'None' in choices.keys(): choices['None'].lookup = 'isnull'
-        return choices
+#   def filter(self, qs, selection):
+#     try: return self.choices[selection].filter(qs)
+#     except KeyError: return qs.none()
+#   def filter_choices(self, qs):
+#     return qs
+#   def get_choice_list(self):
+#     choices=self.filter_choices(self.model.objects.all())
+#     return choices.distinct().order_by(self.display_attr)
+#   def get_choice_key(self, choice):
+#     return unicode(choice)
+#   def build_choice(self, choice):
+#     return Choice(display_attr=self.display_attr, obj=choice, lookup=self.lookup)
+#   def build_choices(self):
+#     choices = {}
+#     l=self.get_choice_list()
+#     for choice in self.get_choice_list():
+#       choices[self.get_choice_key(choice)] = self.build_choice(choice)
+#     return choices
+# class FilteredMixin(object):
+#   def get_context_data(self, **kwargs):
+#     context = super(FilteredMixin, self).get_context_data(**kwargs)
+#     args = (self.request.GET or self.request.POST)
+#     context['q']=args.get('q','')
+#     context['filters']=self.filters
+#     return context
+#   def get_queryset(self):
+#     qs=super(FilteredMixin, self).get_queryset()
+#     args = (self.request.GET or self.request.POST)
+#     print "args = %s" % str(args)
+#     for arg, val in args.items():
+#       print "arg = %s" % str(arg)
+#       print "val = %s" % str(val)
+#       print "type(val) = %s" % str(type(val))
+#       if arg in self.filters.keys(): 
+#         qs=self.filters[arg].filter(qs, val)
+#     return qs
+# #            if arg in self.get_filter_names(): qs=qs.filter(Q(**{arg: val}))
+#   filter_fields=[]
+#   def get_query_filters(self):
+#     filters={}
+#     if self.filter_fields:
+#       for args in self.filter_fields:
+#         name=args.get('name')
+#         model=args.get('model')
+#         base=args.get('base', self.model)
+#         field_filter=args.get('field_filter', Filter)
+#         display_attr=args.get('display_attr', 'name')
+#         lookup=args.get('lookup', 'icontains')
+#         # print "{k:getattr(self.model,k)} = %s" % str({k:getattr(self.model,k)})
+#         # print "self.model = %s" % str(self.model)
+#         filters[name] = field_filter(model=model, base=base, display_attr=display_attr, lookup=lookup)
+#     return filters
+#   def __init__(self, **kwargs):
+#     super(FilteredMixin, self).__init__(**kwargs)
+#     self.filters = self.get_query_filters()
+# class FilteredList(ListView):
+#   filter_fields = ['project', 'writer']
 
-class StatusFilter(RelatedFilter):
-    def __init__(self, **kwargs):
-        self.codes={}
-        for code, name in ACTIONS: self.codes[code]=name
-        super(StatusFilter, self).__init__(**kwargs)
-        self.display_name="Status"
-
-    def build_choice(self, choice):
-        if not choice: return Choice(label=unicode('New'), base=self.name, lookup=self.display_attr, value=choice)
-        return Choice(label=unicode(self.codes[choice]), base=self.name, lookup=self.display_attr, value=choice)
-
-class FilterableListView(SearchableListMixin, ListView):
-    def get_queryset(self):
-        qs=super(FilterableListView, self).get_queryset()
-        for arg, val in self.request.GET.items():
-            if arg in self.filter_fields.keys(): 
-                qs=self.filter_fields[arg].filter(qs, val)
-#            if arg in self.get_filter_names(): qs=qs.filter(Q(**{arg: val}))
-        return qs
-    def get_field_from_class(self, cls, fieldname):
-        for field in cls._meta.local_fields:
-            if field.attname==fieldname: return field
-#    def get_filter_names(self):
-#        return [f.name for f in self.filter_fields]
-    def get_context_data(self, **kwargs):
-        context = super(FilterableListView, self).get_context_data(**kwargs)
-        context['q']=self.request.GET.get('q','')
-        context['filters']=self.filter_fields
-        return context
+# class FilterableListView(SearchableListMixin, ListView):
+#   def __init__(self, **kwargs):
+#     super(FilterableListView, self).__init__(**kwargs)
+#     self.filters={}
+#     for field in self.filter_fields.items():
+#       self.filters[k] = v(()
+#   def get_queryset(self):
+#     qs=super(FilterableListView, self).get_queryset()
+#     for arg, val in self.request.GET.items():
+#       if arg in self.filter_fields.keys(): 
+#         print "self.filter_fields[arg] = %s" % str(self.filter_fields[arg])
+#         qs=self.filter_fields[arg].apply_filter(val, qs)
+# #            if arg in self.get_filter_names(): qs=qs.filter(Q(**{arg: val}))
+#     return qs
+#   def get_field_from_class(self, cls, fieldname):
+#     for field in cls._meta.local_fields:
+#       if field.attname==fieldname: return field
+# #    def get_filter_names(self):
+# #        return [f.name for f in self.filter_fields]
+#   def get_context_data(self, **kwargs):
+#     context = super(FilterableListView, self).get_context_data(**kwargs)
+#     context['q']=self.request.GET.get('q','')
+#     context['filters']=self.filter_fields
+#     # print "context['filters'] = %s" % str(context['filters'])
+#     # for k,f in context['filters'].items():
+#     #     print "key:%s name:%s display_name:%s lookup:%s choices:%s" % (k, f.name, f.display_name, f.lookup, f.choices)
+#     return context
 class GetActionsMixin(object):
     def get_context_data(self, *args, **kwargs):
         object_list_displayed = kwargs['object_list']
@@ -238,13 +435,81 @@ class AvailablilityMixin(object):
         context = super(AvailablilityMixin, self).get_context_data(**kwargs)
         return context    
 
+class UserProfileMixin(object):
+  user_profile=None
+  @property
+  def user_profile(self):
+    if not self.user_profile:
+      try: self.user_profile = self.request.user.get_profile()
+      except: pass
 
-class ArticleList(AvailablilityMixin, SidebarContextMixin, GetActionsMixin, SearchableListView):
+class FilterMixin(UserProfileMixin):
+  filter_fields=[]
+  def save_filter_values_from_request(self, request):
+    for v in self.filters.values():
+      v.save_filter_values_from_request(request)
+  def get_context_data(self, **kwargs):
+    context = super(FilterMixin, self).get_context_data(**kwargs)
+    context['filters']=self.filters
+    return context
+  def get_queryset(self):
+    qs=super(FilterMixin, self).get_queryset()
+    for f in self.filters.values():
+      print "qs = %s" % str(qs)
+      qs=f.filter(qs)
+    return qs
+  def get_query_filters(self):
+    filters={}
+    if self.filter_fields:
+      for args in self.filter_fields:
+        field_filter=args.get('field_filter', Filter)
+        name=args.get('name')
+        # model=args.get('model', None)
+        # choices=args.get('choices', None)
+        # query_list=args.get('query_list')
+        # print "{k:getattr(self.model,k)} = %s" % str({k:getattr(self.model,k)})
+        # print "self.model = %s" % str(self.model)
+        filters[name] = field_filter(
+          model=args.get('model', None),
+          query_list=args.get('query_list'),
+          attr_name=args.get('attr_name',None),
+          request_keyword=args.get('request_keyword',None),
+          base_attr_name=args.get('base_attr_name',None),
+          null_query=args.get('null_query',None),
+          )
+    return filters
+  def __init__(self, **kwargs):
+    self.filters = self.get_query_filters()
+  def get(self, request, *args, **kwargs):
+    self.save_filter_values_from_request(request)
+    return super(FilterMixin, self).get(request, *args, **kwargs)
+  # def post(self, request, *args, **kwargs):
+    # self.save_filter_values()
+    # return super(FilterMixin, self).post(request, *args, **kwargs)
+class ArticleFilterMixin(FilterMixin):
+    filter_fields=[
+      {'name':'project', 'model':Project, 'field_filter':Filter, 'query_list':'project__name__in'}, 
+      {'name':'writer',  'model':User, 'field_filter':Filter,'base_attr_name':'writer', 'query_list':["writer__username__in","writer__first_name__in","writer__last_name__in"]},
+    ]
+
+class ArticleList(AvailablilityMixin, SidebarContextMixin, GetActionsMixin, ArticleFilterMixin, ListView):
     model = Article
     search_fields = ['tags', 'project__name', 'keyword__keyword']
     hidden_columns = ['Reviewer','Status','Category','Length','Priority','Tags']
-    name = "All"
+    name = "Available"
     reverse_url=None
+    # def get_filter_fields(self):
+    #     return {
+    #         'project':ProjectFilter(model=Project, base=Article, user=self.request.user),
+    #         'writer':Filter(base=Article, model=User, display_attr='username'),
+    #     }
+    def get_queryset(self):
+        self.current_filter = self.request.GET.get('view', 'Available')
+        if not self.current_filter in self.get_filters(self.request.user).keys(): self.current_filter = 'Available'
+        view_filter = self.get_filters(self.request.user).get(self.current_filter,None)
+        qs=super(SidebarContextMixin, self).get_queryset()
+        if view_filter: qs=view_filter(qs, self.request.user)
+        return qs
     
     def get_view_header(self):
         return self.current_filter.title()+ " Articles"
@@ -260,9 +525,11 @@ class ArticleList(AvailablilityMixin, SidebarContextMixin, GetActionsMixin, Sear
         kwargs['hidden_columns']=self.get_hidden_columns()
         kwargs['all_columns']=['Project','Keywords','Writer','Reviewer','Status','Category','Length','Priority','Tags']
         kwargs['header']=self.get_view_header()
+        # kwargs['active_filters']='January,February,July'
         context = super(ArticleList, self).get_context_data(**kwargs)
         return context
     def get(self, request, *args, **kwargs):
+        # self.filter_fields = self.get_filter_fields()
         try: self.request.user.mode
         except: self.request.user.mode = None
         response = super(ArticleList, self).get(request, *args, **kwargs)
@@ -272,122 +539,12 @@ class ArticleList(AvailablilityMixin, SidebarContextMixin, GetActionsMixin, Sear
             user_profile.save()
         except AttributeError:pass
         return response
-    def get_queryset(self):
-        self.current_filter = self.request.GET.get('view', 'Available')
-        if not self.current_filter in self.get_filters(self.request.user).keys(): self.current_filter = 'Available'
-        view_filter = self.get_filters(self.request.user).get(self.current_filter,None)
-        qs=super(ArticleList, self).get_queryset()
-        if view_filter: qs=view_filter(qs, self.request.user)
-        return qs
     #     # if 'last_action' in self.request.GET:
     #     #     qs=qs.filter(last_action__code=self.request.GET['last_action'])
     #     if 'status' in self.request.GET:
     #         qs=qs.filter(status=self.request.GET['status'])
     #     return qs
-# class AvailablilityView(ArticleList):
-#     # Adds in code to put together dropdowns for assigning articles and making articles available
-#     def get_available_list(self, group):
-#         return list(set([c.name for c in group]))
-#     def get_assignee_list(self, group):
-#         return list(set([contact.worker for contact in group]))
-#     def get_context_data(self, **kwargs):
-#         # print "self.request.user.writer_contacts = %s" % str(self.request.user.writer_contacts)
-#         try:
-#             kwargs['writer_availability_list']  = self.get_available_list(self.request.user.writer_contacts)
-#             kwargs['reviewer_availability_list']= self.get_available_list(self.request.user.reviewer_contacts)
-#             kwargs['writer_assignment_list']    = self.get_assignee_list(self.request.user.writer_contacts)
-#             kwargs['reviewer_assignment_list']  = self.get_assignee_list(self.request.user.reviewer_contacts)
-#         except AttributeError: pass
-#         # print "kwargs = %s" % str(kwargs)
-#         context = super(AvailablilityView, self).get_context_data(**kwargs)
-#         return context
 
-# class MyArticles(ArticleList):
-#     name = "My"
-#     reverse_url = 'my_articles'
-#     def get_queryset(self):
-#         qs=super(MyArticles, self).get_queryset()
-#         qs=qs.filter(writer=self.request.user).exclude(status=STATUS_SUBMITTED)
-#         return qs
-# class Approved(ArticleList):
-#     name = "Approved"
-#     def get_context_data(self, **kwargs):
-#         kwargs['publishing_outlet_configs']=self.request.user.publishing_outlets
-#         print "kwargs = %s" % str(kwargs)
-#         context = super(Approved, self).get_context_data(**kwargs)
-#         print "context = %s" % str(context)
-#         return context
-#     def get_queryset(self):
-#         qs=super(Approved, self).get_queryset()
-#         qs=qs.filter(status=STATUS_APPROVED)
-#         return qs
-# class Assigned(AvailablilityView):
-#     name = "Assigned"
-#     def get_queryset(self):
-#         qs=super(Assigned, self).get_queryset()
-#         user=self.request.user
-#         if user.mode==WRITER_MODE:
-#             qs=qs.filter(writer=user, was_claimed=False, status=STATUS_ASSIGNED)
-#         elif user.mode==REQUESTER_MODE:
-#             qs=qs.filter(writer__isnull=False, was_claimed=False, status=STATUS_ASSIGNED)
-#         return qs
-# class Available(AvailablilityView):
-#     name = "Available"
-#     def get_queryset(self):
-#         qs=super(Available, self).get_queryset()
-#         user=self.request.user
-#         if user.mode==WRITER_MODE:
-#             qs=qs.filter(writer=None).filter(Q(writer_availability="")|Q(writer_availability__in=self.request.user.writing_contacts))
-#         elif user.mode==REQUESTER_MODE:
-#             qs=qs.filter(writer=None).exclude(writer_availability="Nobody")
-#         elif user.mode==REVIEWER_MODE:
-#             qs=qs.filter(reviewer=None,submitted__isnull=False).filter(Q(reviewer_availability="")|Q(reviewer_availability__in=self.request.user.reviewing_contacts))
-#         # This is for available from requesters viewpoint
-
-
-#         # This is for available to writer
-#         # 
-#         return qs
-# class Claimed(AvailablilityView):
-#     name = "Claimed"
-#     def get_queryset(self):
-#         qs=super(Claimed, self).get_queryset()
-#         user=self.request.user
-#         if user.mode==WRITER_MODE:
-#             qs=qs.filter(writer=user, was_claimed=True, status=STATUS_ASSIGNED)
-#         elif user.mode==REQUESTER_MODE:
-#             qs=qs.filter(was_claimed=True, status=STATUS_ASSIGNED)
-#         return qs
-# class Rejected(ArticleList):
-#     name = "Rejected"
-#     def get_queryset(self):
-#         qs=super(Rejected, self).get_queryset()
-#         qs=qs.filter(rejected__isnull=False)
-#         return qs
-# class Published(ArticleList):
-#     name = "Published"
-#     def get_queryset(self):
-#         qs=super(Published, self).get_queryset()
-#         qs=qs.filter(status=STATUS_PUBLISHED)
-#         return qs
-# class Submitted(AvailablilityView):
-#     name = "Submitted"
-
-#     def get_queryset(self):
-#         qs=super(Submitted, self).get_queryset()
-#         user=self.request.user
-#         if user.mode==WRITER_MODE:
-#             qs=qs.filter(writer=user, status=STATUS_SUBMITTED,submitted__isnull=False, approved__isnull=True)
-#         elif user.mode==REQUESTER_MODE:
-#             qs=qs.filter(status=STATUS_SUBMITTED,submitted__isnull=False, approved__isnull=True)
-#         return qs
-
-# class Unavailable(AvailablilityView):
-#     name = "Unavailable"
-#     def get_queryset(self):
-#         qs=super(Unavailable, self).get_queryset()
-#         qs=qs.filter(writer_availability="Nobody", status__in=[STATUS_NEW, STATUS_RELEASED])
-#         return qs
 
 class AjaxDeleteRowView(DeleteView):
     def delete(self, request, *args, **kwargs):
@@ -433,12 +590,12 @@ class ProjectCreate(FormWithUserMixin, AjaxUpdateMixin, CreateView):
         messages.error(self.request, form.errors)
         return super(ProjectCreate, self).form_invalid(form)
 
-class ProjectList(FilterableListView):
+class ProjectList(ListView):
     model = Project
     search_fields = ['name']
-    filter_fields={
-        'owner':RelatedFilter(name='owner', model=Project, display_attr='username'),
-    }
+    # filter_fields={
+    #     'owner':Filter(base=Project, model=User, display_attr='username'),
+    # }
     def get_context_data(self, **kwargs):
         kwargs['selected_tab']='projects'
         return super(ProjectList, self).get_context_data(**kwargs)
@@ -484,35 +641,28 @@ class ArticleUpdate(FormWithUserMixin, LoginRequiredMixin, UpdateWithInlinesView
     extra = 1
     max_num = 1
     inlines = [KeywordInlineFormSet]
-    success_url = reverse_lazy('article_list')
+    success_url = reverse_lazy('available')
     def get_success_url(self):
-        print "get_success_url"
         try:
             user=self.request.user
-            print "user = %s" % str(user)
             user_profile=self.request.user.get_profile()
-            print "user_profile = %s" % str(user_profile)
             url= reverse_lazy(user_profile.article_list_view)
-            print "url = %s" % str(url)
         except: 
-            print "hit error"
             url= super(ArticleUpdate, self).get_success_url()
         return url
     def get_form_class(self):
         if self.request.user == self.object.owner and self.request.user.in_requester_mode: 
-            print "making an articleForm"
             return ArticleForm
         else: 
             self.inlines = []
-            print "making a WriteArticleForm"
             return WriteArticleForm
     def forms_valid(self, form, inlines):
         results = super(ArticleUpdate, self).forms_valid(form, inlines)
         if 'saveandsubmit' in self.request.POST: self.object.submit(self.request)
-        print "'saveandapprove' in self.request.POST = %s" % str('saveandapprove' in self.request.POST)
         if 'saveandapprove' in self.request.POST: 
             print "approving"
             self.object.approve(self.request.user)
+        print "Form submitted successfully"
         return results
     def get_context_data(self, **kwargs):
         kwargs['article']=self.object
@@ -1063,6 +1213,43 @@ class AjaxKeywordInlineForm(FormView):
         fs=f.get_formset()
         form=fs()._construct_form(id_form.cleaned_data['num'])
         return self.render_to_response(self.get_context_data(form=form))
+# class AddFilterView(FormView):
+#     template_name = "articles/filter_bar.html"
+#     form_class = FiltersForm
+#     def form_valid(self, form):
+#         new_filter = form.cleaned_data.get('q')
+#         profile = self.request.user.get_profile()
+#         filter_list = profile.article_list_filters.split()
+#         filter_list.append(new_filter)
+#         profile.article_list_filters = " ".join(set(filter_list))
+#         profle.save()
+#         return super(AddFilterView, self).form_valid(form)
+# class RemoveFilterView(FormView):
+#     template_name = "articles/filter_bar.html"
+#     form_class = FilterForm
+#     def form_valid(self, form):
+#         old_filter = form.cleaned_data.get('q')
+#         profile = self.request.user.get_profile()
+#         filter_list = profile.article_list_filters.split()
+#         filter_list.remove(old_filter)
+#         profile.article_list_filters = " ".join(set(filter_list))
+#         profle.save()
+#         self.object_list = self.get_queryset()
+#         context = self.get_context_data(object_list=self.object_list)
+#         return self.render_to_response(context)
+class UpdateFilters(ArticleFilterMixin, SidebarContextMixin, ListView):
+    template_name = "articles/ajax_article_list_row.html"
+    model = Article
+
+    # def get_template_names(self):
+    #     return self.template_name
+    # def form_valid(self, form):
+    #     # filters = form.cleaned_data.get('filters')
+    #     # profile = self.request.user.get_profile()
+    #     # UserProfile.objects.filter(pk=profile.pk).update(article_list_filters = filters)
+    #     self.object_list = self.get_queryset()
+    #     context = self.get_context_data(object_list=self.object_list)
+    #     return self.render_to_response(context)
 
 class UserList(SearchableListView):
     model=User

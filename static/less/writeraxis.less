@@ -11,6 +11,16 @@
 // .navbar-inverse .nav > li.split-dropdown > a.dropdown-toggle > b.caret{
 //   margin:5px;
 // }
+
+
+// The following is to hide the input section of tag-inputs in the filter bar
+#filter-tag-list .tagsinput-add-container{
+  display:none;
+}
+// Change the appearance of the filter tag list
+.tagsinput {border:none;}
+
+
 // The following is to make the search bar in the sidebar size correctly responsively
 // Normal Screen
 input.search-query {
@@ -32,6 +42,15 @@ input.search-query {
   }
 }
 
+
+//////////////////// Here is stuff for the Create / Edit Articles Page //////////////////////////////
+// The following is to space rows of input fields on edit page
+.input-row{
+  margin-top:15px;
+}
+
+
+//////////////////////// End of stuff for the Create / Edit Articles Page ///////////////////////////
 // The following is to make selects line up wth the rest of a btn-group
 .btn-group.select{
   margin:0;
@@ -43,7 +62,16 @@ input.search-query {
     margin-left: 5px;
   }
 
-
+// This keeps textareas from overflowing there bounds
+.input-row textarea, .input-row input {
+    -webkit-box-sizing: border-box;
+       -moz-box-sizing: border-box;
+            box-sizing: border-box;
+}
+// The following is to make the text areas not too big
+.input-row textarea, .input-row input.high-input{
+  height:61px;
+}
 // The Following is for the logo
 #logo{
   position:absolute;

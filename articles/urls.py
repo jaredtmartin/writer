@@ -34,16 +34,20 @@ urlpatterns = patterns('',
     url(r'^articles/publish/$',                 PublishArticles.as_view(),      name='publish'),
     url(r'^articles/mark-as-published/$',       MarkArticlesAsPublished.as_view(), name='mark_as_published'),
 
-    url(r'^articles/make-available-to-writer/$',  MakeAvailableToWriter.as_view(),      name='make_available_to_writer'),
-    url(r'^articles/make-available-to-all-writers/$',  MakeAvailableToAllWriters.as_view(),      name='make_available_to_all_writers'),
+    url(r'^articles/make-available-to-writer/$',  MakeAvailableToWriter.as_view(), name='make_available_to_writer'),
+    url(r'^articles/make-available-to-all-writers/$',  MakeAvailableToAllWriters.as_view(), name='make_available_to_all_writers'),
     url(r'^articles/make-unavailable-to-writers/$',  MakeUnavailableToWriters.as_view(),  name='make_unavailable_to_writers'),
     
     url(r'^articles/make-unavailable-to-reviewers/$',MakeUnavailableToReviewers.as_view(),  name='make_unavailable_to_reviewers'),
-    url(r'^articles/make-available-to-reviewer/$',MakeAvailableToReviewer.as_view(),  name='make_available_to_reviewer'),
+    url(r'^articles/make-available-to-reviewer/$',  MakeAvailableToReviewer.as_view(),  name='make_available_to_reviewer'),
     url(r'^articles/make-available-to-all-reviewers/$',  MakeAvailableToAllReviewers.as_view(),      name='make_available_to_all_reviewers'),
     
-    url(r'^articles/assign-to-writer/$',          AssignToWriter.as_view(),name='assign_to_writer'),
-    url(r'^articles/assign-to-reviewer/$',        AssignToReviewer.as_view(),name='assign_to_reviewer'),
+    url(r'^articles/assign-to-writer/$',        AssignToWriter.as_view(),       name='assign_to_writer'),
+    url(r'^articles/assign-to-reviewer/$',      AssignToReviewer.as_view(),     name='assign_to_reviewer'),
+
+    # url(r'^articles/add-filter/$',               AddFilterView.as_view(),                name='add_filter'),
+    # url(r'^articles/remove-filter/$',            RemoveFilterView.as_view(),             name='remove_filter'),
+    url(r'^articles/update-filters/$',            UpdateFilters.as_view(),             name='update_filters'),
 
     url(r'^articles/reject/$',                  RejectArticles.as_view(),       name='reject_articles'),
     url(r'^articles/approve/$',                 ApproveArticles.as_view(),      name='approve_articles'),

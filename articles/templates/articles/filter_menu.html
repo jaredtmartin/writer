@@ -1,0 +1,17 @@
+<div class="btn-group"> 
+	<a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></a></span>
+	<ul class="dropdown-menu">
+	  {% for option in filter.choices.keys %}
+	    <li>
+	    	<a>
+				<label class="checkbox filter-checkbox" for="filter-check-{{option|slugify}}" value="{{option}}"  group="{{filter_group}}">
+				  <input type="checkbox" value="" id="filter-check-{{option|slugify}}" data-toggle="checkbox">
+				  {{option}}
+				</label>
+</a>
+
+	    	</li>
+	  {% endfor %}
+	</ul>
+
+</div>

@@ -4,6 +4,12 @@
 /* 29px */
 /* 28px */
 /* 24px */
+#filter-tag-list .tagsinput-add-container {
+  display: none;
+}
+.tagsinput {
+  border: none;
+}
 input.search-query {
   width: 85px;
 }
@@ -22,11 +28,24 @@ input.search-query {
     width: 115px;
   }
 }
+.input-row {
+  margin-top: 15px;
+}
 .btn-group.select {
   margin: 0;
 }
 .btn-small.dropdown-toggle .caret {
   margin-left: 5px;
+}
+.input-row textarea,
+.input-row input {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+.input-row textarea,
+.input-row input.high-input {
+  height: 61px;
 }
 #logo {
   position: absolute;

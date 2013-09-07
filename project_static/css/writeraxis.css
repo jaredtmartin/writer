@@ -4,6 +4,12 @@
 /* 29px */
 /* 28px */
 /* 24px */
+#filter-tag-list .tagsinput-add-container {
+  display: none;
+}
+.tagsinput {
+  border: none;
+}
 input.search-query {
   width: 85px;
 }

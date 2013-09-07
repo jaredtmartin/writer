@@ -33,14 +33,13 @@ function updateClasses(data){
     for (i = 0; i < window.classesToUpdate.length; ++i) {
         cls = window.classesToUpdate[i];
         results=$('.'+cls, data);
-        for (x = 0; x < window.classesToUpdate.length; ++x) {
+        for (x = 0; x < results.length; ++x) {
             result=results[x];
             if ($('#'+result.id+":visible").length>0){ // See if the item already exists on the page
                 $('#'+result.id+":visible:first").replaceWith(result);                 // Replace it
             } else {
-                $('#'+obj_cls+'s').append(result);        // Otherwise add it to the top of the list
+                $('#'+cls+'s').append(result);        // Otherwise add it to the top of the list
             }
-
         }
     }
 }
@@ -48,6 +47,7 @@ function updatePage(data){
     d=saveDataInCache(data);
     updateMessages(d);  
     updateClasses(d);
+    runCode();
 }
 function sendAjaxPost(url, data){
     jQuery.post(url, data, success=ajaxUpdateRow);

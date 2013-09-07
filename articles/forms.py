@@ -164,3 +164,6 @@ class ProjectForm(ModelForm):
 class UserModeForm(Form):
     mode = IntegerField(min_value=1, max_value=3)
     next = CharField(max_length=128, required=False)
+
+class FiltersForm(Form):
+    filters = CharField(max_length=128, required=False)

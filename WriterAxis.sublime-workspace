@@ -4,6 +4,50 @@
 		"selected_items":
 		[
 			[
+				"display",
+				"display_attr"
+			],
+			[
+				"STATUS",
+				"STATUS_PUBLISHED"
+			],
+			[
+				"publishing",
+				"publishing_outlets"
+			],
+			[
+				"Publishing",
+				"PublishingOutlet"
+			],
+			[
+				"STAT",
+				"STATUS_RELEASED"
+			],
+			[
+				"STATUs",
+				"STATUS_ASSIGNED"
+			],
+			[
+				"STTU",
+				"STATUS_RELEASED"
+			],
+			[
+				"STATU",
+				"STATUS_SUBMITTED"
+			],
+			[
+				"STATUS_",
+				"STATUS_NEW"
+			],
+			[
+				"ST",
+				"STATUS_RELEASED"
+			],
+			[
+				"submitted",
+				"submitted__isnull"
+			],
+			[
 				"padding",
 				"padding-right"
 			],
@@ -56,20 +100,12 @@
 				"STATUS_APPROVED"
 			],
 			[
-				"STAT",
-				"STATUS_SUBMITTED"
-			],
-			[
 				"ACT",
 				"ACT_APPROVE"
 			],
 			[
 				"Appr",
 				"Approved"
-			],
-			[
-				"STATUS",
-				"STATUS_ASSIGNED"
 			],
 			[
 				"ACT_R",
@@ -90,10 +126,6 @@
 			[
 				"rele",
 				"released"
-			],
-			[
-				"ST",
-				"STATUS_ASSIGNED"
 			],
 			[
 				"action",
@@ -184,53 +216,51 @@
 	"buffers":
 	[
 		{
-			"file": "project_static/less/writeraxis.less",
+			"contents": "				Unavailable\nBrand new made		X\nAvailable to all\nAvailable to Group\nAvailable to Writer\nClaimed\nClaimed and Returned\nAssigned\nAssigned and returned\nReassigned\nSubmitted\nAvailable to Reviewers\nAvailable to Reviewers Group\nAvailable to Reviewer\nAssigned to Reviewer\nReassigned to another Reviewer\nAccepted\nRejected\nRejected & ReAssigned\nRejected & Released to all\nRejected & Available to Person\nRejected & Available to Group\nAccepted by Reviewer and then Rejected by Owner\nPublished\n\n\n\n\n\nAvailable to is only visible on \nAvailable\nUnavailable\n\nhould be also for ",
 			"settings":
 			{
-				"buffer_size": 2951,
+				"buffer_size": 562,
+				"line_ending": "Unix",
+				"name": "Unavailable"
+			}
+		},
+		{
+			"file": "articles/views.py",
+			"settings":
+			{
+				"buffer_size": 62601,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "articles/templates/articles/base.html",
+			"file": "articles/templates/articles/article_list.html",
 			"settings":
 			{
-				"buffer_size": 3559,
+				"buffer_size": 7058,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "articles/forms.py",
+			"file": "articles/templates/articles/filter.html",
 			"settings":
 			{
-				"buffer_size": 7471,
+				"buffer_size": 261,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "articles/templates/articles/assignment_widget.html",
+			"file": "articles/templatetags/actions.py",
 			"settings":
 			{
-				"buffer_size": 1788,
+				"buffer_size": 4152,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"contents": "{% load assignment %} \n  {% if user.get_profile.is_requester %} \n\n\n<div class=\"nav-collapse collapse\" id=\"nav-collapse-01\">\n        <ul class=\"nav\">\n          <!-- Menu items go here -->\n          <li>\n            <ul>\n              <!-- Sub Menu items go here -->\n            </ul>\n          </li>\n        </ul>\n\n\n  \n    {% assignment_widget \"writer\" %}\n    {% assignment_widget \"reviewer\" %}\n    <li id=\"delete-button\" class=\"multiaction\"><a onclick=\"showDeleteModal();return false;\">Delete</a></li>\n  {% elif user.is_writer %}\n    <div class=\"btn-group\">\n      <button id=\"writer-claim-button\" class=\"btn btn-small\" onclick=\"doActionOnArticles('{% url claim_articles_as_writer %}');return false;\" >Claim</button>\n    </div>\n\n    <div class=\"btn-group\">\n      <button id=\"submit-button\" class=\"btn btn-small\" onclick=\"doActionOnArticles('{% url submit_articles %}');return false;\" >Submit</button>\n    </div>\n\n    <div class=\"btn-group\">\n      <button id=\"writer-release-button\" class=\"btn btn-small\" onclick=\"doActionOnArticles('{% url release_writer %}');return false;\" >Release</button>\n    </div>\n\n  {% elif user.is_reviewer %}\n\n    <div class=\"btn-group\">\n      <button id=\"reviewer-claim-button\" class=\"btn btn-small\" onclick=\"doActionOnArticles('{% url claim_articles_as_reviewer %}');return false;\" >Claim</button>\n    </div>\n\n    <div class=\"btn-group\">\n      <button id=\"approve-button\" class=\"btn btn-small\" onclick=\"doActionOnArticles('{% url approve_articles %}');return false;\" >Approve</button>\n    </div>\n\n    <div class=\"btn-group\">\n      <button id=\"reject-button\" class=\"btn btn-small\" onclick=\"window.article_id=undefined; $('#reject-modal').modal('show');return false;\" >Reject</button>\n    </div>\n\n    <div class=\"btn-group\">\n      <button id=\"reviewer-release-button\" class=\"btn btn-small\" onclick=\"doActionOnArticles('{% url release_reviewer %}');return false;\" >Release</button>\n    </div>\n\n  {% endif %}\n</span>\n",
-			"file": "articles/templates/articles/action_bar.html",
-			"file_size": 1687,
-			"file_write_time": 1376107011000000,
+			"file": "articles/templatetags/addparam.py",
 			"settings":
 			{
-				"buffer_size": 1940,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "project_static/less/config.less",
-			"settings":
-			{
-				"buffer_size": 4854,
+				"buffer_size": 2518,
 				"line_ending": "Unix"
 			}
 		},
@@ -238,15 +268,15 @@
 			"file": "articles/views.py",
 			"settings":
 			{
-				"buffer_size": 48738,
+				"buffer_size": 62601,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "articles/templates/articles/old base.html",
+			"contents": "class Filter(object):\n    def __init__(self, **kwargs):\n      self.user=kwargs.pop('user',None)\n      self.base = kwargs.pop('base')                      # EX: Article\n      self.base_name=self.base._meta.object_name          \n      self.model=kwargs.pop('model', None)                # Ex: Project\n      self.model_name = kwargs.pop('model_name', self.model._meta.object_name)\n      self.display_attr=kwargs.pop('display_attr', 'name')\n      self.lookup=kwargs.pop('lookup', 'icontains')\n      self.choices=kwargs.pop('choices',self.build_choices())\n      super(Filter, self).__init__(**kwargs)\n    def filter_choices(self, qs):\n      return qs\n    def get_choice_list(self):\n      choices=self.filter_choices(self.model.objects.all())\n      return choices.distinct().order_by(self.display_attr).values_list(self.display_attr, flat=True)\n    def get_choice_key(self, choice):\n      return unicode(choice)\n    def build_choice(self, choice):\n      return Choice(display_attr=self.display_attr, obj=choice, lookup=self.lookup)\n    def build_choices(self):\n      choices = {}\n      for choice in self.get_choice_list():\n        choices[self.get_choice_key(choice)] = self.build_choice(choice)\n      return choices",
 			"settings":
 			{
-				"buffer_size": 6229,
+				"buffer_size": 1211,
 				"line_ending": "Unix"
 			}
 		}
@@ -303,34 +333,53 @@
 	},
 	"file_history":
 	[
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/widgets.py",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/models.py",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templatetags/help_icon.py",
+		"/Users/jaredmartin/Desktop/Checklist",
+		"/Users/jaredmartin/Library/Application Support/Sublime Text 2/Packages/User/Preferences.sublime-settings",
+		"/Users/jaredmartin/Library/Application Support/Sublime Text 2/Packages/Default/Preferences.sublime-settings",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/project_list.html",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/project_static/js/actions.js",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/project_static/js/ajax.js",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/article_list.html",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/models.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/forms.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/urls.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/sidebar.html",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/assignment_widget.html",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/action_bar.html",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/settings.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/admin.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/validation_plugins/standard.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/dump.json",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templatetags/can_do.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/src/django-extra-views/extra_views/models.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/src/django-extra-views/extra_views/search.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/testdata backup.json",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templatetags/assignment.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/article_list_row.html",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/base.html",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/article_edit.html",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/project_static/less/writeraxis.less",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/views.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/old base.html",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/project_static/less/writeraxis.css",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/fixtures/initial_data.yaml",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/project_static/less/config.less",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/widgets.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templatetags/help_icon.py",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/edit_article_keywords_form.html",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/keyword_inline_form.html",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/sidebar.html",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/action_bar.html",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/assignment_widget.html",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/article_list_row.html",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/show_more_widget.html",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/views.py",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/ajax_user_list_row.html",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/oldstatic/js/bootstrap.js",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/project_static/js/bootstrap.min.js",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/project_static/bootstrap/css/bootstrap-responsive.css",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/base.html",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/actions.py",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/project_static/less/config.css",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/project_static/less/config.less",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/project_static/js/flatui-checkbox.js",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/actions.html",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/project_static/js/checkboxes.js",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/filter.html",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/article_list_filters.html",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/project_static/less/writeraxis.less",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templatetags/assignment.py",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templatetags/show_more.py",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/old assignment widget.html",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/project_static/less/flat-ui.less",
@@ -342,13 +391,10 @@
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/static/css/flat-ui.css",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/project_static/css/flat-ui.css",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/templates/base.html",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/admin.py",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/urls.py",
 		"/Users/jaredmartin/Programs/webservices/articles/templates/articles/article_edit.html",
 		"/Users/jaredmartin/Programs/webservices/articles/plugins.py",
 		"/Users/jaredmartin/Programs/webservices/articles/static/css/stylesheet.css",
 		"/Users/jaredmartin/Programs/webservices/articles/templatetags/can_edit.py",
-		"/Users/jaredmartin/Library/Application Support/Sublime Text 2/Packages/Default/Preferences.sublime-settings",
 		"/Users/jaredmartin/Programs/webservices/articles/admin.py",
 		"/Users/jaredmartin/Programs/webservices/articles/templates/articles/user_actions.html",
 		"/Users/jaredmartin/Programs/webservices/articles/static/js/actions.js",
@@ -414,27 +460,11 @@
 		"/Users/jaredmartin/Programs/webservices/articles/templates/articles/edit_article_properties_form.html",
 		"/Users/jaredmartin/Programs/webservices/articles/templates/articles/xxxarticle_form.html",
 		"/Users/jaredmartin/Programs/Jadeold/jade/inventory/forms.py",
-		"/Users/jaredmartin/Programs/webservices/articles/templates/articles/xxxedit_articles_tags.html",
-		"/Users/jaredmartin/Programs/webservices/articles/static/css/navstyle.css",
-		"/Users/jaredmartin/Programs/webservices/articles/templatetags/project_list.py",
-		"/Users/jaredmartin/Programs/webservices/articles/templates/articles/project_form.html",
-		"/Users/jaredmartin/Programs/webservices/test_sqlite.db",
-		"/Users/jaredmartin/Programs/webservices/articles/templatetags/list_block.py",
-		"/Users/jaredmartin/Programs/webservices/articles/templatetags/verbose_name.py",
-		"/Users/jaredmartin/Programs/webservices/articles/templatetags/list_block.html",
-		"/Users/jaredmartin/Desktop/steps simple",
-		"/Users/jaredmartin/Desktop/steps as projects",
-		"/Users/jaredmartin/Desktop/steps with requests",
-		"/Users/jaredmartin/Programs/Jadeold/jade/templates/inventory/transaction_entry_list.html",
-		"/Users/jaredmartin/Programs/Jadeold/jade/static/js/jade.js",
-		"/usr/local/lib/python2.7/site-packages/Django-1.4.2-py2.7.egg/django/views/generic/edit.py",
-		"/usr/local/lib/python2.7/site-packages/Django-1.4.2-py2.7.egg/django/template/loader.py",
-		"/Users/jaredmartin/Programs/webservices/dump.yml",
-		"/Users/jaredmartin/Jade/env/lib/python2.7/site-packages/django/conf/urls/__init__.py"
+		"/Users/jaredmartin/Programs/webservices/articles/templates/articles/xxxedit_articles_tags.html"
 	],
 	"find":
 	{
-		"height": 58.0
+		"height": 48.0
 	},
 	"find_in_files":
 	{
@@ -449,6 +479,50 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"self.filters[arg]",
+			"self.filters",
+			"FilterableListView",
+			"display_name",
+			"self.model",
+			"build_choices",
+			"get_sidebar_context",
+			"ViewFilter",
+			"reverse",
+			"view",
+			"filter_approved",
+			"qs=",
+			"}, {",
+			"Publishing",
+			"Publish",
+			"publish",
+			"SearchableListMixin",
+			"AssignArticles",
+			"}, {",
+			",",
+			"article_status",
+			"picker",
+			"select",
+			"’",
+			"‘",
+			"“",
+			"*",
+			"+",
+			"*",
+			"+",
+			"*",
+			"“",
+			"+",
+			"*",
+			"+",
+			"row-fluid",
+			"\"row\"",
+			"search",
+			"claim",
+			"preferred_mode",
+			"next_status",
+			"approve",
+			"selected_tab",
+			"header",
 			"caret",
 			"row",
 			"dropdown-submenu",
@@ -532,51 +606,7 @@
 			"def update_articles",
 			"update_articles",
 			"def update_articles",
-			"status",
-			"filter",
-			"slip",
-			"RejectArticles",
-			"reject",
-			"get_past_tense_action_verb",
-			"next_status",
-			"GetActionsMixin",
-			"get_actions",
-			"class",
-			"get_action_property_name",
-			"TagArt",
-			"TagArto",
-			"AjaxKeywordInlineForm",
-			"tag",
-			"AjaxKeywordInlineForm",
-			"Relationship",
-			"forms",
-			"Title",
-			"search",
-			"redirect",
-			"article_list",
-			"SearchableListMixin",
-			"9",
-			"reviewer_relationships",
-			"ATTRIBUTES",
-			"filter_action_queryset",
-			"Release",
-			"Claim",
-			"reviewer",
-			"reverse_lazy",
-			"get_success_url",
-			"construct_inlines",
-			"BaseFormSet",
-			"modelformset_factory",
-			"InlineFormSet",
-			"assigned",
-			"    ",
-			"PostActionsView",
-			"article_form",
-			"edit_articles_tag",
-			"edit_articles_tags.html",
-			"                \n",
-			"article_form",
-			"edit_articles_tags"
+			"status"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -584,6 +614,10 @@
 		"regex": false,
 		"replace_history":
 		[
+			"'",
+			"\"",
+			"",
+			"\"",
 			"",
 			"writer",
 			"alter table articles_article add column",
@@ -620,15 +654,124 @@
 	"groups":
 	[
 		{
-			"selected": 6,
+			"selected": 1,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "project_static/less/writeraxis.less",
 					"settings":
 					{
-						"buffer_size": 2951,
+						"buffer_size": 562,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								473,
+								482
+							]
+						],
+						"settings":
+						{
+							"auto_name": "Unavailable",
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "articles/views.py",
+					"settings":
+					{
+						"buffer_size": 62601,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								7445,
+								7445
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Djaneiro/Syntaxes/Python Django.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 2241.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "articles/templates/articles/article_list.html",
+					"settings":
+					{
+						"buffer_size": 7058,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1357,
+								1357
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Djaneiro/Syntaxes/HTML (Django).tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true,
+							"word_wrap": false
+						},
+						"translation.x": 329.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "articles/templates/articles/filter.html",
+					"settings":
+					{
+						"buffer_size": 261,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								231,
+								231
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Djaneiro/Syntaxes/HTML (Django).tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "articles/templatetags/actions.py",
+					"settings":
+					{
+						"buffer_size": 4152,
 						"regions":
 						{
 						},
@@ -641,178 +784,39 @@
 						],
 						"settings":
 						{
-							"syntax": "Packages/LESS/LESS.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "articles/templates/articles/base.html",
-					"settings":
-					{
-						"buffer_size": 3559,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2523,
-								2523
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Djaneiro/Syntaxes/HTML (Django).tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "articles/forms.py",
-					"settings":
-					{
-						"buffer_size": 7471,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2614,
-								2614
-							]
-						],
-						"settings":
-						{
 							"syntax": "Packages/Djaneiro/Syntaxes/Python Django.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
+							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "articles/templates/articles/assignment_widget.html",
-					"settings":
-					{
-						"buffer_size": 1788,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								857,
-								857
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Djaneiro/Syntaxes/HTML (Django).tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "articles/templates/articles/action_bar.html",
-					"settings":
-					{
-						"buffer_size": 1940,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								312,
-								312
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Djaneiro/Syntaxes/HTML (Django).tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 1276.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 5,
-					"file": "project_static/less/config.less",
+					"file": "articles/templatetags/addparam.py",
 					"settings":
 					{
-						"buffer_size": 4854,
+						"buffer_size": 2518,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								652,
-								658
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/LESS/LESS.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 85.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 6,
-					"file": "articles/views.py",
-					"settings":
-					{
-						"buffer_size": 48738,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								8169,
-								8169
+								0,
+								0
 							]
 						],
 						"settings":
 						{
 							"syntax": "Packages/Djaneiro/Syntaxes/Python Django.tmLanguage",
-							"tab_size": 4,
+							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 2731.0,
+						"translation.y": 733.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -824,11 +828,38 @@
 			"sheets":
 			[
 				{
-					"buffer": 7,
-					"file": "articles/templates/articles/old base.html",
+					"buffer": 6,
+					"file": "articles/views.py",
 					"settings":
 					{
-						"buffer_size": 6229,
+						"buffer_size": 62601,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								17920,
+								17939
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Djaneiro/Syntaxes/Python Django.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 5943.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"settings":
+					{
+						"buffer_size": 1211,
 						"regions":
 						{
 						},
@@ -836,17 +867,17 @@
 						[
 							[
 								0,
-								0
+								1211
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/Djaneiro/Syntaxes/HTML (Django).tmLanguage",
-							"tab_size": 4,
+							"syntax": "Packages/Djaneiro/Syntaxes/Python Django.tmLanguage",
+							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 9.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -887,7 +918,7 @@
 		"rows":
 		[
 			0.0,
-			0.935897435897,
+			0.383406941137,
 			1.0
 		]
 	},
@@ -925,6 +956,6 @@
 	"show_open_files": true,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 208.0,
+	"side_bar_width": 140.0,
 	"status_bar_visible": true
 }

@@ -6,10 +6,8 @@
 {% endblock multiactions %}
 {% block content %}
   <div class="row-fluid">
-    <div class="span10">
-      {% for filter in filters %}
-        <span class="label label-primary label-large">{{filter}} <span class="fui-cross"></span></span> 
-      {% endfor %}
+    <div id="filter-tag-list" class="span10">
+      {% include "articles/filter_tag_list.html" %}
     </div>
     <div class="span2">
       {% include "articles/show_more_widget.html" %}
@@ -18,15 +16,15 @@
   <div class="block-fluid table-sorting" style="border:none; ">
     <h1>{{header}}</h1>
     <form class="actions-form" id="actions-form" method="post" action="">{% csrf_token %}
-      <table cellpadding="0" cellspacing="0" width="100%" class="table" id="articles">
+      <table cellpadding="0" cellspacing="0" width="100%" class="table table-bordered" id="articles">
         <thead>
           <tr class="table-header-row">
             <th width="3%">
               <label class="checkbox" for="checkall"><input type="checkbox" value="" id="checkall" data-toggle="checkbox" onChange="toggleMaster();"</label>
             </th>
-            <th class="column-header project-column">Project</th>
-            <th class="column-header keywords-column">Keywords</th>
-            <th class="column-header writer-column">Writer</th>
+            <th class="column-header project-column">Project {% include 'articles/filter_menu.html' with filter=filters.project filter_group='Project' %}</th>
+            <th class="column-header keywords-column"> Keywords</th>
+            <th class="column-header writer-column">Writer {% include 'articles/filter_menu.html' with filter=filters.writer filter_group='Writer' %}</th>
             <th class="column-header reviewer-column">Reviewer</th>
             <th class="column-header status-column">Status</th>
             <th class="column-header category-column">Category</th>
@@ -91,7 +89,7 @@
 {% block js %}
   <script type='text/javascript' src='{{STATIC_URL}}js/actions.js'></script>
   <script type='text/javascript' src='{{STATIC_URL}}js/ajax.js'></script>
-    <script type = "text/javascript" src='{{STATIC_URL}}js/checkboxes.js'></script>
+  <script type = "text/javascript" src='{{STATIC_URL}}js/checkboxes.js'></script>
   <script>
     // function showColumn(section_id){
     //     var index = window.hidden_columns.indexOf(section_id);
@@ -116,6 +114,59 @@
     function toggleColumn(section_id){
       $('.'+section_id+'-column').toggle();
     }
+    function slugify(str){
+      if (str==undefined) return ""
+      return str.toLowerCase().replace(/[^\w ]+/g,'').replace(/ +/g,'-');
+    }
+    function toggleFilterTag(tag, group){
+      if (!$('#filter-check-'+slugify(tag)).is(':checked')){
+        // Removing the filter
+        $('#filter-tags').removeTag(group+': '+tag);
+      } else {
+        // Adding the filter
+        if ($('#filter-tags').val().indexOf(tag) == -1){
+          $('#filter-tags').addTag(group+': '+tag);
+        } else {
+          $('#messages').append('\
+            <li id="message-filter-tag" class="message alert-warning alert"> \
+              <button type="button" class="close" data-dismiss="alert">&times;</button>\
+              A filter for "' + tag + '"" has already been applied. \
+            </li>');
+        }
+      }
+      updateFilters();
+    }
+    function removeFilterTag(tag){
+      updateFilters();
+      $('#filter-check-'+slugify(tag.split(': ')[1])).checkbox('uncheck');
+    }
+    function getFilters(){
+      tags=$('#filter-tags').val();
+      tag_list = tags.split(',');
+      filters={}
+      var i;
+      for (i = 0; i < tag_list.length; ++i) {
+        s=tag_list[i].split(': ');
+        if (filters[s[0]]== undefined){
+          filters[s[0]]=s[1];
+        }else{
+          filters[s[0]]+=","+s[1];
+        }
+      }
+      return filters
+    }
+    function updateFilters(){
+      window.classesToUpdate = ['article']
+      data=""
+      var i;
+      filters=getFilters($('#filter-tags').val());
+      for(var key in filters){
+        data+="&" + key.toLowerCase() +'=' + filters[key];
+      }
+      data+="&view={{header}}"
+      $('.article').remove();
+      jQuery.get('{% url update_filters %}', data, success = updatePage);
+    }
     $(document).ready(function(){
       window.row_selector='.article';
       showOrHideActionBar();
@@ -128,6 +179,14 @@
         {% endfor %}
       ];
       hideColumns();
+      $(".tagsinput").tagsInput({
+         // 'onAddTag':addFilterTag,
+         'onRemoveTag':removeFilterTag,
+      });
+      $('.filter-checkbox').on('toggle', function(e) {
+        toggleFilterTag($(e.currentTarget).attr('value'), $(e.currentTarget).attr('group'))
+      });
+      $("select").selectpicker({style: 'btn-huge btn-primary', menuStyle: 'dropdown-inverse'});
       window.codeForRows=[hideColumns];
     });
     function make_unavailable(assignment){

@@ -1,15 +1,6 @@
 {% include "articles/messages.html" %}
-{% if as_row %}
 <table id="table-rows">
-    {% for article in object_list %}
-        {% include "articles/article_list_row.html" %}
-    {% endfor %}
+  {% for article in object_list %}
+    {% include "articles/article_list_row.html" %}
+  {% endfor %}
 </table>
-{% endif %}
-{% if as_form %}
-    <table id="table-rows">
-        {% for article in object_list %}
-            {% include "articles/article_list_row.html" %}
-        {% endfor %}
-    </table>
-{% endif %}

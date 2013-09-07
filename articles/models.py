@@ -557,7 +557,8 @@ class UserProfile(models.Model):
     mode = models.IntegerField(choices=USER_MODES)
     article_list_view = models.CharField(max_length=32, blank=True, default='')
     def __unicode__(self): return self.user.username+"'s profile"
-
+    project_filter_value = models.CharField(max_length=64, blank=True, default='')
+    writer_filter_value = models.CharField(max_length=64, blank=True, default='')
     @property
     def is_requester(self):
         return self.mode == REQUESTER_MODE
