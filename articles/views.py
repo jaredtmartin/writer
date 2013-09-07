@@ -45,14 +45,15 @@ class Filter(object):
   value=None
   user_profile=None
   def __init__(self, **kwargs):
-    print "kwargs = %s" % str(kwargs)
     self.request = kwargs.pop('request', None)
     if self.request: self.value=self.get_value_from_request()
     self.model=kwargs.pop('model', None)                # Ex: Project
     self.choices=kwargs.pop('choices',self.build_choices())
     self.query_list=kwargs.pop('query_list', None)
     self.base_attr_name=kwargs.pop('base_attr_name', None) # Attribute name to use to caluclate other attributes below
-    if not self.base_attr_name: self.base_attr_name = self.model._meta.module_name
+    if not self.base_attr_name: 
+      try: self.base_attr_name = self.model._meta.module_name
+      except: self.base_attr_name = ""
     self.attr_name=kwargs.pop('attr_name', None) # Attribute on profile where filter value is stored
     if not self.attr_name: self.attr_name = self.base_attr_name+'_filter_value'
     self.request_keyword=kwargs.pop('request_keyword', None) # keyword to look for in request data
@@ -77,28 +78,38 @@ class Filter(object):
   def filter_choices(self, qs):
     return qs
   def get_choice_list(self):
-    choices=self.filter_choices(self.model.objects.all())
-    return choices.distinct()
+    if self.model: return self.filter_choices(self.model.objects.all()).distinct()
+    return []
   def build_choices(self):
     choices = {}
     # print "self.get_choice_list() = %s" % str(self.get_choice_list())
     for choice in self.get_choice_list():
       choices[self.get_choice_key(choice)] = choice
     return choices
-  def return_or(self, x,y=None):
-    return x or y
+  def return_pipe(self, x,y=None):
+    if x and y: return x | y
+    elif x: return x
+    elif y: return y
   def filter(self, qs, value=None):
     if not value: value=self.value
     if not value: return qs
     if not type(self.query_list)== list: self.query_list=[self.query_list]
-    value_list=value.split(',')
+    if ',' in value: value=value.split(',')
     q=None
     for query in self.query_list:
-      new_q = Q(**{query:value_list})
-      q=self.return_or(q, new_q)
+      print "query = %s" % str(query)
+      print "value = %s" % str(value)
+      new_q = Q(**{query:value})
+      print "qs.filter(new_q) = %s" % str(qs.filter(new_q))
+      q=self.return_pipe(q, new_q)
+      print "qs.filter(q) = %s" % str(qs.filter(q))
     qs=qs.filter(q)
     return qs
+class SearchFilter(Filter):
+  def build_choices(self): return {}
+  def __init__(self, **kwargs):
 
+    super(SearchFilter, self).__init__(**kwargs)
 class GetActionsMixin(object):
     def get_context_data(self, *args, **kwargs):
         object_list_displayed = kwargs['object_list']
@@ -269,12 +280,13 @@ class FilterMixin(UserProfileMixin):
 class ArticleFilterMixin(FilterMixin):
     filter_fields=[
       {'name':'project', 'model':Project, 'field_filter':Filter, 'query_list':'project__name__in'}, 
-      {'name':'writer',  'model':User, 'field_filter':Filter,'base_attr_name':'writer', 'query_list':["writer__username__in","writer__first_name__in","writer__last_name__in"]},
+      {'name':'search', 'base_attr_name':'q', 'query_list':['tags__icontains','project__name__icontains','keyword__keyword__icontains']},
+      {'name':'writer', 'model':User, 'field_filter':Filter,'base_attr_name':'writer', 'query_list':["writer__username__in","writer__first_name__in","writer__last_name__in"]},
     ]
 
 class ArticleList(AvailablilityMixin, SidebarContextMixin, GetActionsMixin, ArticleFilterMixin, ListView):
     model = Article
-    search_fields = ['tags', 'project__name', 'keyword__keyword']
+    # search_fields = ['tags', 'project__name', 'keyword__keyword']
     hidden_columns = ['Reviewer','Status','Category','Length','Priority','Tags']
     name = "Available"
     reverse_url=None
