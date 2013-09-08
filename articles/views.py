@@ -111,6 +111,7 @@ class Filter(object):
     return qs
 class ViewFilter(Filter):
   def get_context(self):
+    print "self.filters['order'] = %s" % str(self.filters['order'])
     return [[f,reverse_lazy(f.lower()),self.filters[f](Article.objects.all()).count()] for f in self.filters['order']]
 
   def save_request(self, request):
@@ -178,6 +179,7 @@ class ViewFilter(Filter):
             'Rejected':self.filter_rejected,
             'order':['Available','Approved','Rejected']
         }
+    else: return {'order':[]}
   # def save_filter_values_from_request(self, request):
   #   super(ViewFilter, self).save_filter_values_from_request(request)
   #   self.filters=self.get_filters()
@@ -386,7 +388,16 @@ class ArticleList(AvailablilityMixin, GetActionsMixin, ArticleFilterMixin, ListV
       else: return "Available Articles"
       # return self.current_filter.title()+ " Articles"
     def get_hidden_columns(self):
-        return self.hidden_columns
+      current_view = self.filters['view'].value
+      if current_view == 'Unavailable':return ['Writer','Reviewer','Status','Category','Length','Priority','Tags']
+      elif current_view == 'Available':return ['Reviewer','Status','Category','Length','Priority','Tags']
+      elif current_view == 'Assigned':return ['Reviewer','Status','Category','Length','Priority','Tags']
+      elif current_view == 'Claimed':return ['Reviewer','Status','Category','Length','Priority','Tags']
+      elif current_view == 'Submitted':return ['Reviewer','Status','Category','Length','Priority','Tags']
+      elif current_view == 'Approved':return ['Reviewer','Status','Category','Length','Priority','Tags']
+      elif current_view == 'Rejected':return ['Reviewer','Status','Category','Length','Priority','Tags']
+      elif current_view == 'Published':return ['Reviewer','Status','Category','Length','Priority','Tags']
+      return self.hidden_columns
     def get_reverse_url(self):
         if self.reverse_url: return self.reverse_url
         else: return self.name.lower()
