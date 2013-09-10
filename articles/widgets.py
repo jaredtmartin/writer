@@ -153,7 +153,7 @@ class BootstrapDropdownPlus(BootstrapDropdown):
             <select%(attrs)s>
                 %(options)s
             </select>
-            <button class="btn" type="button"><i class="fui-plus"></i></button>
+            <button class="btn btn-primary" type="button"><i class="fui-plus"></i></button>
             
         </div>
         <noscript>%(noscript)s</noscript>""")

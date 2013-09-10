@@ -1,8 +1,8 @@
 
-    <tr>
-        <td>{{ form.id }}{{form.keyword.errors}}{{ form.keyword }}</td>
-        <td>{{form.url.errors}}{{ form.url }}</td>
-        <td>{{form.times.errors}}{{ form.times }}</td>
-        <td>{{ form.DELETE }} <a class="btn btn-danger btn-small"><i class="icon-minus icon-white"></i></a></td>
-    </tr>
+    <div class="row-fluid input-row" id="keywords-title-row">
+        <div class = "span4">{{ form.id }}{{form.keyword.errors}}{{ form.keyword }}</div>
+        <div class = "span4">{{form.url.errors}}{{ form.url }}</div>
+        <div class = "span2">{{form.times.errors}}{{ form.times }}</div>
+        <div class = "span2">{{ form.DELETE }} <a ><i class="fui-cross"></i></a></div>
+    </div>
 

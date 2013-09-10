@@ -36,12 +36,20 @@ class CreateArticleForm(ModelForm):
     article_notes   = CharField(widget=widgets.Textarea(attrs={'class':'notes boxsizingBorder','placeholder':'Notes to writer...'}), required=False)
     review_notes    = CharField(widget=widgets.Textarea(attrs={'class':'notes boxsizingBorder','placeholder':'Notes to reviewer...'}), required=False)
     description     = CharField(widget=widgets.Textarea(attrs={'class':'notes boxsizingBorder','placeholder':'Add description...'}), required=False)
-    number_of_articles = IntegerField(required=False)
-    project         = ModelChoiceField(queryset=Project.objects.all(), empty_label="Project", widget=BootstrapDropdownPlus(plus_url="www.google.com", help_text='Select a project or start a new one.'), required=False)
-    category        = ModelChoiceField(queryset=Category.objects.all(), empty_label="Category", widget=BootstrapDropdownPlus(plus_url="www.google.com", help_text='Select a category for your article(s).'), required=False)
-    article_type    = ModelChoiceField(queryset=ArticleType.objects.all(), widget=BootstrapDropdownPlus(plus_url="www.google.com", help_text='Select the type of content you want written.'), initial='0')
-    priority        = ChoiceField(choices = ARTICLE_PRIORITIES, widget=BootstrapDropdown(help_text='How urgent is/are the article(s)?'), required=False)
+    number_of_articles = IntegerField(required=False, widget=widgets.TextInput(attrs={'placeholder':'Number of Articles: One'}))
+    project         = ModelChoiceField(queryset=Project.objects.all(), empty_label="Project", widget=BootstrapDropdownPlus(plus_url="www.google.com", help_text='Select a project or start a new one.', attrs={'class':'article-select', 'data-style':"btn-primary"}), required=False)
+    category        = ModelChoiceField(queryset=Category.objects.all(), empty_label="Category", widget=BootstrapDropdownPlus(plus_url="www.google.com", help_text='Select a category for your article(s).', attrs={'data-style':"btn-primary"}), required=False)
+    article_type    = ModelChoiceField(queryset=ArticleType.objects.all(), widget=BootstrapDropdownPlus(plus_url="www.google.com", help_text='Select the type of content you want written.', attrs={'data-style':"btn-primary"}), initial='0')
+    priority        = ChoiceField(choices = ARTICLE_PRIORITIES, widget=BootstrapDropdown(help_text='How urgent is/are the article(s)?', attrs={'data-style':"btn-primary"}), required=False)
     minimum         = CharField(initial="", widget=widgets.TextInput(attrs={'class':'high-input', 'placeholder':'Length:100'}), required=False)
+    expires         = CharField(initial="", widget=widgets.TextInput(attrs={'placeholder':'Expires: Never'}), required=False)
+    tags         = CharField(initial="", widget=widgets.TextInput(attrs={'placeholder':'Tags'}), required=False)
+    referrals         = CharField(initial="", widget=widgets.TextInput(attrs={'placeholder':'Referrals'}), required=False)
+    language         = CharField(initial="", widget=widgets.TextInput(attrs={'placeholder':'Language'}), required=False)
+    style         = CharField(initial="", widget=widgets.TextInput(attrs={'placeholder':'Style'}), required=False)
+    purpose         = CharField(initial="", widget=widgets.TextInput(attrs={'placeholder':'Purpose'}), required=False)
+    price         = CharField(initial="", widget=widgets.TextInput(attrs={'placeholder':'Price'}), required=False)
+
     # def clean_project(self):
     #     # Looksup project by name and creates it if it doesnt exist
     #     return self.clean_lookup('project', Project, auto_create=True)
@@ -68,7 +76,7 @@ class ArticleForm(CreateArticleForm):
     class Meta:
         model = Article
         fields = ('writer','reviewer','language', 'style',  'purpose','price','referrals','expires','priority','category','tags', 'minimum','article_type','project','title','body', 'owner','number_of_articles','article_notes','review_notes','description')
-    
+    title         = CharField(initial="", widget=widgets.TextInput(attrs={'placeholder':'Price'}), required=False)
 class WriteArticleForm(ModelForm):
     class Meta:
         model = Article
@@ -77,8 +85,15 @@ class WriteArticleForm(ModelForm):
         self.user = kwargs.pop('user')
         super(WriteArticleForm, self).__init__(*args, **kwargs)
 
+class KeywordForm(ModelForm):
+    class Meta:
+        model = Keyword
+    keyword = CharField(widget=widgets.TextInput(attrs={'placeholder':'Keyword'}), required=False)
+
+ 
 class KeywordInlineFormSet(InlineFormSet):
     model = Keyword
+    # formset_class = KeywordForm
     extra = 1
 
 class QuantityForm(Form):

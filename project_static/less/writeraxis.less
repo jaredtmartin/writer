@@ -20,26 +20,37 @@
 // Change the appearance of the filter tag list
 .tagsinput {border:none;}
 
-
+// To hide cells initially on article edit page
+.hidden-cell{
+  display:none;
+}
+// .article-select, .article-select>button{
+//   width:100%;
+// }
 // The following is to make the search bar in the sidebar size correctly responsively
 // Normal Screen
+// input.search-query {
+//   width:85px; // 140-55
+// }
+// @media (max-width: 767px) { // Phone Screen
+//   input.search-query {
+//     width:100%;
+//   }
+// }
+// @media (min-width: 768px) and (max-width: 979px) { // Tablet Screen
+//   input.search-query {
+//     width:49px; // 104-55
+//   }
+// }
+// @media (min-width: 1200px) { //Big Screen
+//   input.search-query {
+//     width:115px; // 170-55
+//   }
+// }
 input.search-query {
-  width:85px; // 140-55
-}
-@media (max-width: 767px) { // Phone Screen
-  input.search-query {
-    width:100%;
-  }
-}
-@media (min-width: 768px) and (max-width: 979px) { // Tablet Screen
-  input.search-query {
-    width:49px; // 104-55
-  }
-}
-@media (min-width: 1200px) { //Big Screen
-  input.search-query {
-    width:115px; // 170-55
-  }
+    -webkit-box-sizing: border-box;
+       -moz-box-sizing: border-box;
+            box-sizing: border-box;
 }
 
 

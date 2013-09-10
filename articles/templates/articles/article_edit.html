@@ -18,29 +18,53 @@
           </div>
       {% if user == article.owner and user.mode == 2 or not article.pk %}
           <div class="row-fluid input-row">
-            <div class="span4">{{ form.project }} {% help_icon "Select a project or start a new one" %}</div>
+            <div class="span4">{{ form.project }}</div>
 
-            <div class="span4">{{ form.article_type }} {% help_icon "Select the type of content you want written." %}</div>
+            <div class="span4">{{ form.article_type }}</div>
 
-            <div class="span4">{{ form.category }} {% help_icon "Select a category for your article(s)." %}</div>
+            <div class="span4">{{ form.category }}</div>
+
           </div>
 
           <div class="row-fluid input-row">
-            <div class="span4">
-              <select multiple="yes" class="selectpicker">
-                <option>Red</option>
-                <option>Blue</option>
-                <option>Green</option>
-
-              </select> 
-              
-            </div>
             <div class="span4">{{ form.priority }}</div>
+
+            <div class="span4">
+              <div id="add-details-selector" class="btn-group">
+                <a class="btn dropdown-toggle btn-primary" style="width:100%;" data-toggle="dropdown">Add Details <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li class="add-details-option" id="date-option"><a tabindex="-1" onclick="showSection('date');">Date Due</a></li>
+                  <li class="add-details-option" id="tags-option"><a tabindex="-1" onclick="showSection('tags');">Tags</a></li>
+                  <li class="add-details-option" id="purpose-option"><a tabindex="-1" onclick="showSection('purpose');">Purpose</a></li>
+                  <li class="add-details-option" id="referrals-option"><a tabindex="-1" onclick="showSection('referrals');">Referral Links</a></li>
+                  <li class="add-details-option" id="price-option"><a tabindex="-1" onclick="showSection('price');">Price per Item</a></li>
+                  <li class="add-details-option" id="lang-option"><a tabindex="-1" onclick="showSection('lang');">Language</a></li>
+                  <li class="add-details-option" id="style-option"><a tabindex="-1" onclick="showSection('style');">Style</a></li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="span4">{{ form.number_of_articles }}</div>
+          </div>
+          <div class="row-fluid input-row">
+            <div id="tags-cell" class="hidden-cell span12" style="display:none;">{{form.tags}}</div>
+          </div>
+          <div class="row-fluid input-row">
+            <div id="referrals-cell" class="span4" style="display:none;">{{form.referrals}}</div>
+            <div id="lang-cell" class="hidden-cell span4" style="display:none;">{{form.language}}</div>
+            <div id="style-cell" class="hidden-cell span4" style="display:none;">{{form.style}}</div>
+          </div>
+          <div class="row-fluid input-row">
+          </div>
+          <div class="row-fluid input-row">
+            <div id="date-cell" class="hidden-cell span4" style="display:none;">{{form.expires}}</div>
+            <div id="purpose-cell" class="hidden-cell span4" style="display:none;">{{form.purpose}}</div>
+            <div id="price-cell" class="hidden-cell span4" style="display:none;">{{form.price}}</div>
           </div>
           <div class="row-fluid input-row">
             <div class="span8">{{form.description}}</div>
             <div class="span4">{{ form.minimum }}</div>
-
+          </div>
             
           </div>
           <div class="row-fluid input-row">
@@ -56,54 +80,7 @@
           <div class="row-fluid input-row">
             <div class="span12">{{form.review_notes}}</div>
           </div>
-          <div id="add-details-selector" class="btn-group">
-            <a class="btn dropdown-toggle btn-small" data-toggle="dropdown">Add Details <span class="caret"></span></a>
-            <ul class="dropdown-menu">
-              <li class="add-details-option" id="date-option"><a tabindex="-1" onclick="showSection('date');">Date Due</a></li>
-              <li class="add-details-option" id="tags-option"><a tabindex="-1" onclick="showSection('tags');">Tags</a></li>
-              <li class="add-details-option" id="purpose-option"><a tabindex="-1" onclick="showSection('purpose');">Purpose</a></li>
-              <li class="add-details-option" id="referrals-option"><a tabindex="-1" onclick="showSection('referrals');">Referral Links</a></li>
-              <li class="add-details-option" id="price-option"><a tabindex="-1" onclick="showSection('price');">Price per Item</a></li>
-              <li class="add-details-option" id="lang-option"><a tabindex="-1" onclick="showSection('lang');">Language</a></li>
-              <li class="add-details-option" id="style-option"><a tabindex="-1" onclick="showSection('style');">Style</a></li>
-            </ul>
-          </div>
-          <div class="row-fluid input-row">
-            <div id="date-cell" class="hidden-cell">
-              <div class="span2 input-label">Date Due:</div>
-              <div class="span3">{{form.expires}} {% help_icon "Choose a deadline for the article(s)." %}</div>
-            </div>
-            <div id="tags-cell" class="hidden-cell">
-              <div class="span2 input-label">Tags:</div>
-              <div class="span5">{{form.tags}} {% help_icon "Add some tags to organize your articles." %}</div>
-            </div>
-          </div>
-          <div class="row-fluid input-row">
-            <div id="purpose-cell" class="hidden-cell">
-              <div class="span2 input-label">Purpose:</div>
-              <div class="span3">{{form.purpose}} {% help_icon "Describe the purpose of the article(s) for the writer to take into consideration." %}</div>
-            </div>
-            <div id="referrals-cell" class="hidden-cell">
-              <div class="span2 input-label">Referral Links:</div>
-              <div class="span3">{{form.referrals}} {% help_icon "Provide URL's to help the writers understand the nature of the keyword(s)." %}</div>
-            </div>
-          </div>
-          <div class="row-fluid input-row">
-            <div id="lang-cell" class="hidden-cell">
-              <div class="span2 input-label">Language</div>
-              <div class="span3">{{form.language}} {% help_icon "Select a language in which the article(s) should be written." %}</div>
-            </div>
-            <div id="style-cell" class="hidden-cell">
-              <div class="span2 input-label">Style:</div>
-              <div class="span3">{{form.style}} {% help_icon "Select a writing style in which the article(s) should be written." %}</div>
-            </div>
-          </div>
-          <div class="row-fluid input-row">
-            <div id="price-cell" class="hidden-cell">
-              <div class="span2 input-label">Price per Item:</div>
-              <div class="span3">{{form.price}} {% help_icon "How much you will be paid to the writer(s) for each piece of content written." %}</div>
-            </div>
-          </div>
+          
 
       {% else %}
           <div class="row-fluid input-row">
@@ -144,11 +121,9 @@
           </div>
 
           <div class="row-fluid input-row">
-            <div class="span12">
-              {% with inlines.0 as inline %}
-                {% include "articles/edit_article_keywords_form.html" %}
-              {% endwith %}
-            </div>
+            {% with inlines.0 as inline %}
+              {% include "articles/edit_article_keywords_form.html" %}
+            {% endwith %}
           </div>
           {% if user == article.writer and article.article_notes%}
             <div class="row-fluid input-row">
@@ -203,9 +178,6 @@
             </div>
           {% endif %}
       {% endif %}
-      <div class="row-fluid input-row">
-        <div class="span12"><legend>Actions:</legend></div>
-      </div>
       <div class="row-fluid input-row">
         <div class="span12">
           {% show_edit_page_actions %}
@@ -277,7 +249,10 @@
             {% if article.pk and user|can_edit:article %}
                 CKEDITOR.replace("id_body", {"filebrowserWindowWidth": 940, "width": 835, "filebrowserWindowHeight": 725, "filebrowserBrowseUrl": "/ckeditor/browse/", "filebrowserUploadUrl": "/ckeditor/upload/", "toolbar": "Full", "height": 291});
             {% endif %} 
-            $('.help').tooltip()
+            // $('.help').tooltip()
+            $('input[id$="-keyword"]').attr('placeholder', 'Keyword');
+            $('input[id$="-url"]').attr('placeholder', 'URL');
+            $('input[id$="-DELETE"]').hide();
         });
         function showSection(section_id){
             $('#'+section_id+'-cell').show();

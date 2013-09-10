@@ -1,11 +1,11 @@
 {% load addparam %}
 <ul class="nav nav-list">
-  <li><form class="navbar-search">
+  <li><form class="form-search">
   <div class="input-append">
-    <input type="text" class="search-query search-query-rounded" name="q" placeholder="Search" id="search-query-1" value="{{filters.search.value|default:""}}">
+    <input type="text" class="span2 search-query" name="q" placeholder="Search" id="search-query-1" value="{{filters.search.value|default:""}}">
     <input type="hidden" id="search-input" value="{{filters.search.value|default:""}}">
     <input type="hidden" name="view" value="{{filters.view.value|default:""}}">
-    <button type="button" class="btn" id="search-button" onclick="runSearch();"><span class="fui-search"></span></button>
+    <button class="btn" type="submit" id="search-button" onclick="runSearch();"><span class="fui-search"></span></button>
   </div>
 </form></li>
   <li class="nav-header"><a href="{% url article_add %}">New Article</a></li>
