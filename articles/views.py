@@ -508,7 +508,7 @@ class ProjectList(ListView):
         kwargs['selected_tab']='projects'
         return super(ProjectList, self).get_context_data(**kwargs)
 
-class ArticleCreate(FormWithUserMixin, LoginRequiredMixin, CreateWithInlinesView):
+class ArticleCreate(ArticleFilterMixin, FormWithUserMixin, LoginRequiredMixin, CreateWithInlinesView):
     template_name = 'articles/article_edit.html'
     model = Article
     form_class=CreateArticleForm
@@ -542,7 +542,7 @@ class ArticleCreate(FormWithUserMixin, LoginRequiredMixin, CreateWithInlinesView
         except: return super(ArticleCreate, self).get_success_url()
         
 
-class ArticleUpdate(FormWithUserMixin, LoginRequiredMixin, UpdateWithInlinesView):
+class ArticleUpdate(ArticleFilterMixin, FormWithUserMixin, LoginRequiredMixin, UpdateWithInlinesView):
     template_name = 'articles/article_edit.html'
     model = Article
     form_class = ArticleForm
