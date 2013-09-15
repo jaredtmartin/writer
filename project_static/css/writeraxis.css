@@ -4,6 +4,26 @@
 /* 29px */
 /* 28px */
 /* 24px */
+.bottom-menu {
+  margin-top: 10px;
+}
+.select .btn.btn-select-plus {
+  width: 34px;
+}
+.message.alert {
+  list-style: none outside none;
+}
+.page-header > h1 {
+  line-height: 40px;
+}
+.cell-icon {
+  position: relative;
+}
+.cell-icon > a {
+  position: absolute;
+  top: 50%;
+  margin-top: -0.5em;
+}
 #filter-tag-list .tagsinput-add-container {
   display: none;
 }

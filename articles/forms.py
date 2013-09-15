@@ -37,18 +37,18 @@ class CreateArticleForm(ModelForm):
     review_notes    = CharField(widget=widgets.Textarea(attrs={'class':'notes boxsizingBorder','placeholder':'Notes to reviewer...'}), required=False)
     description     = CharField(widget=widgets.Textarea(attrs={'class':'notes boxsizingBorder','placeholder':'Add description...'}), required=False)
     number_of_articles = IntegerField(required=False, widget=widgets.TextInput(attrs={'placeholder':'Number of Articles: One'}))
-    project         = ModelChoiceField(queryset=Project.objects.all(), empty_label="Project", widget=BootstrapDropdownPlus(plus_url="www.google.com", help_text='Select a project or start a new one.', attrs={'class':'article-select', 'data-style':"btn-primary"}), required=False)
-    category        = ModelChoiceField(queryset=Category.objects.all(), empty_label="Category", widget=BootstrapDropdownPlus(plus_url="www.google.com", help_text='Select a category for your article(s).', attrs={'data-style':"btn-primary"}), required=False)
-    article_type    = ModelChoiceField(queryset=ArticleType.objects.all(), widget=BootstrapDropdownPlus(plus_url="www.google.com", help_text='Select the type of content you want written.', attrs={'data-style':"btn-primary"}), initial='0')
-    priority        = ChoiceField(choices = ARTICLE_PRIORITIES, widget=BootstrapDropdown(help_text='How urgent is/are the article(s)?', attrs={'data-style':"btn-primary"}), required=False)
+    project         = ModelChoiceField(queryset=Project.objects.all(), widget=BootstrapDropdownPlus(label="Project", plus_url="www.google.com", help_text='Select a project or start a new one.', attrs={'class':'article-select', 'data-style':"btn-primary"}), required=False)
+    category        = ModelChoiceField(queryset=Category.objects.all(), widget=BootstrapDropdownPlus(label="Category", plus_url="www.google.com", help_text='Select a category for your article(s).', attrs={'data-style':"btn-primary"}), required=False)
+    article_type    = ModelChoiceField(queryset=ArticleType.objects.all(), widget=BootstrapDropdown(label="Type", plus_url="www.google.com", help_text='Select the type of content you want written.', attrs={'data-style':"btn-primary"}), initial='0')
+    priority        = ChoiceField(choices = ARTICLE_PRIORITIES, widget=BootstrapDropdown(label="Priority", help_text='How urgent is/are the article(s)?', attrs={'data-style':"btn-primary"}), required=False)
     minimum         = CharField(initial="", widget=widgets.TextInput(attrs={'class':'high-input', 'placeholder':'Length:100'}), required=False)
     expires         = CharField(initial="", widget=widgets.TextInput(attrs={'placeholder':'Expires: Never'}), required=False)
-    tags         = CharField(initial="", widget=widgets.TextInput(attrs={'placeholder':'Tags'}), required=False)
-    referrals         = CharField(initial="", widget=widgets.TextInput(attrs={'placeholder':'Referrals'}), required=False)
-    language         = CharField(initial="", widget=widgets.TextInput(attrs={'placeholder':'Language'}), required=False)
-    style         = CharField(initial="", widget=widgets.TextInput(attrs={'placeholder':'Style'}), required=False)
+    tags            = CharField(initial="", widget=widgets.TextInput(attrs={'placeholder':'Tags'}), required=False)
+    referrals       = CharField(initial="", widget=widgets.TextInput(attrs={'placeholder':'Referrals'}), required=False)
+    language        = CharField(initial="", widget=widgets.TextInput(attrs={'placeholder':'Language'}), required=False)
+    style           = CharField(initial="", widget=widgets.TextInput(attrs={'placeholder':'Style'}), required=False)
     purpose         = CharField(initial="", widget=widgets.TextInput(attrs={'placeholder':'Purpose'}), required=False)
-    price         = CharField(initial="", widget=widgets.TextInput(attrs={'placeholder':'Price'}), required=False)
+    price           = CharField(initial="", widget=widgets.TextInput(attrs={'placeholder':'Price'}), required=False)
 
     # def clean_project(self):
     #     # Looksup project by name and creates it if it doesnt exist
@@ -76,7 +76,7 @@ class ArticleForm(CreateArticleForm):
     class Meta:
         model = Article
         fields = ('writer','reviewer','language', 'style',  'purpose','price','referrals','expires','priority','category','tags', 'minimum','article_type','project','title','body', 'owner','number_of_articles','article_notes','review_notes','description')
-    title         = CharField(initial="", widget=widgets.TextInput(attrs={'placeholder':'Price'}), required=False)
+    title = CharField(initial="", widget=widgets.TextInput(attrs={'placeholder':'Price'}), required=False)
 class WriteArticleForm(ModelForm):
     class Meta:
         model = Article
@@ -88,9 +88,9 @@ class WriteArticleForm(ModelForm):
 class KeywordForm(ModelForm):
     class Meta:
         model = Keyword
-    keyword = CharField(widget=widgets.TextInput(attrs={'placeholder':'Keyword'}), required=False)
+    keyword = CharField(widget=widgets.TextInput(attrs={'placeholder':'Keywordxa'}), required=False)
 
- 
+
 class KeywordInlineFormSet(InlineFormSet):
     model = Keyword
     # formset_class = KeywordForm
@@ -102,7 +102,7 @@ class QuantityForm(Form):
 class ActionUserID(Form):
     user = ModelChoiceField(queryset=User.objects.all())
 
-class AvailabilityForm(Form):
+class SimpleTextForm(Form):
     name = CharField(max_length=64)
 
 class TagForm(Form):
@@ -164,18 +164,24 @@ class TagArticleForm(ModelForm):
 #         super(ConfirmRelationshipForm, self).save(commit=False)
 #         self.instance.confirmed=True
 #         return super(ConfirmRelationshipForm, self).save(commit=True)
-class ProjectForm(ModelForm):
-    class Meta:
-        model = Project
-        fields=('name',)
+class ModelFormWithUser(ModelForm):
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user')
-        super(ProjectForm, self).__init__(*args, **kwargs)
+        super(ModelFormWithUser, self).__init__(*args, **kwargs)
     def save(self, commit=True):
-        model = super(ProjectForm, self).save(commit=False)
+        model = super(ModelFormWithUser, self).save(commit=False)
         model.owner = self.user
         if commit: model.save()
         return model
+class ProjectForm(ModelFormWithUser):
+    class Meta:
+        model = Project
+        fields=('name',)
+class CategoryForm(ModelFormWithUser):
+    class Meta:
+        model = Category
+        fields=('name',)
+
 class UserModeForm(Form):
     mode = IntegerField(min_value=1, max_value=3)
     next = CharField(max_length=128, required=False)

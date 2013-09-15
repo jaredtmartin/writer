@@ -7,16 +7,16 @@ from django.contrib import messages
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormMixin#, ModelFormMixin
 from django.views.generic.detail import DetailView, BaseDetailView# , SingleObjectMixin
 from django.views.generic import FormView #, TemplateView, 
-from articles.models import Article, Keyword, Project, ArticleAction, ACTIONS, Contact, \
-PublishingOutlet, PublishingOutletConfiguration, WRITER_POSITION, REVIEWER_POSITION
+from articles.models import Article, Keyword, Project, ArticleAction, ACTIONS, Contact, Category, \
+PublishingOutlet, PublishingOutletConfiguration, WRITER_POSITION, REVIEWER_POSITION, UserProfile
 from django.views.generic.base import View, TemplateResponseMixin
 from articles.forms import RejectForm, ArticleForm, KeywordInlineFormSet, QuantityForm, \
 TagArticleForm, ActionUserID, AssignToForm, UserForm, UserProfileForm, NoteForm,\
-TagForm, ProjectForm, ACT_SUBMIT, ACT_REJECT, ACT_APPROVE, \
+TagForm, ProjectForm, ACT_SUBMIT, ACT_REJECT, ACT_APPROVE, CategoryForm, \
 ACT_ASSIGN_WRITER, ACT_ASSIGN_REVIEWER, ACT_CLAIM_REVIEWER, ACT_RELEASE, ACT_PUBLISH, ACT_COMMENT, \
 ACT_REMOVE_REVIEWER, ACT_REMOVE_WRITER, ACT_CLAIM_WRITER, UserModeForm, PublishForm, \
 STATUS_NEW, STATUS_RELEASED, STATUS_ASSIGNED, STATUS_SUBMITTED, STATUS_APPROVED, FiltersForm, \
-STATUS_PUBLISHED, WriteArticleForm, WRITER_MODE, REVIEWER_MODE, REQUESTER_MODE, AvailabilityForm, CreateArticleForm
+STATUS_PUBLISHED, WriteArticleForm, WRITER_MODE, REVIEWER_MODE, REQUESTER_MODE, SimpleTextForm, CreateArticleForm
 #from django_actions.views import ActionViewMixin
 from django.http import Http404, HttpResponseServerError
 from django.template import loader, Context
@@ -32,7 +32,6 @@ import django_filters
 # from actions import *
 # from django import template
 from django.conf import settings
-from articles.models import UserProfile
 
 VALID_STRING_LOOKUPS = ('exact','isnull','iexact', 'contains', 'icontains', 'startswith', 'istartswith', 'endswith', 'iendswith', 'search', 'regex', 'iregex')
 class LoginRequiredMixin(object):
@@ -457,21 +456,47 @@ class AjaxRowTemplateResponseMixin(object):
         return super(AjaxRowTemplateResponseMixin, self).form_invalid(form)
     
 class AjaxUpdateMixin(object):
-    def form_valid(self, form):
-        self.object = form.save()
-        messages.success(self.request, 'The '+ self.object._meta.verbose_name+' has been updated successfully.')
-        return self.render_to_response(self.get_context_data(form=form))
+  success_message_template = 'The %s has been updated successfully.'
+  error_message_template = 'Unable to create %s.'
+  def get_context_data(self, **kwargs):
+      kwargs['model_name']=self.object._meta.module_name
+      return super(AjaxUpdateMixin, self).get_context_data(**kwargs)
+  def get_success_message_template(self):
+    return self.success_message_template
+  def get_error_message_template(self):
+    return self.error_message_template
+  def form_valid(self, form):
+    self.object = form.save()
+    name=self.object._meta.verbose_name
+    template=self.get_success_message_template
+    # msg = self.get_success_message_template() % self.object._meta.verbose_name
+    messages.success(self.request, self.get_success_message_template() % self.object._meta.verbose_name)
+    return self.render_to_response(self.get_context_data(form=form))
+  def form_invalid(self, form):
+    messages.error(self.request, self.get_error_message_template() % self.object._meta.verbose_name)
+    messages.error(self.request, form.errors)
+    return super(AjaxUpdateMixin, self).form_invalid(form)
 
-class ProjectCreate(FormWithUserMixin, AjaxUpdateMixin, CreateView):
-    # Takes name, owner, and article_id
-    # Creates Project with given name and owner and assignes it to article
-    # Returns message and article project field with new item selected
-    model = Project
-    form_class = ProjectForm
-    def form_invalid(self, form):
-        messages.error(self.request, 'Unable to create project with the name given.')
-        messages.error(self.request, form.errors)
-        return super(ProjectCreate, self).form_invalid(form)
+class SimpleRelatedCreate(FormWithUserMixin, AjaxUpdateMixin, CreateView):
+  # This is a base class for creating categories and projects
+  # Takes name, owner, and article_id
+  # Creates object with given name and owner and assignes it to article
+  # Returns message and option and list item
+  error_message_template = 'Unable to create %s with given name.'
+  template_name = 'articles/simple_related_form.html'
+  # def get_template_names(self):
+  #   return[]
+
+class ProjectCreate(SimpleRelatedCreate):
+  model = Project
+  form_class = ProjectForm
+class CategoryCreate(SimpleRelatedCreate):
+  # Takes name, owner, and article_id
+  # Creates Project with given name and owner and assignes it to article
+  # Returns message and article project field with new item selected
+  model = Category
+  form_class = CategoryForm
+
 
 class ProjectList(ListView):
     model = Project
@@ -871,9 +896,6 @@ class ReleaseAsReviewer(Release):
         super(ReleaseAsReviewer, self).update_articles()
         self.action_qs.update(reviewer=None, was_claimed=False)
 ############################### Available Actions ##################################
-
-
-
 class MakeAvailable(ArticleActionsView):
     action_verb="make available"
     past_tense_action_verb="made available"
@@ -881,7 +903,7 @@ class MakeAvailable(ArticleActionsView):
         return self.filter_by_owner(qs, self.request.user)
 
 class MakeAvailableTo(MakeAvailable):
-    action_form_class = AvailabilityForm
+    action_form_class = SimpleTextForm
 
 class MakeAvailableToAllWriters(MakeAvailable):
     next_status = STATUS_RELEASED

@@ -25,6 +25,8 @@ urlpatterns = patterns('',
     url(r'^projects/$',                         ProjectList.as_view(),          name='project_list'),
     url(r'^project/(?P<pk>\d+)/delete/$',       ProjectDelete.as_view(),        name='project_delete'),
     url(r'^project/add/$',                      ProjectCreate.as_view(),        name='new_project'),
+    
+    url(r'^category/add/$',                     CategoryCreate.as_view(),        name='new_category'),
 
     url(r'^articles/claim-as-writer/$',         ClaimAsWriter.as_view(),        name='claim_as_writer'),
     url(r'^articles/claim-as-reviewer/$',       ClaimAsReviewer.as_view(),      name='claim_as_reviewer'),
