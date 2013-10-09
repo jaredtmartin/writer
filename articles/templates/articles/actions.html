@@ -39,7 +39,7 @@
     fui-cross
 
   {% elif action == 'Save' %}
-    <button class="btn {{btn_size}} btn-primary" type="submit">Save</button>
+    <button id="save-button" class="btn {{btn_size}} btn-primary" type="submit">Save</button>
   {% elif action == "Published" %}
     <button class="btn {{btn_size}}" onclick="doActionOnArticles('',{{article.id}});return false;" >Publish</button>
   {% elif action == "Released" %}

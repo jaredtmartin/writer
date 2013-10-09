@@ -1,10 +1,11 @@
 from articles.models import *
 from django.forms import ModelForm, DateField, ValidationError, BooleanField, ChoiceField, IntegerField, Form, \
-    ModelChoiceField, CharField, ModelMultipleChoiceField, widgets
+    ModelChoiceField, CharField, ModelMultipleChoiceField, widgets, RegexField, PasswordInput
 from extra_views import InlineFormSet
 from articles.widgets import BootstrapDropdown, BootstrapDropdownPlus
 from django.utils.encoding import smart_unicode
-import pytz
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+
 from titlecase import titlecase
 
 class FormWithLookupsMixin(object):
@@ -42,7 +43,7 @@ class CreateArticleForm(ModelForm):
     article_type    = ModelChoiceField(queryset=ArticleType.objects.all(), widget=BootstrapDropdown(label="Type", plus_url="www.google.com", help_text='Select the type of content you want written.', attrs={'data-style':"btn-primary"}), initial='0')
     priority        = ChoiceField(choices = ARTICLE_PRIORITIES, widget=BootstrapDropdown(label="Priority", help_text='How urgent is/are the article(s)?', attrs={'data-style':"btn-primary"}), required=False)
     minimum         = CharField(initial="", widget=widgets.TextInput(attrs={'class':'high-input', 'placeholder':'Length:100'}), required=False)
-    expires         = CharField(initial="", widget=widgets.TextInput(attrs={'placeholder':'Expires: Never'}), required=False)
+    expires         = DateField(initial="", widget=widgets.DateTimeInput(attrs={'placeholder':'Expires: Never'}), required=False)
     tags            = CharField(initial="", widget=widgets.TextInput(attrs={'placeholder':'Tags'}), required=False)
     referrals       = CharField(initial="", widget=widgets.TextInput(attrs={'placeholder':'Referrals'}), required=False)
     language        = CharField(initial="", widget=widgets.TextInput(attrs={'placeholder':'Language'}), required=False)
@@ -76,7 +77,7 @@ class ArticleForm(CreateArticleForm):
     class Meta:
         model = Article
         fields = ('writer','reviewer','language', 'style',  'purpose','price','referrals','expires','priority','category','tags', 'minimum','article_type','project','title','body', 'owner','number_of_articles','article_notes','review_notes','description')
-    title = CharField(initial="", widget=widgets.TextInput(attrs={'placeholder':'Price'}), required=False)
+    title = CharField(initial="", widget=widgets.TextInput(attrs={'placeholder':'Title'}), required=False)
 class WriteArticleForm(ModelForm):
     class Meta:
         model = Article
@@ -137,17 +138,7 @@ class ModelChoiceFieldTitleLabels(ModelChoiceField):
 class AssignToForm(Form):
 #    assign_to_user = ModelChoiceFieldWithFlexibleChoiceLabels(queryset=User.objects.all(), pre_label="Assign to ")
     user = ModelChoiceFieldTitleLabels(queryset=User.objects.all(), empty_label="Assign select articles to:")
-def get_timezone_choices():
-        return [(t,t) for t in pytz.common_timezones]
-class UserForm(ModelForm):
-    class Meta:
-        model = User
-        fields = ('username','first_name','last_name','email')
-class UserProfileForm(ModelForm):
-    class Meta:
-        model = UserProfile
-        fields = ('mode','timezone')
-    timezone = ChoiceField(choices=get_timezone_choices())
+
 class TagArticleForm(ModelForm):
     class Meta:
         model = Article
@@ -188,3 +179,29 @@ class UserModeForm(Form):
 
 class FiltersForm(Form):
     filters = CharField(max_length=128, required=False)
+class RegistrationForm(UserCreationForm):
+    username = RegexField(label="Username", max_length=30,
+        widget=widgets.TextInput(attrs={'placeholder':'Username'}),
+        regex=r'^[\w.@+-]+$',
+        help_text = "Required. 30 characters or fewer. Letters, digits and "
+                      "@/./+/-/_ only.",
+        error_messages = {
+            'invalid': "This value may contain only letters, numbers and "
+                         "@/./+/-/_ characters."})
+    password1 = CharField(label="Password", 
+        widget=PasswordInput(attrs={'placeholder':'Password'}))
+    password2 = CharField(label="Password confirmation",
+        widget=PasswordInput(attrs={'placeholder':'Please re-type your password'}),
+        help_text = "Enter the same password as above, for verification.")
+    first_name = CharField(label="First Name", max_length=30,
+        widget=widgets.TextInput(attrs={'placeholder':'First Name'}))
+    last_name = CharField(label="Last Name", max_length=30,
+        widget=widgets.TextInput(attrs={'placeholder':'Last Name'}))
+    class Meta:
+        model = User
+        fields = ("username","first_name","last_name")
+class LoginForm(AuthenticationForm):
+    username = CharField(label="Username", max_length=30,
+        widget=widgets.TextInput(attrs={'placeholder':'Username'}))
+    password = CharField(label="Password", 
+        widget=PasswordInput(attrs={'placeholder':'Password'}))

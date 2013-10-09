@@ -3,7 +3,7 @@
 {% if user = article.owner or not article.pk%}
   <div  id="keywords-table" class="table block_content" >
     <div class="row-fluid input-row" id="keywords-title-row">
-      <div class="span4"><h5>Keyword <a onclick="getKeywordInlineForm();return false;"><i class="fui-plus"></i></h5></a></div>
+      <div class="span4"><h5>Keyword <a id="new-keyword-button" onclick="getKeywordInlineForm();return false;"><i class="fui-plus"></i></h5></a></div>
       <div class="span4"><h5>Url</h5></div>
       <div class="span2"><h5>Frequency</h5></div>
       <div class="span2"><h5>Remove</h5></div>

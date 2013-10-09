@@ -8,7 +8,7 @@
     <button class="btn" type="submit" id="search-button" onclick="runSearch();"><span class="fui-search"></span></button>
   </div>
 </form></li>
-  <li class="nav-header"><a href="{% url article_add %}">New Article</a></li>
+  <li class="nav-header"><a href="{% url article_add %}" id="new-article-link" title="New Article">New Article</a></li>
   <li class="nav-header"><a href="#">Dashboard</a></li>
   <li class="nav-header">Articles</li>
     {% for filter in filters.view.context %}

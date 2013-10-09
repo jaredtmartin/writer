@@ -33,7 +33,7 @@ class BootstrapDropdown(Select):
       </select>
       <div class="btn-group select">
         <i class="dropdown-arrow"></i>
-        <button data-toggle="dropdown" class="btn dropdown-toggle clearfix btn-small btn-primary">
+        <button id="%(name)s-button" data-toggle="dropdown" class="btn dropdown-toggle clearfix btn-small btn-primary">
           <span id="select-label-%(name)s" class="pull-left">%(label)s</span>&nbsp;<span class="caret"></span>
         </button>
         <ul id="%(name)s-dropdown-menu" role="menu" class="dropdown-menu">
@@ -165,7 +165,7 @@ class BootstrapDropdownPlus(BootstrapDropdown):
           <button data-toggle="dropdown" class="btn dropdown-toggle clearfix btn-small btn-primary">
             <span id="select-label-%(name)s" class="pull-left">%(label)s</span>&nbsp;<span class="caret"></span>
           </button>
-          <button type="button" data-toggle="modal" data-target="#%(name)s-modal" class="btn btn-primary btn-small btn-select-plus"><i class="fui-plus"></i></button>
+          <button type="button" id="%(name)s-button" data-toggle="modal" data-target="#%(name)s-modal" class="btn btn-primary btn-small btn-select-plus"><i class="fui-plus"></i></button>
           <ul id="%(name)s-dropdown-menu" role="menu" class="dropdown-menu">
             %(list_items)s
           </ul>

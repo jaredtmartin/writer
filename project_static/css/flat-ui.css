@@ -4917,8 +4917,8 @@ input.search-query {
   color: #3498db;
 }
 .alert-error {
-  background-color: #f8f5f5;
-  border-color: #ebe9ea;
+  background-color: #f7e8e7;
+  border-color: #eadddd;
 }
 .alert-error a {
   color: #e74c3c;

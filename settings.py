@@ -6,6 +6,8 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__)) + os.sep
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
+SITE_DOMAIN = "writeraxis-python.appspot.com"
+
 from pprint import pprint as pp
 # print "BASE_DIR = %s" % str(BASE_DIR) 
 extra_modules="%senv/lib/python2.7/site-packages/" % BASE_DIR
@@ -58,7 +60,11 @@ else:
     }
 
 
-
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = "587"
+EMAIL_HOST_USER = 'writeraxis@gmail.com'
+EMAIL_HOST_PASSWORD = '179862934'
+EMAIL_USE_TLS = True
 DEBUG_TOOLBAR_CONFIG = {
     'INTERCEPT_REDIRECTS': False,
 }
@@ -199,6 +205,7 @@ INSTALLED_APPS = (
     'django.contrib.markup',
     # 'knowledge',
     'django_extensions',
+    'accounts',
     # 'django_facebook',
     #'forms',
     'articles',
@@ -236,8 +243,8 @@ LOGGING = {
     }
 }
 #LOGIN_URL='https://www.facebook.com/dialog/oauth?client_id=YOUR_APP_ID&redirect_uri=YOUR_REDIRECT_URI&state=SOME_ARBITRARY_BUT_UNIQUE_STRING'
-LOGIN_URL='/accounts/login/'
-LOGIN_REDIRECT_URL = "/articles/"
+LOGIN_URL='/login/'
+LOGIN_REDIRECT_URL = "/articles/articles/"
 ################### Facebook Integration Settings ################### 
 FACEBOOK_APP_ID = '519129288106424'
 FACEBOOK_APP_SECRET = '93c96e8759a2a91bd13336d32e398795'

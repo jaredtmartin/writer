@@ -1,64 +1,43 @@
-{% extends "writeaid_base.html" %}
-{% block js %}
-<script type="text/javascript">
-    $(document).ready(function() {
-        $("input").keypress(function(event) {
-            if (event.which == 13) {
-                event.preventDefault();
-                $("#login-form").submit();
-            }
-        });
-     });
-</script>
-{% endblock %}
-{% block content %}
+{% extends "articles/bare.html" %}
 
-<div class="block">
-  <div class="block_head">
-    <div class="bheadl"></div>
-    <div class="bheadr"></div>
-    <h2>Login</h2>
-    <ul>
-      <li class="nobg">Not registered yet?</li>
-      <li><a href="/accounts/signup/">Sign Up</a></li>
-    </ul>
-  </div>
-  <!-- .block_head ends -->
-  
-  <div class="block_content">
-      
-    <div align="center">
-    
-    
-        <form id="login-form" method="post" action="{% url django.contrib.auth.views.login %}">
-        {% csrf_token %}
-        <input type="hidden" name="next" value="{{ next }}" />
-                
-        <table width="100%" cellspacing="0" cellpadding="0">
-            <tbody><tr>
-                <th>Username</th>
-                <th>Password</th>
-                <th>&nbsp;</th>
-            </tr>
-            <tr style="background-color: rgb(251, 251, 251);">
-                <td><input type="text" style="width: 300px;" value="" class="text small" name="username" id="id_username"></td>
-                <td><input type="password" style="width: 300px;" class="text small" name="password" id="id_password"></td>
-                <td><input id="login-submit" type="submit" style="float: right; margin-right:14px;" value="Login" class="submit mid"></td>
-            </tr>
-                        <tr>
-                <td><div class="aleft smfont"><input type="checkbox" style="margin: 0 0 0 5px; vertical-align: text-bottom; " value="1" checked="checked" name="remember_login"> Remember my password?</div></td>
-                <td><div style="margin: 0 0 0 5px;" class="aleft smfont"><a class="popup_box" href="#forgot_password">Lost password?</a></div></td>
-                <td valign="top">&nbsp;</td>
-            </tr>
-                    </tbody></table>
-        
-        </form>
-    
-    
-    </div>
+{% block base %}
+{% if form.errors %}
+	<div class="row">
+		<div class="span12">
+			<ul id="messages" class="messages">
+				<li id="message-bad-username" class="message alert-error alert">
+	          <button type="button" class="close" data-dismiss="alert">&times;</button>
+	          Your username and password didn't match. Please try again.
+	        </li>
+		</div>
+	</div>
+{% endif %}
 
-    </div>		<!-- .block_content ends -->
-	<div class="bendl"></div>
-	<div class="bendr"></div>
-</div>
+<form method="post" action="{% url login %}">
+	<div class="row-fluid">
+		<div class="span6 offset3">
+				{% csrf_token %}
+				<h2>Log In</h2>
+				{{ form.username }}
+				{{ form.password }}
+		</div>
+	</div>
+	<div class="row-fluid">
+		<div class="span2 offset3">
+			<button type="submit" class="btn full-length">
+			  Log In
+			</button>
+		</div>
+		<div class="span2">
+			<button class="btn full-length">
+			  Register
+			</button>
+		</div>
+		<div class="span2">
+			<button class="btn full-length">
+			  I forgot
+			</button>
+		</div>
+	</div>
+</form>
 {% endblock %}

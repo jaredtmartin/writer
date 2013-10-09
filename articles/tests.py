@@ -16,16 +16,33 @@ import os
 import time
 # from selenium.webdriver.firefox.webdriver import WebDriver
 
+class MyFirefoxWebDriver(webdriver.Firefox):
+    def get_element(self, text):
+        return self.find_element_by_xpath("//*[.='%s']" % text)
+    def get_link(self, text):
+        return self.find_element_by_xpath('//a[contains(%s)' % text)
+    def get_button(self, text):
+        return self.find_element_by_css_selector('button:contains("%s")' % text)
+    def get_body(self):
+        return self.find_element_by_tag_name('body')
+    def see_text_on_page(test, text):
+        test.assertIn(test, text, self.get_body().text)
 class BaseFunctionalTest(LiveServerTestCase):
     fixtures = ['initial_data.yaml', 'test_data.yaml']
+    auto_login = False
     def setUp(self):
-        self.browser = webdriver.Firefox()
-        self.browser.implicitly_wait(3)
+        self.browser = MyFirefoxWebDriver()
+        self.browser.maximize_window()
+        self.browser.implicitly_wait(5)
+        if self.auto_login: self.login()
+        # browser.implicitly_wait(10)
         # self.wait = WebDriverWait(self.browser, 10)
     def tearDown(self):
         self.browser.quit()
     # def wait_for_jquery(self):
     #     self.wait.until(self.browser.execute_script('return jQuery.active == 0'))
+    def assert_see_on_page(self, text):
+        self.assertIn(text, self.browser.get_body().text)
     def login(self):
         self.browser.get(self.live_server_url+'/accounts/login/')
         # He fills in his username and password and hits return
@@ -35,89 +52,66 @@ class BaseFunctionalTest(LiveServerTestCase):
         password_field.send_keys(Keys.RETURN)
         # He sees the friendly welcome message in the top right corner with his name.
         body = self.browser.find_element_by_tag_name('body')
+        self.browser.save_screenshot('screenie.png')
         self.assertIn('Hi Joe Requester!', body.text)
-
-class AdminTest(BaseFunctionalTest):
-    def test_can_create_new_poll_via_admin_site(self):
-        # Gertrude opens her web browser, and goes to the admin page
-        self.browser.get(self.live_server_url + '/admin/')
-
-        # She sees the familiar 'Django administration' heading
-        body = self.browser.find_element_by_tag_name('body')
-        self.assertIn('Django administration', body.text)
 
 class CreateArticles(BaseFunctionalTest):
-
-    def test_can_create_a_simple_set_of_articles(self):
-        # John opens his browser and types www.writeraxis.com
+    auto_login = True
+    def setUp(self):
+        super(CreateArticles, self).setUp()
         self.browser.get(self.live_server_url)
-        # He is greeted and gets the articles list
-        body = self.browser.find_element_by_tag_name('body')
-        self.assertIn('Articles List', body.text)
-        # He sees a link to 'add' a new poll, so he clicks it
-        new_article_link = self.browser.find_element_by_link_text('Add Article')
-        new_article_link.click()
+        self.assert_see_on_page('Available Articles')
+        self.browser.find_elements_by_link_text('NEW ARTICLE')[0].click()
+    def test_bare_minimum(self):
+        self.browser.find_elements_by_id("save-button")[0].click()
+        self.browser.save_screenshot('screenie.png')
+    def test_can_create_a_simple_set_of_articles(self):
 
-        # He gets redirected to the login screen
-
-        # He fills in his username and password and hits return
-        self.browser.find_element_by_name('username').send_keys('requester')
-        self.browser.find_element_by_name('password').send_keys('pass')
-        self.browser.find_element_by_id('login-submit').click()
-        # password_field.send_keys(Keys.RETURN)
-
-        # Should be greeted
-        body = self.browser.find_element_by_tag_name('body')
-        self.browser.save_screenshot('screenie2.png')
-        self.assertIn('Hi Joe Requester!', body.text)
         # Click on Article Type
-        article_type_dropdown = Select(self.browser.find_element_by_name('article_type'))
+        self.browser.find_elements_by_id("select-label-article_type")[0].click()
         # Select Simple Articles    
-        article_type_dropdown.select_by_visible_text("Simple Articles");
-        # He types in "Big Project" in the project name field
-        self.browser.find_element_by_name('project').send_keys("Big Project")
-        # Fill Description with "A simple article"
-        self.browser.find_element_by_name('description').send_keys("A simple article")
-        # Set the Due Date to Next Week
-        # TODO: Add Due Date
-        # Set number of Articles to 10
-        self.browser.find_element_by_name('number_of_articles').send_keys("5")
-        # Fill Article Notes with "Be sure to use good grammar."
-        self.browser.find_element_by_name('article_notes').send_keys("Be sure to use good grammar.")
-        # Fill Review Notes with "Make sure they used good grammar"
-        self.browser.find_element_by_name('review_notes').send_keys("Make sure they used good grammar")
-        # Fill Tags with "High, Rush"
-        self.browser.find_element_by_name('tags').send_keys("High, Rush")
-        # He sets the keyword to "Atlanta Plumber"
-        self.browser.find_element_by_name('keyword_set-0-keyword').send_keys("Atlanta Plumber")
-        # He sets the url to "www.google.com"
-        self.browser.find_element_by_name('keyword_set-0-url').send_keys("www.google.com")
-        # He clickes the Save button
-        self.browser.find_element_by_id('save-btn').click()
-        # He sees his 3 articles there
-        new_article_links = self.browser.find_elements_by_link_text("Atlanta Plumber")
-  
-        # self.browser.save_screenshot('screenie2.png')
-        # He clicks on the user mode dropdown
-        self.browser.find_element_by_id('user-mode-dropdown').click()
-        # Then he selects the requester mode
-        self.browser.find_element_by_id('requester-mode-link').click()
-        # All five of the articles should be "new"
-        self.assertEquals(len(self.browser.find_elements_by_class_name('status-new')), 7)
-        # He checks the first box
-        checkboxes = self.browser.find_elements_by_class_name('action-select')
-        checkboxes[0].click()
-        # Then he clicks on the assign dropdown
-        self.browser.find_element_by_id('assign-writer-button').click()
-        # Then he sees the name of his writer.
-        self.browser.find_element_by_link_text('Ralph Writer').click()
-        # Now only four of the articles should be "new"
-        self.assertEquals(len(self.browser.find_elements_by_class_name('status-new')), 6)
-        # And one should be Assigned
-        self.assertEquals(len(self.browser.find_elements_by_class_name('status-assigned')), 1)
+        self.browser.find_elements_by_link_text("Simple Articles")[0].click()
         
-         
 
+        # Sees the project field and decides to start a new one:
+        # So he clicks on the plus sign next to project
+        self.browser.find_elements_by_id("project-button")[0].click()
+        # He sees a modal appear
+        self.assert_see_on_page("Create a New Project")
+        # He types in "Big Project" in the project name field
+        self.browser.find_elements_by_id("project-name-input")[0].send_keys("Big Project")
+        # He clicks "Create" and sees "Project: Big Project" in the box
+        self.browser.find_elements_by_link_text("Create")[0].click()
+        self.assert_see_on_page("Project: Big Project")
+        # Sees the category field and decides to start a new category:
+        # So he clicks on the plus sign next to category
+        self.browser.find_elements_by_id("category-button")[0].click()
+        # He sees a modal appear
+        self.assert_see_on_page("Create a New Category")
+        # He types in "Special" in the project name field
+        i=self.browser.find_elements_by_id("category-name-input")[0].send_keys("Special")
+        # He clicks "Create" and sees "Category: Special" in the box
+        self.browser.find_elements_by_link_text("Create")[0].click()
+        self.assert_see_on_page("Category: Special")
+        # He Sees the priority option and sets it to low priority
+        self.browser.find_elements_by_id("priority-button")[0].click()
+        self.browser.find_elements_by_link_text("Low Priority")[0].click()
+        # and sees the value has been accepted
+        self.assert_see_on_page("Priority: Low Priority")
+        #  he sees the field for number of articles and types "3"
+        self.browser.find_elements_by_name("number_of_articles")[0].send_keys("3")
+        # He then adds two keywords
+        self.browser.find_elements_by_name("keyword_set-0-keyword")[0].send_keys("Atlanta Plumber")
+        self.browser.find_elements_by_name("keyword_set-0-url")[0].send_keys("www.google.com")
+        self.browser.find_elements_by_name("keyword_set-0-times")[0].send_keys("2")
+        self.browser.find_elements_by_id("new-keyword-button")[0].click()
+        self.browser.find_elements_by_name("keyword_set-1-keyword")[0].send_keys("Florida Orange")
+        self.browser.find_elements_by_name("keyword_set-1-url")[0].send_keys("www.yahoo.com")
+        # # Fill Article Notes with "Be sure to use good grammar."
+        self.browser.find_elements_by_name("article_notes")[0].send_keys("Be sure to use good grammar.")
+        # # Fill Review Notes with "Make sure they used good grammar"
+        self.browser.find_elements_by_name("review_notes")[0].send_keys("Be sure to use good grammar.")
+        self.browser.find_elements_by_id("save-button")[0].click()
     def test_writing_an_article(self):
         # John opens his browser and types www.writeraxis.com
         self.browser.get(self.live_server_url)
@@ -135,16 +129,17 @@ class CreateArticles(BaseFunctionalTest):
 class LoginTest(BaseFunctionalTest):
     def test_can_login(self):
         # John opens his browser and types www.writeraxis.com
-        self.browser.get(self.live_server_url)
         # He is greeted and gets the articles list
-        body = self.browser.find_element_by_tag_name('body')
-        self.assertIn('All Articles', body.text)
-        # He sees a link to 'add' a new poll, so he clicks it
-        login_link = self.browser.find_element_by_link_text('Log in')
-        login_link.click()
+        # body = self.browser.find_element_by_tag_name('body')
+        # # self.assertIn('Welcome', body.text)
+        # # He sees a link to 'add' a new poll, so he clicks it
+        # login_link = self.browser.find_element_by_link_text('Log in')
+        # login_link.click()
 
         # He gets redirected to the login screen
 
+        self.browser.get(self.live_server_url+"/accounts/login")
+        self.browser.maximize_window()
         # He fills in his username and password and hits return
         self.browser.find_element_by_name('username').send_keys('requester')
         password_field=self.browser.find_element_by_name('password')

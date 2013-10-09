@@ -1,7 +1,17 @@
 from django.views.generic import ListView
+from django.template import RequestContext
+import urlparse
+import pytz
 from extra_views import SearchableListMixin
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.contrib.auth import REDIRECT_FIELD_NAME, login
+from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.cache import never_cache
+from accounts.views import UserUpdateView
 from django.http import HttpResponseRedirect
 from django.contrib.auth.models import User
+from django.template.response import TemplateResponse
+from django.contrib.sites.models import get_current_site
 from django.template.defaultfilters import slugify
 from django.contrib import messages
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormMixin#, ModelFormMixin
@@ -11,11 +21,11 @@ from articles.models import Article, Keyword, Project, ArticleAction, ACTIONS, C
 PublishingOutlet, PublishingOutletConfiguration, WRITER_POSITION, REVIEWER_POSITION, UserProfile
 from django.views.generic.base import View, TemplateResponseMixin
 from articles.forms import RejectForm, ArticleForm, KeywordInlineFormSet, QuantityForm, \
-TagArticleForm, ActionUserID, AssignToForm, UserForm, UserProfileForm, NoteForm,\
+TagArticleForm, ActionUserID, AssignToForm, NoteForm,\
 TagForm, ProjectForm, ACT_SUBMIT, ACT_REJECT, ACT_APPROVE, CategoryForm, \
 ACT_ASSIGN_WRITER, ACT_ASSIGN_REVIEWER, ACT_CLAIM_REVIEWER, ACT_RELEASE, ACT_PUBLISH, ACT_COMMENT, \
-ACT_REMOVE_REVIEWER, ACT_REMOVE_WRITER, ACT_CLAIM_WRITER, UserModeForm, PublishForm, \
-STATUS_NEW, STATUS_RELEASED, STATUS_ASSIGNED, STATUS_SUBMITTED, STATUS_APPROVED, FiltersForm, \
+ACT_REMOVE_REVIEWER, ACT_REMOVE_WRITER, ACT_CLAIM_WRITER, UserModeForm, PublishForm, LoginForm, \
+STATUS_NEW, STATUS_RELEASED, STATUS_ASSIGNED, STATUS_SUBMITTED, STATUS_APPROVED, FiltersForm, RegistrationForm, \
 STATUS_PUBLISHED, WriteArticleForm, WRITER_MODE, REVIEWER_MODE, REQUESTER_MODE, SimpleTextForm, CreateArticleForm
 #from django_actions.views import ActionViewMixin
 from django.http import Http404, HttpResponseServerError
@@ -403,6 +413,7 @@ class ArticleList(AvailablilityMixin, GetActionsMixin, ArticleFilterMixin, ListV
     def get_context_data(self, **kwargs):
         # kwargs['view_filters']=self.get_sidebar_context()
         # kwargs['current_filter'] = self.current_filter
+        # kwargs['user']=self.request.user
         kwargs['selected_tab']=self.name
         kwargs['hidden_columns']=self.get_hidden_columns()
         kwargs['all_columns']=['Project','Keywords','Writer','Reviewer','Status','Category','Length','Priority','Tags']
@@ -522,17 +533,20 @@ class ArticleCreate(ArticleFilterMixin, FormWithUserMixin, LoginRequiredMixin, C
     def forms_valid(self, form, inlines):
         # print "form.cleaned_data = %s" % str(form.cleaned_data)
         response = super(ArticleCreate, self).forms_valid(form, inlines)
+        print "============================"
+        print "response = %s" % str(response)
         # If number_of_articles was specified, clone the model that many times
         if 'number_of_articles' in form.cleaned_data and form.cleaned_data['number_of_articles']:
-            keywords = list(self.object.keyword_set.all())
-            # Do one less since we already had one instance
-            for x in xrange(form.cleaned_data['number_of_articles']-1):
-                self.object.pk = None
-                self.object.save()
-                for keyword in keywords:
-                    keyword.pk = None
-                    keyword.article = self.object
-                    keyword.save()
+          form.cleaned_data['number_of_articles']-1
+          keywords = list(self.object.keyword_set.all())
+          # Do one less since we already had one instance
+          for x in xrange(form.cleaned_data['number_of_articles']-1):
+            self.object.pk = None
+            self.object.save()
+            for keyword in keywords:
+              keyword.pk = None
+              keyword.article = self.object
+              keyword.save()
         return response
     def get_success_url(self):
         try:
@@ -964,23 +978,8 @@ class AssignToReviewer(Assign):
 ################################################################################
 #                               User Profile                                   #
 ################################################################################
-class UserUpdateView(UpdateView):
-    model=User
-    form_class = UserForm
-    def get_context_data(self, **kwargs):
-        kwargs.update({
-            'user_profile_form':UserProfileForm(instance=self.object.get_profile()),
-        })
-        return super(UserUpdateView, self).get_context_data(**kwargs)
-    def form_valid(self, form):
-        user_profile_form = UserProfileForm(self.request.POST, instance=self.object.get_profile())
-        if user_profile_form.is_valid():
-            user_profile_form.save()
-            self.request.session['tz'] = user_profile_form.cleaned_data['timezone']
-            messages.success(self.request, 'The changes to your profile have been made successfully.')
-            return super(UserUpdateView, self).form_valid(form)
-        else:
-            return self.render_to_response(self.get_context_data(form=form, user_profile_form=user_profile_form))
+
+
 
 class ChangeModeView(FormView, ArticleList):
     form_class=UserModeForm
@@ -1087,6 +1086,9 @@ class ReviewerList(UserList):
   def get_other(self):
     return User.objects.filter(Q(contacts_as_worker__position=REVIEWER_POSITION).exclude(contacts_as_worker__requester=self.user)|Q(userprofile__mode=REVIEWER_MODE)).distinct()
     
+
+
+
 # class CreateRelationship(CreateView):
 #   model = Relationship
 #   form_class = RelationshipForm
@@ -1190,6 +1192,18 @@ class ReviewerList(UserList):
 #     print "kwargs = %s" % str(kwargs)
 #     return super(ConfirmRelationship, self).get_context_data(**kwargs)
 
+class ChangeModeView(FormView):
+    form_class=LoginForm
+    def form_valid(self, form):
+        p = self.request.user.get_profile()
+        p.mode = form.cleaned_data['mode']
+        p.save()
+        # self.request.user.mode = form.cleaned_data['mode']
+        messages.info(self.request, "You are now in %s mode." % self.request.user.mode_display)
+        return HttpResponseRedirect(reverse_lazy('article_list'))
+    def form_invalid(self, form): 
+        return HttpResponseRedirect(reverse_lazy('article_list'))
+
 def test500(request, template_name='admin/500.html'):
     """
     500 error handler.
@@ -1203,3 +1217,13 @@ def test500(request, template_name='admin/500.html'):
                     #this point in the process already
     if settings.DEBUG == False: settings.DEBUG = True
     return HttpResponseServerError(t.render(Context({'type':ltype,'value':lvalue,'traceback':ltraceback})))
+
+
+class UserSettingsView(ArticleFilterMixin, UserUpdateView):
+  model=User
+  success_url="/user/settings/"
+  template_name = "accounts/user_form.html"
+  def form_valid(self, form, user_profile_form):
+    # self.request.session['tz'] = user_profile_form.cleaned_data['timezone']
+    self.request.session['django_timezone'] = pytz.timezone(user_profile_form.cleaned_data['timezone'])
+    return super(UserSettingsView, self).form_valid(form, user_profile_form)
