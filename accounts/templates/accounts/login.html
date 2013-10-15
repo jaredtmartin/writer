@@ -1,0 +1,52 @@
+{% extends "accounts/base.html" %}
+
+{% block base %}
+{% if form.errors %}
+	<div class="row">
+		<div class="span12">
+			<ul id="messages" class="messages">
+				<li id="message-bad-username" class="message alert-error alert">
+	          <button type="button" class="close" data-dismiss="alert">&times;</button>
+	          Your username and password didn't match. Please try again.
+	        </li>
+		</div>
+	</div>
+{% endif %}
+
+<form method="post" action="{% url login %}">
+	<div class="row-fluid">
+		<div class="span6 offset3 page-header">
+				{% csrf_token %}
+				<h1>Log In</h1>
+		</div>
+	</div>
+<div class="row-fluid">
+	<div class="span6 offset3">
+		<p class="lead">Please enter your email address and password to log in.</p>
+	</div>
+</div>
+	<div class="row-fluid">
+		<div class="span4 offset4">
+				{{ form.username }}
+				{{ form.password }}
+		</div>
+	</div>
+	<div class="row-fluid">
+		<div class="span2 offset3">
+			<button type="submit" class="btn full-length btn-primary">
+			  Log In
+			</button>
+		</div>
+		<div class="span2">
+			<a class="btn full-length" type="button" href="{% url signup %}">
+			  Register
+			</a>
+		</div>
+		<div class="span2">
+			<a class="btn full-length" type="button" href="{% url password_reset %}">
+			  I forgot
+			</a>
+		</div>
+	</div>
+</form>
+{% endblock %}

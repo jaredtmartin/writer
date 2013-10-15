@@ -1,0 +1,7 @@
+{% extends "articles/bare.html" %}
+{% block base %}
+  {% include "articles/messages.html" %}
+  <div id="content">
+    {% block content %}{% endblock %} 
+  </div> 
+{% endblock base %}
