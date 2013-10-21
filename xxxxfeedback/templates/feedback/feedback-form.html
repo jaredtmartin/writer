@@ -1,0 +1,45 @@
+<script>
+    function getScreenshot(){
+        $('#problem-screenshot').html('<img id="problem-screenshot-image" src="http://tantramarinteractive.com/news/2008/cldg_screenshot.jpg"/>');
+    }
+    $("#mycheckboxid").click(function() {
+        alert('Testing');
+    });
+</script>
+<div id="feedback-form" >
+    <form method="POST" action="./srt-preview.php">
+        <div id="tabs" style="float:left; width: 90%;">
+            <ul>
+                <li><a href="#tabs-1">Report a Problem</a></li>
+                <li><a href="#tabs-2">Make a Suggestion</a></li>
+            </ul>
+            <div id="tabs-1">
+                <div id="problem-details" style="float:left;">
+                    {{questionform}}
+                    <label>Email:</label><input value="" name="email"><br/>
+                    <label>Describe the problem:</label><textarea name="description"></textarea><br/>
+                    <input type="checkbox" name="screenshot-checkbox" onclick="getScreenshot();">Include a Screenshot
+                    <div id="problem-similar-results">
+                        <!-- This space is here to show other results that are similar to problem typed above -->
+                    </div> <!--"problem-similar-results"-->
+                </div><!-- id="problem-details" -->
+                <div id="problem-screenshot" style="float:right;">
+                    <!-- This space is here for javascript to place the screenshot if and when it is generated -->
+                </div><!-- id="problem-screenshot" -->
+                <div style="clear:both;"></div>
+                <button> Submit</button><button>Cancel</button>
+            </div><!-- id=id="tabs-1" -->
+            <div id="tabs-2">
+                <div id="suggestion-details" style="float:left;">
+                    <label>Email:</label><input value="" name="email"><br/>
+                    <label>Describe the suggestion:</label><textarea name="description"></textarea><br/>
+                    <div id="suggestion-similar-results">
+                        <!-- This space is here to show other results that are similar to problem typed above -->
+                    </div> <!--"suggestion-similar-results"-->
+                </div><!-- id="suggestion-details" -->
+                <div style="clear:both;"></div>
+                <button> Submit</button><button>Cancel</button>
+            </div> <!-- id="tabs-2" -->
+        </div> <!-- id="tabs" -->
+    </form>
+</div> <!-- id="feedback-form" -->

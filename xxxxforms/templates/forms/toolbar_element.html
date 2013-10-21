@@ -1,0 +1,9 @@
+<li class="curved toolbar-element">
+    {% include "forms/element_preview.html" %}
+    <div class="sample-element-form" style="display:none;">
+        {% with element as inlineform %}
+            {{element.instance.klass}}
+            {% include "forms/element_inline_form.html" %}
+        {% endwith %}
+    </div>    
+</li>

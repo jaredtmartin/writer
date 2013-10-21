@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load tags %}
+{% block content %}
+    <div class="curved">
+        <h1>Add your form to Facebook</h1>
+        You're almost there!
+        <h3>Just 3 simple steps:</h3>
+        Step 1: <a href="http://www.facebook.com" target="_blank">Log in to Facebook</a><br>
+        Step 2: <a href="http://www.facebook.com/pages/create.php" target="_blank">Click here to create a Facebook page if you don't already have one.</a><br>
+        Step 3: <a href="http://www.facebook.com/dialog/pagetab?app_id=519129288106424&next=http://{{site.domain}}{% url form-get pk=object.pk slug='x' %}">Click here to add your form to your facebook page</a><br>
+    </div>
+{% endblock %}

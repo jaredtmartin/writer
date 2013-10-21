@@ -1,0 +1,23 @@
+{% extends 'knowledge/inner.html' %}
+
+{% load i18n %}
+
+{% block title %}{% trans "Support" %}{% endblock title %}
+
+{% block knowledge_widgets %}
+
+<div class="dk-widget">
+  <h3>{% blocktrans with count=questions|length %}Top {{ count }} Questions{% endblocktrans %}</h3>
+  <hr />
+
+  {% include 'knowledge/question_list.html' %}
+</div>
+<div class="dk-widget">
+  <h3>{% blocktrans with count=articles|length %}Top {{ count }} Articles{% endblocktrans %}</h3>
+  <hr />
+
+  {% include 'knowledge/article_list.html' %}
+</div>
+
+
+{% endblock knowledge_widgets %}

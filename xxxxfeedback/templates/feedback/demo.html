@@ -1,0 +1,36 @@
+<html>
+<head>
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.9.1/themes/base/jquery-ui.css" />
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.0/jquery-ui.min.js"></script>
+    <script> 
+        jQuery.fn.center = function () {
+            this.css("position","absolute");
+            this.css("top", Math.max(0, (($(window).height() - this.outerHeight()) / 2) + $(window).scrollTop()) + "px");
+            this.css("left", Math.max(0, (($(window).width() - this.outerWidth()) / 2) + $(window).scrollLeft()) + "px");
+            return this;
+        }
+        function fetchFeedbackForm(){
+            $.get('/feedback/feedback-form/', function(data) {
+              result=$('.result');
+              result.html(data);
+              $( "#tabs" ).tabs();
+              $('#feedback-tab').hide();
+              //$('#feedback-window').center();
+              //$('#feedback-window').css({bottom: - + result.height() + 'px', right: $('#feedback-tab').width() - result.width() + 'px'});
+              $('#feedback-window').css({top:'100px', left: '100px'});
+            });
+        }
+    </script>
+<body>
+    <title> Feedback Tab Demo</title>
+    <h1>This is a test of the feedback system I am working on.</h1>
+    <div id="feedback-window" style=position:fixed;right:0;bottom:0;>
+        <div id="feedback-tab" class="ui-widget ui-state-default ui-corner-all ui-helper-clearfix ui-widget-header" style="display: table">
+            <a class="ui-tabs-anchor" style="padding: 0.5em 1em;float:left;" role="presentation" onclick="fetchFeedbackForm();" >Feedback</a>
+        </div>
+        <div class="result">
+        </div>
+    </div>
+</body>
+

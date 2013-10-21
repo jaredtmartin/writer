@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load tags %}
+{% block content %}
+    <div class="form-display formWrapper curved">
+        {% if me %}Hello, {{me.first_name}}{% endif %}
+        {% if user.can_edit %}
+            <a href="{{object.get_theme_url}}"> Edit this form</a> <br>
+        {% endif %}
+        <form action="{{object.get_absolute_url}}" method="POST">{% csrf_token %}
+            {{ form.non_field_errors }}
+            {% for field in form %}
+                <div class="fieldWrapper">
+                    {{ field.errors }}
+                    {% if field.field.show_label %}{{ field.label_tag }}{% if field.field.required %} *{% endif %} :{% endif %} 
+                    {% if field.field.description %}<div class="description">{{field.field.description}}</div>{% endif %}
+                    {{ field }}
+                </div>
+            {% endfor %}
+        <input type="submit">
+        </form>
+    </div>
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Forms</h2>
+    <ul>
+        {% for form in object_list %}
+            <li class="curved" ><a href="{{ form.get_absolute_url }}">{{ form.name }}</a></li>
+        {% endfor %}
+    </ul>
+    <a href="/forms/new/">Add a new form, {{me.first_name}}</a>
+{% endblock %}
