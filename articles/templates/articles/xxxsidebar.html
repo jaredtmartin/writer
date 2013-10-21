@@ -1,0 +1,27 @@
+{% load addparam %}
+<ul class="nav nav-list">
+  <li><form class="form-search">
+  <div class="input-append">
+    <input type="text" class="span2 search-query" name="q" placeholder="Search" id="search-query-1" value="{{filters.search.value|default:""}}">
+    <input type="hidden" id="search-input" value="{{filters.search.value|default:""}}">
+    <input type="hidden" name="view" value="{{filters.view.value|default:""}}">
+    <button class="btn" type="submit" id="search-button" onclick="runSearch();"><span class="fui-search"></span></button>
+  </div>
+</form></li>
+  <li class="nav-header"><a href="{% url article_add %}" id="new-article-link" title="New Article">New Article</a></li>
+  <li class="nav-header"><a href="#">Dashboard</a></li>
+  <li class="nav-header">Articles</li>
+    {% for filter in filters.view.context %}
+      {% with name=filter.0 url=filter.1 count=filter.2 %}
+      <li{% if current_filter = name %} class="active"{% endif %}>
+        <a href="{{url}}">{{name|capfirst}}{% if count %}<span class="nav-counter">{{count}}</span>{% endif %}</a>
+      </li>
+      {% endwith %}
+    {% endfor %}
+  <li class="nav-header">Writers</li>
+  <li{% if header = 'My Writers' %} class="active"{% endif %}><a href="{% url my_writers %}">My Writers<span class="nav-counter">??</span></a></li>
+  <li{% if header = 'unavailable' %} class="active"{% endif %}><a href="{% url available_writers %}">Available Writers<span class="nav-counter">??</span></a></li>
+  <li class="nav-header">Reviewers</li>
+  <li{% if header = 'unavailable' %} class="active"{% endif %}><a href="{% url reviewer_list %}">My Reviewers<span class="nav-counter">??</span></a></li>
+  <li{% if header = 'unavailable' %} class="active"{% endif %}><a href="{% url reviewer_list %}">Available Reviewers<span class="nav-counter">??</span></a></li>
+</ul>
