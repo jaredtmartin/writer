@@ -143,27 +143,41 @@ class TagArticleForm(ModelForm):
     class Meta:
         model = Article
         fields = ('tags',)
-# class RelationshipForm(ModelForm):
-#     class Meta:
-#         model = Relationship
-#         fields = ('requester','writer','reviewer')
-# class ConfirmRelationshipForm(ModelForm):
-#     class Meta:
-#         model = Relationship
-#         fields = ('confirmed',)
-#     def save(self, commit=True):
-#         super(ConfirmRelationshipForm, self).save(commit=False)
-#         self.instance.confirmed=True
-#         return super(ConfirmRelationshipForm, self).save(commit=True)
-class ModelFormWithUser(ModelForm):
+
+class FormWithUserMixin(object):
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user')
-        super(ModelFormWithUser, self).__init__(*args, **kwargs)
+        super(FormWithUserMixin, self).__init__(*args, **kwargs)
+class ModelFormWithUser(FormWithUserMixin, ModelForm):
     def save(self, commit=True):
         model = super(ModelFormWithUser, self).save(commit=False)
         model.owner = self.user
         if commit: model.save()
         return model
+
+class ContactForm(FormWithUserMixin, ModelForm):
+  class Meta:
+    model = Contact
+    fields = ('requester','worker','position','user_asked')
+  def clean(self):
+    cleaned_data = self.cleaned_data
+    # Figure out who is being asked and save with the object
+    if cleaned_data['requester'] == self.user:
+      cleaned_data['user_asked'] = cleaned_data['worker']
+    else:
+      cleaned_data['user_asked'] = cleaned_data['requester']
+    # Always return the full collection of cleaned data.
+    return cleaned_data
+
+# class ConfirmContactForm(ModelForm):
+#     class Meta:
+#         model = Contact
+#         fields = ('confirmation',)
+#     def save(self, commit=True):
+#         super(ConfirmContactForm, self).save(commit=False)
+#         self.instance.confirmation=True
+#         return super(ConfirmContactForm, self).save(commit=True)
+
 class ProjectForm(ModelFormWithUser):
     class Meta:
         model = Project

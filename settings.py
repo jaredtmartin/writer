@@ -209,6 +209,7 @@ INSTALLED_APPS = (
     # 'django_facebook',
     #'forms',
     'articles',
+    'slick',
     # 'common',
     #'django_actions',
 
@@ -243,7 +244,7 @@ LOGGING = {
     }
 }
 #LOGIN_URL='https://www.facebook.com/dialog/oauth?client_id=YOUR_APP_ID&redirect_uri=YOUR_REDIRECT_URI&state=SOME_ARBITRARY_BUT_UNIQUE_STRING'
-LOGIN_URL='/login/'
+LOGIN_URL='/accounts/login/'
 LOGIN_REDIRECT_URL = "/articles/articles/"
 ################### Facebook Integration Settings ################### 
 FACEBOOK_APP_ID = '519129288106424'

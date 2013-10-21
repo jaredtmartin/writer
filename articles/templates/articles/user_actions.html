@@ -1,7 +1,7 @@
 {% for action in actions %}
   {% if action == "hire_user" %}
     <button class="btn {{btn_size}}" 
-    	onclick="doActionOnUser('{% url hire_user %}', {{user.id}}, {% if user_group == 'Writer' %}{{object.id}},undefined{% else %}undefined,{{object.id}}{% endif %},'{{user_group}}');">
+      onclick="doActionOnUser('{% url create_contact object.id %}', 'requester={{user.id}}&worker={{object.id}}&position={% if user_group = 'Writer' %}1{% else %}2{% endif %}&user_group={{user_group}}');">
     	Hire {{user_group}}</button>
   {% elif action == "remove_user" %}
     <button class="btn {{btn_size}}"

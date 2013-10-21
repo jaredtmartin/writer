@@ -55,11 +55,6 @@ function doActionOnArticles(url, article_id, extra){
     if (extra != undefined){data += extra}
     jQuery.post(url, data, success = ajaxUpdateRow);
 }
-function doActionOnUser(url, requester, writer, reviewer, group){
-    jQuery.post(url, {
-        requester:requester, 
-        writer:writer, 
-        reviewer:reviewer, 
-        user_group:group
-    }, success = ajaxUpdateRow);
+function doActionOnUser(url, data){
+    jQuery.post(url, data, success = ajaxUpdateRow);
 }

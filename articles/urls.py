@@ -59,19 +59,24 @@ urlpatterns = patterns('',
 
     url(r'^user/mode/$',                        ChangeModeView.as_view(),       name='change_user_mode'),
 
-    url(r'^user/hire/$',                        WriterList.as_view(),   name='hire_user'),
-    url(r'^user/apply/$',                       WriterList.as_view(),   name='apply_user'),
-    url(r'^user/reject/$',                      WriterList.as_view(),   name='reject_user'),
-    url(r'^user/accept/$',                      WriterList.as_view(),  name='accept_user'),
+    # url(r'^user/hire/$',                        WriterList.as_view(),   name='hire_user'),
+    # url(r'^user/apply/$',                       WriterList.as_view(),   name='apply_user'),
+    # url(r'^user/reject/$',                      WriterList.as_view(),   name='reject_user'),
+    # url(r'^user/accept/$',                      WriterList.as_view(),  name='accept_user'),
     
     # url(r'^requester/add/$',                    AddRequester.as_view(),         name='requester_add'),
     # url(r'^writer/add/$',                       AddWriter.as_view(),            name='writer_add'),
     url(r'^writers/$',                          WriterList.as_view(),           name='writer_list'),
     url(r'^requesters/$',                       RequesterList.as_view(),        name='requester_list'),
     url(r'^reviewers/$',                        ReviewerList.as_view(),         name='reviewer_list'),
-    
-    # url(r'^relationship/(?P<pk>\d+)/delete/$', DeleteRelationship.as_view(),    name='relationship_delete'),
-    # url(r'^relationship/(?P<pk>\d+)/confirm/$', ConfirmRelationship.as_view(),  name='relationship_confirm'),
+    url(r'^my-writers/$', MyWritersList.as_view(), name = "my_writers"),
+    url(r'^available-writers/$', AvailableWritersList.as_view(), name = "available_writers"),
+
+    url(r'^contact/(?P<pk>\d+)/create/$', CreateContact.as_view(),    name='create_contact'),
+    url(r'^contact/(?P<pk>\d+)/delete/$', DeleteContact.as_view(),    name='delete_contact'),
+    url(r'^contact/writer/(?P<pk>\d+)/delete/$', DeleteWriterContact.as_view(),    name='delete_writer_contact'),
+    url(r'^contact/reviewer/(?P<pk>\d+)/delete/$', DeleteReviewerContact.as_view(),    name='delete_reviewer_contact'),
+    url(r'^contact/(?P<pk>\d+)/confirm/$', ConfirmContact.as_view(),  name='confirm_contact'),
 
     url(r'^dashboard/$', direct_to_template, {'template': 'dashboard.html'},    name='dashboard'),
 

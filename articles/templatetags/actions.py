@@ -40,16 +40,15 @@ def get_action_string(contact, me, obj, request_str='hire_user', remove_str='rem
 	elif contact.user == me: return [remove_str]
 	elif contact.user_asked == me:return [accept_str,reject_str]
 	else: raise NotImplemented
+
+
 @register.inclusion_tag('articles/user_actions.html', takes_context = True)
 def show_user_actions(context):
 	me = context['request'].user
-	user_group = context['user_group']
-	print "me = %s" % str(me)
-	print "user_group = %s" % str(user_group)
+	user_group = context.get('user_group',None)
 	if 'object' in context:
 		user = context['object']
 	else:user = None
-	print "user = %s" % str(user)
 	try:
 		status = context['status'] or 'all'
 	except: status = 'all'

@@ -122,23 +122,6 @@ class UserConfigBaseModel(PluginBaseMixin, models.Model):
     class Meta:
         abstract = True
     pickled_data = models.CharField(max_length=512, default="", blank=True)
-    # _data=None
-    # def _get_data(self): 
-    #     if self._data: return self._data
-    #     import pickle
-    #     import base64
-    #     self._data = pickle.loads(base64.b64decode(self.pickled_data))
-    #     return self._data
-    # def _set_data(self,value):
-    #     self._data = value
-    #     import pickle
-    #     import base64
-    #     self.pickled_data = base64.b64encode(pickle.dumps(value))
-    # data = property(_get_data, _set_data)
-    # def get_setting(self, setting):
-    #     return self.data[setting]
-    # def set_setting(self, setting, value):
-    #     self.data[setting] = value
     def __init__(self, *args, **kwargs):
         super(UserConfigBaseModel, self).__init__(*args, **kwargs)
         self.load_plugin()
@@ -275,18 +258,12 @@ User.in_reviewing_mode = property(user_in_reviewing_mode)
 def user_in_requester_mode(self):
     if self.mode == REQUESTER_MODE:return True
 User.in_requester_mode = property(user_in_requester_mode) 
-
-# def get_writers(self):
-#     return self.objects.filter(contacts_as_worker__position=WRITER_POSITION, contacts_as_worker__confirmation=True).distinct()
-# User.writers = property(get_writers) 
-# def get_reviewers(self):
-#     return self.objects.filter(contacts_as_worker__position=REVIEWER_POSITION, contacts_as_worker__confirmation=True).distinct()
-# User.reviewers = property(get_reviewers) 
-
-
-# def user_outlets(self):
-#     return self.relationships_as_requester.filter(confirmed=True, reviewer__isnull=False)
-# User.outlets = property(user_outlets)
+# def get_status(me, contact):
+#     if not contact: return "No Contact"
+#     if not contact.confirmation:
+#         if contact.user_asked = me: return "Requesting work"
+#         else: return "Awaiting Approval"
+#     if contact.requester == me: return "Hired"
 
 def get_user_mode(self):
     return self.get_profile().mode
@@ -307,7 +284,7 @@ class Contact(models.Model):
     name = models.CharField(max_length=64)
     requester = models.ForeignKey(User, related_name='contacts_as_requester')
     worker = models.ForeignKey(User, related_name='contacts_as_worker')
-    user_asked = models.ForeignKey(User, related_name='contact_requests')
+    user_asked = models.ForeignKey(User, related_name='contact_requests', blank=True)
     position = models.IntegerField(choices=WORKING_POSITIONS)
     confirmation = models.NullBooleanField(default=None, blank=True)
     @property
@@ -455,14 +432,6 @@ class Article(ValidationModelMixin, models.Model):
         self.writer_availability = contact.name
     def make_available_to_reviewer(self, contact):
         self.reviewer_availability = contact.name
-    # @property
-    # def status(self): 
-    #     if self.published: return STATUS_PUBLISHED
-    #     if self.approved: return STATUS_APPROVED
-    #     if self.submitted: return STATUS_SUBMITTED
-    #     if self.writer: return STATUS_ASSIGNED
-    #     if self.released: return STATUS_RELEASED
-    #     return STATUS_NEW
     
     class ArticleWorkflowException(Exception): pass
     # ATTRIBUTES={'publish':ACT_PUBLISH,'approved':ACT_APPROVE,'submitted':ACT_SUBMIT,'assigned':ACT_ASSIGN,'rejected':ACT_REJECT,'released':ACT_RELEASE}
@@ -480,16 +449,6 @@ class Article(ValidationModelMixin, models.Model):
         elif user.mode == REQUESTER_MODE and user==self.owner:
             if   status == STATUS_APPROVED:     actions.append(ACT_PUBLISH)
             elif status == STATUS_SUBMITTED:    actions += [ACT_REJECT, ACT_APPROVE]
-            # elif status == STATUS_ASSIGNED:     actions.append(ACT_REMOVE_WRITER)
-            # elif status == STATUS_RELEASED:     actions.append(ACT_ASSIGN_WRITER)
-            # else:                               actions.append(ACT_RELEASE)
-            # if not self.approved:
-                # actions += [ACT_DELETE]
-                # if self.reviewer:
-                #     actions += [ACT_REMOVE_REVIEWER]
-                # else:
-                #     actions += [ACT_ASSIGN_REVIEWER]
-            # actions += (ACT_TAG, )
         elif user.mode == REVIEWER_MODE:
             contact_names = [c.name for c in self.owner.reviewers.filter(worker=user)]
             if self.reviewer == user and status == STATUS_SUBMITTED:
@@ -568,8 +527,6 @@ class UserProfile(models.Model):
     @property
     def is_reviewer(self):
         return self.mode == REVIEWER_MODE
-    # @property
-    # def graph(self): return facebook.GraphAPI(self.access_token)
 
 def create_user_profile(sender, instance, created, **kwargs):
     if created:

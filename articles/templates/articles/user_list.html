@@ -1,28 +1,22 @@
 {% extends 'articles/base.html' %}
-{% load actions %}
-{% block navbar %}
-  <li><a href="{% url article_add %}">Add Writer</a></li>
-  <li><a href="{% url article_add %}">Add Requester</a></li>
-{% endblock %}
 {% block js %}
 	<script type='text/javascript' src='{{STATIC_URL}}js/actions.js'></script>
   <script type='text/javascript' src='{{STATIC_URL}}js/ajax.js'></script>
 {% endblock js %}
-{% block content %}  
+{% block content %}
   <div class="block-fluid table-sorting" style="border:none; ">
 	  <table cellpadding="0" cellspacing="0" width="100%" class="table" id="users">
 	    <thead>
 	      <tr class="table-header-row">
-	        <th class="column-header">Username</th>
 	        <th class="column-header">Full Name</th>
 	        <th class="column-header">Status</th>
 	        <th class="column-header">Actions</th>
 	      </tr>
 	    </thead>
 	    <tbody>
-	      {% for object in object_list %}
-	        {% include "articles/user_list_row.html" %}
-	      {% endfor %}
+        {% block user_rows %}
+        	
+        {% endblock user_rows %}
 	    </tbody>
 	  </table>
   </div>

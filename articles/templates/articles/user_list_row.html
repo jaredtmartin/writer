@@ -1,11 +1,10 @@
-{% load actions %}
 <tr id="user-{{object.id}}" class="user parent even" style="background-color: rgb(251, 251, 251);">
-  <td class="q_desc">{{object.username}}</td>
   <td>{{object.full_name}}</td>
-  <td> Unknown </td>
+  <td>Unknown </td>
   <td>
     <div class="btn-group">
-      {% show_user_actions %}
+      {% block buttons %}
+      {% endblock buttons %}
     </div>
   </td>
 </tr>

@@ -19,9 +19,9 @@
       {% endwith %}
     {% endfor %}
   <li class="nav-header">Writers</li>
-  <li{% if header = 'My Writers' %} class="active"{% endif %}><a href="#">My Writers<span class="nav-counter">??</span></a></li>
-  <li{% if header = 'unavailable' %} class="active"{% endif %}><a href="#">Available Writers<span class="nav-counter">??</span></a></li>
+  <li{% if header = 'My Writers' %} class="active"{% endif %}><a href="{% url my_writers %}">My Writers<span class="nav-counter">??</span></a></li>
+  <li{% if header = 'unavailable' %} class="active"{% endif %}><a href="{% url available_writers %}">Available Writers<span class="nav-counter">??</span></a></li>
   <li class="nav-header">Reviewers</li>
-  <li{% if header = 'unavailable' %} class="active"{% endif %}><a href="#">My Reviewers<span class="nav-counter">??</span></a></li>
-  <li{% if header = 'unavailable' %} class="active"{% endif %}><a href="#">Available Reviewers<span class="nav-counter">??</span></a></li>
+  <li{% if header = 'unavailable' %} class="active"{% endif %}><a href="{% url reviewer_list %}">My Reviewers<span class="nav-counter">??</span></a></li>
+  <li{% if header = 'unavailable' %} class="active"{% endif %}><a href="{% url reviewer_list %}">Available Reviewers<span class="nav-counter">??</span></a></li>
 </ul>
