@@ -4,33 +4,35 @@
 
 // Background
 .modal-backdrop {
-  z-index: @modal-backdrop-zindex;
-  background-color: @modal-backdrop-background;
+  z-index: (@zindex-modal-background - 10);
+  background-color: @modal-backdrop-bg;
   
   // Fade for backdrop
-  &.fade { opacity: 0; }
+  &.in { .opacity(.95); }
 }
 
-.modal-backdrop,
-.modal-backdrop.fade.in {
-  .opacity(95);
-}
-
-// Base modal
+// Container that the modal scrolls within
 .modal {
-  z-index: @modal-zindex;
-  width: 624px;
-  margin-left: -312px;
-  background-color: @modal-background;
-  border: 2px solid @modal-border-color;
-  .border-radius(7px);
+	z-index: @zindex-modal-background;
+}
+
+// Shell div to position the modal with bottom padding
+.modal-dialog {    
+  z-index: (@zindex-modal-background + 10);
+}
+
+// Actual modal
+.modal-content {
+	width: 624px;
+	background-color: @modal-content-bg;
+  border: 2px solid @modal-content-border-color;
+  border-radius: @modal-content-border-radius;
   .background-clip(border-box);
-  .box-shadow(-14px 14px 0 0 rgba(0,0,0,0.35));
+  .box-shadow(@modal-content-box-shadow);
   
   @media (max-width: 767px) {
   	& {
   		width: auto;
-  		margin: 0;
   	}
   }
   @media (max-width: 480px) {
@@ -39,22 +41,28 @@
   	}
   }
 }
+
+// Modal header
+// Top section of the modal w/ title and dismiss
 .modal-header {
   padding: 17px 19px 15px 24px;
-  border-bottom: 1px solid @modal-border-color;
-  
-  // Close icon
-  .close {
-    margin: 5px 0 0;
-    padding: 0;
-    font-size: 18px;
-    line-height: 1;
-    color: @base;
-  }
-  // Heading
-  h3 {
-    font-size: 24px;
-  }
+  border-bottom: 1px solid @modal-content-border-color;
+}
+
+ // Close icon
+.modal-header .close {
+	margin: 5px 0 0;
+	padding: 0;
+	font-size: 18px;
+	line-height: 1;
+	color: @brand-primary;
+}
+
+// Title text within header
+.modal-title {
+  margin: 0;
+  font-size: ceil(@component-font-size-base * 1.60); // ~24px
+  line-height: 30px;
 }
 
 // Body (where all modal content resides)
@@ -62,18 +70,18 @@
   padding: 20px 24px 20px;
   
   p {
-    font-size: @base-font-size * 1.143; // ~16px
-    line-height: @base-line-height * 1.32; // ~26px
+    font-size: floor(@component-font-size-base * 1.067); // ~16px
+    line-height: 1.625; // ~26px
   }
 }
 
 // Footer (for actions)
 .modal-footer {
   padding: 19px 22px 20px;
-  background-color: @modal-footer-background;
+  margin-top: 0;
+  background-color: @modal-footer-bg;
   border-top: none;
-  .border-radius(0 0 7px 7px);
-  .box-shadow(none);
+  border-radius: 0 0 @modal-content-border-radius @modal-content-border-radius;
 
   .btn + .btn {
     margin-left: 12px;
@@ -95,4 +103,15 @@
       }
     }
   }  
+}
+
+// Scale up the modal
+@media screen and (min-width: 768px) {
+
+  .modal-dialog {
+    left: 50%;
+    right: auto;
+    width: 624px;
+  }
+
 }

@@ -75,7 +75,7 @@ urlpatterns = patterns('',
     url(r'^contact/(?P<pk>\d+)/create/$', CreateContact.as_view(),    name='create_contact'),
     url(r'^contact/(?P<pk>\d+)/delete/$', DeleteContact.as_view(),    name='delete_contact'),
     url(r'^contact/writer/(?P<pk>\d+)/delete/$', DeleteWriterContact.as_view(),    name='delete_writer_contact'),
-    url(r'^contact/reviewer/(?P<pk>\d+)/delete/$', DeleteReviewerContact.as_view(),    name='delete_reviewer_contact'),
+    # url(r'^contact/reviewer/(?P<pk>\d+)/delete/$', DeleteReviewerContact.as_view(),    name='delete_reviewer_contact'),
     url(r'^contact/(?P<pk>\d+)/confirm/$', ConfirmContact.as_view(),  name='confirm_contact'),
 
     url(r'^dashboard/$', direct_to_template, {'template': 'dashboard.html'},    name='dashboard'),

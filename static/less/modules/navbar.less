@@ -3,18 +3,23 @@
 // --------------------------------------------------
 
 .navbar {
-  font-size: @base-font-size * 1.142; /* 16px */
+  font-size: floor(@component-font-size-base * 1.067); // ~16px
+  border-radius: @border-radius-large;
+  border: none;
 
-  .brand {
-    border-radius: 6px 0 0 6px;
-    color: mix(@base, white, 85%);
-    font-size: @base-font-size * 1.714; /* 24px */
+  .navbar-brand {
+    border-radius: @border-radius-large 0 0 @border-radius-large;
+    color: mix(@brand-primary, white, 85%);
+    font-size: floor(@component-font-size-base * 1.60); // ~24px
+    line-height: 29.55px;
     font-weight: 700;
-    margin-left: 0;
-    padding: 23px 28px 24px 32px;
+    padding: 23px 28px 24px 17px;
     text-shadow: none;
-    &:hover, &:focus {
-      color: @firm;
+    display: inline-block;
+    
+    &:hover,
+    &:focus {
+      color: @brand-secondary;
     }
     &[class*="fui-"] {
       font-weight: normal;
@@ -24,10 +29,13 @@
 
   .nav {
     margin-right: 0;
+    display: inline-block;
+    float: left;
 
     // First level nav
     > li {
       position: relative;
+      display: inline-block;
 
       &:hover {
         > ul {
@@ -45,16 +53,23 @@
         > a:hover,
         > a:focus {
           background: none;
-          color: @firm;
+          color: @brand-secondary;
           .box-shadow(none);
         }
+      }
+      &:first-child {
+        border-radius: @border-radius-large @border-radius-large 0 0;
+      }
+      &:last-child {
+        border-radius: 0 0 @border-radius-large @border-radius-large;
       }
 
       // Second level nav
       > ul {
         padding-top: 13px;
         top: 80%;
-        .dropdown-arrow(@base);
+        padding-left: 0;
+        .dropdown-arrow(@brand-primary);
 
         // Third level nav
         li {
@@ -74,15 +89,19 @@
 
       // First level link
       > a {
-        color: mix(@base, white, 85%);
+        color: mix(@brand-primary, white, 85%);
+        display: inline-block;
         font-weight: 700;
-        font-size: @base-font-size * 1.071; /* 15px */
-        padding: 29px @navbar-link-space 27px;
+        font-size: @component-font-size-base; // ~15px
+        line-height: 28px;
+        padding: 22px @navbar-link-space;
         text-shadow: none;
         .transition(~"background-color .25s, color .25s, border-bottom-color .25s");
 
-        &:hover, &:focus {
-          color: @firm;
+        &:hover,
+        &:focus {
+          color: @brand-secondary;
+          background-color: transparent;
         }
         &[class*="fui-"] {
           font-size: 24px;
@@ -117,7 +136,7 @@
       -webkit-transform-origin: 0 0;
       // Don't show it at all by default since IE doesn't get modern transitions
       visibility: hidden;
-      .transition(0.3s ease-out);
+      .transition(.25s ease-out);
 
       // Deep level sub menu
       ul {
@@ -127,22 +146,22 @@
 
       // Sub menu item
       li {
-        background-color: @base;
+        background-color: @brand-primary;
         padding: 0 3px 3px;
         position: relative;
 
         &:first-child {
-          border-radius: 6px 6px 0 0;
+          border-radius: @border-radius-large @border-radius-large 0 0;
           padding-top: 3px;
         }
         &:last-child {
-          border-radius: 0 0 6px 6px;
+          border-radius: 0 0 @border-radius-large @border-radius-large;
         }
         &.active {
           > a,
           > a:hover,
           > a:focus {
-            background-color: @firm;
+            background-color: @brand-secondary;
             color: @inverse;
             padding-left: @navbar-sublink-space;
             padding-right: @navbar-sublink-space;
@@ -161,12 +180,12 @@
         border-radius: 2px;
         color: @inverse;
         display: block;
-        font-size: @base-font-size;
+        font-size: ceil(@component-font-size-base * 0.933);
         padding: 6px @navbar-sublink-space;
         text-decoration: none;
 
         &:hover {
-          background-color: @firm;
+          background-color: @brand-secondary;
         }
       }
     }
@@ -176,19 +195,21 @@
   .btn-navbar {
     background: none;
     border: none;
-    color: @base;
-    margin: 21px 15px 17px;
+    color: @brand-primary;
+    margin: 18px 15px;
+    padding: 3px 15px;
     text-shadow: none;
-    .box-shadow(none);
+    display: none;
 
-    &:hover, &:focus {
+    &:hover,
+    &:focus {
       background: none;
-      color: @firm;
+      color: @brand-secondary;
     }
     &:before {
       content: "\e00c";
       font-family: "Flat-UI-Icons";
-      font-size: @base-font-size * 1.571;
+      font-size: ceil(@component-font-size-base * 1.467); // ~22px
       font-style: normal;
       font-weight: normal;
       -webkit-font-smoothing: antialiased;
@@ -199,28 +220,23 @@
   }
 }
 
-.navbar-inner {
-  background: mix(@base, white, 9.5%);
+.navbar-default {
+  background: mix(@brand-primary, white, 9.5%);
   border: none;
   padding-left: 0;
   padding-right: 0;
-  .border-radius(6px);
-  .drop-ie-gradient();
-  .box-shadow(none);
+  border-radius: @border-radius-large;
 }
 
 // Alternate Color
 // --------------------------------------------------
 .navbar-inverse {
-  font-size: @base-font-size * 1.214; /* 17px */
-
-  .navbar-inner {
-    background: @base;
-    .drop-ie-gradient();
-  }
-  .brand {
-    border-bottom: 2px solid mix(@base, black, 85%);
-    border-right: 2px solid mix(@base, black, 85%);
+	background: @brand-primary;
+  font-size: ceil(@component-font-size-base * 1.133); // ~17px
+  
+  .navbar-brand {
+    border-bottom: 2px solid mix(@brand-primary, black, 85%);
+    border-right: 2px solid mix(@brand-primary, black, 85%);
     color: @inverse;
     padding: 10px 28px 11px 32px;
   }
@@ -247,13 +263,14 @@
       // Active item
       &.active {
         > a {
-          &, &:hover, &:focus {
-            background-color: @firm;
-            border-bottom-color: mix(@firm, black, 85%);
+          &,
+          &:hover,
+          &:focus {
+            background-color: @brand-secondary;
+            border-bottom-color: mix(@brand-secondary, black, 85%);
             border-left: none;
             color: @inverse;
             padding-left: @navbar-link-space;
-            .box-shadow(none);
           }
         }
         & + li {
@@ -266,19 +283,29 @@
 
       // Link styling
       > a {
-        font-size: @base-font-size * 1.143; /* 16px */
-        border-bottom: 2px solid mix(@base, black, 85%);
-        border-left: 2px solid mix(@base, black, 85%);
+        font-size: floor(@component-font-size-base * 1.067); // ~16px
+        border-bottom: 2px solid mix(@brand-primary, black, 85%);
+        border-left: 2px solid mix(@brand-primary, black, 85%) !important;
         color: @inverse;
         padding: 16px @navbar-link-space 15px;
+        line-height: 20px;
       }
     }
   }
 
+	.nav.navbar-right {
+		.dropdown-menu {
+			left: -100%;
+			margin-left: 17px;
+		}
+		.open > .dropdown-menu:before {
+			display: block !important;
+		}
+	}
   // Round corders of the pull-right dropdown
-  .nav.pull-right > li {
+  .nav.navbar-right > li {
     > a {
-      border-radius: 0 6px 6px 0;
+      border-radius: 0 @border-radius-large @border-radius-large 0;
     }
   }
 }
@@ -286,14 +313,14 @@
 // Unread icon
 .navbar-unread,
 .navbar-new {
-  font-family: @base-font-family;
-  background-color: @firm;
+  font-family: @font-family-base;
+  background-color: @brand-secondary;
   border-radius: 50%;
   color: @inverse;
   font-size: 0;
   font-weight: 700;
   height: 6px;
-  line-height: @base-font-size;
+  line-height: 14px;
   position: absolute;
   right: 12px;
   text-align: center;
@@ -311,12 +338,12 @@
 }
 
 .navbar-new {
-  background-color: @danger;
+  background-color: @brand-danger;
   font-size: 12px;
   line-height: 17px;
   height: 18px;
   margin: -9px -1px;
-  min-width: 16px;
+  min-width: 18px;
   padding: 0 1px;
   width: auto;
   -webkit-font-smoothing: subpixel-antialiased;
@@ -330,8 +357,8 @@
     .nav li.dropdown {
       &.open {
         > .dropdown-toggle {
-          background-color: @firm;
-          border-bottom-color: mix(@firm, black, 85%);
+          background-color: @brand-secondary;
+          border-bottom-color: mix(@brand-secondary, black, 85%);
           color: @inverse;
 
           .caret {
@@ -348,11 +375,11 @@
     &.open {
       > .dropdown-toggle {
         background: none;
-        color: @firm;
+        color: @brand-secondary;
 
         .caret {
-          border-bottom-color: @firm !important;
-          border-top-color: @firm !important;
+          border-bottom-color: @brand-secondary !important;
+          border-top-color: @brand-secondary !important;
         }
       }
       .dropdown-menu {
@@ -366,24 +393,24 @@
     > .dropdown-toggle {
       outline: none;
 
-      &:hover, &:focus {
+      &:hover,
+      &:focus {
         .caret {
-          border-bottom-color: @firm;
-          border-top-color: @firm;
+          border-bottom-color: @brand-secondary;
+          border-top-color: @brand-secondary;
         }
       }
       .caret {
         border-left-width: 6px;
         border-right-width: 6px;
         border-top-width: 8px;
-        border-bottom-color: lighten(@base, 13%);
-        border-top-color: lighten(@base, 13%);
+        border-bottom-color: lighten(@brand-primary, 13%);
+        border-top-color: lighten(@brand-primary, 13%);
         margin-left: 10px;
-        margin-top: 7px;
       }
     }
     .dropdown-menu {
-      background-color: @base;
+      background-color: @brand-primary;
       opacity: 0;
       padding: 0;
       visibility: hidden;
@@ -392,7 +419,7 @@
         display: none;
       }
       &:after {
-        border-bottom-color: @base;
+        border-bottom-color: @brand-primary;
       }
       > li {
         > a {
@@ -402,7 +429,7 @@
         }
       }
       .divider {
-        background-color: mix(@base, black, 85%);
+        background-color: mix(@brand-primary, black, 85%);
         border-bottom: none;
         margin: 2px 0 5px;
         padding: 0;
@@ -417,87 +444,58 @@
 .navbar {
   // Inverse navbar search box styling
   &.navbar-inverse {
-    .navbar-search {
-      border-left: 2px solid mix(@base, black, 85%);
-      border-bottom: 2px solid mix(@base, black, 85%);
-      padding: 8px 0 6px @navbar-link-space + 3;
-      min-width: 220px;
+    .navbar-form {
+      border-left: 2px solid mix(@brand-primary, black, 85%);
+      border-bottom: 2px solid mix(@brand-primary, black, 85%);
+      padding: 8px 5px 8px @navbar-link-space + 3;
 
-      &.form-search {
-        .input-append {
-          .search-query {
-            &:focus {
-              & + .btn {
-                border-color: @firm;
-              }
-            }
-          }
-          .btn {
-            background-color: mix(@base, black, 85%);
-            color: lighten(@base, 13%);
-            &:hover, &:focus {
-              color: @inverse;
-            }
-          }
-        }
-      }
-      .search-query,
-      .search-query:focus {
-        background-color: mix(@base, black, 85%);
+      .input-group-btn {
+	      .btn {
+		      background-color: mix(@brand-primary, black, 85%);
+	        color: lighten(@brand-primary, 13%) !important;
+	      }
+      }      
+      .form-control {
+        background-color: mix(@brand-primary, black, 85%);
         color: @inverse;
-        .placeholder-color(lighten(@base, 10%));
+        .placeholder(lighten(@brand-primary, 33%));
       }
-      .search-query:focus {
-        border-color: @firm;
+      .form-control:focus {
+        border-color: @brand-secondary;
+      }
+      &.focus {
+	      .input-group-btn {
+		      .btn {
+			      background-color: mix(@brand-primary, black, 85%) !important;
+		      }
+				}  
       }
     }
   }
 
   // Default navbar search box styling
-  .navbar-search {
+  .navbar-form {
     margin: 0;
-    padding: 20px @navbar-link-space 19px;
+    padding: 20px (@navbar-link-space - 15) 19px @navbar-link-space;
+    max-width: 229px;
 
-    &.form-search {
-      .input-append {
-        .search-query {
-          border-right: none;
-          &:focus {
-            .border-radius(6px 0 0 6px);
-            & + .btn {
-              border-color: @firm;
-            }
-          }
-        }
-        .btn {
-          background-color: @inverse;
-          border-color: transparent;
-          color: mix(@base, white, 33%);
-          padding: 8px 8px 7px;
-          &:hover, &:focus {
-            color: @firm;
-          }
-        }
-      }
-    }
-
-    .search-query,
-    .search-query:focus {
+		.form-group {
+			margin-bottom: 0;
+		}
+    .form-control {
       background-color: @inverse;
       border: 2px solid transparent;
-      color: mix(@base, white, 85%);
-      font-family: @base-font-family;
-      font-size: @base-font-size * 1.071; /* 15px */
-      padding: 5px 5px 7px;
-      text-shadow: none;
-      .border-radius(6px);
-      .box-shadow(none);
-      .placeholder-color(mix(@base, white, 33%));
-      .placeholder-height(18px);
-      .transition(.25s);
+      color: mix(@brand-primary, white, 85%);
+      .placeholder(mix(@brand-primary, white, 66%));
+      font-size: @component-font-size-base; // ~15px
     }
-    .search-query:focus {
-      border-color: @firm;
+    .form-control:focus {
+      border-color: @brand-secondary;
+    }
+    .input-group-btn .btn {
+	    border-color: transparent;
+	    color: mix(@brand-primary, white, 50%);
+	    font-size: floor(@component-font-size-base * 1.067); // ~16px
     }
   }
 }
@@ -506,10 +504,8 @@
 .navbar.navbar-fixed-bottom,
 .navbar.navbar-fixed-top {
   .navbar-inner {
-    .box-shadow(none);
-
-    .navbar-search {
-      .search-query {
+    .navbar-form {
+      .form-control {
         border-radius: 50px 0 0 50px !important;
       }
       .btn {
@@ -551,16 +547,21 @@
 @media (max-width: 979px) {
   .navbar {
     &.navbar-inverse {
-      .brand {
+      .navbar-brand {
         border: none;
+        padding-top: 11px;
+        padding-bottom: 13px;
       }
       .nav {
+      	margin-left: 0;
+      	margin-right: 0;
+      	
         > li {
           &.active {
             > a,
             > a:hover,
             > a:focus {
-              background-color: @firm;
+              background-color: @brand-secondary;
             }
           }
           > a,
@@ -573,26 +574,46 @@
           }
         }
       }
-      .navbar-form,
-      .navbar-search {
+      .navbar-form {
         border: none;
-        .box-shadow(none);
+        padding-right: 20px;
+        padding-left: 20px !important;
+        max-width: none;
       }
       a,
-      .nav-collapse .nav > li > a,
-      .nav-collapse li.dropdown .dropdown-menu a {
+      .navbar-collapse .nav > li > a,
+      .navbar-collapse li.dropdown .dropdown-menu a {
         color: @inverse;
-        .border-radius(0);
+        border-radius: 0;
 
-        &:hover, &:focus {
+        &:hover,
+        &:focus {
           color: @inverse;
         }
-      }
+      }     
     }
-    .brand {
+    .navbar-brand {
       padding-left: 20px;
+      float: none;
+    }
+    .btn-navbar {
+	    float: right;
+	    display: block;
+    }
+    .navbar-collapse {
+    	padding: 0;
+    }
+    .navbar-form {
+	    max-width: none;
+	    padding: 20px 20px 19px;
     }
     .nav {
+    	float: none !important;
+    	display: block;
+    	margin-bottom: 10px;  
+    	margin-right: 0;
+    	margin-left: 0;  	
+    	
       > li,
       > li.dropdown {
         &:hover {
@@ -604,7 +625,7 @@
             li:hover {
               a {
                 background-color: transparent;
-                color: @firm;
+                color: @brand-secondary;
               }
               ul {
                 height: auto;
@@ -625,17 +646,19 @@
           position: static;
           width: auto;
 
-          &:before, &:after {
+          &:before,
+          &:after {
             display: none;
           }
           li {
             background: none;
 
             a {
-              color: @base;
+              color: @brand-primary;
 
-              &:hover, &:focus {
-                color: @firm;
+              &:hover,
+              &:focus {
+                color: @brand-secondary;
               }
             }
           }
@@ -649,10 +672,11 @@
 
           li {
             a {
-              color: @base;
+              color: @brand-primary;
 
-              &:hover, &:focus {
-                color: @firm;
+              &:hover,
+              &:focus {
+                color: @brand-secondary;
               }
             }
           }
@@ -662,40 +686,24 @@
         background-color: transparent !important;
       }
 
-      li a .hidden-desktop {
-        display: inline!important;
+      li a .hidden-lg {
+        display: inline !important;
+      }
+      li {
+	      display: block;
+      }
+      a {
+	      display: block !important;
       }
     }
 
     .nav-collapse {
-      .navbar-form,
+    	width: 100%;
+      .clearfix();
+      
       .navbar-search {
-        border: none;
-        .box-shadow(none);
-
-        .input-append {
-          display: block;
-
-          .search-query,
-          .search-query:focus {
-            border-right: 2px solid transparent;
-            border-radius: 6px;
-            height: 37px;
-            margin-right: -41px;
-            width: 100%;
-            .box-sizing();
-          }
-          .btn {
-            position: relative;
-            z-index: 2;
-          }
-        }
-        &.focus {
-          .search-query,
-          .btn {
-            border-color: @firm !important;
-          }
-        }
+        padding-left: 5px;
+        float: none !important;
       }
     }
   }

@@ -6,18 +6,18 @@
   background-color: @inverse;
   display: none;
   margin: 10px 0 0 0;
-  border: 7px solid @firm;
-  .box-shadow(-14px 14px 0 fade(@base, 6%));
-  .border-radius(@datepicker-border-radius);
+  border: 7px solid @brand-secondary;
+  border-radius: @datepicker-border-radius;
+  .box-shadow(-14px 14px 0 fade(@brand-primary, 6%));
 
   // Navigation pad
   .ui-datepicker-header {
-    background-color: @firm;
+    background-color: @brand-secondary;
     color: @inverse;
     cursor: default;
     margin: -7px -7px 2px;
     position: relative;
-    .border-radius(@datepicker-border-radius @datepicker-border-radius 0 0);
+    border-radius: @datepicker-border-radius @datepicker-border-radius 0 0;
   }
   .ui-datepicker-prev,
   .ui-datepicker-next {
@@ -30,33 +30,33 @@
     cursor: pointer;
 
     &:hover {
-      background-color: mix(@firm, white, 80%);
+      background-color: mix(@brand-secondary, white, 80%);
     }
     &:active {
-      background-color: mix(@firm, black, 85%);
+      background-color: mix(@brand-secondary, black, 85%);
     }
     &.ui-state-disabled {
       background-color: transparent;
       color: fade(@inverse, 75%);
       cursor: default;
-      .opacity(70);
+      .opacity(.7);
     }
   }
   .ui-datepicker-prev {
     left: 0;
-    border-right: 2px solid mix(white, @firm, 30%);
-    .border-radius(@datepicker-border-radius 0 0 0);
+    border-right: 2px solid mix(white, @brand-secondary, 30%);
+    border-radius: @datepicker-border-radius 0 0 0;
   }
   .ui-datepicker-next {
     right: 0;
-    border-left: 2px solid mix(white, @firm, 30%);
-    .border-radius(0 @datepicker-border-radius 0 0);
+    border-left: 2px solid mix(white, @brand-secondary, 30%);
+    border-radius: 0 @datepicker-border-radius 0 0;
   }
   .ui-datepicker-title {
     margin: 0 52px;
     line-height: 44px;
     text-align: center;
-    font-size: @base-font-size * 1.071; // ~15px
+    font-size: @component-font-size-base;
   }
   .ui-datepicker-prev span,
   .ui-datepicker-next span {
@@ -84,9 +84,7 @@
 
   // General styling
   table {
-    border-left: 3px solid @inverse;
-    border-right: 3px solid @inverse;
-    font-size: @base-font-size;
+    font-size: ceil(@component-font-size-base * 0.933); // ~14px
     margin: 0 0 3px;
     width: 100%;
   }
@@ -109,26 +107,26 @@
     a {
       display: block;
       text-decoration: none;
-      color: @base;
+      color: @brand-primary;
       height: 30px;
       line-height: 30px;
       min-width: 34px;
     }
     a {
-      .border-radius(@datepicker-border-radius);
+      border-radius: @datepicker-border-radius;
 
       &:hover {
-        background-color: mix(@lightgray, white, 60%);
-        color: @base;
+        background-color: mix(@gray-light, white, 60%);
+        color: @brand-primary;
       }
     }
   }
   .ui-state-active {
-    background-color: @firm;
+    background-color: @brand-secondary;
     color: @inverse;
   }
   .ui-datepicker-other-month a {
-    color: mix(@base, white, 30%);
+    color: mix(@brand-primary, white, 30%);
   }
 
   // Aditional elements
@@ -165,7 +163,7 @@
 
   &:before {
     content: "";
-    border-color: transparent transparent @firm;
+    border-color: transparent transparent @brand-secondary;
     border-style: solid;
     border-width: 0 6px 6px;
     height: 0;

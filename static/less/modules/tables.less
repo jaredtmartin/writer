@@ -3,26 +3,35 @@
 // --------------------------------------------------
 
 .table {
-  font-size: @base-font-size * 1.142;
+  font-size: floor(@component-font-size-base * 1.067); // 16px
   
   // Cells
-  th,
-  td {
-    padding: 8px 25px;
-    border-top: 2px solid @table-border;
+  > thead,
+  > tbody,
+  > tfoot {
+    > tr {
+      > th,
+      > td {
+        padding: 9px 25px;
+        line-height: 1.231; // ~19.7px
+        border-top: 2px solid @table-border-color;
+      }
+      > th {
+		    color: mix(@brand-primary, white, 85%);
+		    border-bottom: 2px solid @table-border-color;
+		  }
+    }
   }
-  th {
-    color: mix(@base, white, 85%);
-    padding-bottom: 14px;
-  }
-  i[class*="fui-"] {
+  [class*="fui-"] {
     vertical-align: baseline;
     font-size: 20px;
+    margin: -5px 0;
+    position: relative;
+    top: 2px;
   }
   .checkbox,
   .radio {
-    margin-bottom: 0;
-    margin-left: -9px;
+  	margin: 0 0 0 -9px;
 
     &.no-label {
       padding-left: 0;
@@ -30,7 +39,7 @@
   }
   .selected-row {
     > td {
-      background-color: mix(@firm, white, 5.5%)
+      background-color: mix(@brand-secondary, white, 5.5%);
     }
   }
   img { vertical-align: top; }
@@ -38,22 +47,27 @@
 
 // Bordered table
 .table-bordered {
-  border: 2px solid @table-border;
-  border-left: 0;
-  font-size: @base-font-size;
-  .border-radius(6px);
-
-  th,
-  td {
-    border-left: 2px solid @table-border;
-  }
-
-  th { padding-bottom: 8px }
+  border: 2px solid @table-border-color;
+  font-size: ceil(@component-font-size-base * 0.933); // ~14px
+	
+	> thead,
+  > tbody,
+  > tfoot {
+    > tr {
+      th,
+		  td {
+		    border: 2px solid @table-border-color !important;
+		    padding-top: 8px;
+		    padding-bottom: 8px;
+		    vertical-align: middle;
+		  }
+    }
+  }  
 }
 
 // Stripped
 .table-striped {
-  tbody {
+  > tbody {
     > tr {
       &:nth-child(even),
       &.selected-row {
@@ -74,32 +88,39 @@
 
 // Hovered table
 .table-hover {
-  tbody {
-    tr:hover > td,
-    tr:hover > th {
-      background-color: @table-bg-active;
+  > tbody {
+    > tr:hover {
+	    > td,
+	    > th {
+		    background-color: @table-bg-active;
+	    }
     }
   }
 }
 
 // Table backgrounds
 .table tbody tr {
-  &.success > td {
+  &.success > td,
+  & > td.success {
     background-color: @table-success;
-    border-color: mix(@success, white, 20%);
+    border-color: mix(@brand-success, white, 20%);
   }
   &.error > td,
-  &.danger > td {
+  & > td.error,
+  &.danger > td,
+  & > td.danger {
     background-color: @table-danger;
-    border-color: mix(@danger, white, 20%);
+    border-color: mix(@brand-danger, white, 20%);
   }
-  &.warning > td {
+  &.warning > td,
+  & > td.warning {
     background-color: @table-warning;
-    border-color: mix(@warning, white, 33%);
+    border-color: mix(@brand-warning, white, 33%);
   }
-  &.info > td {
+  &.info > td,
+  & > td.info {
     background-color: @table-info;
-    border-color: mix(@info, white, 20%);
+    border-color: mix(@brand-info, white, 20%);
   }
 }
 
@@ -120,46 +141,4 @@
   }
 }
 
-// RWD
-.rwd-table {
-  font-size: @base-font-size * 1.142;
-  display: none;
-  width: 100%;
-
-  tr {
-    &.even {
-      td {
-        background-color: mix(@base, white, 3%);
-      }
-    }
-
-    td {
-      border-bottom: 2px solid mix(@lightgray, white, 15%);
-    }
-  }
-
-  td {
-    padding: 5px 0;
-    width: 62%;
-    &:first-child {
-      padding-right: 5%;
-      width: 33%;
-    }
-  }
-
-  .checkbox,
-  .radio {
-    display: none;
-  }
-}
-
-@media (max-width: 767px) {
-  .table {
-    display: none;
-  }
-
-  .rwd-table {
-    display: block;
-  }
-}
 

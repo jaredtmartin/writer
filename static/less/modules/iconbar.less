@@ -23,7 +23,7 @@
 
       &.active {
         > a {
-          color: @firm;
+          color: @brand-secondary;
         }
       }
 
@@ -36,12 +36,15 @@
       > a {
         color: @inverse;
         display: block;
-        font-size: @base-font-size * 1.714;
+        font-size: ceil(@component-font-size-base * 1.600); // ~24px
+        line-height: 1;
         padding: 8px 30px 32px;
         position: relative;
         text-decoration: none;
-        &:hover, &:focus {
-          color: @firm;
+        
+        &:hover,
+        &:focus {
+          color: @brand-secondary;
         }
       }
     }
@@ -102,14 +105,14 @@
 
 // Unread icon
 .iconbar-unread {
-  background-color: mix(@info, black, 80%);
+  background-color: mix(@brand-info, black, 80%);
   border-radius: 50%;
   color: @inverse;
-  font-family: @base-font-family;
-  font-size: @base-font-size * .857;
-  font-weight: 500;
-  line-height: @base-font-size * 1.357;
-  min-width: 14px;
+  font-family: @font-family-base;
+  font-size: ceil(@component-font-size-base * .80); // ~12px
+  font-weight: 700;
+  line-height: 1.667; // ~25px
+  min-width: 20px;
   padding: 0 2px;
   position: absolute;
   right: 20px;
@@ -120,10 +123,10 @@
 
 // Alternate Colors
 // --------------------------------------------------
-.iconbar-success { .swap-iconbar-color(@success) }
-.iconbar-danger  { .swap-iconbar-color(@danger) }
-.iconbar-warning { .swap-iconbar-color(@warning) }
-.iconbar-info    { .swap-iconbar-color(@info) }
+.iconbar-success { .swap-iconbar-color(@brand-success); }
+.iconbar-danger  { .swap-iconbar-color(@brand-danger); }
+.iconbar-warning { .swap-iconbar-color(@brand-warning); }
+.iconbar-info    { .swap-iconbar-color(@brand-info); }
 
 // Horizontal layout
 // --------------------------------------------------
@@ -136,12 +139,12 @@
       float: left;
       &:first-child {
         > a {
-          padding: 25px 32px 25px;
+          padding: 23px 32px 23px;
         }
       }
 
       > a {
-        padding: 25px 32px 25px 8px;
+        padding: 23px 32px 23px 8px;
       }
     }
   }

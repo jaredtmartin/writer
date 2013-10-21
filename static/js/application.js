@@ -18,10 +18,10 @@ String.prototype.repeat = function(num) {
   $(function() {
 
     // Custom Selects
-    $("select[name='huge']").selectpicker({style: 'btn-huge btn-primary', menuStyle: 'dropdown-inverse'});
-    $("select[name='large']").selectpicker({style: 'btn-large btn-danger'});
+    $("select[name='huge']").selectpicker({style: 'btn-hg btn-primary', menuStyle: 'dropdown-inverse'});
+    $("select[name='large']").selectpicker({style: 'btn-lg btn-danger'});
     $("select[name='info']").selectpicker({style: 'btn-info'});
-    $("select[name='small']").selectpicker({style: 'btn-small btn-warning'});
+    $("select[name='small']").selectpicker({style: 'btn-sm btn-warning'});
 
     // Tabs
     $(".nav-tabs a").on('click', function (e) {
@@ -136,10 +136,10 @@ String.prototype.repeat = function(num) {
 
 
     // Focus state for append/prepend inputs
-    $('.input-prepend, .input-append').on('focus', 'input', function () {
-      $(this).closest('.control-group, form').addClass('focus');
-    }).on('blur', 'input', function () {
-      $(this).closest('.control-group, form').removeClass('focus');
+    $('.input-group').on('focus', '.form-control', function () {
+      $(this).closest('.form-group, .navbar-search').addClass('focus');
+    }).on('blur', '.form-control', function () {
+      $(this).closest('.form-group, .navbar-search').removeClass('focus');
     });
 
     // Table: Toggle all checkboxes
@@ -171,17 +171,15 @@ String.prototype.repeat = function(num) {
       e && e.preventDefault();
       $(datepickerSelector).focus();
     });
+    $.extend($.datepicker, {_checkOffset:function(inst,offset,isFixed){return offset}});
 
     // Now let's align datepicker with the prepend button
-    $(datepickerSelector).datepicker('widget').css({'margin-left': -$(datepickerSelector).prev('.btn').outerWidth() - 2});
+    $(datepickerSelector).datepicker('widget').css({'margin-left': -$(datepickerSelector).prev('.input-group-btn').find('.btn').outerWidth()});
 
     // Switch
     $("[data-toggle='switch']").wrap('<div class="switch" />').parent().bootstrapSwitch();
 
-    // Stackable tables
-    $(".table-striped").stacktable({id: "rwd-table"});
-
     // make code pretty
-    window.prettyPrint && prettyPrint()
+    window.prettyPrint && prettyPrint();
   });
 })(jQuery);

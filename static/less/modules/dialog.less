@@ -3,11 +3,11 @@
 // --------------------------------------------------
 
 .dialog {
-  background-color: mix(@base, white, 9%);
-  border-top: 2px solid mix(@base, white, 20);
-  font-size: @dialog-font-size; /* 16px */
+  background-color: mix(@brand-primary, white, 9%);
+  border-top: 2px solid mix(@brand-primary, white, 20);
+  font-size: @dialog-font-size;
   margin-bottom: 20px;
-  padding: @dialog-padding 0;
+  padding: @dialog-padding;
   position: relative;
   text-align: center;
 
@@ -17,7 +17,8 @@
   form {
     margin-bottom: 0;
 
-    input, .btn {
+    input,
+    .btn {
       margin-bottom: 0;
       margin-left: 20px;
       vertical-align: top;
@@ -35,12 +36,12 @@
     border-top-color: #e2edeb;
   }
 
-  &.dialog-danger  { .swap-dialog-color(@danger) }
-  &.dialog-warning { .swap-dialog-color(@warning) }
-  &.dialog-info    { .swap-dialog-color(@info) }
+  &.dialog-danger  { .swap-dialog-color(@brand-danger); }
+  &.dialog-warning { .swap-dialog-color(@brand-warning); }
+  &.dialog-info    { .swap-dialog-color(@brand-info); }
   &.dialog-inverse {
-    background-color: @base;
-    border-top-color: mix(@base, black, 80%);
+    background-color: @brand-primary;
+    border-top-color: mix(@brand-primary, black, 80%);
     color: @inverse;
   }
 }
@@ -50,8 +51,6 @@
 // --------------------------------------------------
 @media (max-width: 767px) {
   .dialog {
-    margin-left: -@rwd-container-space;
-    margin-right: -@rwd-container-space;
     padding-left: 20px;
     padding-right: 20px;
 
@@ -61,7 +60,6 @@
       margin: 9px 0;
       min-width: auto;
       width: 100%;
-      .box-sizing;
 
       &:last-child {
         margin-bottom: 0;
@@ -76,4 +74,3 @@
     }
   }
 }
-

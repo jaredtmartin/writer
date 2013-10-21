@@ -1,58 +1,73 @@
-// Demo Flat UI
+// Demo Flat UI Pro
 
 
 // Loading config with variables (changing them leads to changing a color scheme)
-@import "config";
+@import "variables";
 
 // Utility mixins for greater good
 @import "mixins";
 
+.prettyprint {
+  overflow: auto;
+  
+  &.linenums {
+    overflow: visible;
+    white-space: pre;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+}
+
 // For demo purposes only
 .demo-headline {
-  color: @firm;
-  font-size: 142px !important;
-  font-weight: 600;
-  line-height: 1.1;
+  color: @brand-secondary;
+  font: 700 118px/1.1 @font-family-demo !important;
   margin-bottom: 50px;
   padding: 40px 0;
   text-align: center;
   word-wrap: break-word;
+  margin-top: 2px;
 }
 
 // Panels delimiter
 .demo-row {
   margin: 0 auto;
   padding: 0 20px 50px;
-  width: 900px;
+  width: 940px;
   .clearfix();
 
-  &.typography-row {
-    .demo-content {
-      position: relative;
-      float: none;
-      margin-left: 20px;
-      width: auto;
-      padding-left: 265px;
-    }
-    .header-note,
-    .text-note {
-      display: block;
-      width: 260px;
-      position: absolute;
-      bottom: 10px;
-      left: 0;
-      font-size: 13px;
-      line-height: 13px;
-      color: mix(desaturate(@base, 25%), white, 34%);
-      font-weight: 400;
-    }
-    .text-note {
-      bottom: auto;
-      top: 10px;
-    }
+  .demo-heading-note,
+  .demo-text-note {
+    display: block;
+    width: 260px;
+    position: absolute;
+    bottom: 10px;
+    left: 0;
+    font-size: 13px;
+    line-height: 13px;
+    color: mix(desaturate(@brand-primary, 25%), white, 34%);
+    font-weight: 400;
+  }
+  .demo-text-note {
+    bottom: auto;
+    top: 10px;
   }
   &.menu-row {
-    padding: 50px 20px 0;
+    padding: 50px 20px 10px;
+  }
+  &.typography-row {
+	  .demo-content {
+      float: none;
+      margin-left: 20px;
+      padding-top: 0;
+      width: auto;    
+      clear: both; 
+    }
+    .demo-type-example {
+	    padding-left: 265px;
+	    margin-bottom: 40px;
+	    position: relative;
+    }
   }
 }
 
@@ -68,8 +83,8 @@
   width: 580px;
 
   &.demo-content-article {
-    font-size: @base-font-size * 1.285;
-    p { margin-bottom: 20px }
+    font-size: ceil(@font-size-base * 1.285);
+    p { margin-bottom: 20px; }
 
     ul {
       list-style-type: none;
@@ -77,7 +92,7 @@
     }
 
     li {
-      line-height: @base-font-size * 1.285 * 1.5;
+      line-height: ceil(@font-size-base * 1.285 * 1.5);
       padding: 0 0 5px;
     }
   }
@@ -86,17 +101,18 @@
 .demo-content-wide {
   clear: both;
   margin: 0 20px;
+  .clearfix();
 }
 
 .demo-title {
   float: left;
-  margin: -10px 20px 10px;
+  margin: -0.5em 20px 0;
   width: 240px;
-  font-size: 24.5px;
-  line-height: 40px;
+  font: 700 24.5px/40px @font-family-demo;
 
   h1, h2, h3, h4 {
     margin-top: 0;
+    font-family: @font-family-demo;
   }
   h1, h2, h3 {
     line-height: 40px !important;
@@ -105,7 +121,7 @@
     font-size: 24.5px !important;
   }
   small {
-    color: mix(desaturate(@base, 25%), white, 34%);
+    color: mix(desaturate(@brand-primary, 25%), white, 34%);
     font-size: 13px;
     font-weight: 400;
   }
@@ -188,7 +204,7 @@
 
 .demo-icons-tooltip {
   bottom: 0;
-  color: mix(@base, white, 30%);
+  color: mix(@brand-primary, white, 30%);
   font-size: 12px;
   left: 100%;
   margin-left: 0 !important;
@@ -200,29 +216,18 @@
   display: inline-block;
 }
 
-// Inputs of the same width (just for the demo purpose)
-#appendedInputButton-01 { width: 188px }
-#appendedInputButton-02 { width: 197px }
-#appendedInputButton-04 { width: 211px }
-#datepicker-01          { width: 223px }
-#prependedInput-01,
-#prependedInput-02,
-#prependedInput-03,
-#prependedInput-04      { width: 212px }
-#appendedInputButton-03 { width: 162px }
-
-// Search inupts
-#search-query-1  { width: 215px }
-#search-query-2,
-#search-query-5  { width: 211px }
-#search-query-3  { width: 216px }
-#search-query-4,
-#search-query-7  { width: 219px }
-#search-query-6  { width: 214px }
-#search-query-8,
-#search-query-9  { width: 226px }
-.demo-col {
-  .ui-spinner    { max-width: 221px }
+.demo-labels {
+	font-size: floor(@font-size-base * 1.056); // ~19px
+	
+	.visible-lg {
+		display: inline !important;
+		
+		@media (max-width: 767px) {
+			& {
+				display: none !important;
+			}
+		}
+	}	
 }
 
 
@@ -239,48 +244,81 @@
       float: left;
       width: 100px;
       height: 100px;
+      line-height: 100px;
       margin: 0 0 80px 87px;
       text-align: center;
+      vertical-align: middle;
     }
   }
   img {
     display: inline-block;
     max-height: 100px;
     max-width: 100px;
-    vertical-align: baseline;
+    vertical-align: middle;
   }
 }
 
 // Dialog with form inside
 .demo-dialog {
-  input.flat {
-    width: 286px;
+  padding: 13px 20px 15px;
+  
+  .flat {
+	  width: 300px;
   }
-  @media (max-width: 1023px) {
-    & {
-      input.flat {
-        width: 200px;
-      }
-    }
-  }
-  @media (max-width: 767px) {
-    & {
-      input.flat {
-        width: 100%;
-      }
-    }
+  @media (max-width: 767px) { 
+	  .flat {
+		  width: 100%;
+	  }
   }
 }
 
 // Static Modal
 .static-modal-backdrop {
-  background-color: mix(@base, black, 70%);
+  background-color: mix(@brand-primary, black, 70%);
   padding: 62px 14px;
   margin-bottom: 50px;
+  width: 100%;
+  
+  .modal {
+  	bottom: auto;
+    display: block;
+    left: auto;
+    position: relative;
+    right: auto;
+    top: auto;
+    z-index: 1;
+    overflow: hidden;
+    padding-bottom: 20px;
+  }
+  .modal-dialog {
+	  padding: 0;
+  }
+}
+
+.components-static-modal {
+	.modal {
+  	bottom: auto;
+    display: block;
+    left: auto;
+    position: relative;
+    right: auto;
+    top: auto;
+    z-index: 1;
+    overflow: visible;
+  }
+  .modal-dialog,
+  .modal-content {
+	  width: auto;
+  }
+  .modal-dialog {
+	  padding: 0;
+  }
 }
 
 // Sidebar for Components navigation
 .demo-sidebar {
+	font-size: floor(@font-size-base * 0.778); // ~14px
+	line-height: 1.214; // ~17px
   height: 100%;
   left: 0;
   margin: 0;
@@ -288,9 +326,10 @@
   overflow: auto;
   position: fixed;
   top: 0;
+  padding: 0;
   width: 150px;
   z-index: 10000;
-  background-color: mix(@base, white, 6%);
+  background-color: mix(@brand-primary, white, 6%);
   -webkit-backface-visibility: hidden;
   -webkit-font-smoothing: subpixel-antialiased;
 
@@ -312,11 +351,6 @@
 // Responsive: Landscape phone to desktop/tablet
 // --------------------------------------------------
 @media (max-width: 767px) {
-
-  .hide-on-tablets {
-    display: none;
-  }
-
   .demo-row {
     margin-bottom: 0;
     margin-left: 0;
@@ -334,8 +368,10 @@
     width: auto;
   }
   .demo-headline {
-    font-size: @base-font-size * 4.643 !important;
+    font-size: ceil(@font-size-base * 4.643) !important;
     text-align: left;
+    padding-left: 15px;
+    padding-right: 15px;
   }
 
   .demo-inline { display: block; }
@@ -345,23 +381,36 @@
       margin: 0;
     }
 
-    .pager,
-    .mll.pvm {
+    .pager {
       display: block;
-      margin: 0 0 20px;
-      padding: 0;
+      margin-left: 0 !important;
+      margin-bottom: 20px;
     }
   }
   .typography-row {
-    .header-note,
-    .text-note {
+  	.demo-type-example {
+	  	padding-left: 0 !important;
+  	}
+    .demo-heading-note,
+    .demo-text-note {
       position: static !important;
       margin: 0 0 10px;
     }
   }
-  
-  .static-modal-backdrop {
-    margin-left: -@rwd-container-space;
-    margin-right: -@rwd-container-space;
+  .demo-illustrations .demo-content-wide > div {
+	  margin-left: 67px;
   }
+}
+
+@media (max-width: 480px) {
+	.demo-illustrations .demo-content-wide > div {
+		margin-left: 23px;
+	}
+	.demo-navigation {
+		.mll.pvl {
+			padding: 0;
+			margin-left: 0 !important;
+			margin-bottom: 20px;
+		}
+	}
 }

@@ -1,4 +1,4 @@
-{% extends 'articles/base.html' %}
+{% extends 'design/base.html' %}
 {% load actions %}
 {% load assignment %}
 {% block multiactions %}
@@ -6,10 +6,10 @@
 {% endblock multiactions %}
 {% block content %}
   <div class="row-fluid">
-    <div id="filter-tag-list" class="span10">
+    <div id="filter-tag-list" class="col-md-10">
       {% include "articles/filter_tag_list.html" %}
     </div>
-    <div class="span2">
+    <div class="col-md-2">
       {% include "articles/show_more_widget.html" %}
     </div>
   </div>

@@ -1,164 +1,210 @@
+//
 // Typography
 // --------------------------------------------------
 
-body {
-  color: @base;
-  font-family: @base-font-family;
-  font-size: @base-font-size;
-  line-height: @base-line-height;
+
+// Body text
+// -------------------------
+
+p {
+  font-size: 	 @font-size-base;
+  line-height: @line-height-base;
+  margin: 0 0 (@line-height-computed / 2);
 }
 
-input,
-button,
-select,
-textarea {
-  font-family: @base-font-family;
-  font-size: @base-font-size;
-}
-
-a {
-  color: @link-color;
-  text-decoration: none;
-  .transition(0.25s);
-  &:hover {
-    color: @link-hover-color;
-    text-decoration: none;
+.lead {
+	margin-bottom: @line-height-computed;
+  font-size: 	 floor(@font-size-base * 1.556); 	// ~28px
+  line-height: 1.46428571; 											// ~41px
+  font-weight: 300;
+  
+  @media (min-width: @screen-sm-min) {
+    font-size: (@font-size-base * 1.667);				// ~30px
   }
 }
 
-// Heading sizes
-h1, .h1 { font-size: @h1 /* 64px */ }
-h2, .h2 { font-size: @h2 /* 52px */ }
-h3, .h3 { font-size: @h3 /* 40px */ }
-h4, .h4 { font-size: @h4 /* 29px */ }
-h5, .h5 { font-size: @h5 /* 28px */ }
-h6, .h6 { font-size: @h6 /* 24px */ }
+// Emphasis & misc
+// -------------------------
 
-h1, .h1,
-h2, .h2,
-h3, .h3,
-h4, .h4,
-h5, .h5,
-h6, .h6 {
-  line-height: 1.2em;
+// Ex: 18px base font * 83% = about 15px
+small,
+.small {
+  font-size: 83%; 		// ~15px
+  line-height: 2.067; // ~31px
 }
 
-// H1—H6 specific styling
-h1 {
-  font-weight: 700;
+// Contextual emphasis
+.text-muted {
+  color: @text-muted;
+}
+.text-inverse {
+	color: @inverse;
+}
+.text-primary {
+  color: @brand-secondary;
+  &:hover {
+    color: mix(@brand-secondary, black, 80%);
+  }
+}
+.text-warning {
+  color: @state-warning-text;
+  &:hover {
+    color: mix(@state-warning-text, black, 80%);
+  }
+}
+.text-danger {
+  color: @state-danger-text;
+  &:hover {
+    color: mix(@state-danger-text, black, 80%);
+  }
+}
+.text-success {
+  color: @state-success-text;
+  &:hover {
+    color: mix(@state-success-text, black, 80%);
+  }
+}
+.text-info {
+  color: @state-info-text;
+  &:hover {
+    color: mix(@state-info-text, black, 80%);
+  }
 }
 
-h2 {
-  font-weight: 700;
-  margin-bottom: 2px;
+
+// Headings
+// -------------------------
+
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+  font-family: @headings-font-family;
+  font-weight: @headings-font-weight;
+  line-height: @headings-line-height;
+  color: @headings-color;
+  
+  small {
+    color: @headings-small-color;
+  }
 }
 
+h1,
+h2,
 h3 {
-  font-weight: 700;
-  margin-bottom: 4px;
-  margin-top: 2px;
+  margin-top: @line-height-computed;
+  margin-bottom: (@line-height-computed / 2);
 }
-
-h4 {
-  font-weight: 500;
-  margin-top: 4px;
-}
-
-h5 {
-  font-weight: 500;
+h4,
+h5,
+h6 {
+  margin-top: (@line-height-computed / 2);
+  margin-bottom: (@line-height-computed / 2);
 }
 
 h6 {
   font-weight: normal;
 }
 
-// Paragraph
-p {
-  font-size: @base-font-size * 1.286; /* 18px */
-  line-height: @base-line-height * 1.399; /* 31px */
+h1, .h1 { font-size: @font-size-h1; } // ~62px
+h2, .h2 { font-size: @font-size-h2; } // ~52px
+h3, .h3 { font-size: @font-size-h3; } // ~40px
+h4, .h4 { font-size: @font-size-h4; } // ~29px
+h5, .h5 { font-size: @font-size-h5; }	// ~28px 
+h6, .h6 { font-size: @font-size-h6; } // ~24px
+
+
+// Page header
+// -------------------------
+
+.page-header {
+  padding-bottom: ((@line-height-computed / 2) - 1);
+  margin: (@line-height-computed * 2) 0 @line-height-computed;
+  border-bottom: 1px solid @page-header-border-color;
 }
 
-.lead {
-  font-size: @base-font-size * 2; /* 28px */
-  line-height: @base-line-height * 1.1895; /* 41px */
-  font-weight: 300;
+
+// Lists
+// --------------------------------------------------
+
+// Unordered and Ordered lists
+ul,
+ol {
+  margin-bottom: (@line-height-computed / 2);
 }
 
-small {
-  font-size: 84%; /* 15px */
-  line-height: @base-line-height * 1.666; /* 31px */
+// Description Lists
+dl {
+  margin-bottom: @line-height-computed;
+}
+dt,
+dd {
+  line-height: @line-height-base;
 }
 
-// Blockquote
-blockquote {
-  position: relative;
-  border-left: none;
-  padding-left: 19px;
+// Horizontal description lists
+//
+// Defaults to being stacked without any of the below styles applied, until the
+// grid breakpoint is reached (default of ~768px).
 
-  &:before {
-    position: absolute;
-    left: 0;
-    width: 3px;
-    height: 100%;
-    top: 0;
-    bottom: 0;
-    background-color: #ebedee;
-    content: "";
-    .border-radius(2px);
+@media (min-width: @grid-float-breakpoint) {
+  .dl-horizontal {
+    dt {
+      width: (@component-offset-horizontal - 20);
+    }
+    dd {
+      margin-left: @component-offset-horizontal;
+    }
   }
+}
 
+// MISC
+// ----
+
+// Abbreviations and acronyms
+abbr[title],
+abbr[data-original-title] {
+  border-bottom: 1px dotted @abbr-border-color;
+}
+
+// Blockquotes
+blockquote {
+  border-left: 3px solid @blockquote-border-color;
+  padding: 0 0 0 16px;
+  margin: 0 0 @line-height-computed;
+  
   p {
-    font-size: @base-font-size * 1.429;
-    line-height: @base-line-height * 1.259;
+    font-size: ceil(@font-size-base * 1.111); // ~20px
+    line-height: 1.55;												// ~31px
     font-weight: normal;
     margin-bottom: .4em;
   }
-
   small {
-    font-size: @base-font-size * 1.286;
-    line-height: @base-line-height * 1.399;
+    font-size: @font-size-base;
+    line-height: @line-height-base;
     font-style: italic;
-    color: @base;
+    color: @blockquote-small-color;
 
     &:before {
       content: "";
     }
   }
-}
+  
+  // Float right with text-align: right
+  &.pull-right {
+    padding-right: 16px;
+    padding-left: 0;
+    border-right: 3px solid @blockquote-border-color;
+    border-left: 0;
 
-.img-rounded {
-  .border-radius(5px);
-}
-
-.img-comment {
-  font-size: @base-font-size * 1.071;
-  line-height: @base-line-height;
-  font-style: italic;
-  margin: 24px 0;
-}
-
-.prettyprint {
-  background-color: @pre-background;
-  border-color: @pre-border-color;
-  border-radius: @pre-border-radius;
-  border-width: 2px;
-  overflow: auto;
-  word-wrap: normal;
-  white-space: pre;
-  &.linenums {
-    overflow: visible;
-    white-space: pre;
-    white-space: pre-wrap;
-    word-wrap: break-word;
+    small {
+      &:after {
+        content: "";
+      }
+    }
   }
 }
 
-// Text colors
-.text-primary { .swap-text-color(@firm) }
-.text-success { .swap-text-color(@success) }
-.text-danger  { .swap-text-color(@danger) }
-.text-warning { .swap-text-color(@warning) }
-.text-info    { .swap-text-color(@info) }
-.text-inverse { .swap-text-color(@inverse) }
-.muted        { .swap-text-color(@lightgray) }
-
+// Addresses
+address {
+  margin-bottom: @line-height-computed;
+  line-height: @line-height-base;
+}

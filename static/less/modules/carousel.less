@@ -2,27 +2,27 @@
 // Carousel
 // --------------------------------------------------
 
-
-.carousel {
-  margin-bottom: 0;
-  .border-radius(5px);
-}
-
 .carousel-inner {
-
   > .item {
-    // Account for jankitude on images
-    > img,
-    > a > img {
-      .border-radius(5px);
-    }
-    @media (max-width: 480px) {
-      & > img {
-        .border-radius(5px 5px 0 0);
-      }
-    }
+    &.active {
+	   	> img,
+	    > a > img {
+	      border-radius: @border-radius-large;
+	    }
+	    @media (max-width: 480px) {
+	      & > img {
+	        border-radius: @border-radius-large @border-radius-large 0 0;
+	      }
+	    } 
+    } 
+    &.active.left,
+    &.active.right {
+	   	> img,
+	    > a > img {
+	      border-radius: 0;
+	    }
+    }   
   }
-
 }
 
 // Left/right controls for nav
@@ -33,34 +33,58 @@
   top: 45%;
   font-size: 20px;
   line-height: 32px;
-  color: @inverse;  
-  background: @carousel-controls-background;
-  text-indent: 1px;
-  .box-sizing();
+  color: @inverse;    
+  text-indent: 1px;  
+  border: 3px solid @inverse;  
+  height: 40px;
+  right: 15px;
+  margin-top: -20px;  
+  text-align: center;
+  width: 40px;
+  outline: none !important;
+  border-radius: 23px;
+  .opacity(.5);
   
+  &.left,
+  &.right {
+	  background: none @carousel-controls-background;
+  }
   &.left {
     text-indent: -1px;
+    left: 15px;
   }
-
-  // Hover/focus state
-  &:hover,
-  &:focus {
-    .opacity(100);
+  &.right {
+	  left: auto;
+	  right: 15px;
   }
 }
 
 // Carousel indicator pips
 // -----------------------------
 .carousel-indicators {
-  top: 16px;
+	bottom: auto;
+  left: auto;
+  margin: 0;
   right: 16px;
+  top: 16px;
+  width: auto;
+  line-height: 8px;
+  .user-select(none);
 
   li {
+  	vertical-align: top;
+  	border: none;
     width: 8px;
     height: 8px;
-    margin-left: 6px;
+    margin: 0 0 0 6px;
     background-color: @carousel-controls-background;
     background-color: rgba(red(@carousel-controls-background), green(@carousel-controls-background), blue(@carousel-controls-background),.5);
+  }
+  li.active {
+	  background-color: #fff;
+	  width: 8px;
+    height: 8px;
+    margin: 0 0 0 6px;
   }
 }
 
@@ -69,17 +93,31 @@
 .carousel-caption {
   padding: 20px 19px 22px;
   background: @carousel-background;
-  background: rgba(red(@carousel-background), green(@carousel-background), blue(@carousel-background),.7);
-  .border-radius(0 0 5px 5px);
+  background: rgba(red(@carousel-background), green(@carousel-background), blue(@carousel-background),.7);  
+  left: 0;
+  right: 0;
+  bottom: 0;
+  text-align: left;
+  border-radius: 0 0 @border-radius-large @border-radius-large;
+  text-shadow: none;
 
-  h4,
+  h3,
   p {
     color: @inverse;
   }
-  h4 {
-    font-size: @base-font-size * 1.286;
+  h3 {
+    font-size: ceil(@component-font-size-base * 1.2); // ~18px
+    line-height: 20px;
+    margin: 0 0 5px;
   }
   p {
-    font-size: @base-font-size * 1.071;
+    font-size: @component-font-size-base;
+    line-height: 20px;
+    margin-bottom: 0;
+  }
+  @media (max-width: 480px) {
+    & {
+	    position: static;
+    }
   }
 }

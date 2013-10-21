@@ -1,7 +1,0 @@
-{% load tags %}
-{% for result in form.results.all %}
-    {{ result }}
-    {% for value in result.values.all %}
-        {{value.element.name}}:{{value.value}}
-    {% endfor %}
-{% endfor %}

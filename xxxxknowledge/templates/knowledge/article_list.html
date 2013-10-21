@@ -1,9 +1,0 @@
-{% load i18n %}
-
-<ol class="article-list">
-  {% for article in articles %}
-    <li><a href="{{ article.get_absolute_url }}">{{ article.title }}</a>&nbsp; 
-    {% if article.question %}{% if not article.question.get_responses %}<span class="dk-label dk-label-important">{% trans "no responses" %}</span>{% else %}<span class="dk-label">{{ article.question.get_responses|length }}&nbsp;responses</span>{% endif %}{% endif %}
-    {% if article.accepted %}<span class="dk-label dk-label-warning">{% trans "accepted" %}</span>&nbsp;{% endif %} <small class="quiet">by {{ article.get_name }}</small></li>
-  {% endfor %}
-</ol>
