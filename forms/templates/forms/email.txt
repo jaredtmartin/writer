@@ -1,8 +1,0 @@
-We have recieved a submission of the form you posted on Form Hoster.  Here is the information submitted:
-
-{% for value in result.values %}
-{{value.element.name}}: {{value.value}}
-{% endfor %}
-
-Yours truly, 
-Form Hoster
