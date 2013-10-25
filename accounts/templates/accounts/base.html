@@ -1,7 +1,9 @@
-{% extends "articles/bare.html" %}
+{% extends "design/bare.html" %}
 {% block base %}
-  {% include "design/messages.html" %}
-  <div id="content">
-    {% block content %}{% endblock %} 
-  </div> 
+  <div class="row">
+    <div class="col-md-6 col-md-offset-3">
+      <h1 class="page-title">{% block header %}{% endblock %}</h1>
+    </div>
+  </div>
+  {% block content %}{% endblock %} 
 {% endblock base %}

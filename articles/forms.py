@@ -34,22 +34,22 @@ class CreateArticleForm(ModelForm):
         fields = ('language', 'style', 'purpose','price','referrals','expires','priority','category','tags', 'minimum','article_type','project','title','body', 'owner','number_of_articles','article_notes','review_notes','description')
     # lookup_field_names = {'project':'name'}
     # project = CharField(required=False)
-    article_notes   = CharField(widget=widgets.Textarea(attrs={'class':'notes boxsizingBorder','placeholder':'Notes to writer...'}), required=False)
-    review_notes    = CharField(widget=widgets.Textarea(attrs={'class':'notes boxsizingBorder','placeholder':'Notes to reviewer...'}), required=False)
-    description     = CharField(widget=widgets.Textarea(attrs={'class':'notes boxsizingBorder','placeholder':'Add description...'}), required=False)
-    number_of_articles = IntegerField(required=False, widget=widgets.TextInput(attrs={'placeholder':'Number of Articles: One'}))
-    project         = ModelChoiceField(queryset=Project.objects.all(), widget=BootstrapDropdownPlus(label="Project", plus_url="www.google.com", help_text='Select a project or start a new one.', attrs={'class':'article-select', 'data-style':"btn-primary"}), required=False)
-    category        = ModelChoiceField(queryset=Category.objects.all(), widget=BootstrapDropdownPlus(label="Category", plus_url="www.google.com", help_text='Select a category for your article(s).', attrs={'data-style':"btn-primary"}), required=False)
-    article_type    = ModelChoiceField(queryset=ArticleType.objects.all(), widget=BootstrapDropdown(label="Type", plus_url="www.google.com", help_text='Select the type of content you want written.', attrs={'data-style':"btn-primary"}), initial='0')
-    priority        = ChoiceField(choices = ARTICLE_PRIORITIES, widget=BootstrapDropdown(label="Priority", help_text='How urgent is/are the article(s)?', attrs={'data-style':"btn-primary"}), required=False)
-    minimum         = CharField(initial="", widget=widgets.TextInput(attrs={'class':'high-input', 'placeholder':'Length:100'}), required=False)
-    expires         = DateField(initial="", widget=widgets.DateTimeInput(attrs={'placeholder':'Expires: Never'}), required=False)
-    tags            = CharField(initial="", widget=widgets.TextInput(attrs={'placeholder':'Tags'}), required=False)
-    referrals       = CharField(initial="", widget=widgets.TextInput(attrs={'placeholder':'Referrals'}), required=False)
-    language        = CharField(initial="", widget=widgets.TextInput(attrs={'placeholder':'Language'}), required=False)
-    style           = CharField(initial="", widget=widgets.TextInput(attrs={'placeholder':'Style'}), required=False)
-    purpose         = CharField(initial="", widget=widgets.TextInput(attrs={'placeholder':'Purpose'}), required=False)
-    price           = CharField(initial="", widget=widgets.TextInput(attrs={'placeholder':'Price'}), required=False)
+    article_notes   = CharField(widget=widgets.Textarea(attrs={'class':'notes boxsizingBorder','placeholder':'Notes to writer...','class':'form-control'}), required=False)
+    review_notes    = CharField(widget=widgets.Textarea(attrs={'class':'notes boxsizingBorder','placeholder':'Notes to reviewer...','class':'form-control'}), required=False)
+    description     = CharField(widget=widgets.Textarea(attrs={'class':'notes boxsizingBorder','placeholder':'Add description...','class':'form-control'}), required=False)
+    number_of_articles = IntegerField(required=False, widget=widgets.TextInput(attrs={'placeholder':'Number of Articles: One','class':'form-control'}))
+    project         = ModelChoiceField(queryset=Project.objects.all(), widget=BootstrapDropdownPlus(label="Project", plus_url="www.google.com", help_text='Select a project or start a new one.', attrs={'class':'article-select form-control', 'data-style':"btn-primary"}), required=False)
+    category        = ModelChoiceField(queryset=Category.objects.all(), widget=BootstrapDropdownPlus(label="Category", plus_url="www.google.com", help_text='Select a category for your article(s).', attrs={'data-style':"btn-primary",'class':'form-control'}), required=False)
+    article_type    = ModelChoiceField(queryset=ArticleType.objects.all(), widget=BootstrapDropdown(label="Type", plus_url="www.google.com", help_text='Select the type of content you want written.', attrs={'data-style':"btn-primary",'class':'form-control'}), initial='0')
+    priority        = ChoiceField(choices = ARTICLE_PRIORITIES, widget=BootstrapDropdown(label="Priority", help_text='How urgent is/are the article(s)?', attrs={'data-style':"btn-primary",'class':'form-control'}), required=False)
+    minimum         = CharField(initial="", widget=widgets.TextInput(attrs={'class':'high-input', 'placeholder':'Length:100','class':'form-control'}), required=False)
+    expires         = DateField(initial="", widget=widgets.DateTimeInput(attrs={'placeholder':'Expires: Never','class':'form-control'}), required=False)
+    tags            = CharField(initial="", widget=widgets.TextInput(attrs={'placeholder':'Tags','class':'form-control'}), required=False)
+    referrals       = CharField(initial="", widget=widgets.TextInput(attrs={'placeholder':'Referrals','class':'form-control'}), required=False)
+    language        = CharField(initial="", widget=widgets.TextInput(attrs={'placeholder':'Language','class':'form-control'}), required=False)
+    style           = CharField(initial="", widget=widgets.TextInput(attrs={'placeholder':'Style','class':'form-control'}), required=False)
+    purpose         = CharField(initial="", widget=widgets.TextInput(attrs={'placeholder':'Purpose','class':'form-control'}), required=False)
+    price           = CharField(initial="", widget=widgets.TextInput(attrs={'placeholder':'Price','class':'form-control'}), required=False)
 
     # def clean_project(self):
     #     # Looksup project by name and creates it if it doesnt exist
@@ -77,7 +77,7 @@ class ArticleForm(CreateArticleForm):
     class Meta:
         model = Article
         fields = ('writer','reviewer','language', 'style',  'purpose','price','referrals','expires','priority','category','tags', 'minimum','article_type','project','title','body', 'owner','number_of_articles','article_notes','review_notes','description')
-    title = CharField(initial="", widget=widgets.TextInput(attrs={'placeholder':'Title'}), required=False)
+    title = CharField(initial="", widget=widgets.TextInput(attrs={'placeholder':'Title','class':'form-control'}), required=False)
 class WriteArticleForm(ModelForm):
     class Meta:
         model = Article
@@ -89,13 +89,19 @@ class WriteArticleForm(ModelForm):
 class KeywordForm(ModelForm):
     class Meta:
         model = Keyword
-    keyword = CharField(widget=widgets.TextInput(attrs={'placeholder':'Keywordxa'}), required=False)
+    keyword = CharField(widget=widgets.TextInput(attrs={'class':'form-control'}), required=False)
+    url = CharField(widget=widgets.TextInput(attrs={'class':'form-control'}), required=False)
+    times = CharField(widget=widgets.TextInput(attrs={'class':'form-control'}), required=False)
 
 
 class KeywordInlineFormSet(InlineFormSet):
+    # This is old and deprecated
     model = Keyword
-    # formset_class = KeywordForm
+    form_class = KeywordForm
     extra = 1
+class KeywordInline(InlineFormSet):
+    model = Keyword
+    form_class = KeywordForm
 
 class QuantityForm(Form):
     num = IntegerField(min_value=0)
@@ -191,6 +197,17 @@ class UserModeForm(Form):
     mode = IntegerField(min_value=1, max_value=3)
     next = CharField(max_length=128, required=False)
 
+class GroupMemberForm(Form):
+  contact = ModelChoiceField(queryset=Contact.objects.all())
+class NewGroupForm(ModelForm):
+  class Meta:
+    model = ContactGroup
+    fields=('name','position')
+class RenameGroupForm(ModelForm):
+  class Meta:
+    model = ContactGroup
+    fields=('name',)
+
 class FiltersForm(Form):
     filters = CharField(max_length=128, required=False)
 class RegistrationForm(UserCreationForm):
@@ -203,19 +220,19 @@ class RegistrationForm(UserCreationForm):
             'invalid': "This value may contain only letters, numbers and "
                          "@/./+/-/_ characters."})
     password1 = CharField(label="Password", 
-        widget=PasswordInput(attrs={'placeholder':'Password'}))
+        widget=PasswordInput(attrs={'placeholder':'Password','class':'form-control'}))
     password2 = CharField(label="Password confirmation",
-        widget=PasswordInput(attrs={'placeholder':'Please re-type your password'}),
+        widget=PasswordInput(attrs={'placeholder':'Please re-type your password','class':'form-control'}),
         help_text = "Enter the same password as above, for verification.")
     first_name = CharField(label="First Name", max_length=30,
-        widget=widgets.TextInput(attrs={'placeholder':'First Name'}))
+        widget=widgets.TextInput(attrs={'placeholder':'First Name','class':'form-control'}))
     last_name = CharField(label="Last Name", max_length=30,
-        widget=widgets.TextInput(attrs={'placeholder':'Last Name'}))
+        widget=widgets.TextInput(attrs={'placeholder':'Last Name','class':'form-control'}))
     class Meta:
         model = User
         fields = ("username","first_name","last_name")
 class LoginForm(AuthenticationForm):
     username = CharField(label="Username", max_length=30,
-        widget=widgets.TextInput(attrs={'placeholder':'Username'}))
+        widget=widgets.TextInput(attrs={'placeholder':'Username','class':'form-control'}))
     password = CharField(label="Password", 
-        widget=PasswordInput(attrs={'placeholder':'Password'}))
+        widget=PasswordInput(attrs={'placeholder':'Password','class':'form-control'}))

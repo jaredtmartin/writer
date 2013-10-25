@@ -25,6 +25,7 @@ function runCode(){
 function ajaxUpdateRow(data){                                               // Get last transaction id
     d=saveDataInCache(data);
     updateMessages(d);                                                                  // Add new messages
+    $('.empty-list').hide();
     addRows(d);
     runCode();
 }

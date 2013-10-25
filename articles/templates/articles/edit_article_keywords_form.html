@@ -2,11 +2,11 @@
 {{ inline.management_form }}
 {% if user = article.owner or not article.pk%}
   <div  id="keywords-table" class="table block_content" >
-    <div class="row-fluid input-row" id="keywords-title-row">
-      <div class="span4"><h5>Keyword <a id="new-keyword-button" onclick="getKeywordInlineForm();return false;"><i class="fui-plus"></i></h5></a></div>
-      <div class="span4"><h5>Url</h5></div>
-      <div class="span2"><h5>Frequency</h5></div>
-      <div class="span2"><h5>Remove</h5></div>
+    <div class="row input-row" id="keywords-title-row">
+      <div class="col-md-4"><h5>Keyword <a id="new-keyword-button" onclick="getKeywordInlineForm();return false;"><i class="fui-plus"></i></h5></a></div>
+      <div class="col-md-4"><h5>Url</h5></div>
+      <div class="col-md-2"><h5>Frequency</h5></div>
+      <div class="col-md-2"><h5>Remove</h5></div>
     </div>
     {% for form in inline %}
       {% include "articles/keyword_inline_form.html" %}
@@ -15,9 +15,9 @@
   
 {% else %}
   {% for keyword in article.keyword_set.all %}
-    <div class="row-fluid">
-      <div class="span1 input-label">Keyword:</div>
-      <div class="span2">{{keyword.keyword}} (x{{ keyword.times }})</div>
+    <div class="row">
+      <div class="col-md-1 input-label">Keyword:</div>
+      <div class="col-md-2">{{keyword.keyword}} (x{{ keyword.times }})</div>
     </div>
   {% endfor %}
 {% endif %}

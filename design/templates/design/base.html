@@ -1,14 +1,17 @@
 {% extends "design/bare.html" %}
 {% block base %}
   <div class="row">
+    <div class="col-md-10 col-md-offset-2">
+      <h1 class="page-title"> {% block header %}{{header}}{% endblock %} </h1>
+    </div>
+  </div>
+
+  <div class="row">
     <div class="col-md-2">
       {% include "design/sidebar.html" %}
     </div>
     <div class="col-md-10">
-      {% include "design/messages.html" %}
-      <div id="content">
           {% block content %}{% endblock %} 
-      </div> 
     </div>
   </div>
 {% endblock base %}

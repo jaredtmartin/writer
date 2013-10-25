@@ -2,27 +2,17 @@
   <div class="navbar-header navbar-inner">
     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse-01"></button>
     <!-- <button data-target=".navbar-collapse-01" data-toggle="collapse" class="btn btn-navbar" type="button"></button> -->
-    <a class="navbar-brand fui-flat" href="#fakelink"></a>
-  </div>
-  <div class="navbar-collapse collapse navbar-collapse-01 navbar-inner">
-    <ul class="nav navbar-nav">
-      <li class="logo-space">
+      <div class="logo-space">
         <div id="logo-positioner" href="#">
           <img id="logo" src="{{STATIC_URL}}images/logo.gif">&nbsp;
         </div>
-      </li>
+      </div>
+  </div>
+  <div class="navbar-collapse collapse navbar-collapse-01 navbar-inner">
+    <ul class="nav navbar-nav">
+
       {% block multiactions %}{% endblock multiactions %}
     </ul> <!-- /nav -->
-    <form role="search" action="#" class="navbar-form navbar-right">
-      <div class="form-group">
-        <div class="input-group input-group-sm">
-          <input type="search" placeholder="Search" id="navbarInput-01" class="form-control">
-          <span class="input-group-btn">
-            <button class="btn" type="submit"><span class="fui-search"></span></button>
-          </span>            
-        </div>
-      </div>               
-    </form>
     <ul class="nav navbar-nav navbar-right">
       <li class="divider"></li>
       {% if user.is_authenticated %}
@@ -40,5 +30,15 @@
         <li><a href="{% url login %}">Welcome, guest.</a></li>
       {% endif %}
     </ul>
+    <form role="search" action="#" class="navbar-form navbar-right">
+      <div class="form-group">
+        <div class="input-group input-group-sm">
+          <input type="search" placeholder="Search" id="navbarInput-01" class="form-control">
+          <span class="input-group-btn">
+            <button class="btn" type="submit"><span class="fui-search"></span></button>
+          </span>            
+        </div>
+      </div>               
+    </form>
   </div><!--/.navbar-collapse -->
 </div><!--end of the header -->

@@ -5,42 +5,24 @@ from django.forms.util import flatatt
 from django.utils.html import escape, conditional_escape
 from django.utils.translation import ugettext as _
 from django.utils.safestring import mark_safe 
-# class SelectWithFlexibleOptionLabels(Select):
-#   def __init__(self, attrs=None, choices=(), **kwargs):
-#     self.pre_label= kwargs.get('pre_label', '')
-#     self.post_label= kwargs.get('post_label', '')
-#     super(SelectWithFlexibleOptionLabels, self).__init__(attrs)
-#   def render_options(self, choices, selected_choices):
-#     # Normalize to strings.
-#     selected_choices = set(force_unicode(v) for v in selected_choices)
-#     output = []
-#     for option_value, option_label in chain(self.choices, choices):
-#       if isinstance(option_label, (list, tuple)):
-#         output.append(u'<optgroup label="%s">' % escape(force_unicode(option_value)))
-#         for option in option_label:
-#           output.append(self.render_option(selected_choices, *option))
-#         output.append(u'</optgroup>')
-#       else:
-#         output.append(self.render_option(selected_choices, option_value, option_label))
-#     return u'\n'.join(output)
+
 class BootstrapDropdown(Select):
   select_option_template = """<option id="%(name)s-option-%(value)s" value="%(value)s" %(option_selected_html)s>%(label)s</option>"""
   list_item_template = """<li id="%(name)s-list-item-%(value)s" name="%(name)s" data-label="%(label)s" rel="%(value)s" class="select-list-item %(list_selected_html)s"><a class="" tabindex="-1"><span class="pull-left">%(label)s</span></a></li>"""
   html_template = ("""
-    <div class="btn-group">
       <select%(attrs)s style="display: none;">
         %(select_options)s
       </select>
       <div class="btn-group select">
-        <i class="dropdown-arrow"></i>
         <button id="%(name)s-button" data-toggle="dropdown" class="btn dropdown-toggle clearfix btn-small btn-primary">
-          <span id="select-label-%(name)s" class="pull-left">%(label)s</span>&nbsp;<span class="caret"></span>
+          <span id="select-label-%(name)s" class="filter-option pull-left">%(label)s</span>&nbsp;<span class="caret"></span>
         </button>
-        <ul id="%(name)s-dropdown-menu" role="menu" class="dropdown-menu">
+        <i class="dropdown-arrow dropdown-arrow-inverse"></i>
+        <ul id="%(name)s-dropdown-menu" role="menu" class="dropdown-menu dropdown-inverse" style="overflow-y: auto; min-height: 108px;">
           %(list_items)s
         </ul>
       </div>
-    </div>  
+    
     """)
   attrs = {}
   label=None
@@ -61,7 +43,7 @@ class BootstrapDropdown(Select):
     return attrs
   def __init__(self, *args, **kwargs):
     attrs = kwargs.pop('attrs',{})
-    print "kwargs = %s" % str(kwargs)
+    # print "kwargs = %s" % str(kwargs)
     label = kwargs.pop('label', None)
     help_text = self.get_help_text(kwargs.pop('help_text',None))
     # self.btn_size = kwargs.pop('btn_size',None)
@@ -70,9 +52,9 @@ class BootstrapDropdown(Select):
     self.noscript_widget = Select(attrs={}, choices=choices)
     super(BootstrapDropdown, self).__init__(attrs, choices)
     self.help_text = help_text
-    print "label = %s" % str(label)
+    # print "label = %s" % str(label)
     self.label=label
-    print "self.label = %s" % str(self.label)
+    # print "self.label = %s" % str(self.label)
     # print "self.help_text = %s" % str(self.help_text)
     
   def __setattr__(self, k, value):
@@ -152,24 +134,23 @@ class BootstrapDropdown(Select):
     output['select'] = u'\n'.join(output['select'])
     return output
 
-
-
 class BootstrapDropdownPlus(BootstrapDropdown):
     list_item_template = """<li id="%(name)s-list-item-%(value)s" name="%(name)s" data-label="%(label)s" rel="%(value)s" class="select-list-item %(list_selected_html)s"><a class="" tabindex="-1"><span class="pull-left">%(label)s</span></a></li>"""
     html_template = ("""
-      <div class="btn-group">
         <select%(attrs)s style="display: none;">
           %(select_options)s
         </select>
-        <div class="btn-group select"><i class="dropdown-arrow"></i>
+      <div class="btn-group">
+        <div class="btn-group select">
           <button data-toggle="dropdown" class="btn dropdown-toggle clearfix btn-small btn-primary">
-            <span id="select-label-%(name)s" class="pull-left">%(label)s</span>&nbsp;<span class="caret"></span>
+            <span id="select-label-%(name)s" class="filter-option pull-left">%(label)s</span>&nbsp;<span class="caret"></span>
           </button>
-          <button type="button" id="%(name)s-button" data-toggle="modal" data-target="#%(name)s-modal" class="btn btn-primary btn-small btn-select-plus"><i class="fui-plus"></i></button>
-          <ul id="%(name)s-dropdown-menu" role="menu" class="dropdown-menu">
+          <i class="dropdown-arrow dropdown-arrow-inverse"></i>          
+          <ul id="%(name)s-dropdown-menu" role="menu" class="dropdown-menu dropdown-inverse" style="overflow-y: auto; min-height: 108px;">
             %(list_items)s
           </ul>
         </div>
+        <button type="button" id="%(name)s-button" data-toggle="modal" data-target="#%(name)s-modal" class="btn btn-primary btn-small btn-select-plus"><i class="fui-plus"></i></button>
       </div>
       """)
 class BootstrapDropdownPlusMultiple(BootstrapDropdown):

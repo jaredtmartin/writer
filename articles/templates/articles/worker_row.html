@@ -1,0 +1,15 @@
+<tr id="contact-{{object.id}}" class="contact parent even" style="background-color: rgb(251, 251, 251);{% if hide_row %}display:none;{% endif %}">
+  <td>{{object.worker.full_name}}</td>
+  <td>
+    {% if object.confirmation %}
+      <button class="btn btn-sm btn-primary" onclick="doActionOnUser('{% url delete_contact object.id %}', '');">Fire</button>
+    {% else %}
+      {% if object.user_asked = user %}
+        <button class="btn btn-sm btn-primary" onclick="doActionOnUser('{% url confirm_contact object.id %}', '');">Accept</button>
+        <button class="btn btn-sm btn-primary" onclick="doActionOnUser('{% url reject_contact_request object.id %}', '');">Reject</button>
+      {% else %}
+        <button class="btn btn-sm btn-primary" onclick="doActionOnUser('{% url cancel_contact_request object.id %}', '');">Cancel Request</button>
+      {% endif %}
+    {% endif %}
+  </td>
+</tr>

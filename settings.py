@@ -169,7 +169,7 @@ MIDDLEWARE_CLASSES = (
     #'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-#    'debug_toolbar.middleware.DebugToolbarMiddleware',
+   'debug_toolbar.middleware.DebugToolbarMiddleware',
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
     #'django_facebook.middleware.FacebookMiddleware',
@@ -187,8 +187,8 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    os.path.join(DIRNAME, 'feedback/templates/'),
-    os.path.join(DIRNAME, 'templates/'),
+    # os.path.join(DIRNAME, 'feedback/templates/'),
+    # os.path.join(DIRNAME, 'templates/'),
 )
 
 INSTALLED_APPS = (
@@ -266,7 +266,7 @@ if 'test' in sys.argv:
         }
     }
     DEBUG = True
-# else:
-#     INSTALLED_APPS=INSTALLED_APPS+('debug_toolbar',)
+else:
+    INSTALLED_APPS=INSTALLED_APPS+('debug_toolbar',)
 
 

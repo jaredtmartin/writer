@@ -1,20 +1,2 @@
-{% extends "articles/user_list.html" %}
-{% block user_rows %}
-  {% for object in object_list %}
-    <tr id="user-{{object.id}}" class="user parent even" style="background-color: rgb(251, 251, 251);">
-      <td>{{object.full_name}}</td>
-      <td>Unknown </td>
-      <td>
-        <div class="btn-group">
-          <button class="btn {{btn_size}}" 
-            onclick="doActionOnUser('{% url create_contact object.id %}', 'requester={{user.id}}&worker={{object.id}}&position={% if user_group = 'Writer' %}1{% else %}2{% endif %}&user_group={{user_group}}');">
-            Hire {{user_group}}</button>
-        </div>
-        <button class="btn {{btn_size}}"
-          onclick="doActionOnUser('{% url "delete_contact" user.id %}', {{user.id}}, {% if user_group == 'Writer' %}{{object.id}},undefined{% else %}undefined,{{object.id}}{% endif %},'{{user_group}}');">
-          Fire Writer
-        </button>
-      </td>
-    </tr>
-  {% endfor %}
-{% endblock user_rows %}
+{% extends "articles/contact_list.html" %}
+{% block header %}My Writers{% endblock %}

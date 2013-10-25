@@ -1,0 +1,17 @@
+{% extends "articles/contact_list.html" %}
+{% block header %}Writers Pending Approval{% endblock %}
+{% block contact_rows %}
+  {% for object in object_list %}
+    <tr id="contact-{{object.id}}" class="contact parent even" style="background-color: rgb(251, 251, 251);">
+      <td>{{object.worker.full_name}}</td>
+      <td>
+        {% if object.user_asked = user %}
+          <button class="btn btn-sm btn-primary" onclick="doActionOnUser('{% url confirm_contact object.id %}', '');">Accept</button>
+          <button class="btn btn-sm btn-primary" onclick="doActionOnUser('{% url delete_contact object.id %}', '');">Reject</button>
+        {% else %}
+          <button class="btn btn-sm btn-primary" onclick="doActionOnUser('{% url delete_contact object.id %}', '');">Cancel Request</button>
+        {% endif %}
+      </td>
+    </tr>
+  {% endfor %}
+{% endblock contact_rows %}

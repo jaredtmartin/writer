@@ -1,5 +1,6 @@
 from django.conf.urls import patterns, include, url #, redirect_to
-from django.views.generic.simple import redirect_to
+from django.views.generic import RedirectView
+from django.core.urlresolvers import reverse_lazy
 from articles.views import *
 # from django.views.generic import TemplateView, ListView, DetailView
 from django.contrib import admin
@@ -25,7 +26,8 @@ urlpatterns = patterns('',
     # url(r'^register/$',RegisterUserView.as_view(), name='register'),
     # url(r'^logout/$', 'django.contrib.auth.views.logout_then_login', {'login_url': '/login/'}, name='logout'),
     # url(r'^users/', include('articles.user_urls')),
-    url(r'^$', redirect_to, {'url': '/articles/articles/'}),
+    # url(r'^$', redirect_to, {'url': '/articles/available/'}),
+    url(r'^$', RedirectView.as_view(url=reverse_lazy('dashboard'))),
     url(r'^accounts/', include('accounts.urls')),
     url(r'^user/settings/$', UserSettingsView.as_view(), name="user_settings"),
 )

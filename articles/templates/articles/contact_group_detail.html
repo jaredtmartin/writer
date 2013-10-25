@@ -1,0 +1,37 @@
+{% extends 'design/base.html' %}
+{% block content %}
+  {% include "articles/contact_group_detail_lists.html" %}
+{% endblock %}
+{% block js %}
+<script type='text/javascript' src='{{STATIC_URL}}js/thane/ajax.js'></script>
+<script type="text/javascript">
+  function activateDragDrop(){
+    $( "#contacts, #group" ).sortable({
+      connectWith: ".connectedSortable",
+    }).disableSelection();
+
+    $( "#group" ).on("sortreceive", function( event, ui ) {
+      $.ajax({
+        url: "{% url add_to_group object.pk %}",
+        type:'POST',
+        data:"contact="+ui.item.children('input').val(),
+        success:updatePage,
+      });  
+    } );
+
+    $( "#group" ).on("sortremove", function( event, ui ) {
+      $.ajax({
+        url: "{% url remove_from_group object.pk %}",
+        type:'POST',
+        data:"contact="+ui.item.children('input').val(),
+        success:updatePage,
+      });     
+    });
+  }
+  $(function() {
+    window.codeForRows=[activateDragDrop];
+    window.classesToUpdate=['data-block'];
+    activateDragDrop();
+  });
+</script>
+{% endblock %}

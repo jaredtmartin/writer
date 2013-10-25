@@ -1,22 +1,18 @@
 {% extends 'design/base.html' %}
 {% load actions %}
 {% load assignment %}
+
 {% block multiactions %}
   {% include "articles/action_bar.html"%}
 {% endblock multiactions %}
+
+{% block header %}{{header}} <span class="pull-right">{% include "articles/show_more_widget.html" %}</span>{% endblock header %}
+
 {% block content %}
-  <div class="row-fluid">
-    <div id="filter-tag-list" class="col-md-10">
-      {% include "articles/filter_tag_list.html" %}
-    </div>
-    <div class="col-md-2">
-      {% include "articles/show_more_widget.html" %}
-    </div>
-  </div>
+  {% include "articles/filter_tag_list.html" %}
   <div class="block-fluid table-sorting" style="border:none; ">
-    <h1>{{header}}</h1>
     <form class="actions-form" id="actions-form" method="post" action="">{% csrf_token %}
-      <table cellpadding="0" cellspacing="0" width="100%" class="table table-bordered" id="articles">
+      <table cellpadding="0" cellspacing="0" width="100%" class="table" id="articles">
         <thead>
           <tr class="table-header-row">
             <th width="3%">
@@ -87,9 +83,9 @@
   </div>
 {% endblock %}
 {% block js %}
-  <script type='text/javascript' src='{{STATIC_URL}}js/actions.js'></script>
-  <script type='text/javascript' src='{{STATIC_URL}}js/ajax.js'></script>
-  <script type = "text/javascript" src='{{STATIC_URL}}js/checkboxes.js'></script>
+  <script type='text/javascript' src='{{STATIC_URL}}js/thane/actions.js'></script>
+  <script type='text/javascript' src='{{STATIC_URL}}js/thane/ajax.js'></script>
+  <script type = "text/javascript" src='{{STATIC_URL}}js/thane/checkboxes.js'></script>
   <script>
     // function showColumn(section_id){
     //     var index = window.hidden_columns.indexOf(section_id);
@@ -140,8 +136,7 @@
       updateFilters();
       $('#filter-check-'+slugify(tag.split(': ')[1])).checkbox('uncheck');
     }
-    function getFilters(){
-      tags=$('#filter-tags').val();
+    function getFilters(tags){
       tag_list = tags.split(',');
       filters={}
       var i;
@@ -163,7 +158,13 @@
       window.classesToUpdate = ['article']
       data=""
       var i;
-      filters=getFilters($('#filter-tags').val());
+      tags=$('#filter-tags').val();
+      filters=getFilters(tags);
+      if (tags ==""){
+        $('#filter-tag-row').hide();
+      } else{
+        $('#filter-tag-row').show();
+      }
       for(var key in filters){
         data+="&" + key.toLowerCase() +'=' + filters[key];
       }

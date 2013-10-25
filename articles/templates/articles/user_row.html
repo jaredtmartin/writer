@@ -1,0 +1,10 @@
+<tr id="user-{{object.id}}" class="user parent even" style="background-color: rgb(251, 251, 251);{% if object.contact %}display:none;{% endif %}">
+  <td>{{object.full_name}}</td>
+  <td>
+    <div class="btn-group">
+      <button class="btn btn-sm btn-primary" 
+        onclick="doActionOnUser('{% url create_contact object.id %}', 'requester={{user.id}}&worker={{object.id}}&position={{position}}');">
+        Hire</button>
+    </div>
+  </td>
+</tr>

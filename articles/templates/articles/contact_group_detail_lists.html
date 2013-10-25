@@ -1,0 +1,18 @@
+<div class="row data-block">
+  <div class="col-md-5">
+    <h3>Your {{object.get_position_display}}s</h3>
+    <ul id="contacts" class="list-group drag-drop-list connectedSortable">
+      {% for contact in worker_list %}
+        <li class="list-group-item contact">{{contact.worker.full_name}}<input type="hidden" value="{{contact.pk}}"></li>
+      {% endfor %}
+    </ul>
+  </div>
+  <div class="col-md-5 col-md-offset-1">
+    <h3>{{object.name}}</h3>
+    <ul id="group" class="list-group drag-drop-list connectedSortable">
+      {% for contact in object.contacts.all %}
+        <li class="list-group-item contact">{{contact.worker.full_name}}<input type="hidden" value="{{contact.pk}}"></li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>

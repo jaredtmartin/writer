@@ -1,0 +1,55 @@
+{% extends 'design/base.html' %}
+{% block content %}
+  <div class="block-fluid table-sorting" style="border:none; ">
+    <table cellpadding="0" cellspacing="0" width="100%" class="table" id="groups">
+      <thead>
+        <tr class="table-header-row">
+          <th class="column-header">Group Name</th>
+          <th class="column-header">Number of Members</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for object in object_list %}
+          {% include row_template_name %}
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+    {% if not object_list %}
+    <p class="lead empty-list">You have no groups set up.</p>
+  {% endif %}
+  <button id="add-group-btn" class="btn btn-primary" onclick="addGroup();">Add a Group</button>
+{% endblock %}
+{% block js %}
+<script type='text/javascript' src='{{STATIC_URL}}js/thane/ajax.js'></script>
+<script src="{{STATIC_URL}}js/bootbox.min.js"></script>
+<script type="text/javascript">
+function renameGroup(url){
+  bootbox.prompt("What will you call this group?", function(result) {                
+    if (result !== null) {                                             
+      $.ajax({
+        url: url,
+        type:'POST',
+        data:"name="+result,
+        success: ajaxUpdateRow,
+      });                        
+    }
+  });
+}
+function deleteGroup(url){
+  $.ajax({url: url ,type:'POST',success: ajaxUpdateRow});
+}
+function addGroup(){
+  bootbox.prompt("What will you call your new group?", function(result) {                
+    if (result !== null) {                                             
+      $.ajax({
+        url: '{% url add_group %}',
+        type:'POST',
+        data:"name="+result+"&position={{position}}",
+        success: ajaxUpdateRow,
+      });                        
+    }
+  });
+}
+</script>
+{% endblock %}

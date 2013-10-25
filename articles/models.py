@@ -503,35 +503,37 @@ class ArticleMessage(models.Model):
     # is_sticky   = models.BooleanField(default=False, blank=True)
 
 class Keyword(models.Model):
-    article = models.ForeignKey(Article)
-    keyword = models.CharField(max_length=32)
-    url = models.CharField(max_length=64)
-    times = models.IntegerField(default=1)
-    def __unicode__(self): return self.keyword
+  article = models.ForeignKey(Article)
+  keyword = models.CharField(max_length=32)
+  url = models.CharField(max_length=64)
+  times = models.IntegerField(default=1)
+  def __unicode__(self): return self.keyword
     
 class UserProfile(models.Model):
-    user = models.OneToOneField(User)
-    timezone = models.CharField(max_length=32, default='America/Chicago')
-    access_token = models.TextField(blank=True, help_text='Facebook token for offline access', null=True)
-    mode = models.IntegerField(choices=USER_MODES)
-    article_list_view = models.CharField(max_length=32, blank=True, default='')
-    def __unicode__(self): return self.user.username+"'s profile"
-    project_filter_value = models.CharField(max_length=64, blank=True, default='')
-    writer_filter_value = models.CharField(max_length=64, blank=True, default='')
-    @property
-    def is_requester(self):
-        return self.mode == REQUESTER_MODE
-    @property
-    def is_writer(self):
-        return self.mode == WRITER_MODE
-    @property
-    def is_reviewer(self):
-        return self.mode == REVIEWER_MODE
+  user = models.OneToOneField(User)
+  timezone = models.CharField(max_length=32, default='America/Chicago')
+  access_token = models.TextField(blank=True, help_text='Facebook token for offline access', null=True)
+  mode = models.IntegerField(choices=USER_MODES)
+  article_list_view = models.CharField(max_length=32, blank=True, default='')
+  def __unicode__(self): return self.user.username+"'s profile"
+  project_filter_value = models.CharField(max_length=64, blank=True, default='')
+  writer_filter_value = models.CharField(max_length=64, blank=True, default='')
+  @property
+  def is_requester(self):return self.mode == REQUESTER_MODE
+  @property
+  def is_writer(self):return self.mode == WRITER_MODE
+  @property
+  def is_reviewer(self):return self.mode == REVIEWER_MODE
 
 def create_user_profile(sender, instance, created, **kwargs):
-    if created:
-        UserProfile.objects.create(user=instance, mode=WRITER_MODE)
-
+  if created: UserProfile.objects.create(user=instance, mode=WRITER_MODE)
 post_save.connect(create_user_profile, sender=User)
+
+class ContactGroup(models.Model):
+  owner = models.ForeignKey(User)
+  contacts = models.ManyToManyField(Contact)
+  name = models.CharField(max_length=32)
+  position = models.IntegerField(choices=WORKING_POSITIONS)
+  def __unicode__(self): return self.name
 
 

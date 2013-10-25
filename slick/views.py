@@ -1,6 +1,33 @@
 import vanilla
 from django.db.models import Q
+from django.contrib import messages
+
+class ExtraContextMixin(object):
+  extra_context = {}
+  def collect_bases(self, classType):
+    bases = [classType]
+    for baseClassType in classType.__bases__:
+      bases += self.collect_bases(baseClassType)
+    return bases
+  def get_context_data(self, **kwargs):
+    # Get the bases and remove duplicates
+    bases = list(set(self.collect_bases(self.__class__)))
+    for base in bases:
+      if hasattr(base, 'extra_context'):
+        for key, value in base.extra_context.items():
+          if key=="writer_filter_counts":
+            print "I'm here"
+            print "hasattr(self, value) = %s" % str(hasattr(self, value))
+            print "callable(getattr(self, value)) = %s" % str(callable(getattr(self, value)))
+          # First try to run it to see if it's the name of a function
+          try: kwargs[key] = getattr(self,value)()
+          # Otherwise, just add it to the context
+          except (AttributeError, TypeError): kwargs[key] = value
+    for key, value in kwargs.items(): print key+":"+str(value)
+    return super(ExtraContextMixin, self).get_context_data(**kwargs)
+
 class MessageMixin(object):
+  # Sends messages when form is valid or invalid
   success_message = None
   error_message = None
   def get_error_message(self, form):return self.error_message
@@ -15,12 +42,46 @@ class MessageMixin(object):
     if error_msg: messages.error(self.request, error_msg)
     return super(MessageMixin, self).form_invalid(form)
 
-class VanillaCreateView(MessageMixin, vanilla.CreateView): pass
-class VanillaUpdateView(MessageMixin, vanilla.UpdateView): pass
-class VanillaDeleteView(MessageMixin, vanilla.DeleteView): pass
-class VanillaFormView(MessageMixin, vanilla.FormView): pass
+class AjaxPostMixin(object):
+  template_name = 'design/ajax_row.html'
+  # Renders a response when form_valid
+  def form_valid(self, form):
+    self.object = form.save()
+    context = self.get_context_data(form=form)
+    return self.render_to_response(context)
+class NonModelFormMixin(object):
+  def get_form(self, data=None, files=None, **kwargs):
+    del kwargs['instance']
+    return super(NonModelFormMixin, self).get_form(data=data, files=files, **kwargs)
+class CreateView(ExtraContextMixin, MessageMixin, vanilla.CreateView): pass
+class DetailView(ExtraContextMixin, MessageMixin, vanilla.DetailView): pass
+class UpdateView(ExtraContextMixin, MessageMixin, vanilla.UpdateView): pass
+class DeleteView(ExtraContextMixin, vanilla.DeleteView): pass
+class FormView(ExtraContextMixin, MessageMixin, vanilla.FormView): pass
+class GenericModelView(ExtraContextMixin, MessageMixin, vanilla.GenericModelView):pass
+class TemplateView(ExtraContextMixin, MessageMixin, vanilla.TemplateView):pass
+class GenericAjaxModelView(AjaxPostMixin, GenericModelView): pass
+#   def post(self, request, *args, **kwargs):
+#     self.object = self.get_object()
+#     self.do_task()
+#     context = self.get_context_data()
+#     return self.render_to_response(context)
+class AjaxCreateView(AjaxPostMixin, CreateView): pass 
+class AjaxUpdateView(AjaxPostMixin, UpdateView): pass 
+class AjaxDeleteView(DeleteView):
+  success_message = ""
+  template_name = 'design/ajax_row.html'
+  def post(self, request, *args, **kwargs):
+    # We save the pk so the js will know which row to replace
+    self.object = self.get_object()
+    old_pk=self.object.pk
+    self.object.delete()
+    if self.success_message: messages.success(self.request, self.success_message)
+    context = self.get_context_data()
+    context['object'].pk=old_pk
+    return self.render_to_response(context)
 
-class ListView(vanilla.ListView):
+class ListView(ExtraContextMixin, vanilla.ListView):
   search_key = 'q'
   search_on = []
   filter_on = []
@@ -34,9 +95,8 @@ class ListView(vanilla.ListView):
     # Declare a function: filter_{{fieldname}} that takes a queryset and the value, 
     # does the filter and returns the queryset
     for f in self.filter_on:
-      if f in self.request.GET:
-        if hasattr(self,'filter_'+f): queryset = getattr(self,'filter_'+f)(queryset, self.request.GET[f])
-        else:queryset = queryset.filter(**{f:self.request.GET[f]})
+      if hasattr(self,'filter_'+f): queryset = getattr(self,'filter_'+f)(queryset, self.request.GET.get(f,''))
+      elif f in self.request.GET: queryset = queryset.filter(**{f:self.request.GET[f]})
     return queryset
   def search(self, queryset):
     # Takes a queryset and returns the queryset filtered based on search
@@ -64,11 +124,11 @@ class ListView(vanilla.ListView):
     return queryset
   def get_context_data(self, **kwargs):
     context = super(ListView, self).get_context_data(**kwargs)
-    print "context = %s" % str(context)
+    # print "context = %s" % str(context)
     if self.search_key in self.request.GET: context[self.search_key] = self.request.GET
-    print "context = %s" % str(context)
+    # print "context = %s" % str(context)
     for filter_key in self.filter_on:
       if filter_key in self.request.GET: context[filter_key] = self.request.GET
-    print "context = %s" % str(context)
+    # print "context = %s" % str(context)
     return context
 

@@ -13,10 +13,10 @@ from django.core.mail import send_mail
 from django.forms import ModelForm, ChoiceField
 from articles.models import UserProfile, USER_MODES
 class SimpleUserCreationForm(forms.ModelForm):
-    password1 = forms.CharField(label="Password", widget=forms.PasswordInput(attrs={'placeholder':'Password'}))
-    password2 = forms.CharField(label="Password confirmation", widget=forms.PasswordInput(attrs={'placeholder':'Retype Password'}),
+    password1 = forms.CharField(label="Password", widget=forms.PasswordInput(attrs={'placeholder':'Password','class':'form-control'}))
+    password2 = forms.CharField(label="Password confirmation", widget=forms.PasswordInput(attrs={'placeholder':'Retype Password','class':'form-control'}),
                                 help_text = "Enter the same password as above, for verification.")
-    email = forms.EmailField(label="Email", max_length=75, widget=widgets.TextInput(attrs={'placeholder':'E-mail address'}))
+    email = forms.EmailField(label="Email", max_length=75, widget=widgets.TextInput(attrs={'placeholder':'E-mail address','class':'form-control'}))
 
     class Meta:
         model = User
@@ -69,8 +69,8 @@ class SimpleUserCreationFormWithFullName(SimpleUserCreationForm):
     class Meta:
         model = User
         fields = ("first_name","last_name")
-    first_name = forms.CharField(label="First Name", widget=forms.TextInput(attrs={'placeholder':'First Name'}))
-    last_name = forms.CharField(label="Last Name", widget=forms.TextInput(attrs={'placeholder':'Last Name'}))
+    first_name = forms.CharField(label="First Name", widget=forms.TextInput(attrs={'placeholder':'First Name','class':'form-control'}))
+    last_name = forms.CharField(label="Last Name", widget=forms.TextInput(attrs={'placeholder':'Last Name','class':'form-control'}))
 
 # class UserCreationForm(forms.ModelForm):
 #     username = forms.RegexField(label="Username", max_length=30, regex=r'^[\w.@+-]+$',
@@ -151,20 +151,20 @@ class UserProfileForm(ModelForm):
     mode = ChoiceField(choices=USER_MODES, widget=forms.Select(attrs={'class':'selectpicker primary'}))
 
 class LoginForm(django_forms.AuthenticationForm):
-    username = forms.CharField(label="E-mail", max_length=30, widget=widgets.TextInput(attrs={'placeholder':'E-mail address'}))
-    password = forms.CharField(label="Password", widget=forms.PasswordInput(attrs={'placeholder':'Password'}))
+    username = forms.CharField(label="E-mail", max_length=30, widget=widgets.TextInput(attrs={'placeholder':'E-mail address','class':'form-control'}))
+    password = forms.CharField(label="Password", widget=forms.PasswordInput(attrs={'placeholder':'Password','class':'form-control'}))
 class PasswordResetForm(django_forms.PasswordResetForm):
-    email = forms.EmailField(label="E-mail", max_length=75, widget=widgets.TextInput(attrs={'placeholder':'E-mail address'}))
+    email = forms.EmailField(label="E-mail", max_length=75, widget=widgets.TextInput(attrs={'placeholder':'E-mail address','class':'form-control'}))
 class SetPasswordForm(django_forms.SetPasswordForm):
     new_password1 = forms.CharField(label="New password",
-                                    widget=forms.PasswordInput(attrs={'placeholder':'Password'}))
+                                    widget=forms.PasswordInput(attrs={'placeholder':'Password','class':'form-control'}))
     new_password2 = forms.CharField(label="New password confirmation",
-                                    widget=forms.PasswordInput(attrs={'placeholder':'Retype Password'}))
+                                    widget=forms.PasswordInput(attrs={'placeholder':'Retype Password','class':'form-control'}))
 class PasswordChangeForm(django_forms.PasswordChangeForm):
     new_password1 = forms.CharField(label="New password",
-                                    widget=forms.PasswordInput(attrs={'placeholder':'Password'}))
+                                    widget=forms.PasswordInput(attrs={'placeholder':'Password','class':'form-control'}))
     new_password2 = forms.CharField(label="New password confirmation",
-                                    widget=forms.PasswordInput(attrs={'placeholder':'Retype Password'}))
+                                    widget=forms.PasswordInput(attrs={'placeholder':'Retype Password','class':'form-control'}))
     old_password = forms.CharField(label="Old password",
-                                   widget=forms.PasswordInput(attrs={'placeholder':'Old Password'}))
+                                   widget=forms.PasswordInput(attrs={'placeholder':'Old Password','class':'form-control'}))
 

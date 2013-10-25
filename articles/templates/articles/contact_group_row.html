@@ -1,0 +1,8 @@
+<tr id="group-{{object.id}}" class="group parent even" style="background-color: rgb(251, 251, 251);{% if hide_row %}display:none;{% endif %}">
+  <td><a href="{% url group_detail object.pk %}">{{object.name}}</a></td>
+  <td>{{object.contacts.all.count}}</td>
+  <td>
+      <button class="btn btn-sm btn-primary"onclick="renameGroup('{% url rename_group object.pk %}');">Rename</button>
+      <button class="btn btn-sm btn-danger" onclick="deleteGroup('{% url remove_group object.pk %}');">Remove</button>
+  </td>
+</tr>

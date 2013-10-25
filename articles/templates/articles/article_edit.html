@@ -7,22 +7,19 @@
 {% block navbar %}
   <li><a href="{% url article_add %}">Add Article</a></li>
 {% endblock %}
+{% block header %}{% if article.pk %} Article: {{article.name}} {% else %} New Article {% endif %}{% endblock %}
 {% block content %}
   <div id="article">
-    {{form.errors}}
     <form action="{{ article.get_absolute_url }}" method="post"> {% csrf_token %}
       {{form.ID}}
       <input type="hidden" name="owner" value="{% if article.owner %}{{article.owner.pk}}{% else %}{{user.pk}}{% endif %}">
-          <div class="page-header">
-              <h1>{% if article.pk %} Article: {{article.name}} {% else %} New Article {% endif %}</h1>
-          </div>
       {% if user == article.owner and user.mode == 2 or not article.pk %}
-          <div class="row-fluid input-row">
+          <div class="row input-row">
             <div class="col-md-4">{{ form.project }}</div>
             <div class="col-md-4">{{ form.article_type }}</div>
             <div class="col-md-4">{{ form.category }}</div>
           </div>
-          <div class="row-fluid input-row">
+          <div class="row input-row">
             <div class="col-md-4">{{ form.priority }}</div>
             <div class="col-md-4">
               <div id="add-details-selector" class="btn-group">
@@ -41,42 +38,42 @@
 
             <div class="col-md-4">{{ form.number_of_articles }}</div>
           </div>
-          <div class="row-fluid input-row" style="display:none;">
+          <div class="row input-row" style="display:none;">
             <div id="tags-cell" class="hidden-cell col-md-12" style="display:none;">{{form.tags}}</div>
           </div>
-          <div class="row-fluid input-row" style="display:none;">
+          <div class="row input-row" style="display:none;">
             <div id="referrals-cell" class="col-md-4" style="display:none;">{{form.referrals}}</div>
             <div id="lang-cell" class="hidden-cell col-md-4" style="display:none;">{{form.language}}</div>
             <div id="style-cell" class="hidden-cell col-md-4" style="display:none;">{{form.style}}</div>
           </div>
-          <div class="row-fluid input-row" style="display:none;">
+          <div class="row input-row" style="display:none;">
             <div id="date-cell" class="hidden-cell col-md-4" style="display:none;">{{form.expires}}</div>
             <div id="purpose-cell" class="hidden-cell col-md-4" style="display:none;">{{form.purpose}}</div>
             <div id="price-cell" class="hidden-cell col-md-4" style="display:none;">{{form.price}}</div>
           </div>
-          <div class="row-fluid input-row" style="display:none;">
+          <div class="row input-row" style="display:none;">
             <div class="col-md-8">{{form.description}}</div>
             <div class="col-md-4">{{ form.minimum }}</div>
           </div>
             
           </div>
-          <div class="row-fluid input-row">
+          <div class="row input-row">
             <div class="col-md-12">
                 {% with inlines.0 as inline %}
                     {% include "articles/edit_article_keywords_form.html" %}
                 {% endwith %}
             </div>
           </div>
-          <div class="row-fluid input-row">
+          <div class="row input-row">
             <div class="col-md-12">{{form.article_notes}}</div>
           </div>
-          <div class="row-fluid input-row">
+          <div class="row input-row">
             <div class="col-md-12">{{form.review_notes}}</div>
           </div>
           
 
       {% else %}
-          <div class="row-fluid input-row">
+          <div class="row input-row">
             <div class="col-md-1 input-label">Project:</div>
             <div class="col-md-2">{{ article.project }}</div>
 
@@ -87,7 +84,7 @@
             <div class="col-md-3">{{ article.category }}</div>
           </div>
 
-          <div class="row-fluid input-row">
+          <div class="row input-row">
             <div class="col-md-1 input-label">Writer:</div>
             {% if article.writer %}
               <div class="col-md-2">{{ article.writer.full_name }}</div>
@@ -105,7 +102,7 @@
             <div class="col-md-1 input-label">Priority:</div>
             <div class="col-md-2">{{ article.priority }}</div>
           </div>
-          <div class="row-fluid input-row">
+          <div class="row input-row">
             <div class="col-md-1 input-label">Description</div>
             <div class="col-md-7">{{article.description}}</div>
 
@@ -113,25 +110,25 @@
             <div class="col-md-3">{{ article.minimum }}</div>
           </div>
 
-          <div class="row-fluid input-row">
+          <div class="row input-row">
             {% with inlines.0 as inline %}
               {% include "articles/edit_article_keywords_form.html" %}
             {% endwith %}
           </div>
           {% if user == article.writer and article.article_notes%}
-            <div class="row-fluid input-row">
+            <div class="row input-row">
               <div class="col-md-1 input-label">Notes to Writer</div>
               <div class="col-md-11">{{article.article_notes}}</div>
             </div>
           {% endif %}
           {% if user == ariticle.reviewer and article.review_notes%}
-            <div class="row-fluid input-row">
+            <div class="row input-row">
               <div class="col-md-1 input-label">Notes to Reviewer</div>
               <div class="col-md-11">{{article.review_notes}}</div>
             </div>
           {% endif %}
           {% if article.expires or article.tags %}
-            <div class="row-fluid input-row">
+            <div class="row input-row">
               <div id="date-cell" class="hidden-cell">
                 <div class="col-md-2 input-label">Date Due</div>
                 <div class="col-md-2">{{article.expires}}</div>
@@ -143,7 +140,7 @@
             </div>
           {% endif %}
           {% if article.purpose or article.referrals or article.price %}
-            <div class="row-fluid input-row">
+            <div class="row input-row">
               <div id="purpose-cell" class="hidden-cell">
                 <div class="col-md-2 input-label">Purpose</div>
                 <div class="col-md-2">{{article.purpose}}</div>
@@ -159,7 +156,7 @@
             </div>
           {% endif %}
           {% if article.language or article.style %}
-            <div class="row-fluid input-row">
+            <div class="row input-row">
               <div id="lang-cell" class="hidden-cell">
                 <div class="col-md-2 input-label">Language</div>
                 <div class="col-md-2">{{article.language}}</div>
@@ -171,20 +168,20 @@
             </div>
           {% endif %}
       {% endif %}
-      <div class="row-fluid input-row">
+      <div class="row input-row">
         <div class="col-md-12">
           {% show_edit_page_actions %}
         </div>
       </div>
       {% if article.pk and user|can_edit:article %}
-        <div class="row-fluid input-row">
+        <div class="row input-row">
           <div class="col-md-12"><legend>Content:</legend></div>
         </div>
-        <div class="row-fluid input-row">
+        <div class="row input-row">
           <div class="col-md-2">Title</div>
           <div class="col-md-9 long-input">{{form.title}}</div>
         </div>
-        <div class="row-fluid input-row">
+        <div class="row input-row">
           <div class="col-md-12 well">
             <textarea id="id_body" name="body">
               {{form.instance.body}}
@@ -232,7 +229,7 @@
 {% endblock %}
 
 {% block js %}
-    <script type='text/javascript' src='{{STATIC_URL}}js/ajax.js'></script>
+    <script type='text/javascript' src='{{STATIC_URL}}js/thane/ajax.js'></script>
     <script src="{{STATIC_URL}}js/ckeditor/ckeditor.js"></script>
     <script type="text/javascript">
       {% if user = article.owner or not article.pk%}
