@@ -22,7 +22,7 @@ from django.views.generic.detail import DetailView, BaseDetailView# , SingleObje
 from django.views.generic import FormView #, TemplateView, 
 from articles.models import Article, Keyword, Project, ArticleAction, ACTIONS, Contact, Category, \
 PublishingOutlet, PublishingOutletConfiguration, WRITER_POSITION, REVIEWER_POSITION, UserProfile, \
-ContactGroup
+ContactGroup, Writer, Reviewer, WriterGroup, ReviewerGroup
 from django.views.generic.base import View, TemplateResponseMixin
 from articles.forms import RejectForm, ArticleForm, KeywordInline, KeywordInlineFormSet,  \
 TagArticleForm, ActionUserID, AssignToForm, NoteForm, ContactForm, QuantityForm, \
@@ -62,6 +62,7 @@ class LoginRequiredMixin(object):
            # #  #   # #  ##   #   #     #     #   #
             #   #   # #   # ##### ##### ##### #   #
 ################################################################################
+
 class MessageMixin(object):
   success_message = None
   error_message = None
@@ -106,6 +107,7 @@ class FiltersMixin(object):
     elif self.request.user.mode==REQUESTER_MODE:
       return qs.filter(writer__isnull=False, was_claimed=False, status=STATUS_ASSIGNED)
   def filter_available(self, qs, value=True):
+    return qs
     if self.request.user.mode == REQUESTER_MODE:
       return qs.filter(owner=self.request.user).filter(Q(available_to_contacts__position=WRITER_POSITION)|Q(available_to_groups__position=WRITER_POSITION)|Q(available_to_all_writers=True)|Q(available_to_all_my_writers=True)).exclude(writer__isnull=False)
     elif self.request.user.mode == WRITER_MODE: return qs.filter(Q(available_to_contacts__worker=self.request.user, available_to_contacts__position=self.request.user.mode)|Q(available_to_groups__contacts__worker=self.request.user, available_to_groups__contacts__position=self.request.user.mode)|Q(available_to_all_writers=True)|Q(available_to_all_my_writers=True, owner__contacts_as_requester__worker=self.request.user, owner__contacts_as_requester__position=WRITER_POSITION)).exclude(writer__isnull=False)
@@ -125,25 +127,26 @@ class FiltersMixin(object):
     elif self.request.user.mode==REQUESTER_MODE:
       return qs.filter(status=STATUS_SUBMITTED,submitted__isnull=False, approved__isnull=True)
   def filter_unavailable(self, qs, value=True):
+    return qs
     return qs.filter(owner=self.request.user, available_to_all_my_writers=False, available_to_all_writers=False).exclude(available_to_contacts__position=1).exclude( available_to_groups__position=1)
   def filter_my_writers(self, qs, value=True):
-    return qs.filter(requester=self.request.user, confirmation = True, position=WRITER_POSITION)
+    return qs.filter(requester=self.request.user, confirmation = True)
   def filter_writers_pending(self, qs, value=True):
-    return qs.filter(requester=self.request.user, confirmation__isnull=True, position=WRITER_POSITION)
+    return qs.filter(requester=self.request.user, confirmation__isnull=True)
   def filter_writers_available(self, qs, value=True):
-    qs = qs.filter(Q(contacts_as_worker__position=WRITER_POSITION)|Q(userprofile__mode=WRITER_MODE)).distinct()
-    return qs.exclude(contacts_as_worker__requester=self.request.user, contacts_as_worker__position=WRITER_POSITION).exclude(pk=self.request.user.pk)
+    qs = qs.filter(Q(contacts_as_writer__isnull=False)|Q(userprofile__mode=WRITER_MODE)).distinct()
+    return qs.exclude(contacts_as_writer__requester=self.request.user).exclude(pk=self.request.user.pk)
   def filter_my_reviewers(self, qs, value=True):
-    return qs.filter(requester=self.request.user, confirmation = True, position=REVIEWER_POSITION)
+    return qs.filter(requester=self.request.user, confirmation = True)
   def filter_reviewers_pending(self, qs, value=True):
-    return qs.filter(requester=self.request.user, confirmation__isnull=True, position=REVIEWER_POSITION)
+    return qs.filter(requester=self.request.user, confirmation__isnull=True)
   def filter_reviewers_available(self, qs, value=True):
-    qs = qs.filter(Q(contacts_as_worker__position=REVIEWER_POSITION)|Q(userprofile__mode=REVIEWER_MODE)).distinct()
-    return qs.exclude(contacts_as_worker__requester=self.request.user, contacts_as_worker__position=REVIEWER_POSITION).exclude(pk=self.request.user.pk)
+    qs = qs.filter(Q(contacts_as_reviewer__isnull=False)|Q(userprofile__mode=REVIEWER_MODE)).distinct()
+    return qs.exclude(contacts_as_reviewer__requester=self.request.user).exclude(pk=self.request.user.pk)
   def filter_writer_groups(self, qs, value=True):
-    return qs.filter(position=WRITER_POSITION, owner=self.request.user)
+    return qs.filter(owner=self.request.user)
   def filter_reviewer_groups(self, qs, value=True):
-    return qs.filter(position=REVIEWER_POSITION, owner=self.request.user)
+    return qs.filter(owner=self.request.user)
   def get_article_filter_counts(self):
     # Last value, when True, forces item to show in sidebar even when empty
     return {
@@ -159,18 +162,18 @@ class FiltersMixin(object):
   def get_writer_filter_counts(self):
     # Last value, when True, forces item to show in sidebar even when empty
     return {
-      'My Writers': (self.filter_my_writers(Contact.objects.all()).count(),False),
-      'Writers Pending': (self.filter_writers_pending(Contact.objects.all()).count(),False),
+      'My Writers': (self.filter_my_writers(Writer.objects.all()).count(),False),
+      'Writers Pending': (self.filter_writers_pending(Writer.objects.all()).count(),False),
       'Writers Avail.': (self.filter_writers_available(User.objects.all()).count(),True),
-      'Writer Groups': (self.filter_writer_groups(ContactGroup.objects.all()).count(),True),
+      'Writer Groups': (self.filter_writer_groups(WriterGroup.objects.all()).count(),True),
     }
   def get_reviewer_filter_counts(self):
     # Last value, when True, forces item to show in sidebar even when empty
     return {
-      'My Reviewers': (self.filter_my_reviewers(Contact.objects.all()).count(),False),
-      'Reviewers Pending': (self.filter_reviewers_pending(Contact.objects.all()).count(),False),
+      'My Reviewers': (self.filter_my_reviewers(Reviewer.objects.all()).count(),False),
+      'Reviewers Pending': (self.filter_reviewers_pending(Reviewer.objects.all()).count(),False),
       'Reviewers Avail.': (self.filter_reviewers_available(User.objects.all()).count(),True),
-      'Reviewer Groups': (self.filter_reviewer_groups(ContactGroup.objects.all()).count(),True),
+      'Reviewer Groups': (self.filter_reviewer_groups(ReviewerGroup.objects.all()).count(),True),
     }
 
 ################################################################################
@@ -877,7 +880,6 @@ class UpdateFilters(FiltersMixin, ListView):
 ################################################################################
 
 class WorkerListBase(FiltersMixin, slick.ListView):
-  model=Contact
   template_name = "articles/contact_list.html"
   extra_context = {'row_template_name':"articles/worker_row.html"}
   search_on=['worker__username', 'worker__first_name', 'worker__last_name']
@@ -899,10 +901,12 @@ class UserListBase(FiltersMixin, slick.ListView):
 #                               Writers                                  #
 ################################################################################
 class WritersPendingList(WorkerListBase):
+  model = Writer
   extra_context = {'heading':"Writers Pending Approval"}
   filter_on = ['writers_pending']
 
 class MyWritersList(WorkerListBase):
+  model = Writer
   extra_context = {'heading' : "My Writers"}
   filter_on = ['my_writers']
   # def get_queryset(self): 
@@ -927,9 +931,11 @@ class AvailableWritersList(UserListBase):
 ################################################################################
 
 class ReviewersPendingList(WorkerListBase):
+  model = Reviewer
   extra_context = {'heading':"Reviewers Pending Approval"}
   filter_on = ['reviewers_pending']
 class MyReviewersList(WorkerListBase):
+  model = Reviewer
   extra_context = {'heading' : "My Reviewers"}
   filter_on = ['my_reviewers']
 class AvailableReviewersList(UserListBase):
@@ -988,6 +994,11 @@ class ConfirmContact(slick.GenericModelView):
     self.object = self.get_object()
     self.object.confirmation=True
     self.object.save()
+    requester = self.object.requester
+    worker = self.object.worker
+    if object.position==WRITER_POSITION:
+      requester.writers.add(worker)
+      requester.writers.add(worker)
     messages.success(self.request, self.success_message)
     return self.render_to_response(self.get_context_data())
 

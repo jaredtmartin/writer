@@ -203,42 +203,39 @@ class ValidationModelMixin(object):
       #   # #   # #  ##   #   #   # #   #   #       #
        ###   ###  #   #   #   #   #  ###    #   #### 
 ################################################################################
-
 class Contact(models.Model):
-  # name = models.CharField(max_length=64)
   requester = models.ForeignKey(User, related_name='contacts_as_requester')
-  worker = models.ForeignKey(User, related_name='contacts_as_worker')
   user_asked = models.ForeignKey(User, related_name='contact_requests', blank=True)
-  position = models.IntegerField(choices=WORKING_POSITIONS)
   confirmation = models.NullBooleanField(default=None, blank=True)
   @property
-  def verb(self):
-    if self.position==WRITER_POSITION: return "write"
-    elif self.position==REVIEWER_POSITION: return "review"
-    else: return "works"
-  def __unicode__(self):
-    if self.confirmation:
-      return "%s %ss for %s" % (self.worker.full_name, self.verb, self.requester.full_name)
-    else:
-      if self.confirmation == None:
-        if self.user_asked==self.requester: 
-          return "%s requested to %s for %s" % (self.worker.full_name, self.verb, self.requester.full_name)
-        else:
-          return "%s requested %s to %s for him" % (self.requester.full_name, self.worker, self.verb)
-      else:
-        if self.user_asked==self.requester: 
-          return "%s was not accepted to %s for %s" % (self.worker.full_name, self.verb, self.requester.full_name)
-        else:
-          return "%s declined to %s for %s" % (self.worker.full_name, self.verb, self.requester.full_name)
+  def worker(self):
+    try: return self.writer
+    except: return self.reviewer
+  def __unicode__(self): 
+    if self.confirmation: return "%s %ss for %s" % (self.worker, self.verb, self.requester)
+    elif self.user_asked == self.requester: return "%s requested to %s for %s"% (self.worker, self.verb, self.requester)
+    elif self.user_asked == self.worker: return "%s requested %s to %s"% (self.requester, self.worker, self.verb)
 
+class Writer(Contact):
+  verb="write"
+  @property
+  def worker(self): return self.writer
+  writer = models.ForeignKey(User, related_name='contacts_as_writer')
+
+class Reviewer(Contact): 
+  @property
+  def worker(self): return self.reviewer
+  reviewer = models.ForeignKey(User, related_name='contacts_as_reviewer')
+  verb="review"
 
 class ContactGroup(models.Model):
   owner = models.ForeignKey(User)
   contacts = models.ManyToManyField(Contact)
   name = models.CharField(max_length=32)
-  position = models.IntegerField(choices=WORKING_POSITIONS)
+  # position = models.IntegerField(choices=WORKING_POSITIONS)
   def __unicode__(self): return self.name
-
+class WriterGroup(ContactGroup): pass
+class ReviewerGroup(ContactGroup): pass
 class ArticleAction(models.Model):
     class Meta:
         ordering = ["timestamp"]
@@ -316,6 +313,22 @@ User.in_reviewing_mode = property(user_in_reviewing_mode)
 def user_in_requester_mode(self):
     if self.mode == REQUESTER_MODE:return True
 User.in_requester_mode = property(user_in_requester_mode) 
+
+# class DahlBookManager(models.Manager):
+#     def get_query_set(self):
+#         return super(DahlBookManager, self).get_query_set().filter(author='Roald Dahl')
+
+# class UserManagerBase(models.Manager):
+#   mode = None
+#   def get_query_set(self):
+#     print "here!!!"
+#     return super(UserManagerBase, self).get_query_set().filter(contacts_as_writer__isnull=False)
+#     # qs = super(UserManagerBase, self).get_query_set()
+#     # return qs.filter(Q(contacts_as_writer__isnull=False)|Q(userprofile__mode=self.mode)).distinct()
+# class WriterUserManager(UserManagerBase): mode = WRITER_MODE
+# class ReviewerUserManager(UserManagerBase): mode = REVIEWER_MODE
+# User.writer_objects = WriterUserManager() 
+# User.reviewer_objects = ReviewerUserManager()
 # def get_status(me, contact):
 #     if not contact: return "No Contact"
 #     if not contact.confirmation:
@@ -379,12 +392,12 @@ class Article(ValidationModelMixin, models.Model):
     owner       = models.ForeignKey(User, related_name='articles_owned')
     writer      = models.ForeignKey(User, null=True, blank=True, related_name='articles_writing')
     reviewer    = models.ForeignKey(User, null=True, blank=True, related_name='articles_reviewing')
-    available_to_contacts = models.ManyToManyField(Contact, through='Availability')
+    # available_to_contacts = models.ManyToManyField(Contact, through='Availability')
     available_to_all_writers = models.BooleanField(default=False)
     available_to_all_my_writers = models.BooleanField(default=False)
     available_to_all_reviewers = models.BooleanField(default=False)
     available_to_all_my_reviewers = models.BooleanField(default=False)
-    available_to_groups = models.ManyToManyField(ContactGroup, through='Availability')
+    # available_to_groups = models.ManyToManyField(ContactGroup, through='Availability')
     last_action = models.ForeignKey(ArticleAction, null=True, blank=True, related_name='last_action_articles')
     published   = models.ForeignKey(ArticleAction, null=True, blank=True, related_name='published_articles')
     approved    = models.ForeignKey(ArticleAction, null=True, blank=True, related_name='approved_articles')
@@ -393,7 +406,10 @@ class Article(ValidationModelMixin, models.Model):
     rejected    = models.ForeignKey(ArticleAction, null=True, blank=True, related_name='rejected_articles')
     # released    = models.ForeignKey(ArticleAction, null=True, blank=True, related_name='released_articles')
     was_claimed = models.BooleanField(default=False)
-
+    writers = models.ManyToManyField(Writer)
+    reviewers = models.ManyToManyField(Reviewer)
+    writer_groups = models.ManyToManyField(WriterGroup)
+    reviewer_groups = models.ManyToManyField(ReviewerGroup)
     expires = models.DateTimeField(blank=True, null=True)
     deleted = models.BooleanField(default=False, blank=True)
     # released = models.BooleanField(default=False, blank=True)
@@ -476,10 +492,11 @@ class Article(ValidationModelMixin, models.Model):
         if not user.is_authenticated(): return []
         if user.mode == WRITER_MODE:
           if self.writer == user and not self.submitted: actions += [ACT_REMOVE_WRITER, ACT_SUBMIT]
-          if self.available_to_contacts.filter(position=user.mode, worker=user) or self.available_to_all_writers or (self.available_to_all_my_writers and self.owner.contacts_as_requester__worker=user and self.owner.contacts_as_requester__position=user.mode)
-          contact_names = [c.name for c in self.owner.writer_contacts.filter(worker=user)]
-          elif not self.writer and (self.writer_availability in contact_names or not self.writer_availability):
-            actions += [ACT_CLAIM_WRITER]
+          # The following is needed, but is not working:
+          # if self.available_to_contacts.filter(position=user.mode, worker=user) or self.available_to_all_writers or (self.available_to_all_my_writers and self.owner.contacts_as_requester__worker=user and self.owner.contacts_as_requester__position=user.mode)
+          # contact_names = [c.name for c in self.owner.writer_contacts.filter(worker=user)]
+          # elif not self.writer and (self.writer_availability in contact_names or not self.writer_availability):
+          #   actions += [ACT_CLAIM_WRITER]
         elif user.mode == REQUESTER_MODE and user==self.owner:
             if   status == STATUS_APPROVED:     actions.append(ACT_PUBLISH)
             elif status == STATUS_SUBMITTED:    actions += [ACT_REJECT, ACT_APPROVE]
@@ -552,8 +569,8 @@ class UserProfile(models.Model):
   def __unicode__(self): return self.user.username+"'s profile"
   project_filter_value = models.CharField(max_length=64, blank=True, default='')
   writer_filter_value = models.CharField(max_length=64, blank=True, default='')
-  writers = models.ManyToManyField(Contact, related_name = 'requesters_for_writing')
-  reviewers = models.ManyToManyField(Contact, related_name = 'requesters_for_writing')
+  # writers = models.ManyToManyField(Contact, related_name = 'requesters_for_writing')
+  # reviewers = models.ManyToManyField(Contact, related_name = 'requesters_for_writing')
   @property
   def is_requester(self):return self.mode == REQUESTER_MODE
   @property

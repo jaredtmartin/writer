@@ -164,7 +164,7 @@ class ModelFormWithUser(FormWithUserMixin, ModelForm):
 class ContactForm(FormWithUserMixin, ModelForm):
   class Meta:
     model = Contact
-    fields = ('requester','worker','position','user_asked')
+    fields = ('requester','user_asked')
   def clean(self):
     cleaned_data = self.cleaned_data
     # Figure out who is being asked and save with the object
@@ -202,7 +202,7 @@ class GroupMemberForm(Form):
 class NewGroupForm(ModelForm):
   class Meta:
     model = ContactGroup
-    fields=('name','position')
+    fields=('name',)
 class RenameGroupForm(ModelForm):
   class Meta:
     model = ContactGroup
