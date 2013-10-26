@@ -7,7 +7,6 @@
 {% block navbar %}
   <li><a href="{% url article_add %}">Add Article</a></li>
 {% endblock %}
-{% block header %}{% if article.pk %} Article: {{article.name}} {% else %} New Article {% endif %}{% endblock %}
 {% block content %}
   <div id="article">
     <form action="{{ article.get_absolute_url }}" method="post"> {% csrf_token %}

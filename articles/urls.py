@@ -30,11 +30,13 @@ urlpatterns = patterns('',
     url(r'^article/(?P<pk>\d+)/publish/$',      PublishArticle.as_view(),       name='publish_article'),
     url(r'^article/(?P<pk>\d+)/$',              UpdateArticle.as_view(),        name='article_update'),
     url(r'^keyword/new/$',                      AjaxKeywordInlineForm.as_view(),name='new_keyword'),
-
+    url(r'^tag/(?P<slug>[-\w]+)/show/$',        ShowTag.as_view(),              name='show_tag'),
 
     url(r'^projects/$',                         ProjectList.as_view(),          name='project_list'),
     url(r'^project/(?P<pk>\d+)/delete/$',       ProjectDelete.as_view(),        name='project_delete'),
     url(r'^project/add/$',                      ProjectCreate.as_view(),        name='new_project'),
+    url(r'^project/(?P<pk>\d+)/detail/$',       ProjectDetail.as_view(),        name='project_detail'),
+    
     
     url(r'^category/add/$',                     CategoryCreate.as_view(),        name='new_category'),
 

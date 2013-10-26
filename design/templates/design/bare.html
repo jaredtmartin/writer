@@ -24,7 +24,7 @@
     {% block head %}{% endblock head %}
   </head>
   <body>
-    {% include "design/header.html" %}
+    {% block header %}{% endblock header %}
     {% include "design/messages.html" %}
     <div class="waist">
       {% block base %}{% endblock base %}

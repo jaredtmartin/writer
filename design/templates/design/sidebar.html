@@ -2,7 +2,7 @@
 {% load url from future %}
 <ul class="nav nav-list">
   <li class="nav-header"><a href="{% url "article_add" %}" id="new-article-link" title="New Article">New Article</a></li>
-  <li class="nav-header"><a href="#">Dashboard</a></li>
+  <li class="nav-header"><a href="{% url "dashboard" %}">Dashboard</a></li>
   <li class="nav-header">Articles</li>
     {% for key, value in article_filter_counts.items %}
       {% if value.0 or value.1 %}

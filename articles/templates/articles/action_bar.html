@@ -1,17 +1,17 @@
 {% load assignment %} 
   {% if user.get_profile.is_requester %} 
     {# Reject #}
-    {% if header = "Submitted Articles" or header = "Approved Articles" %}
+    {% if heading = "Submitted Articles" or heading = "Approved Articles" %}
       <li id="reject-button" class="multiaction"><a onclick="window.article_id=undefined; $('#reject-modal').modal('show');return false;">Reject</a></li>
     {% endif %}
 
     {# Approve #}
-    {% if header = "Submitted Articles" or header = "Rejected Articles" %}
+    {% if heading = "Submitted Articles" or heading = "Rejected Articles" %}
       <li id="accept-button" class="multiaction"><a onclick="doActionOnArticles('{% url approve_articles %}');return false;">Approve</a></li>
     {% endif %}
 
     {# Publish #}
-    {% if header = "Approved Articles" %}
+    {% if heading = "Approved Articles" %}
       <li class="dropdown multiaction">
         <a data-toggle="dropdown" id="publish-dropdown" class="dropdown-toggle" href="#">Publish <b class="caret"></b></a>
         <ul class="dropdown-menu">
@@ -27,7 +27,7 @@
     {% endif %}
 
     {# Make Available for Writers #}
-    {% if header = "Available Articles" or header = "Unavailable Articles" %}
+    {% if heading = "Available Articles" or heading = "Unavailable Articles" %}
       <li class="dropdown multiaction">
         <a data-toggle="dropdown" id="writer-availablity-dropdown" class="dropdown-toggle" href="#">Available To <b class="caret"></b></a>
         <ul class="dropdown-menu">
@@ -45,7 +45,7 @@
 
 
     {# Make Available for Reviewers #}
-    {% if header = "Submitted Articles" %}
+    {% if heading = "Submitted Articles" %}
       <li class="dropdown multiaction">
         <a data-toggle="dropdown" id="reviewer-availablity-dropdown" class="dropdown-toggle" href="#">Available To <b class="caret"></b></a>
         <ul class="dropdown-menu">
@@ -62,7 +62,7 @@
     {% endif %}
 
     {# Assign #}
-    {% if header = "Available Articles" or header = "Unavailable Articles" or header = "Assigned Articles" %}
+    {% if heading = "Available Articles" or heading = "Unavailable Articles" or heading = "Assigned Articles" %}
       <li class="dropdown multiaction">
         <a data-toggle="dropdown" id="assign-writer-dropdown" class="dropdown-toggle" href="#">Assign To <b class="caret"></b></a>
         <ul class="dropdown-menu">
@@ -74,7 +74,7 @@
     {% endif %}
 
     {# Assign Reviewer #}
-    {% if header = "Submitted Articles" %}
+    {% if heading = "Submitted Articles" %}
       <li class="dropdown multiaction">
         <a data-toggle="dropdown" id="assign-reviewer-dropdown" class="dropdown-toggle" href="#">Assign Reviewer <b class="caret"></b></a>
         <ul class="dropdown-menu">
@@ -87,11 +87,11 @@
 
   {% elif user.get_profile.is_writer %}
     {# Claim #}
-    {% if header = "Available Articles" %}
+    {% if heading = "Available Articles" %}
       <li id="claim-button" class="multiaction"><a onclick="doActionOnArticles('{% url claim_as_writer %}');return false;">Claim</a></li>
     {% endif %}
     {# Release & Submit #}
-    {% if header = "My Articles" %}
+    {% if heading = "My Articles" %}
       <li id="submit-button" class="multiaction"><a onclick="doActionOnArticles('{% url submit_articles %}');return false;">Submit</a></li>
       <li id="claim-button" class="multiaction"><a onclick="doActionOnArticles('{% url release_as_writer %}');return false;">Release</a></li>
     {% endif %}

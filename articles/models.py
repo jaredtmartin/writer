@@ -195,7 +195,50 @@ class ValidationModelMixin(object):
     def set_validators_as_Str(self, s):
         self._validators = s
     validators_as_Str = property(get_validators_as_Str, set_validators_as_Str)
-    
+
+################################################################################
+       ###   ###  #   # #####   #    ###  #####  ####
+      #   # #   # ##  #   #    # #  #   #   #   #    
+      #     #   # # # #   #    ###  #       #    ### 
+      #   # #   # #  ##   #   #   # #   #   #       #
+       ###   ###  #   #   #   #   #  ###    #   #### 
+################################################################################
+
+class Contact(models.Model):
+  # name = models.CharField(max_length=64)
+  requester = models.ForeignKey(User, related_name='contacts_as_requester')
+  worker = models.ForeignKey(User, related_name='contacts_as_worker')
+  user_asked = models.ForeignKey(User, related_name='contact_requests', blank=True)
+  position = models.IntegerField(choices=WORKING_POSITIONS)
+  confirmation = models.NullBooleanField(default=None, blank=True)
+  @property
+  def verb(self):
+    if self.position==WRITER_POSITION: return "write"
+    elif self.position==REVIEWER_POSITION: return "review"
+    else: return "works"
+  def __unicode__(self):
+    if self.confirmation:
+      return "%s %ss for %s" % (self.worker.full_name, self.verb, self.requester.full_name)
+    else:
+      if self.confirmation == None:
+        if self.user_asked==self.requester: 
+          return "%s requested to %s for %s" % (self.worker.full_name, self.verb, self.requester.full_name)
+        else:
+          return "%s requested %s to %s for him" % (self.requester.full_name, self.worker, self.verb)
+      else:
+        if self.user_asked==self.requester: 
+          return "%s was not accepted to %s for %s" % (self.worker.full_name, self.verb, self.requester.full_name)
+        else:
+          return "%s declined to %s for %s" % (self.worker.full_name, self.verb, self.requester.full_name)
+
+
+class ContactGroup(models.Model):
+  owner = models.ForeignKey(User)
+  contacts = models.ManyToManyField(Contact)
+  name = models.CharField(max_length=32)
+  position = models.IntegerField(choices=WORKING_POSITIONS)
+  def __unicode__(self): return self.name
+
 class ArticleAction(models.Model):
     class Meta:
         ordering = ["timestamp"]
@@ -209,10 +252,25 @@ class ArticleAction(models.Model):
     comment = models.CharField(max_length=64, default="", blank=True)
     def __unicode__(self): 
         return self.get_code_display() + " by " + self.user.get_full_name()
+
+class Availability(models.Model):
+  contact = models.ForeignKey(Contact, null=True, blank=True)
+  group = models.ForeignKey(ContactGroup, null=True, blank=True)
+  article = models.ForeignKey('Article')
+  def __unicode__(self): 
+    positions={1:'write',2:'review'}
+    if self.contact: return "Available to %s to %s." % (self.contact.worker.full_name, positions[self.contact.position])
+    elif self.group: return "Available to %s group to %s." % (self.group.name, positions[self.group.position])
+
         
-#####################################################################################################
-#                                     User Properties                                               #
-#####################################################################################################
+################################################################################
+      #   #  #### ##### ####        ####  ####   ###  ####   ####
+      #   # #     #     #   #       #   # #   # #   # #   # #    
+      #   #  ###  ####  ####        ####  ####  #   # ####   ### 
+      #   #     # #     #   #       #     #   # #   # #         #
+       ###  ####  ##### #   #       #     #   #  ###  #     #### 
+################################################################################
+
 def user_full_name(self):
     return "%s %s" % (self.first_name,self.last_name)
 User.full_name = property(user_full_name)
@@ -277,42 +335,14 @@ def get_user_mode_display(self):
     return self.get_profile().get_mode_display()
 User.mode_display = property(get_user_mode_display)
 
-#####################################################################################################
-#                                     Contacts                                                      #
-#####################################################################################################
-class Contact(models.Model):
-    name = models.CharField(max_length=64)
-    requester = models.ForeignKey(User, related_name='contacts_as_requester')
-    worker = models.ForeignKey(User, related_name='contacts_as_worker')
-    user_asked = models.ForeignKey(User, related_name='contact_requests', blank=True)
-    position = models.IntegerField(choices=WORKING_POSITIONS)
-    confirmation = models.NullBooleanField(default=None, blank=True)
-    @property
-    def verb(self):
-        if self.position==WRITER_POSITION: return "write"
-        elif self.position==REVIEWER_POSITION: return "review"
-        else: return "works"
-    def __unicode__(self):
-        if self.confirmation:
-            if self.name == self.worker.full_name:
-                return "%s %ss for %s" % (self.worker.full_name, self.verb, self.requester.full_name)
-            else:
-                return "%s %ss for %s as %s" % (self.worker.full_name, self.verb, self.requester.full_name, self.name)
-        else:
-            if self.confirmation == None:
-                if self.user_asked==self.requester: 
-                    return "%s requested to %s for %s" % (self.worker.full_name, self.verb, self.requester.full_name)
-                else:
-                    return "%s requested %s to %s for him" % (self.requester.full_name, self.worker, self.verb)
-            else:
-                if self.user_asked==self.requester: 
-                    return "%s was not accepted to %s for %s" % (self.worker.full_name, self.verb, self.requester.full_name)
-                else:
-                    return "%s declined to %s for %s" % (self.worker.full_name, self.verb, self.requester.full_name)
+################################################################################
+        #   ####  ##### #####  ###  #     #####  ####
+       # #  #   #   #     #   #   # #     #     #    
+       ###  ####    #     #   #     #     ####   ### 
+      #   # #   #   #     #   #   # #     #         #
+      #   # #   #   #   #####  ###  ##### ##### #### 
+################################################################################
 
-#####################################################################################################
-#                                     Articles                                                      #
-#####################################################################################################
 class NotDeletedManager(models.Manager):
     def get_query_set(self):
         return super(NotDeletedManager, self).get_query_set().filter(deleted=False)
@@ -349,7 +379,12 @@ class Article(ValidationModelMixin, models.Model):
     owner       = models.ForeignKey(User, related_name='articles_owned')
     writer      = models.ForeignKey(User, null=True, blank=True, related_name='articles_writing')
     reviewer    = models.ForeignKey(User, null=True, blank=True, related_name='articles_reviewing')
-    
+    available_to_contacts = models.ManyToManyField(Contact, through='Availability')
+    available_to_all_writers = models.BooleanField(default=False)
+    available_to_all_my_writers = models.BooleanField(default=False)
+    availalble_to_all_reviewers = models.BooleanField(default=False)
+    availalble_to_all_my_reviewers = models.BooleanField(default=False)
+    available_to_groups = models.ManyToManyField(ContactGroup, through='Availability')
     last_action = models.ForeignKey(ArticleAction, null=True, blank=True, related_name='last_action_articles')
     published   = models.ForeignKey(ArticleAction, null=True, blank=True, related_name='published_articles')
     approved    = models.ForeignKey(ArticleAction, null=True, blank=True, related_name='approved_articles')
@@ -370,8 +405,8 @@ class Article(ValidationModelMixin, models.Model):
     price = models.CharField(max_length=128, blank=True, default="")
     language = models.CharField(max_length=7, choices=LANGUAGES, blank=True, default="en")
     style = models.CharField(max_length=128, blank=True, default="")
-    writer_availability = models.CharField(max_length=64, blank=True, default="Nobody")
-    reviewer_availability = models.CharField(max_length=64, blank=True, default="Nobody")
+    # writer_availability = models.CharField(max_length=64, blank=True, default="Nobody")
+    # reviewer_availability = models.CharField(max_length=64, blank=True, default="Nobody")
     objects = ArticleManager()
     all_objects = models.Manager()
     def get_assignment_status(self, assigned, availability):
@@ -529,11 +564,6 @@ def create_user_profile(sender, instance, created, **kwargs):
   if created: UserProfile.objects.create(user=instance, mode=WRITER_MODE)
 post_save.connect(create_user_profile, sender=User)
 
-class ContactGroup(models.Model):
-  owner = models.ForeignKey(User)
-  contacts = models.ManyToManyField(Contact)
-  name = models.CharField(max_length=32)
-  position = models.IntegerField(choices=WORKING_POSITIONS)
-  def __unicode__(self): return self.name
+
 
 

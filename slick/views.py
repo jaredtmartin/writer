@@ -1,6 +1,7 @@
 import vanilla
 from django.db.models import Q
 from django.contrib import messages
+from django.http import Http404
 
 class ExtraContextMixin(object):
   extra_context = {}
@@ -53,12 +54,22 @@ class NonModelFormMixin(object):
   def get_form(self, data=None, files=None, **kwargs):
     del kwargs['instance']
     return super(NonModelFormMixin, self).get_form(data=data, files=files, **kwargs)
+class CheckOwnerMixin(object):
+  owner_field_name = None
+  def get_queryset(self):
+    qs= super(CheckOwnerMixin, self).get_queryset()
+    if self.owner_field_name: qs = qs.filter(**{owner_field_name:self.request.user})
+    return qs
+  def get_object(self):
+    obj = super(CheckOwnerMixin, self).get_object()
+    if self.owner_field_name and not getattr(obj,self.owner_field_name)==self.request.user: return Http404
+    return obj
 class CreateView(ExtraContextMixin, MessageMixin, vanilla.CreateView): pass
-class DetailView(ExtraContextMixin, MessageMixin, vanilla.DetailView): pass
-class UpdateView(ExtraContextMixin, MessageMixin, vanilla.UpdateView): pass
-class DeleteView(ExtraContextMixin, vanilla.DeleteView): pass
+class DetailView(CheckOwnerMixin, ExtraContextMixin, MessageMixin, vanilla.DetailView): pass
+class UpdateView(CheckOwnerMixin, ExtraContextMixin, MessageMixin, vanilla.UpdateView): pass
+class DeleteView(CheckOwnerMixin, ExtraContextMixin, vanilla.DeleteView): pass
 class FormView(ExtraContextMixin, MessageMixin, vanilla.FormView): pass
-class GenericModelView(ExtraContextMixin, MessageMixin, vanilla.GenericModelView):pass
+class GenericModelView(CheckOwnerMixin, ExtraContextMixin, MessageMixin, vanilla.GenericModelView):pass
 class TemplateView(ExtraContextMixin, MessageMixin, vanilla.TemplateView):pass
 class GenericAjaxModelView(AjaxPostMixin, GenericModelView): pass
 #   def post(self, request, *args, **kwargs):

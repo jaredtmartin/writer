@@ -25,7 +25,7 @@
                 <tbody>
                     {% for project in object_list %}
                         <tr>
-                            <td><a href="{% url article_list %}?project={{project.name}}"> {{project.name}}</a></td>
+                            <td><a href="{% url project_detail project.pk %}"> {{project.name}}</a></td>
                             <td>{{project.owner.username}}</td>
                             <td>{{project.keywords}}</td>
                             <td align="right" style="text-align: right;">

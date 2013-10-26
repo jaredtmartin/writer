@@ -1,6 +1,7 @@
 from django.contrib import admin
 from articles.models import Article, ArticleType, ArticleAction, Keyword, Project, Contact, \
-UserProfile, PublishingOutlet, PublishingOutletConfiguration, ValidationPlugin, Category
+UserProfile, PublishingOutlet, PublishingOutletConfiguration, ValidationPlugin, Category,\
+Availability, ContactGroup
 from django.contrib import messages
 
 class KeywordInline(admin.TabularInline):
@@ -59,10 +60,10 @@ def reject_and_release(modeladmin, request, queryset):
 reject_and_release.short_description = "Reject and release selected articles"
 
 class ContactAdmin(admin.ModelAdmin):
-    list_display = ('name',  'requester','worker','user_asked','position', 'confirmation')
+    list_display = ('requester','worker','user_asked','position', 'confirmation')
 
 class ArticleAdmin(admin.ModelAdmin):
-    list_display = ('name','id','rejected','was_claimed','status','writer','reviewer','submitted','approved','writer_availability','reviewer_availability')
+    list_display = ('name','id','rejected','was_claimed','status','writer','reviewer','submitted','approved')
 #    list_filter = ('assigned','submitted','approved','published')
     list_filter=('project','minimum')
     search_fields = ['project']
@@ -71,9 +72,11 @@ class ArticleAdmin(admin.ModelAdmin):
     
 admin.site.register(Article, ArticleAdmin)
 admin.site.register(ArticleType)
+admin.site.register(Availability)
 admin.site.register(ArticleAction)
 admin.site.register(Project)
 admin.site.register(Category)
+admin.site.register(ContactGroup)
 admin.site.register(Contact, ContactAdmin)
 admin.site.register(UserProfile)
 admin.site.register(PublishingOutlet)
