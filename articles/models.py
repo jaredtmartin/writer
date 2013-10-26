@@ -382,8 +382,8 @@ class Article(ValidationModelMixin, models.Model):
     available_to_contacts = models.ManyToManyField(Contact, through='Availability')
     available_to_all_writers = models.BooleanField(default=False)
     available_to_all_my_writers = models.BooleanField(default=False)
-    availalble_to_all_reviewers = models.BooleanField(default=False)
-    availalble_to_all_my_reviewers = models.BooleanField(default=False)
+    available_to_all_reviewers = models.BooleanField(default=False)
+    available_to_all_my_reviewers = models.BooleanField(default=False)
     available_to_groups = models.ManyToManyField(ContactGroup, through='Availability')
     last_action = models.ForeignKey(ArticleAction, null=True, blank=True, related_name='last_action_articles')
     published   = models.ForeignKey(ArticleAction, null=True, blank=True, related_name='published_articles')
@@ -475,12 +475,11 @@ class Article(ValidationModelMixin, models.Model):
         actions=[]
         if not user.is_authenticated(): return []
         if user.mode == WRITER_MODE:
-            contact_names = [c.name for c in self.owner.writer_contacts.filter(worker=user)]
-            if self.writer == user and not self.submitted:
-                actions += [ACT_REMOVE_WRITER, ACT_SUBMIT]
-
-            elif not self.writer and (self.writer_availability in contact_names or not self.writer_availability):
-                actions += [ACT_CLAIM_WRITER]
+          if self.writer == user and not self.submitted: actions += [ACT_REMOVE_WRITER, ACT_SUBMIT]
+          if self.available_to_contacts.filter(position=user.mode, worker=user) or self.available_to_all_writers or (self.available_to_all_my_writers and self.owner.contacts_as_requester__worker=user and self.owner.contacts_as_requester__position=user.mode)
+          contact_names = [c.name for c in self.owner.writer_contacts.filter(worker=user)]
+          elif not self.writer and (self.writer_availability in contact_names or not self.writer_availability):
+            actions += [ACT_CLAIM_WRITER]
         elif user.mode == REQUESTER_MODE and user==self.owner:
             if   status == STATUS_APPROVED:     actions.append(ACT_PUBLISH)
             elif status == STATUS_SUBMITTED:    actions += [ACT_REJECT, ACT_APPROVE]
@@ -553,6 +552,8 @@ class UserProfile(models.Model):
   def __unicode__(self): return self.user.username+"'s profile"
   project_filter_value = models.CharField(max_length=64, blank=True, default='')
   writer_filter_value = models.CharField(max_length=64, blank=True, default='')
+  writers = models.ManyToManyField(Contact, related_name = 'requesters_for_writing')
+  reviewers = models.ManyToManyField(Contact, related_name = 'requesters_for_writing')
   @property
   def is_requester(self):return self.mode == REQUESTER_MODE
   @property

@@ -108,7 +108,8 @@ class FiltersMixin(object):
   def filter_available(self, qs, value=True):
     if self.request.user.mode == REQUESTER_MODE:
       return qs.filter(owner=self.request.user).filter(Q(available_to_contacts__position=WRITER_POSITION)|Q(available_to_groups__position=WRITER_POSITION)|Q(available_to_all_writers=True)|Q(available_to_all_my_writers=True)).exclude(writer__isnull=False)
-    else: return qs.filter(Q(available_to_contacts__worker=self.request.user, available_to_contacts__position=self.request.user.mode)|Q(available_to_groups__contacts__worker=self.request.user, available_to_groups__contacts__position=self.request.user.mode)|Q(available_to_all_writers=True)|Q(available_to_all_my_writers=True)).exclude(writer__isnull=False)
+    elif self.request.user.mode == WRITER_MODE: return qs.filter(Q(available_to_contacts__worker=self.request.user, available_to_contacts__position=self.request.user.mode)|Q(available_to_groups__contacts__worker=self.request.user, available_to_groups__contacts__position=self.request.user.mode)|Q(available_to_all_writers=True)|Q(available_to_all_my_writers=True, owner__contacts_as_requester__worker=self.request.user, owner__contacts_as_requester__position=WRITER_POSITION)).exclude(writer__isnull=False)
+    elif self.request.user.mode == REVIEWER_MODE: return qs.filter(Q(available_to_contacts__worker=self.request.user, available_to_contacts__position=self.request.user.mode)|Q(available_to_groups__contacts__worker=self.request.user, available_to_groups__contacts__position=self.request.user.mode)|Q(available_to_all_writers=True)|Q(available_to_all_my_writers=True, owner__contacts_as_requester__worker=self.request.user, owner__contacts_as_requester__position=REVIEWER_POSITION)).exclude(reviewer__isnull=False)
   def filter_claimed(self, qs, value=True):
     if self.request.user.mode==WRITER_MODE:
       return qs.filter(writer=self.request.user, was_claimed=True, status=STATUS_ASSIGNED)
@@ -492,109 +493,109 @@ class TagArticle(ArticleActionFormView):
 ################################################################################
 
 class ArticleActionsView(TemplateResponseMixin, View):
-    template_name = "articles/ajax_article_list_row.html"
-    model = Article
-    next_status = None
-    action_property_name=None
-    past_tense_action_verb=None
-    action_verb=None
-    action_form_class = None
-    pks=[]
-    def filter_by_owner(self, qs, user):
-        if not user.is_authenticated(): return qs.none()
-        if not self.request.user.is_staff: return qs.filter(owner_id=user.pk)
-        else: return qs
-    def filter_by_writer(self, qs, user):
-        if not user.is_authenticated(): return qs.none()
-        return qs.filter(writer_id=self.request.user.pk)
-    def filter_by_owner_or_writer(self, qs, user):
-        if not user.is_authenticated(): return qs.none()
-        if not self.request.user.is_staff: return qs.filter(Q(owner_id=self.request.user.pk)|Q(writer_id=self.request.user.pk))
-        else: return qs
-    def filter_by_owner_or_reviewer(self, qs, user):
-        if not user.is_authenticated(): return qs.none()
-        if not self.request.user.is_staff: return qs.filter(Q(owner_id=self.request.user.pk)|Q(reviewer_id=self.request.user.pk))
-        else: return qs
-    def filter_by_writer(self, qs, user):
-        if not user.is_authenticated(): return qs.none()
-        if not self.request.user.is_staff: return qs.filter(writer_id=user.pk)
-        else: return qs
-    def filter_by_owner_or_writer_or_reviewer(self, qs, user):
-        if not user.is_authenticated(): return qs.none()
-        if not self.request.user.is_staff: return qs.filter(writer_id=user.pk)
-        else: return qs
-    def get_action_property_name(self):
-        return self.action_property_name or self.action_verb+'ed'
-    def filter_action_queryset(self, qs):
-        return qs
-    def get_action_form_class(self):
-        return self.action_form_class
-    def get_requested_objects(self):
-        if not self.pks:
-            if 'select-across' in self.request.POST and self.request.POST['select-across'] == u'0':
-                # Building a empty queryset to load pickled data
-                qs = self.model.objects.all()#[:1]
-                qs.query = pickle.loads(self.request.session['serialized_qs'])
-            else:
-                # select a specific set of items
-                qs = self.model.objects.filter(pk__in=(self.request.POST.getlist('action-select')))
-            self.pks = list(qs.values_list('id', flat=True))
-        else: qs=Article.all_objects.filter(pk__in=self.pks)
-        return qs
+  template_name = "articles/ajax_article_list_row.html"
+  model = Article
+  next_status = None
+  action_property_name=None
+  past_tense_action_verb=None
+  action_verb=None
+  action_form_class = None
+  pks=[]
+  def filter_by_owner(self, qs, user):
+    if not user.is_authenticated(): return qs.none()
+    if not self.request.user.is_staff: return qs.filter(owner_id=user.pk)
+    else: return qs
+  def filter_by_writer(self, qs, user):
+    if not user.is_authenticated(): return qs.none()
+    return qs.filter(writer_id=self.request.user.pk)
+  def filter_by_owner_or_writer(self, qs, user):
+    if not user.is_authenticated(): return qs.none()
+    if not self.request.user.is_staff: return qs.filter(Q(owner_id=self.request.user.pk)|Q(writer_id=self.request.user.pk))
+    else: return qs
+  def filter_by_owner_or_reviewer(self, qs, user):
+    if not user.is_authenticated(): return qs.none()
+    if not self.request.user.is_staff: return qs.filter(Q(owner_id=self.request.user.pk)|Q(reviewer_id=self.request.user.pk))
+    else: return qs
+  def filter_by_writer(self, qs, user):
+    if not user.is_authenticated(): return qs.none()
+    if not self.request.user.is_staff: return qs.filter(writer_id=user.pk)
+    else: return qs
+  def filter_by_owner_or_writer_or_reviewer(self, qs, user):
+    if not user.is_authenticated(): return qs.none()
+    if not self.request.user.is_staff: return qs.filter(writer_id=user.pk)
+    else: return qs
+  def get_action_property_name(self):
+    return self.action_property_name or self.action_verb+'ed'
+  def filter_action_queryset(self, qs):
+    return qs
+  def get_action_form_class(self):
+    return self.action_form_class
+  def get_requested_objects(self):
+    if not self.pks:
+      if 'select-across' in self.request.POST and self.request.POST['select-across'] == u'0':
+        # Building a empty queryset to load pickled data
+        qs = self.model.objects.all()#[:1]
+        qs.query = pickle.loads(self.request.session['serialized_qs'])
+      else:
+        # select a specific set of items
+        qs = self.model.objects.filter(pk__in=(self.request.POST.getlist('action-select')))
+      self.pks = list(qs.values_list('id', flat=True))
+    else: qs=Article.all_objects.filter(pk__in=self.pks)
+    return qs
 
-    def get_action_queryset(self):
-        try:
-            if self.action_qs: return self.action_qs
-        except AttributeError: pass
-        qs = self.get_requested_objects()
-        self.initial_action_qty = len(qs)
-        if self.initial_action_qty:
-            qs=self.filter_action_queryset(qs)
-            self.final_qty = qs.count()
-            return qs
-        else:
-            self.final_qty = 0
-            return []
+  def get_action_queryset(self):
+    try:
+      if self.action_qs: return self.action_qs
+    except AttributeError: pass
+    qs = self.get_requested_objects()
+    self.initial_action_qty = len(qs)
+    if self.initial_action_qty:
+      qs=self.filter_action_queryset(qs)
+      self.final_qty = qs.count()
+      return qs
+    else:
+      self.final_qty = 0
+      return []
 
-    def create_action(self):pass
-    def update_status(self):
-        if self.next_status: self.action_qs.update(status=self.next_status)
-    def update_articles(self):
-        self.update_status()
-        if self.action:
-            self.action_qs.update(**{'last_action':self.action})
-            try:self.action_qs.update(**{self.get_action_property_name():self.action})
-            except :pass
-    def get_action_verb(self):
-        return self.action_verb
-    def get_past_tense_action_verb(self):
-        if self.past_tense_action_verb: return self.past_tense_action_verb
-        return str(self.get_action_verb())+'ed'
-    def send_result_messages(self):
-        if self.final_qty==0:
-            messages.error(self.request, 'The articles selected are not ready to be %s or are not yours to %s.' % (self.get_past_tense_action_verb(), self.get_action_verb()))
-        elif self.action_form and not self.action_form.is_valid():
-            messages.error(self.request, 'You did not select a valid value to complete this action.')
-        elif self.final_qty < self.initial_action_qty:
-            messages.warning(self.request, 'Only %i of the articles selected have been %s. Please verify the operation and that you have authority to make this change on the remaining articles.' % (self.final_qty, self.get_past_tense_action_verb()))
-        else: messages.success(self.request, 'All (%s) of the articles have been %s sucessfully' % (self.final_qty, self.get_past_tense_action_verb()))
-    def post(self, request, *args, **kwargs):
-        self.action_qs = self.get_action_queryset()
-        form_class=self.get_action_form_class()
-        if self.action_qs and self.final_qty > 0:
-            if form_class: self.action_form=form_class(self.request.POST)
-            else: self.action_form=None
-            if (not self.action_form) or self.action_form.is_valid():
-                self.action=self.create_action()
-                self.update_articles()
-                self.action_qs=self.get_requested_objects()
-        elif form_class: self.action_form=form_class()
-        self.send_result_messages()
-        context = self.get_context_data()
-        return self.render_to_response(context)
-    def get_context_data(self, **kwargs):
-        kwargs.update({'as_row':True,'object_list':self.action_qs})
-        return kwargs
+  def create_action(self):pass
+  def update_status(self):
+    if self.next_status: self.action_qs.update(status=self.next_status)
+  def update_articles(self):
+    self.update_status()
+    if self.action:
+      self.action_qs.update(**{'last_action':self.action})
+      try:self.action_qs.update(**{self.get_action_property_name():self.action})
+      except :pass
+  def get_action_verb(self):
+    return self.action_verb
+  def get_past_tense_action_verb(self):
+    if self.past_tense_action_verb: return self.past_tense_action_verb
+    return str(self.get_action_verb())+'ed'
+  def send_result_messages(self):
+    if self.final_qty==0:
+      messages.error(self.request, 'The articles selected are not ready to be %s or are not yours to %s.' % (self.get_past_tense_action_verb(), self.get_action_verb()))
+    elif self.action_form and not self.action_form.is_valid():
+      messages.error(self.request, 'You did not select a valid value to complete this action.')
+    elif self.final_qty < self.initial_action_qty:
+      messages.warning(self.request, 'Only %i of the articles selected have been %s. Please verify the operation and that you have authority to make this change on the remaining articles.' % (self.final_qty, self.get_past_tense_action_verb()))
+    else: messages.success(self.request, 'All (%s) of the articles have been %s sucessfully' % (self.final_qty, self.get_past_tense_action_verb()))
+  def post(self, request, *args, **kwargs):
+    self.action_qs = self.get_action_queryset()
+    form_class=self.get_action_form_class()
+    if self.action_qs and self.final_qty > 0:
+      if form_class: self.action_form=form_class(self.request.POST)
+      else: self.action_form=None
+      if (not self.action_form) or self.action_form.is_valid():
+        self.action=self.create_action()
+        self.update_articles()
+        self.action_qs=self.get_requested_objects()
+    elif form_class: self.action_form=form_class()
+    self.send_result_messages()
+    context = self.get_context_data()
+    return self.render_to_response(context)
+  def get_context_data(self, **kwargs):
+    kwargs.update({'as_row':True,'object_list':self.action_qs})
+    return kwargs
 
 ############################### Reject Actions ####################################
 
@@ -761,29 +762,42 @@ class MakeAvailable(ArticleActionsView):
 class MakeAvailableTo(MakeAvailable):
     action_form_class = ContactForm
 
-class MakeAvailableToAllWriters(MakeAvailable):
-    next_status = STATUS_RELEASED
-    def update_articles(self):
-        super(MakeAvailableToAllWriters, self).update_articles()
-        self.action_qs.update(writer_availability="")
-        self.action_qs.update(writer=None, was_claimed=False)
 class MakeAvailableToWriter(MakeAvailableTo):
     next_status = STATUS_RELEASED
     def update_articles(self):
         super(MakeAvailableToWriter, self).update_articles()
-        self.action_qs.update(writer_availability=self.action_form.cleaned_data['name'])
-        self.action_qs.update(writer=None, was_claimed=False)
+        for article in action_qs:
+          Availability.objects.create(article=article, contact=self.action_form.cleaned_data['contact'])
+        self.action_qs.update(writer=None, was_claimed=False, available_to_all_my_writers=False, available_to_all_writers=False)
+
+class MakeAvailableToAllMyWriters(MakeAvailable):
+    next_status = STATUS_RELEASED
+    def update_articles(self):
+        super(MakeAvailableToAllMyWriters, self).update_articles()
+        self.action_qs.update(available_to_all_my_writers=True, available_to_all_writers=False, writer=None, was_claimed=False)
+
+class MakeAvailableToAllWriters(MakeAvailable):
+    next_status = STATUS_RELEASED
+    def update_articles(self):
+        super(MakeAvailableToAllWriters, self).update_articles()
+        self.action_qs.update(available_to_all_writers=True, writer=None, was_claimed=False)
 
 class MakeAvailableToReviewer(MakeAvailableTo):
     def update_articles(self):
         super(MakeAvailableToReviewer, self).update_articles()
-        self.action_qs.update(reviewer_availability=self.action_form.cleaned_data['name'])
-        self.action_qs.update(reviewer=None, was_claimed=False)
+        for article in action_qs:
+          Availability.objects.create(article=article, contact=self.action_form.cleaned_data['contact'])
+        self.action_qs.update(reviewer=None, was_claimed=False, available_to_all_my_reviewers=False, available_to_all_reviewers=False)
+
+class MakeAvailableToAllMyReviewers(MakeAvailable):
+    def update_articles(self):
+        super(MakeAvailableToAllMyReviewers, self).update_articles()
+        self.action_qs.update(available_to_all_my_reviewers=True, available_to_all_reviewers=False, reviewer=None, was_claimed=False)
+
 class MakeAvailableToAllReviewers(MakeAvailable):
     def update_articles(self):
         super(MakeAvailableToAllReviewers, self).update_articles()
-        self.action_qs.update(reviewer_availability="")
-        self.action_qs.update(reviewer=None, was_claimed=False)
+        self.action_qs.update(available_to_all_reviewers=True, reviewer=None, was_claimed=False)
 ############################### Unavailable Actions ##################################
 class MakeUnavailable(ArticleActionsView):
     action_verb="make unavailable"
@@ -795,12 +809,15 @@ class MakeUnavailableToWriters(MakeUnavailable):
     def update_articles(self):
         super(MakeUnavailableToWriters, self).update_articles()
         self.action_qs.update(writer_availability="Nobody")
-        self.action_qs.update(writer=None, was_claimed=False)
+        for article in self.action_qs: 
+          Availability.objects.filter(article=article, contact__position=WRITER_POSITION).delete()
+        self.action_qs.update(writer=None, was_claimed=False, available_to_all_my_writers=False, available_to_all_writers=False)
 class MakeUnavailableToReviewers(MakeUnavailable):
     def update_articles(self):
         super(MakeUnavailableToReviewers, self).update_articles()
-        self.action_qs.update(reviewer_availability="Nobody")
-        self.action_qs.update(reviewer=None, was_claimed=False)
+        for article in self.action_qs: 
+          Availability.objects.filter(article=article, contact__position=WRITER_POSITION).delete()
+        self.action_qs.update(reviewer=None, was_claimed=False, available_to_all_my_reviewers=False, available_to_all_reviewers=False)
 ############################### Assign Actions ##################################
 class Assign(ArticleActionsView):
     action_form_class = AssignToForm
