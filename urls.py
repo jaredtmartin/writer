@@ -37,4 +37,4 @@ if settings.DEBUG:
         (r'^media/(?P<path>.*)$', 'django.views.static.serve', {
         'document_root': settings.MEDIA_ROOT}))
 
-handler500 = 'articles.views.test500'
+# handler500 = 'articles.views.test500'

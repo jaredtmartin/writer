@@ -1,4 +1,0 @@
-{% load url from future %}
-<li{% if header = key %} class="active"{% endif %}>
-  <a href="{% url key|lower %}">{{key}}<span class="badge pull-right">{{value.0}}</span></a>
-</li>

@@ -74,8 +74,8 @@ p.lead {
   position: relative;
   left: 20px;
 }
-li.logo-space {
-  width: 235px;
+div.logo-space {
+  width: 230px;
 }
 /* The following lines were copied from flat-ui but modified to apply to navbar-search instead of form-search */
 .navbar-search button#search-button {

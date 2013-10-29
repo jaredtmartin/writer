@@ -52,12 +52,10 @@ def show_user_actions(context):
 	try:
 		status = context['status'] or 'all'
 	except: status = 'all'
-	print "status = %s" % str(status)
 	if status == 'mine' or status == 'unconfirmed': actions = ['remove_user']
 	elif status == 'other': actions = ['hire_user']
 	elif status == 'requested': actions = ['accept_user','reject_user']
 	else: 
-		print "status = %s" % str(status)
 		r = get_contact(user_group, me, user)
 		if user_group == 'Requester':
 			if me.mode == WRITER_MODE:

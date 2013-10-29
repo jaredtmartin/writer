@@ -141,6 +141,18 @@ class ModelChoiceFieldTitleLabels(ModelChoiceField):
     def label_from_instance(self, obj):
         return smart_unicode(obj).title()
     
+class WriterChoiceForm(Form):
+  writer = ModelChoiceField(queryset=Writer.objects.all())
+
+class WriterGroupChoiceForm(Form):
+  group = ModelChoiceField(queryset=WriterGroup.objects.all())
+
+class ReviewerChoiceForm(Form):
+  reviewer = ModelChoiceField(queryset=Reviewer.objects.all())
+
+class ReviewerGroupChoiceForm(Form):
+  group = ModelChoiceField(queryset=ReviewerGroup.objects.all())
+
 class AssignToForm(Form):
 #    assign_to_user = ModelChoiceFieldWithFlexibleChoiceLabels(queryset=User.objects.all(), pre_label="Assign to ")
     user = ModelChoiceFieldTitleLabels(queryset=User.objects.all(), empty_label="Assign select articles to:")
@@ -161,19 +173,42 @@ class ModelFormWithUser(FormWithUserMixin, ModelForm):
         if commit: model.save()
         return model
 
+# class ContactForm(FormWithUserMixin, ModelForm):
+#   class Meta:
+#     model = Contact
+#     fields = ('requester','user_asked')
+#   def clean(self):
+#     cleaned_data = self.cleaned_data
+#     # Figure out who is being asked and save with the object
+#     if cleaned_data['requester'] == self.user:
+#       cleaned_data['user_asked'] = cleaned_data['worker']
+#     else:
+#       cleaned_data['user_asked'] = cleaned_data['requester']
+#     # Always return the full collection of cleaned data.
+#     return cleaned_data
 class ContactForm(FormWithUserMixin, ModelForm):
-  class Meta:
-    model = Contact
-    fields = ('requester','user_asked')
+  worker_label =None
   def clean(self):
     cleaned_data = self.cleaned_data
     # Figure out who is being asked and save with the object
     if cleaned_data['requester'] == self.user:
-      cleaned_data['user_asked'] = cleaned_data['worker']
-    else:
+      cleaned_data['user_asked'] = cleaned_data[self.worker_label]
+    elif cleaned_data[self.worker_label] == self.user:
       cleaned_data['user_asked'] = cleaned_data['requester']
     # Always return the full collection of cleaned data.
     return cleaned_data
+
+class WriterForm(ContactForm):
+  worker_label ='writer'
+  class Meta:
+    model = Writer
+    fields = ('requester', 'writer', 'user_asked')
+
+class ReviewerForm(ContactForm):
+  worker_label ='reviewer'
+  class Meta:
+    model = Reviewer
+    fields = ('requester', 'reviewer', 'user_asked')
 
 # class ConfirmContactForm(ModelForm):
 #     class Meta:

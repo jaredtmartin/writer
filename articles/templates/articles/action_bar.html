@@ -31,14 +31,21 @@
       <li class="dropdown multiaction">
         <a data-toggle="dropdown" id="writer-availablity-dropdown" class="dropdown-toggle" href="#">Available To <b class="caret"></b></a>
         <ul class="dropdown-menu">
-          <li><a id="available-option" onclick="make_available('writer');return false;">Everybody</a></li>
-          <li><a id="unavailable-option" onclick="make_unavailable('writer');return false;">Nobody</a></li>
-          {% if writer_availability_list %}
+          {% for writer in user.writers.all %}
+            <li><a id="writer-available-to-option-{{writer.pk}}" onclick="make_available_to('writer','{{writer.pk}}');return false;">{{writer.writer.full_name}}</a></li>
+          {% endfor %}
+          {% if user.writers %}
             <li class="divider"></li>
           {% endif %}
-          {% for contact in writer_availability_list %}
-            <li><a id="writer-available-to-option-{{contact.pk}}" onclick="make_available_to('writer','{{contact}}');return false;">{{contact}}</a></li>
+          {% for group in user.writer_groups.all %}
+            <li><a id="available-to-writer-group-option-{{group.pk}}" onclick="make_available_to_group('writer','{{group.pk}}');return false;">{{group.name}}</a></li>
           {% endfor %}
+          {% if user.writer_groups %}
+            <li class="divider"></li>
+          {% endif %}
+          <li><a id="available-option" onclick="make_available('writer');return false;">All Writers</a></li>
+          <li><a id="available-option" onclick="make_available_to_mine('writer');return false;">All My Writers</a></li>
+          <li><a id="unavailable-option" onclick="make_unavailable('writer');return false;">Nobody</a></li>
         </ul>
       </li>
     {% endif %}
@@ -50,24 +57,25 @@
         <a data-toggle="dropdown" id="reviewer-availablity-dropdown" class="dropdown-toggle" href="#">Available To <b class="caret"></b></a>
         <ul class="dropdown-menu">
           <li><a id="available-option" onclick="make_available('reviewer');return false;">All Reviewers</a></li>
+          <li><a id="available-option" onclick="make_available_to_mine('reviewer');return false;">All My Reviewers</a></li>
           <li><a id="unavailable-option" onclick="make_unavailable('reviewer');return false;">Nobody</a></li>
           {% if reviewer_availability_list %}
             <li class="divider"></li>
           {% endif %}
-          {% for contact in reviewer_availability_list %}
-            <li><a id="reviewer-available-to-option-{{contact.pk}}" onclick="make_available_to('reviewer','{{contact}}');return false;">{{contact}}</a></li>
+          {% for reviewer in reviewer_availability_list %}
+            <li><a id="reviewer-available-to-option-{{reviewer.pk}}" onclick="make_available_to('reviewer','{{reviewer.pk}}');return false;">{{reviewer.reviewer.full_name}}</a></li>
           {% endfor %}
         </ul>
       </li>
     {% endif %}
 
     {# Assign #}
-    {% if heading = "Available Articles" or heading = "Unavailable Articles" or heading = "Assigned Articles" %}
+    {% if heading = "Available Articles" or heading = "Unavailable Articles" or heading = "Assigned Articles" or heading = "Claimed Articles" %}
       <li class="dropdown multiaction">
         <a data-toggle="dropdown" id="assign-writer-dropdown" class="dropdown-toggle" href="#">Assign To <b class="caret"></b></a>
         <ul class="dropdown-menu">
-        {% for user in writer_assignment_list %}
-          <li><a id="assign-writer-option-{{user.pk}}" onclick="assign_user('writer',{{user.pk}},'{{user.full_name}}');return false;">{{user.full_name}}</a></li>
+        {% for writer in user.writers.all %}
+          <li><a id="assign-writer-option-{{writer.pk}}" onclick="assign_user('writer',{{writer.pk}},'{{writer.full_name}}');return false;">{{writer.writer.full_name}}</a></li>
         {% endfor %}
         </ul>
       </li>
@@ -78,8 +86,8 @@
       <li class="dropdown multiaction">
         <a data-toggle="dropdown" id="assign-reviewer-dropdown" class="dropdown-toggle" href="#">Assign Reviewer <b class="caret"></b></a>
         <ul class="dropdown-menu">
-        {% for user in reviewer_assignment_list %}
-          <li><a id="assign-reviewer-option-{{user.pk}}" onclick="assign_user('reviewer',{{user.pk}},'{{user.full_name}}');return false;">{{user.full_name}}</a></li>
+        {% for reviewer in user.reviewers.all %}
+          <li><a id="assign-reviewer-option-{{reviewer.pk}}" onclick="assign_user('reviewer',{{reviewer.pk}},'{{reviewer.full_name}}');return false;">{{reviewer.reviewer.full_name}}</a></li>
         {% endfor %}
         </ul>
       </li>
@@ -91,7 +99,7 @@
       <li id="claim-button" class="multiaction"><a onclick="doActionOnArticles('{% url claim_as_writer %}');return false;">Claim</a></li>
     {% endif %}
     {# Release & Submit #}
-    {% if heading = "My Articles" %}
+    {% if heading = "Claimed Articles" or heading = "Assigned Articles" or heading = "Rejected Articles" %}
       <li id="submit-button" class="multiaction"><a onclick="doActionOnArticles('{% url submit_articles %}');return false;">Submit</a></li>
       <li id="claim-button" class="multiaction"><a onclick="doActionOnArticles('{% url release_as_writer %}');return false;">Release</a></li>
     {% endif %}

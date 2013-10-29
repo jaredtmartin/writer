@@ -2,8 +2,11 @@
   <td>{{object.full_name}}</td>
   <td>
     <div class="btn-group">
-      <button class="btn btn-sm btn-primary" 
-        onclick="doActionOnUser('{% url create_contact object.id %}', 'requester={{user.id}}&worker={{object.id}}&position={{position}}');">
+        {% if position = 1 %}
+          <button class="btn btn-sm btn-primary" onclick="doActionOnUser('{% url create_writer %}', 'requester={{user.id}}&writer={{object.id}}');">
+        {% elif position = 2 %}
+          <button class="btn btn-sm btn-primary" onclick="doActionOnUser('{% url create_reviewer %}', 'requester={{user.id}}&reviewer={{object.id}}');">
+        {% endif %}
         Hire</button>
     </div>
   </td>

@@ -4,5 +4,9 @@
 		{
 			"path": "/Users/jaredmartin/Programs/writeraxis/writeraxis"
 		}
-	]
+	],
+  "settings":
+  {
+      "tab_size": 2
+  }
 }

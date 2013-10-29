@@ -3,22 +3,15 @@
 <ul class="nav nav-list">
   <li class="nav-header"><a href="{% url "article_add" %}" id="new-article-link" title="New Article">New Article</a></li>
   <li class="nav-header"><a href="{% url "dashboard" %}">Dashboard</a></li>
-  <li class="nav-header">Articles</li>
-    {% for key, value in article_filter_counts.items %}
-      {% if value.0 or value.1 %}
-        {% include "articles/sidebar_filter_list_item.html" %}
-      {% endif %}
-    {% endfor %}
-  <li class="nav-header">Writers</li>
-    {% for key, value in writer_filter_counts.items %}
-      {% if value.0 or value.1 %}
-        {% include "articles/sidebar_filter_list_item.html" %}
-      {% endif %}
-    {% endfor %}
-  <li class="nav-header">Reviewers</li>
-    {% for key, value in reviewer_filter_counts.items %}
-      {% if value.0 or value.1 %}
-        {% include "articles/sidebar_filter_list_item.html" %}
-      {% endif %}
-    {% endfor %}
+  {% for section_label, section in sidebar_links %}
+    <li class="nav-header">{{section_label}}</li>
+      {% for label, count, always_show in section %}
+        {% if count or always_show %}
+          <li{% if header = label %} class="active"{% endif %}>
+            <a href="{% url label|lower %}">{{label}}<span class="badge pull-right">{{count}}</span></a>
+          </li>
+        {% endif %}
+      {% endfor %}
+    </li>
+  {% endfor %}
 </ul>

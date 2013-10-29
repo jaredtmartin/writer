@@ -26,7 +26,7 @@
             <th class="column-header category-column">Category</th>
             <th class="column-header length-column">Length</th>
             <th class="column-header priority-column">Priority</th>
-            <th class="column-header tags-column">Tags</th>       
+            <th class="column-header tags-column">Tags</th>
             <th></th>
           </tr>
         </thead>
@@ -52,21 +52,25 @@
       <a href="#" class="btn btn-primary" onclick="$('#tag-modal').modal('hide');">Cancel</a>
     </div>
   </div>
-  <div id="reject-modal" class="modal hide fade">
-    <div class="modal-header">
-      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-      <h3>Reject Article</h3>
-    </div>
-    <div class="modal-body">
-      <p>Please provide a brief explanation for rejecting the article.</p>
-      <input id="reject_input">
-      <p><input type="checkbox" name="return_to_writer" id="id_return_to_writer" /> Return the article to the writer? Otherwise the content will be erased and the article will be made available to other writers.</p>
-      
-    </div>
-    <div class="modal-footer">
-      <a href="#" class="btn btn-primary" onclick="rejectArticle('{% url reject_articles%}', window.article_id);return false;">Save</a>
-      <a href="#" class="btn btn-primary" onclick="$('#reject-modal').modal('hide');">Cancel</a>
-    </div>
+  <div id="reject-modal" class="modal fade">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h3>Reject Article</h3>
+        </div>
+        <div class="modal-body">
+          <p>Please provide a brief explanation for rejecting the article.</p>
+          <input id="reject_input">
+          <p><input type="checkbox" name="return_to_writer" id="id_return_to_writer" /> Return the article to the writer? Otherwise the content will be erased and the article will be made available to other writers.</p>
+          
+        </div>
+        <div class="modal-footer">
+          <a href="#" class="btn btn-primary" onclick="rejectArticle('{% url reject_articles%}', window.article_id);return false;">Save</a>
+          <a href="#" class="btn btn-primary" onclick="$('#reject-modal').modal('hide');">Cancel</a>
+        </div>
+      </div>
+    </div>  
   </div>
   <div id="delete-modal" class="modal hide fade">
     <div class="modal-header">
@@ -209,23 +213,36 @@
         doActionOnArticles('{% url make_available_to_all_reviewers %}');
       }
     }
-    function make_available_to(assignment, name){
+    function make_available_to_mine(assignment, id){
       if (assignment=="writer"){
-        doActionOnArticles('{% url make_available_to_writer %}', undefined, "&name="+name);
+        doActionOnArticles('{% url make_available_to_all_my_writers %}', undefined);
       }else{
-        doActionOnArticles('{% url make_available_to_reviewer %}', undefined, "&name="+name);
+        doActionOnArticles('{% url make_available_to_all_my_reviewers %}', undefined);
+      }
+    }
+    function make_available_to(assignment, id){
+      if (assignment=="writer"){
+        doActionOnArticles('{% url make_available_to_writer %}', undefined, "&writer="+id);
+      }else{
+        doActionOnArticles('{% url make_available_to_reviewer %}', undefined, "&reviewer="+id);
+      }
+    }
+    function make_available_to_group(assignment, id){
+      if (assignment=="writer"){
+        doActionOnArticles('{% url make_available_to_writer_group %}', undefined, "&group="+id);
+      }else{
+        doActionOnArticles('{% url make_available_to_reviewer_group %}', undefined, "&group="+id);
       }
     }
     function assign_user(assignment, id, name){
       if (assignment=="writer"){
-        doActionOnArticles('{% url assign_to_writer %}', undefined, "&user="+id);
+        doActionOnArticles('{% url assign_to_writer %}', undefined, "&"+assignment+"="+id);
       }else{
-        doActionOnArticles('{% url assign_to_reviewer %}', undefined, "&user="+id);
+        doActionOnArticles('{% url assign_to_reviewer %}', undefined, "&"+assignment+"="+id);
       }
-        
     }
     function publish_articles(id){
-        doActionOnArticles('{% url publish %}', undefined, "&outlet="+id);
+      doActionOnArticles('{% url publish %}', undefined, "&outlet="+id);
     }
   </script>
 {% endblock js %}

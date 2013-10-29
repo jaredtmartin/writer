@@ -2,6 +2,14 @@ import vanilla
 from django.db.models import Q
 from django.contrib import messages
 from django.http import Http404
+# For LoginRequiredMixin
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
+class LoginRequiredMixin(object):
+  u"""Ensures that user must be authenticated in order to access view."""
+  @method_decorator(login_required)
+  def dispatch(self, *args, **kwargs):
+    return super(LoginRequiredMixin, self).dispatch(*args, **kwargs)
 
 class ExtraContextMixin(object):
   extra_context = {}
@@ -12,19 +20,22 @@ class ExtraContextMixin(object):
     return bases
   def get_context_data(self, **kwargs):
     # Get the bases and remove duplicates
-    bases = list(set(self.collect_bases(self.__class__)))
+    bases = self.collect_bases(self.__class__)
+    # for b in bases: print b
+    bases.reverse()
+    # print "======= Printing Bases ========"
     for base in bases:
       if hasattr(base, 'extra_context'):
         for key, value in base.extra_context.items():
-          if key=="writer_filter_counts":
-            print "I'm here"
-            print "hasattr(self, value) = %s" % str(hasattr(self, value))
-            print "callable(getattr(self, value)) = %s" % str(callable(getattr(self, value)))
-          # First try to run it to see if it's the name of a function
-          try: kwargs[key] = getattr(self,value)()
+          # print "key: %s value: %s" % (key, value)
+          # First check to see if it's the name of a function
+          if isinstance(value, basestring) and value[:4] == "get_": kwargs[key] = getattr(self,value)()
           # Otherwise, just add it to the context
-          except (AttributeError, TypeError): kwargs[key] = value
-    for key, value in kwargs.items(): print key+":"+str(value)
+          else: kwargs[key] = value
+        # print "Base: %s Template: %s" % (base, kwargs.get('row_template_name',""))
+        # for k,v in kwargs.items(): print "%s: %s" % (k,v)
+    # print "==============================="
+    # for key, value in kwargs.items(): print key+":"+str(value)
     return super(ExtraContextMixin, self).get_context_data(**kwargs)
 
 class MessageMixin(object):
@@ -50,6 +61,13 @@ class AjaxPostMixin(object):
     self.object = form.save()
     context = self.get_context_data(form=form)
     return self.render_to_response(context)
+
+class FormWithUserMixin(object):
+  def get_form(self, data=None, files=None, **kwargs):
+    cls = self.get_form_class()
+    kwargs['user'] = self.request.user
+    return cls(data=data, files=files, **kwargs)
+
 class NonModelFormMixin(object):
   def get_form(self, data=None, files=None, **kwargs):
     del kwargs['instance']

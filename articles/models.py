@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AnonymousUser
 from django.db.models.signals import post_save
 from django.contrib import messages
 from django.db.models import Q
@@ -204,38 +204,39 @@ class ValidationModelMixin(object):
        ###   ###  #   #   #   #   #  ###    #   #### 
 ################################################################################
 class Contact(models.Model):
-  requester = models.ForeignKey(User, related_name='contacts_as_requester')
   user_asked = models.ForeignKey(User, related_name='contact_requests', blank=True)
   confirmation = models.NullBooleanField(default=None, blank=True)
-  @property
-  def worker(self):
-    try: return self.writer
-    except: return self.reviewer
-  def __unicode__(self): 
-    if self.confirmation: return "%s %ss for %s" % (self.worker, self.verb, self.requester)
-    elif self.user_asked == self.requester: return "%s requested to %s for %s"% (self.worker, self.verb, self.requester)
-    elif self.user_asked == self.worker: return "%s requested %s to %s"% (self.requester, self.worker, self.verb)
 
 class Writer(Contact):
-  verb="write"
   @property
   def worker(self): return self.writer
+  requester = models.ForeignKey(User, related_name='writers')
   writer = models.ForeignKey(User, related_name='contacts_as_writer')
+  def __unicode__(self): 
+    if self.confirmation: return "%s writes for %s" % (self.writer, self.requester)
+    elif self.user_asked == self.requester: return "%s requested to write for %s"% (self.writer, self.requester)
+    elif self.user_asked == self.writer: return "%s requested %s to write"% (self.requester, self.writer)
+
 
 class Reviewer(Contact): 
   @property
   def worker(self): return self.reviewer
+  requester = models.ForeignKey(User, related_name='reviewers')
   reviewer = models.ForeignKey(User, related_name='contacts_as_reviewer')
-  verb="review"
+  def __unicode__(self): 
+    if self.confirmation: return "%s reviews for %s" % (self.reviewer, self.requester)
+    elif self.user_asked == self.requester: return "%s requested to review for %s"% (self.reviewer, self.requester)
+    elif self.user_asked == self.reviewer: return "%s requested %s to review"% (self.requester, self.reviewer)
 
 class ContactGroup(models.Model):
-  owner = models.ForeignKey(User)
   contacts = models.ManyToManyField(Contact)
   name = models.CharField(max_length=32)
   # position = models.IntegerField(choices=WORKING_POSITIONS)
   def __unicode__(self): return self.name
-class WriterGroup(ContactGroup): pass
-class ReviewerGroup(ContactGroup): pass
+class WriterGroup(ContactGroup):
+  owner = models.ForeignKey(User, related_name='writer_groups')
+class ReviewerGroup(ContactGroup): 
+  owner = models.ForeignKey(User, related_name='reviewer_groups')
 class ArticleAction(models.Model):
     class Meta:
         ordering = ["timestamp"]
@@ -271,33 +272,37 @@ class Availability(models.Model):
 def user_full_name(self):
     return "%s %s" % (self.first_name,self.last_name)
 User.full_name = property(user_full_name)
-def user_writers(self):
-    return User.objects.filter(contacts_as_worker__position=WRITER_POSITION, contacts_as_worker__requester=self, contacts_as_worker__confirmation=True).distinct()
-User.writers = property(user_writers)
-def user_writer_contacts(self):
-    return self.contacts_as_requester.filter(confirmation=True, position=WRITER_POSITION)
-User.writer_contacts = property(user_writer_contacts)
-def user_reviewers(self):
-    return User.objects.filter(contacts_as_worker__position=REVIEWER_POSITION, contacts_as_worker__requester=self, contacts_as_worker__confirmation=True).distinct()
-User.reviewers = property(user_reviewers)
-def user_requester_contacts(self):
-    return self.contacts_as_worker.filter(confirmation=True)
-User.requester_contacts = property(user_requester_contacts)
-def user_writes_for(self):
-    return self.contacts_as_worker.filter(confirmation=True, position=WRITER_POSITION)
-User.writes_for = property(user_writes_for)
-def user_reviews_for(self):
-    return self.contacts_as_worker.filter(confirmation=True, position=REVIEWER_POSITION)
-User.reviews_for = property(user_reviews_for)
-def user_reviewer_contacts(self):
-    return self.contacts_as_requester.filter(confirmation=True, position=REVIEWER_POSITION)
-User.reviewer_contacts = property(user_reviewer_contacts)
-def user_writing_contacts(self):
-    return list(set([c.name for c in self.contacts_as_worker.filter(position=WRITER_POSITION)]))
-User.writing_contacts = property(user_writing_contacts)
-def user_reviewing_contacts(self):
-    return list(set([c.name for c in self.contacts_as_worker.filter(position=REVIEWER_POSITION)]))
-User.reviewing_contacts = property(user_reviewing_contacts)
+# def user_writers(self):
+#     return User.objects.filter(contacts_as_worker__position=WRITER_POSITION, contacts_as_worker__requester=self, contacts_as_worker__confirmation=True).distinct()
+# User.writers = property(user_writers)
+# def user_writer_contacts(self):
+#     return self.writers.filter(confirmation=True)
+# User.writer_contacts = property(user_writer_contacts)
+# def user_reviewers(self):
+#     return User.objects.filter(contacts_as_worker__position=REVIEWER_POSITION, contacts_as_worker__requester=self, contacts_as_worker__confirmation=True).distinct()
+# User.reviewers = property(user_reviewers)
+# def user_requester_contacts(self):
+#     return self.contacts_as_worker.filter(confirmation=True)
+# User.requester_contacts = property(user_requester_contacts)
+# def user_writes_for(self):
+#     return self.contacts_as_worker.filter(confirmation=True, position=WRITER_POSITION)
+# User.writes_for = property(user_writes_for)
+# def user_reviews_for(self):
+#     return self.contacts_as_worker.filter(confirmation=True, position=REVIEWER_POSITION)
+# User.reviews_for = property(user_reviews_for)
+# def user_reviewer_contacts(self):
+#     return self.contacts_as_requester.filter(confirmation=True, position=REVIEWER_POSITION)
+# User.reviewer_contacts = property(user_reviewer_contacts)
+# def get_anon_reviewer_contacts(self): return Reviewer.objects.none()
+# AnonymousUser.reviewer_contacts = property(get_anon_reviewer_contacts)
+# def get_anon_writer_contacts(self): return Writer.objects.none()
+# AnonymousUser.writer_contacts = property(get_anon_writer_contacts)
+# def user_writing_contacts(self):
+#     return list(set([c.name for c in self.contacts_as_worker.filter(position=WRITER_POSITION)]))
+# User.writing_contacts = property(user_writing_contacts)
+# def user_reviewing_contacts(self):
+#     return list(set([c.name for c in self.contacts_as_worker.filter(position=REVIEWER_POSITION)]))
+# User.reviewing_contacts = property(user_reviewing_contacts)
 def user_articles_available_to_write(self):
     return Article.objects.filter(Q(writer_availability__in=self.writing_contacts)|Q(writer_availability=""))
 User.articles_available_to_write = property(user_articles_available_to_write)
@@ -314,28 +319,14 @@ def user_in_requester_mode(self):
     if self.mode == REQUESTER_MODE:return True
 User.in_requester_mode = property(user_in_requester_mode) 
 
-# class DahlBookManager(models.Manager):
-#     def get_query_set(self):
-#         return super(DahlBookManager, self).get_query_set().filter(author='Roald Dahl')
-
-# class UserManagerBase(models.Manager):
-#   mode = None
-#   def get_query_set(self):
-#     print "here!!!"
-#     return super(UserManagerBase, self).get_query_set().filter(contacts_as_writer__isnull=False)
-#     # qs = super(UserManagerBase, self).get_query_set()
-#     # return qs.filter(Q(contacts_as_writer__isnull=False)|Q(userprofile__mode=self.mode)).distinct()
-# class WriterUserManager(UserManagerBase): mode = WRITER_MODE
-# class ReviewerUserManager(UserManagerBase): mode = REVIEWER_MODE
-# User.writer_objects = WriterUserManager() 
-# User.reviewer_objects = ReviewerUserManager()
-# def get_status(me, contact):
-#     if not contact: return "No Contact"
-#     if not contact.confirmation:
-#         if contact.user_asked = me: return "Requesting work"
-#         else: return "Awaiting Approval"
-#     if contact.requester == me: return "Hired"
-
+class WriterUsersManager(object):
+  def all(self): 
+    return User.objects.filter(Q(contacts_as_writer__isnull=False)|Q(userprofile__mode=WRITER_MODE)).distinct()
+class ReviewerUsersManager(object):
+  def all(self): 
+    return User.objects.filter(Q(contacts_as_reviewer__isnull=False)|Q(userprofile__mode=REVIEWER_MODE)).distinct()
+User.writer_users = WriterUsersManager()
+User.reviewer_users=ReviewerUsersManager()
 def get_user_mode(self):
     return self.get_profile().mode
 def set_user_mode(self, value):
@@ -378,175 +369,190 @@ class Category(models.Model):
         return self.name
 
 class Article(ValidationModelMixin, models.Model):
-    def __unicode__(self): return self.name
-    minimum     = models.IntegerField(default=100)
-    priority    = models.IntegerField(default=PRIORITY_NORMAL, choices = ARTICLE_PRIORITIES)
-    maximum     = models.IntegerField(default=0) # Use zero for no maximum
-    body        = models.TextField(blank=True, default="")
-    title       = models.CharField(max_length=256, blank=True, default="")
-    article_type = models.ForeignKey(ArticleType, related_name='articles')
-    project     = models.ForeignKey(Project, related_name='articles', null=True, blank=True)
-    category     = models.ForeignKey(Category, related_name='articles', null=True, blank=True)
-    tags        = models.CharField(max_length=128, blank=True, default="")
-    status      = models.CharField(max_length=32, blank=True, default=STATUS_NEW, choices=STATUSES)
-    owner       = models.ForeignKey(User, related_name='articles_owned')
-    writer      = models.ForeignKey(User, null=True, blank=True, related_name='articles_writing')
-    reviewer    = models.ForeignKey(User, null=True, blank=True, related_name='articles_reviewing')
-    # available_to_contacts = models.ManyToManyField(Contact, through='Availability')
-    available_to_all_writers = models.BooleanField(default=False)
-    available_to_all_my_writers = models.BooleanField(default=False)
-    available_to_all_reviewers = models.BooleanField(default=False)
-    available_to_all_my_reviewers = models.BooleanField(default=False)
-    # available_to_groups = models.ManyToManyField(ContactGroup, through='Availability')
-    last_action = models.ForeignKey(ArticleAction, null=True, blank=True, related_name='last_action_articles')
-    published   = models.ForeignKey(ArticleAction, null=True, blank=True, related_name='published_articles')
-    approved    = models.ForeignKey(ArticleAction, null=True, blank=True, related_name='approved_articles')
-    submitted   = models.ForeignKey(ArticleAction, null=True, blank=True, related_name='submitted_articles')
-    # assigned    = models.ForeignKey(ArticleAction, null=True, blank=True, related_name='assigned_articles')
-    rejected    = models.ForeignKey(ArticleAction, null=True, blank=True, related_name='rejected_articles')
-    # released    = models.ForeignKey(ArticleAction, null=True, blank=True, related_name='released_articles')
-    was_claimed = models.BooleanField(default=False)
-    writers = models.ManyToManyField(Writer)
-    reviewers = models.ManyToManyField(Reviewer)
-    writer_groups = models.ManyToManyField(WriterGroup)
-    reviewer_groups = models.ManyToManyField(ReviewerGroup)
-    expires = models.DateTimeField(blank=True, null=True)
-    deleted = models.BooleanField(default=False, blank=True)
-    # released = models.BooleanField(default=False, blank=True)
-    description = models.TextField(max_length=256, blank=True, default="")
-    article_notes = models.CharField(max_length=128, blank=True, default="")
-    review_notes = models.CharField(max_length=128, blank=True, default="")
-    referrals = models.CharField(max_length=128, blank=True, default="")
-    purpose = models.CharField(max_length=128, blank=True, default="")
-    price = models.CharField(max_length=128, blank=True, default="")
-    language = models.CharField(max_length=7, choices=LANGUAGES, blank=True, default="en")
-    style = models.CharField(max_length=128, blank=True, default="")
-    # writer_availability = models.CharField(max_length=64, blank=True, default="Nobody")
-    # reviewer_availability = models.CharField(max_length=64, blank=True, default="Nobody")
-    objects = ArticleManager()
-    all_objects = models.Manager()
-    def get_assignment_status(self, assigned, availability):
-        if assigned:
-            return "Assigned to %s" % assigned.full_name
-        elif availability == "Nobody":
-            return "Unavailable"
-        elif availability=="":
-            return "Available to Everybody"
-        else:
-            return "Available to %s" % availability
-    @property
-    def can_edit(self, user):
-        if (user.is_staff or user == self.owner) and self.submitted ==False: return True
-        if user == self.writer and not self.approved and not self.rejected: return True
-        if user == self.reviewer and self.submitted: return True
-        return False
-    @property
-    def writer_status(self): return self.get_assignment_status(self.writer, self.writer_availability)
-    @property
-    def reviewer_status(self): return self.get_assignment_status(self.reviewer, self.reviewer_availability)
+  def __unicode__(self): return self.name
+  minimum     = models.IntegerField(default=100)
+  priority    = models.IntegerField(default=PRIORITY_NORMAL, choices = ARTICLE_PRIORITIES)
+  maximum     = models.IntegerField(default=0) # Use zero for no maximum
+  body        = models.TextField(blank=True, default="")
+  title       = models.CharField(max_length=256, blank=True, default="")
+  article_type = models.ForeignKey(ArticleType, related_name='articles')
+  project     = models.ForeignKey(Project, related_name='articles', null=True, blank=True)
+  category     = models.ForeignKey(Category, related_name='articles', null=True, blank=True)
+  tags        = models.CharField(max_length=128, blank=True, default="")
+  status      = models.CharField(max_length=32, blank=True, default=STATUS_NEW, choices=STATUSES)
+  owner       = models.ForeignKey(User, related_name='articles_owned')
+  writer      = models.ForeignKey(Writer, null=True, blank=True, related_name='articles_writing')
+  reviewer    = models.ForeignKey(Reviewer, null=True, blank=True, related_name='articles_reviewing')
+  # available_to_contacts = models.ManyToManyField(Contact, through='Availability')
+  available_to_all_writers = models.BooleanField(default=False, blank=True)
+  available_to_all_my_writers = models.BooleanField(default=False, blank=True)
+  available_to_all_reviewers = models.BooleanField(default=False, blank=True)
+  available_to_all_my_reviewers = models.BooleanField(default=False, blank=True)
+  # available_to_groups = models.ManyToManyField(ContactGroup, through='Availability')
+  last_action = models.ForeignKey(ArticleAction, null=True, blank=True, related_name='last_action_articles')
+  published   = models.ForeignKey(ArticleAction, null=True, blank=True, related_name='published_articles')
+  approved    = models.ForeignKey(ArticleAction, null=True, blank=True, related_name='approved_articles')
+  submitted   = models.ForeignKey(ArticleAction, null=True, blank=True, related_name='submitted_articles')
+  # assigned    = models.ForeignKey(ArticleAction, null=True, blank=True, related_name='assigned_articles')
+  rejected    = models.ForeignKey(ArticleAction, null=True, blank=True, related_name='rejected_articles')
+  # released    = models.ForeignKey(ArticleAction, null=True, blank=True, related_name='released_articles')
+  was_claimed = models.BooleanField(default=False)
+  writers = models.ManyToManyField(Writer, related_name ='articles_available_to_me_to_write', blank=True, null=True)
+  reviewers = models.ManyToManyField(Reviewer, related_name ='articles_available_to_me_to_review', blank=True, null=True)
+  writer_groups = models.ManyToManyField(WriterGroup, null=True, blank=True, related_name ='articles_available_to_group_to_write')
+  reviewer_groups = models.ManyToManyField(ReviewerGroup, null=True, blank=True, related_name ='articles_available_to_group_to_review')
+  expires = models.DateTimeField(blank=True, null=True)
+  deleted = models.BooleanField(default=False, blank=True)
+  # released = models.BooleanField(default=False, blank=True)
+  description = models.TextField(max_length=256, blank=True, default="")
+  article_notes = models.CharField(max_length=128, blank=True, default="")
+  review_notes = models.CharField(max_length=128, blank=True, default="")
+  referrals = models.CharField(max_length=128, blank=True, default="")
+  purpose = models.CharField(max_length=128, blank=True, default="")
+  price = models.CharField(max_length=128, blank=True, default="")
+  language = models.CharField(max_length=7, choices=LANGUAGES, blank=True, default="en")
+  style = models.CharField(max_length=128, blank=True, default="")
+  # writer_availability = models.CharField(max_length=64, blank=True, default="Nobody")
+  # reviewer_availability = models.CharField(max_length=64, blank=True, default="Nobody")
+  objects = ArticleManager()
+  all_objects = models.Manager()
+  def get_assignment_status(self, position, assigned, contacts, groups, all_mine, everyone):
+    # print "==============="
+    # print "self = %s" % str(self)
+    # print "position = %s" % str(position)
+    # print "assigned = %s" % str(assigned)
+    # print "contacts = %s" % str(contacts)
+    # print "groups = %s" % str(groups)
+    if assigned:
+      if self.was_claimed: return "Claimed by %s" % assigned.worker.full_name
+      else: return "Assigned to %s" % assigned.worker.full_name
+    elif not (contacts or groups or all_mine or everyone):
+      return "Unavailable"
+    elif contacts:
+      msg = "Available to %s" % contacts[0].worker.full_name
+      if len(contacts)>1: msg+=" and %s others" % len(contacts)-1
+      return msg
+    elif groups:
+      msg = "Available to %s" % groups[0].name
+      if len(groups)>1: msg+=" and %s others" % len(groups)-1
+      return msg
+    elif all_mine: return "Available to all my %ss" % position
+    elif everyone: return "Available to all %ss" % position
+    # return "XXX"
 
-    @classmethod
-    def filter_valid(self, qs, request):
-        article_pk_list = list(qs.values_list('id', flat=True))
-        for article in qs:
-            if not article.is_valid(request): article_pk_list.remove(article.pk)
-        return Article.objects.filter(pk__in=article_pk_list)
+  @property
+  def can_edit(self, user):
+    if (user.is_staff or user == self.owner) and self.submitted ==False: return True
+    if user == self.writer and not self.approved and not self.rejected: return True
+    if user == self.reviewer and self.submitted: return True
+    return False
+  @property
+  def writer_status(self): return self.get_assignment_status('writer', self.writer, self.writers.all(), self.writer_groups.all(), self.available_to_all_my_writers, self.available_to_all_writers)
+  @property
+  def reviewer_status(self): return self.get_assignment_status('reviewer', self.reviewer, self.reviewers.all(), self.reviewer_groups.all(), self.available_to_all_my_reviewers, self.available_to_all_reviewers)
 
-    def is_valid(self, request):
-        for validation in ValidationPlugin.objects.all():
-            if not validation.plugin.is_valid(self, request): return False
-        return True
-    def submit(self, request):
-        if not self.submitted and request.user == self.writer: 
-            if self.is_valid(request):
-                action = ArticleAction.objects.create(user=request.user, author=request.user, code=ACT_SUBMIT)
-                self.last_action=action
-                self.submitted = action
-                self.status = STATUS_SUBMITTED
-                self.save()
-            else: messages.error(request, "We were unable to submit the article due to the errors encountered")
-    def approve(self, user):
-        if self.submitted and (user==self.owner or user==self.reviewer) and not self.approved: 
-            action = ArticleAction.objects.create(user=user, author=self.writer, code=ACT_APPROVE)
-            self.last_action=action
-            self.approved = action
-            self.status = STATUS_APPROVED
-            self.save()
-    def get_tags(self):
-        return self.tags.split(',')
-    def set_tags(self, value):
-        if type(value)==list:
-            self.tags=",".join(set(value))
-        else: self.tags=value
-    tags_as_list=property(get_tags, set_tags)
-    def make_available_to_writer(self, contact):
-        self.writer_availability = contact.name
-    def make_available_to_reviewer(self, contact):
-        self.reviewer_availability = contact.name
-    
-    class ArticleWorkflowException(Exception): pass
-    # ATTRIBUTES={'publish':ACT_PUBLISH,'approved':ACT_APPROVE,'submitted':ACT_SUBMIT,'assigned':ACT_ASSIGN,'rejected':ACT_REJECT,'released':ACT_RELEASE}
-    def get_available_actions(self, user):
-        status = self.status
-        actions=[]
-        if not user.is_authenticated(): return []
-        if user.mode == WRITER_MODE:
-          if self.writer == user and not self.submitted: actions += [ACT_REMOVE_WRITER, ACT_SUBMIT]
-          # The following is needed, but is not working:
-          # if self.available_to_contacts.filter(position=user.mode, worker=user) or self.available_to_all_writers or (self.available_to_all_my_writers and self.owner.contacts_as_requester__worker=user and self.owner.contacts_as_requester__position=user.mode)
-          # contact_names = [c.name for c in self.owner.writer_contacts.filter(worker=user)]
-          # elif not self.writer and (self.writer_availability in contact_names or not self.writer_availability):
-          #   actions += [ACT_CLAIM_WRITER]
-        elif user.mode == REQUESTER_MODE and user==self.owner:
-            if   status == STATUS_APPROVED:     actions.append(ACT_PUBLISH)
-            elif status == STATUS_SUBMITTED:    actions += [ACT_REJECT, ACT_APPROVE]
-        elif user.mode == REVIEWER_MODE:
-            contact_names = [c.name for c in self.owner.reviewers.filter(worker=user)]
-            if self.reviewer == user and status == STATUS_SUBMITTED:
-                actions += [ACT_REMOVE_REVIEWER, ACT_REJECT, ACT_APPROVE]
-            elif not self.reviewer and \
-            (self.reviewer_availability in contact_names or not self.reviewer_availability): 
-                actions += [ACT_CLAIM_REVIEWER]
-        return actions
+  @classmethod
+  def filter_valid(self, qs, request):
+    article_pk_list = list(qs.values_list('id', flat=True))
+    for article in qs:
+      if not article.is_valid(request): article_pk_list.remove(article.pk)
+    return Article.objects.filter(pk__in=article_pk_list)
+
+  def is_valid(self, request):
+    for validation in ValidationPlugin.objects.all():
+      if not validation.plugin.is_valid(self, request): return False
+    return True
+  def submit(self, request):
+    if not self.submitted and request.user == self.writer: 
+      if self.is_valid(request):
+        action = ArticleAction.objects.create(user=request.user, author=request.user, code=ACT_SUBMIT)
+        self.last_action=action
+        self.submitted = action
+        self.status = STATUS_SUBMITTED
+        self.save()
+      else: messages.error(request, "We were unable to submit the article due to the errors encountered")
+  def approve(self, user):
+    if self.submitted and (user==self.owner or user==self.reviewer) and not self.approved: 
+      action = ArticleAction.objects.create(user=user, author=self.writer, code=ACT_APPROVE)
+      self.last_action=action
+      self.approved = action
+      self.status = STATUS_APPROVED
+      self.save()
+  def get_tags(self):
+    return self.tags.split(',')
+  def set_tags(self, value):
+    if type(value)==list:
+      self.tags=",".join(set(value))
+    else: self.tags=value
+  tags_as_list=property(get_tags, set_tags)
+  def make_available_to_writer(self, contact):
+    self.writer_availability = contact.name
+  def make_available_to_reviewer(self, contact):
+    self.reviewer_availability = contact.name
+  
+  class ArticleWorkflowException(Exception): pass
+  # ATTRIBUTES={'publish':ACT_PUBLISH,'approved':ACT_APPROVE,'submitted':ACT_SUBMIT,'assigned':ACT_ASSIGN,'rejected':ACT_REJECT,'released':ACT_RELEASE}
+  def get_available_actions(self, user):
+      status = self.status
+      actions=[]
+      if not user.is_authenticated(): return []
+      if user.mode == WRITER_MODE:
+        if self.writer == user and not self.submitted: actions += [ACT_REMOVE_WRITER, ACT_SUBMIT]
+        # The following is needed, but is not working:
+        # if self.available_to_contacts.filter(position=user.mode, worker=user) or self.available_to_all_writers or (self.available_to_all_my_writers and self.owner.contacts_as_requester__worker=user and self.owner.contacts_as_requester__position=user.mode)
+        # contact_names = [c.name for c in self.owner.writer_contacts.filter(worker=user)]
+        # elif not self.writer and (self.writer_availability in contact_names or not self.writer_availability):
+        #   actions += [ACT_CLAIM_WRITER]
+      elif user.mode == REQUESTER_MODE and user==self.owner:
+          if   status == STATUS_APPROVED:     actions.append(ACT_PUBLISH)
+          elif status == STATUS_SUBMITTED:    actions += [ACT_REJECT, ACT_APPROVE]
+      elif user.mode == REVIEWER_MODE:
+          contact_names = [c.name for c in self.owner.reviewers.filter(worker=user)]
+          if self.reviewer == user and status == STATUS_SUBMITTED:
+              actions += [ACT_REMOVE_REVIEWER, ACT_REJECT, ACT_APPROVE]
+          elif not self.reviewer and \
+          (self.reviewer_availability in contact_names or not self.reviewer_availability): 
+              actions += [ACT_CLAIM_REVIEWER]
+      return actions
             
-    @property
-    def klass(self):return self.article_type.name
-    @property
-    def keywords(self):
-        return ", ".join([k.keyword for k in self.keyword_set.all()])
-    @property
-    def name(self):
-        if self.title: return self.title
-        if self.maximum > 0: length=u" (" + str(self.minimum) + u" - " + str(self.maximum) + u" words)"
-        else: length = u" (" + str(self.minimum) + u" words)"
-        return self.keywords + length
-    @models.permalink
-    def get_absolute_url(self):
-        return ('article_update', [self.id,])
-    @models.permalink
-    def get_tag_url(self):
-        return ('tag_article', [self.id,])
-    @models.permalink
-    def get_claim_url(self):
-        return ('article_claim', [self.id,])
-    @models.permalink
-    def get_accept_url(self):
-        return ('accept_article', [self.id,])
-    @models.permalink
-    def get_submit_url(self):
-        return ('article_submit', [self.id,])
-    @models.permalink
-    def get_release_url(self):
-        return ('article_release', [self.id,])
-    @models.permalink
-    def get_assign_url(self):
-        return ('article_assign', [self.id,])
-    @models.permalink
-    def get_reject_url(self):
-        return ('article_reject', [self.id,])
-    @models.permalink
-    def get_delete_url(self):
-        return ('article_delete', [self.id,])
+  @property
+  def klass(self):return self.article_type.name
+  @property
+  def keywords(self):
+      return ", ".join([k.keyword for k in self.keyword_set.all()])
+  @property
+  def name(self):
+      if self.title: return self.title
+      if self.maximum > 0: length=u" (" + str(self.minimum) + u" - " + str(self.maximum) + u" words)"
+      else: length = u" (" + str(self.minimum) + u" words)"
+      return self.keywords + length
+  # @models.permalink
+  # def get_absolute_url(self):
+  #     return ('article_update', [self.id,])
+  # @models.permalink
+  # def get_tag_url(self):
+  #     return ('tag_article', [self.id,])
+  # @models.permalink
+  # def get_claim_url(self):
+  #     return ('article_claim', [self.id,])
+  # @models.permalink
+  # def get_accept_url(self):
+  #     return ('accept_article', [self.id,])
+  # @models.permalink
+  # def get_submit_url(self):
+  #     return ('article_submit', [self.id,])
+  # @models.permalink
+  # def get_release_url(self):
+  #     return ('article_release', [self.id,])
+  # @models.permalink
+  # def get_assign_url(self):
+  #     return ('article_assign', [self.id,])
+  # @models.permalink
+  # def get_reject_url(self):
+  #     return ('article_reject', [self.id,])
+  # @models.permalink
+  # def get_delete_url(self):
+  #     return ('article_delete', [self.id,])
 
 class ArticleMessage(models.Model):
     msg         = models.CharField(max_length=256)

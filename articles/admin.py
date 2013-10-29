@@ -1,7 +1,7 @@
 from django.contrib import admin
 from articles.models import Article, ArticleType, ArticleAction, Keyword, Project, Contact, \
 UserProfile, PublishingOutlet, PublishingOutletConfiguration, ValidationPlugin, Category,\
-Availability, ContactGroup, Writer, Reviewer
+Availability, Writer, Reviewer, ReviewerGroup, WriterGroup
 from django.contrib import messages
 
 class KeywordInline(admin.TabularInline):
@@ -78,8 +78,9 @@ admin.site.register(Project)
 admin.site.register(Category)
 admin.site.register(Writer)
 admin.site.register(Reviewer)
-admin.site.register(ContactGroup)
-admin.site.register(Contact, ContactAdmin)
+admin.site.register(WriterGroup)
+admin.site.register(ReviewerGroup)
+# admin.site.register(Contact, ContactAdmin)
 admin.site.register(UserProfile)
 admin.site.register(PublishingOutlet)
 admin.site.register(ValidationPlugin)

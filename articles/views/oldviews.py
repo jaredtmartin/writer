@@ -25,12 +25,12 @@ PublishingOutlet, PublishingOutletConfiguration, WRITER_POSITION, REVIEWER_POSIT
 ContactGroup, Writer, Reviewer, WriterGroup, ReviewerGroup
 from django.views.generic.base import View, TemplateResponseMixin
 from articles.forms import RejectForm, ArticleForm, KeywordInline, KeywordInlineFormSet,  \
-TagArticleForm, ActionUserID, AssignToForm, NoteForm, ContactForm, QuantityForm, \
+TagArticleForm, ActionUserID, AssignToForm, NoteForm, WriterForm, ReviewerForm, QuantityForm, \
 TagForm, ProjectForm, ACT_SUBMIT, ACT_REJECT, ACT_APPROVE, CategoryForm, RenameGroupForm, \
 ACT_ASSIGN_WRITER, ACT_ASSIGN_REVIEWER, ACT_CLAIM_REVIEWER, ACT_RELEASE, ACT_PUBLISH, \
 ACT_COMMENT, ACT_REMOVE_REVIEWER, ACT_REMOVE_WRITER, ACT_CLAIM_WRITER, UserModeForm, PublishForm, \
 LoginForm, STATUS_NEW, STATUS_RELEASED, STATUS_ASSIGNED, STATUS_SUBMITTED, STATUS_APPROVED, \
-FiltersForm, RegistrationForm, STATUS_PUBLISHED, GroupMemberForm, NewGroupForm, \
+FiltersForm, RegistrationForm, STATUS_PUBLISHED, GroupMemberForm, NewGroupForm, ContactForm, \
 WriteArticleForm, WRITER_MODE, REVIEWER_MODE, REQUESTER_MODE, SimpleTextForm, CreateArticleForm
 #from django_actions.views import ActionViewMixin
 from django.http import Http404, HttpResponseServerError
@@ -134,14 +134,14 @@ class FiltersMixin(object):
   def filter_writers_pending(self, qs, value=True):
     return qs.filter(requester=self.request.user, confirmation__isnull=True)
   def filter_writers_available(self, qs, value=True):
-    qs = qs.filter(Q(contacts_as_writer__isnull=False)|Q(userprofile__mode=WRITER_MODE)).distinct()
+    # qs = qs.filter(Q(contacts_as_writer__isnull=False)|Q(userprofile__mode=WRITER_MODE)).distinct()
     return qs.exclude(contacts_as_writer__requester=self.request.user).exclude(pk=self.request.user.pk)
   def filter_my_reviewers(self, qs, value=True):
     return qs.filter(requester=self.request.user, confirmation = True)
   def filter_reviewers_pending(self, qs, value=True):
     return qs.filter(requester=self.request.user, confirmation__isnull=True)
   def filter_reviewers_available(self, qs, value=True):
-    qs = qs.filter(Q(contacts_as_reviewer__isnull=False)|Q(userprofile__mode=REVIEWER_MODE)).distinct()
+    # qs = qs.filter(Q(contacts_as_reviewer__isnull=False)|Q(userprofile__mode=REVIEWER_MODE)).distinct()
     return qs.exclude(contacts_as_reviewer__requester=self.request.user).exclude(pk=self.request.user.pk)
   def filter_writer_groups(self, qs, value=True):
     return qs.filter(owner=self.request.user)
@@ -164,7 +164,7 @@ class FiltersMixin(object):
     return {
       'My Writers': (self.filter_my_writers(Writer.objects.all()).count(),False),
       'Writers Pending': (self.filter_writers_pending(Writer.objects.all()).count(),False),
-      'Writers Avail.': (self.filter_writers_available(User.objects.all()).count(),True),
+      'Writers Avail.': (self.filter_writers_available(User.writers.all()).count(),True),
       'Writer Groups': (self.filter_writer_groups(WriterGroup.objects.all()).count(),True),
     }
   def get_reviewer_filter_counts(self):
@@ -172,7 +172,7 @@ class FiltersMixin(object):
     return {
       'My Reviewers': (self.filter_my_reviewers(Reviewer.objects.all()).count(),False),
       'Reviewers Pending': (self.filter_reviewers_pending(Reviewer.objects.all()).count(),False),
-      'Reviewers Avail.': (self.filter_reviewers_available(User.objects.all()).count(),True),
+      'Reviewers Avail.': (self.filter_reviewers_available(User.writers.all()).count(),True),
       'Reviewer Groups': (self.filter_reviewer_groups(ReviewerGroup.objects.all()).count(),True),
     }
 
@@ -309,6 +309,14 @@ class AjaxUpdateMixin(object):
     messages.error(self.request, form.errors)
     return super(AjaxUpdateMixin, self).form_invalid(form)
 
+################################################################################
+      ####  ####   ###   #### #####  ###  #####  ####
+      #   # #   # #   #    #  #     #   #   #   #    
+      ####  ####  #   #    #  ####  #       #    ### 
+      #     #   # #   # #  #  #     #   #   #       #
+      #     #   #  ###   ##   #####  ###    #   #### 
+################################################################################
+
 class SimpleRelatedCreate(FormWithUserMixin, AjaxUpdateMixin, CreateView):
   # This is a base class for creating categories and projects
   # Takes name, owner, and article_id
@@ -350,6 +358,14 @@ class ProjectList(ListView):
         kwargs['selected_tab']='projects'
         return super(ProjectList, self).get_context_data(**kwargs)
 
+################################################################################
+  #   ####  ##### #####  ###  #     #####        ###  ####  #####   #   ##### #####
+ # #  #   #   #     #   #   # #     #           #   # #   # #      # #    #   #    
+ ###  ####    #     #   #     #     ####        #     ####  ####   ###    #   #### 
+#   # #   #   #     #   #   # #     #           #   # #   # #     #   #   #   #    
+#   # #   #   #   #####  ###  ##### #####        ###  #   # ##### #   #   #   #####
+################################################################################
+
 class ArticleCreate(slick.ExtraContextMixin, FiltersMixin, FormWithUserMixin, LoginRequiredMixin, CreateWithInlinesView):
     template_name = 'articles/article_edit.html'
     model = Article
@@ -357,16 +373,13 @@ class ArticleCreate(slick.ExtraContextMixin, FiltersMixin, FormWithUserMixin, Lo
     context_object_name = 'article'
     extra_context = {'heading':'New Article'}
     inlines = [KeywordInlineFormSet]
-    success_url = reverse_lazy('article_list')
+    success_url = reverse_lazy('available')
     def get_context_data(self, **kwargs):
         kwargs['article']=self.object
         context = super(ArticleCreate, self).get_context_data(**kwargs)
         return context
     def forms_valid(self, form, inlines):
-        # print "form.cleaned_data = %s" % str(form.cleaned_data)
         response = super(ArticleCreate, self).forms_valid(form, inlines)
-        print "============================"
-        print "response = %s" % str(response)
         # If number_of_articles was specified, clone the model that many times
         if 'number_of_articles' in form.cleaned_data and form.cleaned_data['number_of_articles']:
           form.cleaned_data['number_of_articles']-1
@@ -381,11 +394,20 @@ class ArticleCreate(slick.ExtraContextMixin, FiltersMixin, FormWithUserMixin, Lo
               keyword.save()
         return response
     def get_success_url(self):
-        try:
-            user=self.request.user
-            user_profile=self.request.user.get_profile()
-            return reverse_lazy(user_profile.article_list_view)
-        except: return super(ArticleCreate, self).get_success_url()
+      try:
+        user=self.request.user
+        user_profile=self.request.user.get_profile()
+        return user_profile.article_list_view or reverse_lazy('available')
+      except: return reverse_lazy('available')
+
+################################################################################
+  #   ####  ##### #####  ###  #     #####       #   # ####  ####    #   ##### #####
+ # #  #   #   #     #   #   # #     #           #   # #   # #   #  # #    #   #    
+ ###  ####    #     #   #     #     ####        #   # ####  #   #  ###    #   #### 
+#   # #   #   #     #   #   # #     #           #   # #     #   # #   #   #   #    
+#   # #   #   #   #####  ###  ##### #####        ###  #     ####  #   #   #   #####
+################################################################################
+
 class UpdateArticle(slick.ExtraContextMixin, FiltersMixin, LoginRequiredMixin, UpdateWithInlinesView):
     model = Article
     inlines = [KeywordInline]
@@ -748,7 +770,7 @@ class ReleaseAsReviewer(Release):
 
 # class MakeAvailableToContact(MakeAvailable):
 #   action_form_class = ContactForm
-# class MakeAvailableToWriter(MakeAvailableTo):
+# class MakeAvailableToWriter(MakeAvailable):
 #   next_status = STATUS_RELEASED
 #   def update_articles(self):
 #     super(MakeAvailableToWriter, self).update_articles()
@@ -762,45 +784,43 @@ class MakeAvailable(ArticleActionsView):
   def filter_action_queryset(self, qs):
     return self.filter_by_owner(qs, self.request.user)
 
-class MakeAvailableTo(MakeAvailable):
-    action_form_class = ContactForm
-
-class MakeAvailableToWriter(MakeAvailableTo):
-    next_status = STATUS_RELEASED
-    def update_articles(self):
-        super(MakeAvailableToWriter, self).update_articles()
-        for article in action_qs:
-          Availability.objects.create(article=article, contact=self.action_form.cleaned_data['contact'])
-        self.action_qs.update(writer=None, was_claimed=False, available_to_all_my_writers=False, available_to_all_writers=False)
+class MakeAvailableToWriter(MakeAvailable):
+  action_form_class = WriterForm
+  next_status = STATUS_RELEASED
+  def update_articles(self):
+    super(MakeAvailableToWriter, self).update_articles()
+    writer = self.action_form.cleaned_data['contact']
+    writer.articles_available_to_me_to_write = writer.articles_available_to_me_to_write.all()|action_qs
+    self.action_qs.update(writer=None, was_claimed=False, available_to_all_my_writers=False, available_to_all_writers=False)
 
 class MakeAvailableToAllMyWriters(MakeAvailable):
-    next_status = STATUS_RELEASED
-    def update_articles(self):
-        super(MakeAvailableToAllMyWriters, self).update_articles()
-        self.action_qs.update(available_to_all_my_writers=True, available_to_all_writers=False, writer=None, was_claimed=False)
+  next_status = STATUS_RELEASED
+  def update_articles(self):
+    super(MakeAvailableToAllMyWriters, self).update_articles()
+    self.action_qs.update(available_to_all_my_writers=True, available_to_all_writers=False, writer=None, was_claimed=False)
 
 class MakeAvailableToAllWriters(MakeAvailable):
-    next_status = STATUS_RELEASED
-    def update_articles(self):
-        super(MakeAvailableToAllWriters, self).update_articles()
-        self.action_qs.update(available_to_all_writers=True, writer=None, was_claimed=False)
+  next_status = STATUS_RELEASED
+  def update_articles(self):
+    super(MakeAvailableToAllWriters, self).update_articles()
+    self.action_qs.update(available_to_all_writers=True, writer=None, was_claimed=False)
 
-class MakeAvailableToReviewer(MakeAvailableTo):
-    def update_articles(self):
-        super(MakeAvailableToReviewer, self).update_articles()
-        for article in action_qs:
-          Availability.objects.create(article=article, contact=self.action_form.cleaned_data['contact'])
-        self.action_qs.update(reviewer=None, was_claimed=False, available_to_all_my_reviewers=False, available_to_all_reviewers=False)
+class MakeAvailableToReviewer(MakeAvailable):
+  def update_articles(self):
+    super(MakeAvailableToReviewer, self).update_articles()
+    for article in action_qs:
+      Availability.objects.create(article=article, contact=self.action_form.cleaned_data['contact'])
+    self.action_qs.update(reviewer=None, was_claimed=False, available_to_all_my_reviewers=False, available_to_all_reviewers=False)
 
 class MakeAvailableToAllMyReviewers(MakeAvailable):
-    def update_articles(self):
-        super(MakeAvailableToAllMyReviewers, self).update_articles()
-        self.action_qs.update(available_to_all_my_reviewers=True, available_to_all_reviewers=False, reviewer=None, was_claimed=False)
+  def update_articles(self):
+    super(MakeAvailableToAllMyReviewers, self).update_articles()
+    self.action_qs.update(available_to_all_my_reviewers=True, available_to_all_reviewers=False, reviewer=None, was_claimed=False)
 
 class MakeAvailableToAllReviewers(MakeAvailable):
-    def update_articles(self):
-        super(MakeAvailableToAllReviewers, self).update_articles()
-        self.action_qs.update(available_to_all_reviewers=True, reviewer=None, was_claimed=False)
+  def update_articles(self):
+    super(MakeAvailableToAllReviewers, self).update_articles()
+    self.action_qs.update(available_to_all_reviewers=True, reviewer=None, was_claimed=False)
 ############################### Unavailable Actions ##################################
 class MakeUnavailable(ArticleActionsView):
     action_verb="make unavailable"
@@ -958,30 +978,29 @@ class AvailableRequestersList(FiltersMixin, slick.ListView):
 ################################################################################
 #                               Ajax                                           #
 ################################################################################
-class CreateContact(slick.UpdateView):
+class CreateContact(FormWithUserMixin, slick.CreateView):
   extra_context = {
-    'hide_row':True,
     'row_template_name':"articles/user_row.html",
   }
-  model = User
-  form_class = ContactForm
   template_name = "design/ajax_row.html"
-  success_message = "Your request has been processed."
+  success_message = "Your request is awaiting approval from the other user."
   error_message = "There was a problem processing your request."
-
-  def get_form(self, data=None, files=None, **kwargs):
-    # Creates a blank ContactForm rather than an UserUpdate form
-    cls = self.get_form_class()
-    instance=kwargs.pop('instance')
-    kwargs['user']=self.request.user
-    return cls(data=data, files=files, **kwargs)
-
   def form_valid(self, form):
+    self.object = form.cleaned_data['user_asked']
     self.object.contact = form.save()
     messages.success(self.request, self.success_message)
     context = self.get_context_data(form=form)
+    context['hide_row'] = True
     return self.render_to_response(context)
 
+class CreateWriter(CreateContact):
+  model = Writer
+  form_class = WriterForm
+
+class CreateReviewer(CreateContact):
+  model = Reviewer
+  form_class = ReviewerForm
+ 
 class ConfirmContact(slick.GenericModelView):
   model = Contact
   extra_context = {
@@ -990,17 +1009,14 @@ class ConfirmContact(slick.GenericModelView):
   }
   template_name = "design/ajax_row.html"
   success_message = "The contact has been confirmed successfully."
+
   def post(self, request, *args, **kwargs):
     self.object = self.get_object()
     self.object.confirmation=True
     self.object.save()
-    requester = self.object.requester
-    worker = self.object.worker
-    if object.position==WRITER_POSITION:
-      requester.writers.add(worker)
-      requester.writers.add(worker)
     messages.success(self.request, self.success_message)
     return self.render_to_response(self.get_context_data())
+
 
 class DeleteContact(slick.AjaxDeleteView):
   success_message = "The contact has been deleted."
