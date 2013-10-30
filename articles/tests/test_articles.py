@@ -12,20 +12,20 @@ class TestArticles(BaseTestCase):
     self.assertContext(response, {
       'all_columns':['Project', 'Keywords', 'Writer', 'Reviewer', 'Status', 'Category', 'Length', 'Priority', 'Tags'],
       'sidebar_links': (
-          ('Articles', (('Unavailable', 1, False), ('Available', 7, False), ('Assigned', 3, False), ('Claimed', 1, False), ('Submitted', 2, False), ('Approved', 2, False), ('Rejected', 1, False), ('Published', 1, False))), 
-          ('Writers', (('My Writers', 1, False), ('Writers Pending', 1, False), ('Writers Avail.', 2, True), ('Writer Groups', 1, True))), 
-          ('Reviewers', (('My Reviewers', 1, False), ('Reviewers Pending', 1, False), ('Reviewers Avail.', 2, True), ('Reviewer Groups', 1, True)))
-        ),
+        ('Articles', (('Unavailable', 1, False), ('Available', 11, False), ('Assigned', 3, False), ('Claimed', 1, False), ('Submitted', 2, False), ('Approved', 2, False), ('Rejected', 1, False), ('Published', 1, False))), 
+        ('Writers', (('My Writers', 4, False), ('Writers Pending', 1, False), ('Writers Avail.', 2, True), ('Writer Groups', 1, True))), 
+        ('Reviewers', (('My Reviewers', 1, False), ('Reviewers Pending', 1, False), ('Reviewers Avail.', 2, True), ('Reviewer Groups', 1, True)))
+      ),
       # 'reviewer_filter_counts':{'Reviewers Pending': (1, False), 'Reviewers Avail.': (2, True), 'Reviewer Groups': (1, True), 'My Reviewers': (1, False)},
       'heading':'Available Articles',
       'is_paginated': False,
       # 'article_filter_counts':{'Available': (7, False), 'Assigned': (3, False), 'Unavailable': (1, False), 'Published': (1, False), 'Claimed': (1, False), 'Approved': (2, False), 'Submitted': (2, False), 'Rejected': (1, False)},
       'hidden_columns':['Reviewer', 'Status', 'Category', 'Length', 'Priority', 'Tags'],
       'page_obj': None,
-      'all_items_count':7,
+      'all_items_count':11,
       'paginator': None,
       # 'writer_filter_counts':{'My Writers': (1, False), 'Writers Pending': (1, False), 'Writers Avail.': (2, True), 'Writer Groups': (1, True)},
-      'article_list':Article.objects.filter(pk__in=[2,3,4,5,8,9,15]),
-      'object_list':Article.objects.filter(pk__in=[2,3,4,5,8,9,15]),
+      'article_list':Article.objects.filter(pk__in=[2,3,4,5,8,9,15,35, 36, 37, 38]),
+      'object_list':Article.objects.filter(pk__in=[2,3,4,5,8,9,15,35, 36, 37, 38]),
       'view': InstanceOf(AvailableArticles),
     })

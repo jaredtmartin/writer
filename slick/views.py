@@ -124,7 +124,7 @@ class ListView(ExtraContextMixin, vanilla.ListView):
     # Declare a function: filter_{{fieldname}} that takes a queryset and the value, 
     # does the filter and returns the queryset
     for f in self.filter_on:
-      if hasattr(self,'filter_'+f): queryset = getattr(self,'filter_'+f)(queryset, self.request.GET.get(f,''))
+      if hasattr(self,'filter_'+f): queryset = getattr(self,'filter_'+f)(queryset, self.request.GET.getlist(f,[]))
       elif f in self.request.GET: queryset = queryset.filter(**{f:self.request.GET[f]})
     return queryset
   def search(self, queryset):

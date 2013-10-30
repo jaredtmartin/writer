@@ -17,7 +17,7 @@ class FiltersMixin(object):
       return qs.filter(writer__isnull=False, was_claimed=False, status=STATUS_ASSIGNED)
   def filter_available(self, qs, value=True):
     if self.request.user.mode == REQUESTER_MODE:
-      return qs.filter(owner=self.request.user).filter(Q(writers__isnull=False)|Q(writer_groups__isnull=False)|Q(available_to_all_writers=True)|Q(available_to_all_my_writers=True)).exclude(writer__isnull=False)
+      return qs.filter(owner=self.request.user).filter(Q(writers__isnull=False)|Q(writer_groups__isnull=False)|Q(available_to_all_writers=True)|Q(available_to_all_my_writers=True)).exclude(writer__isnull=False).distinct()
     elif self.request.user.mode == WRITER_MODE: return qs.filter(Q(writers__writer=self.request.user)|Q(writer_groups__contacts__writer__writer=self.request.user)|Q(available_to_all_writers=True)|Q(available_to_all_my_writers=True, owner__writers__writer=self.request.user)).exclude(writer__isnull=False).distinct()
     elif self.request.user.mode == REVIEWER_MODE: return qs.filter(Q(reviewers__reviewer=self.request.user)|Q(reviewer_groups__contacts__reviewer__reviewer=self.request.user)|Q(available_to_all_reviewers=True)|Q(available_to_all_my_reviewers=True, owner__reviewers__reviewers=self.request.user)).exclude(reviewer__isnull=False).distinct()
   def filter_claimed(self, qs, value=True):
@@ -53,6 +53,12 @@ class FiltersMixin(object):
     return qs.filter(owner=self.request.user)
   def filter_reviewer_groups(self, qs, value=True):
     return qs.filter(owner=self.request.user)
+  def filter_available_to_writer(self, qs, value=[]):
+    # print "self.request.GET = %s" % str(self.request.GET)
+    # print "value = %s" % str(value)
+    if not value: return qs
+    for contact in value:
+      return qs.filter()
   def get_sidebar_links(self):
     links= (
       ('Articles', (

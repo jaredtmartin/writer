@@ -417,24 +417,17 @@ class Article(ValidationModelMixin, models.Model):
   objects = ArticleManager()
   all_objects = models.Manager()
   def get_assignment_status(self, position, assigned, contacts, groups, all_mine, everyone):
-    # print "==============="
-    # print "self = %s" % str(self)
-    # print "position = %s" % str(position)
-    # print "assigned = %s" % str(assigned)
-    # print "contacts = %s" % str(contacts)
-    # print "groups = %s" % str(groups)
     if assigned:
       if self.was_claimed: return "Claimed by %s" % assigned.worker.full_name
       else: return "Assigned to %s" % assigned.worker.full_name
     elif not (contacts or groups or all_mine or everyone):
       return "Unavailable"
     elif contacts:
-      msg = "Available to %s" % contacts[0].worker.full_name
-      if len(contacts)>1: msg+=" and %s others" % len(contacts)-1
-      return msg
+      if len(contacts)==1: return "Available to %s" % contacts[0].worker.full_name
+      else: return "Available to %s writers" % len(contacts)
     elif groups:
-      msg = "Available to %s" % groups[0].name
-      if len(groups)>1: msg+=" and %s others" % len(groups)-1
+      if len(groups)==1: return "Available to %s" % groups[0].name
+      else: return "Available to %s groups" % len(groups)
       return msg
     elif all_mine: return "Available to all my %ss" % position
     elif everyone: return "Available to all %ss" % position

@@ -13,6 +13,7 @@ class ArticleListBase(FiltersMixin, slick.ListView):
   extra_context = {
     'all_items_count':'get_object_list_count',
     'hidden_columns':'get_hidden_columns',
+    # 'filter_menus':'get_filter_menus',
     'all_columns':['Project','Keywords','Writer','Reviewer','Status','Category','Length','Priority','Tags'],
   }
   # Functions for getting info about list for doing actions on all
@@ -26,6 +27,12 @@ class ArticleListBase(FiltersMixin, slick.ListView):
   def get(self, request, *args, **kwargs):
     self.request.session['article_list_view'] = self.request.path
     return super(ArticleListBase, self).get(request, *args, **kwargs)
+
+  def get_filter_menus(self):
+    return {
+      'project':(('Big','1'),('Small','2'),('Medium','3')),
+      'writer':(('Joe','1'),('Fred','2'),('Pam','3')),
+      }
   # def get_context_data(self, **kwargs):
   #   if self.request.user.mode == REQUESTER_MODE:
   #     kwargs['writer_list'] = self.request.user.writers.all()
@@ -34,7 +41,7 @@ class ArticleListBase(FiltersMixin, slick.ListView):
   
 class AvailableArticles(ArticleListBase):
   search_on = ['tags','project__name','keyword__keyword']
-  filter_on = ['available', 'project']
+  filter_on = ['available', 'project','available_to_writer']
   extra_context={
     # 'hidden_columns':['Writer','Reviewer','Status','Category','Length','Priority','Tags'],
     'heading':'Available Articles',
