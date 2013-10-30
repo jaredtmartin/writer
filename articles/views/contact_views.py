@@ -4,18 +4,18 @@ from articles.models import (Contact, User, Writer, Reviewer, WRITER_POSITION,RE
 from articles.forms import (WriterForm, ReviewerForm)
 from django.contrib import messages
 
-class ListWorkersBase(FiltersMixin, slick.ListView):
+class ListWorkersBase(FiltersMixin, slick.LoginRequiredMixin, slick.ListView):
   template_name = "articles/contact_list.html"
   extra_context = {'row_template_name':"articles/worker_row.html"}
   search_on=['worker__username', 'worker__first_name', 'worker__last_name']
 
-class ListRequestersBase(FiltersMixin, slick.ListView):
+class ListRequestersBase(FiltersMixin, slick.LoginRequiredMixin, slick.ListView):
   model=Contact
   template_name = "articles/contact_list.html"
   extra_context = {'row_template_name':"articles/requester_row.html"}
   search_on=['requester__username', 'requester__first_name', 'requester__last_name']
 
-class ListUsersBase(FiltersMixin, slick.ListView):
+class ListUsersBase(FiltersMixin, slick.LoginRequiredMixin, slick.ListView):
   model = User
   extra_context = {'row_template_name':"articles/user_row.html"}
   search_on = ['username','first_name','last_name']
@@ -84,7 +84,7 @@ class ListAvailableRequesters(FiltersMixin, slick.ListView):
 ################################################################################
 #                               Ajax                                           #
 ################################################################################
-class CreateContact(slick.FormWithUserMixin, slick.CreateView):
+class CreateContact(slick.FormWithUserMixin, slick.LoginRequiredMixin, slick.CreateView):
   extra_context = {
     'row_template_name':"articles/user_row.html",
   }
@@ -107,7 +107,7 @@ class CreateReviewer(CreateContact):
   model = Reviewer
   form_class = ReviewerForm
  
-class ConfirmContact(slick.GenericModelView):
+class ConfirmContact(slick.LoginRequiredMixin, slick.GenericModelView):
   model = Contact
   extra_context = {
     'hide_row':True,
@@ -124,7 +124,7 @@ class ConfirmContact(slick.GenericModelView):
     return self.render_to_response(self.get_context_data())
 
 
-class DeleteContact(slick.AjaxDeleteView):
+class DeleteContact(slick.LoginRequiredMixin, slick.AjaxDeleteView):
   success_message = "The contact has been deleted."
   model = Contact
   extra_context = {

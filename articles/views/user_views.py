@@ -6,7 +6,7 @@ from accounts.views import UserUpdateView
 from django.contrib.auth.models import User
 import pytz
 
-class ChangeMode(vanilla.FormView):
+class ChangeMode(slick.LoginRequiredMixin, vanilla.FormView):
   form_class=UserModeForm
   def form_valid(self, form):
     p = self.request.user.get_profile()
@@ -18,11 +18,11 @@ class ChangeMode(vanilla.FormView):
   def form_invalid(self, form): 
     return HttpResponseRedirect(reverse_lazy('article_list'))
 
-class Dashboard(FiltersMixin, slick.TemplateView):
+class Dashboard(FiltersMixin, slick.LoginRequiredMixin, slick.TemplateView):
   extra_context = {'heading':'Dashboard'}
   template_name = "articles/dashboard.html"
 
-class UserSettingsView(FiltersMixin, UserUpdateView):
+class UserSettingsView(FiltersMixin, slick.LoginRequiredMixin, UserUpdateView):
   model=User
   success_url="/user/settings/"
   template_name = "accounts/user_form.html"

@@ -28,7 +28,7 @@ class AjaxUpdateMixin(object):
     messages.error(self.request, form.errors)
     return super(AjaxUpdateMixin, self).form_invalid(form)
 
-class SimpleRelatedCreate(slick.FormWithUserMixin, AjaxUpdateMixin, CreateView):
+class SimpleRelatedCreate(slick.FormWithUserMixin, AjaxUpdateMixin, slick.LoginRequiredMixin, CreateView):
   # This is a base class for creating categories and projects
   # Takes name, owner, and article_id
   # Creates object with given name and owner and assignes it to article
@@ -51,7 +51,7 @@ class ShowProject(ArticleListBase):
     self.object = self.get_object()
     return super(ShowProject,self).get(request, *args, **kwargs)
 
-class ListProjects(ListView):
+class ListProjects(slick.LoginRequiredMixin, ListView):
     model = Project
     search_fields = ['name']
     owner_field_name = 'owner'
@@ -62,7 +62,7 @@ class ListProjects(ListView):
         kwargs['selected_tab']='projects'
         return super(ListProjects, self).get_context_data(**kwargs)
 
-class DeleteProject(DeleteView):
+class DeleteProject(slick.LoginRequiredMixin, DeleteView):
     model = Project
     success_url = reverse_lazy('list_projects')
 

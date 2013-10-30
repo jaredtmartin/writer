@@ -88,6 +88,6 @@ class FiltersMixin(object):
       )
     # print "links = %s" % str(links)
     return links
-class UpdateFilters(FiltersMixin, ListView):
+class UpdateFilters(FiltersMixin, slick.LoginRequiredMixin, ListView):
     template_name = "articles/ajax_article_list_row.html"
     model = Article

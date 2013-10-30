@@ -3,7 +3,7 @@ from filter_views import FiltersMixin
 from articles.models import ContactGroup, WRITER_POSITION, REVIEWER_POSITION
 from articles.forms import NewGroupForm, RenameGroupForm, GroupMemberForm
 
-class ListGroups(FiltersMixin, slick.ListView):
+class ListGroups(FiltersMixin, slick.LoginRequiredMixin, slick.ListView):
   model = ContactGroup
   template_name = 'articles/contact_group_list.html'
   extra_context = {'row_template_name':"articles/contact_group_row.html"}
@@ -16,7 +16,7 @@ class ListReviewerGroups(ListGroups):
   extra_context = {'heading':"Reviewer Groups",'position':REVIEWER_POSITION}
   filter_on = ['reviewer_groups']
 
-class AddGroup(slick.AjaxCreateView):
+class AddGroup(slick.LoginRequiredMixin, slick.AjaxCreateView):
   model = ContactGroup
   form_class = NewGroupForm
   extra_context = {'row_template_name':"articles/contact_group_row.html"}
@@ -26,19 +26,19 @@ class AddGroup(slick.AjaxCreateView):
     self.object = form.save()
     return super(AddGroup, self).form_valid(form)
 
-class RenameGroup(slick.AjaxUpdateView):
+class RenameGroup(slick.LoginRequiredMixin, slick.AjaxUpdateView):
   model = ContactGroup
   form_class = RenameGroupForm
   extra_context = {'row_template_name':"articles/contact_group_row.html"}
 
-class RemoveGroup(slick.AjaxDeleteView):
+class RemoveGroup(slick.LoginRequiredMixin, slick.AjaxDeleteView):
   model = ContactGroup
   extra_context = {
     'row_template_name':"articles/contact_group_row.html",
     'hide_row':True,
   }
 
-class AddToGroup(slick.NonModelFormMixin, slick.AjaxUpdateView):
+class AddToGroup(slick.NonModelFormMixin, slick.LoginRequiredMixin, slick.AjaxUpdateView):
   model = ContactGroup
   form_class = GroupMemberForm
   template_name = "articles/contact_group_detail_lists.html"
@@ -47,7 +47,7 @@ class AddToGroup(slick.NonModelFormMixin, slick.AjaxUpdateView):
     return HttpResponse("AOK.")
 
 
-class RemoveFromGroup(slick.NonModelFormMixin, slick.AjaxUpdateView):
+class RemoveFromGroup(slick.NonModelFormMixin, slick.LoginRequiredMixin, slick.AjaxUpdateView):
   model = ContactGroup
   form_class = GroupMemberForm
   extra_context = {
@@ -59,7 +59,7 @@ class RemoveFromGroup(slick.NonModelFormMixin, slick.AjaxUpdateView):
     return HttpResponse("AOK.")
 
 
-class ShowGroup(FiltersMixin, slick.DetailView):
+class ShowGroup(FiltersMixin, slick.LoginRequiredMixin, slick.DetailView):
   model = ContactGroup
   template_name = 'articles/contact_group_detail.html'
   extra_context={

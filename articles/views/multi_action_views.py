@@ -7,7 +7,7 @@ from articles.forms import (RejectForm, PublishForm, WriterForm, AssignToForm,
 from django.contrib import messages
 from django.db.models import Q
 
-class ArticleActionsView(TemplateResponseMixin, View):
+class ArticleActionsView(TemplateResponseMixin, slick.LoginRequiredMixin, View):
   template_name = "articles/ajax_article_list_row.html"
   model = Article
   next_status = None

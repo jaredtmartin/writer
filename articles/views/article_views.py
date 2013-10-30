@@ -8,7 +8,7 @@ from django.core.urlresolvers import reverse_lazy, reverse
 from django.views.generic import FormView
 import pickle
 
-class ArticleListBase(FiltersMixin, slick.ListView): 
+class ArticleListBase(FiltersMixin, slick.LoginRequiredMixin, slick.ListView): 
   model = Article
   extra_context = {
     'all_items_count':'get_object_list_count',
@@ -144,7 +144,7 @@ class UpdateArticle(slick.ExtraContextMixin, FiltersMixin, slick.LoginRequiredMi
 class ShowTag(ArticleListBase):
   pass
 
-class AjaxNewKeyword(FormView):
+class AjaxNewKeyword(slick.LoginRequiredMixin, FormView):
     template_name = "articles/keyword_inline_form.html"
     form_class = QuantityForm
 
