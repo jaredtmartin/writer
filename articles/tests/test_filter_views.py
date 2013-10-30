@@ -1,7 +1,7 @@
 from articles.models import (Article, UserProfile)
 from articles.views import (UnavailableArticles, AvailableArticles, AssignedArticles, 
   ClaimedArticles, SubmittedArticles, ApprovedArticles, RejectedArticles, PublishedArticles)
-from common import BaseTestCase, InstanceOf
+from common import BaseTestCase, InstanceOf, BaseTestCaseAsGuest
 from django.core.urlresolvers import reverse
 
 class TestFilterViews(BaseTestCase):
@@ -549,6 +549,24 @@ class TestFilterViews(BaseTestCase):
     self.assertEqual(response.status_code, 200)
     self.assertEqual(response.template_name, ['articles/article_list.html'])
 
+class TestFilterViewsAsGuest(BaseTestCaseAsGuest):
+  fixtures = ['fixtures/test_articles_fixture.json']
+  def test_unavailable_articles(self):
+    response = self.c.get(reverse('unavailable'))
+  def test_available_articles(self):
+    response = self.c.get(reverse('available'))
+  def test_assigned_articles(self):
+    response = self.c.get(reverse('assigned'))
+  def test_claimed_articles(self):
+    response = self.c.get(reverse('claimed'))
+  def test_submitted_articles(self):
+    response = self.c.get(reverse('submitted'))
+  def test_approved_articles(self):
+    response = self.c.get(reverse('approved'))
+  def test_rejected_articles(self):
+    response = self.c.get(reverse('rejected'))
+  def test_published_articles(self):
+    response = self.c.get(reverse('published'))
 # Have articles available to two writers and see if they are duplicated in available view
 # Test filters from writer and reviewer modes
 # Test sombody else's rejected doesnt appear in my view since I'm rewriting it

@@ -1,6 +1,6 @@
 from articles.models import (Article)
 from articles.views import (AvailableArticles)
-from common import BaseTestCase, InstanceOf
+from common import BaseTestCase, InstanceOf, BaseTestCaseAsGuest
 
 class TestArticles(BaseTestCase):
   fixtures = ['fixtures/test_articles_fixture.json']
@@ -29,3 +29,9 @@ class TestArticles(BaseTestCase):
       'object_list':Article.objects.filter(pk__in=[2,3,4,5,8,9,15,35, 36, 37, 38]),
       'view': InstanceOf(AvailableArticles),
     })
+
+class TestArticlesAsGuest(BaseTestCaseAsGuest):
+  fixtures = ['fixtures/test_articles_fixture.json']
+  def test_avilable_articles_list(self):
+    response = self.c.get('/articles/available/')
+    self.assertEqual(response.status_code, 302)

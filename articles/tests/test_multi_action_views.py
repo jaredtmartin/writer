@@ -1,6 +1,6 @@
 from articles.models import (Article, Writer, Reviewer, ArticleAction, ReviewerGroup, WriterGroup, 
   ACT_SUBMIT, ACT_APPROVE, STATUS_PUBLISHED)
-from common import BaseTestCase, InstanceOf
+from common import BaseTestCase, InstanceOf, BaseTestCaseAsGuest
 from django.core.urlresolvers import reverse
 
 class TestMultiActionViews(BaseTestCase):
@@ -288,3 +288,74 @@ class TestMultiActionViews(BaseTestCase):
       'as_row':True,
       })
     self.assertTrue(Article.objects.get(pk=2).status==STATUS_PUBLISHED)
+
+class TestMultiActionViewsAsGuest(BaseTestCaseAsGuest):
+  fixtures = ['fixtures/test_articles_fixture.json']
+  def test_make_article_available_to_writer(self):
+    response = self.c.post(reverse('make_available_to_writer'), {'action-select':2, 'writer':3})
+  def test_make_article_available_to_reviewer(self):
+    response = self.c.post(reverse('make_available_to_reviewer'), {'action-select':2, 'reviewer':6})
+  def test_make_article_available_to_all_writers(self):
+    response = self.c.post(reverse('make_available_to_all_writers'), {'action-select':2})
+  def test_make_article_available_to_all_reviewers(self):
+    response = self.c.post(reverse('make_available_to_all_reviewers'), {'action-select':2})
+  def test_make_article_available_to_all_my_writers(self):
+    response = self.c.post(reverse('make_available_to_all_my_writers'), {'action-select':2})
+  def test_make_article_available_to_all_my_reviewers(self):
+    response = self.c.post(reverse('make_available_to_all_my_reviewers'), {'action-select':2})
+  def test_make_available_to_writer_group(self):
+    response = self.c.post(reverse('make_available_to_writer_group'), {'action-select':2,'group':1})
+  def test_make_available_to_reviewer_group(self):
+    response = self.c.post(reverse('make_available_to_reviewer_group'), {'action-select':2,'group':2})
+  def test_make_article_unavailable_to_writers(self):
+    response = self.c.post(reverse('make_unavailable_to_writers'), {'action-select':2})
+  def test_make_article_unavailable_to_reviewers(self):
+    response = self.c.post(reverse('make_unavailable_to_reviewers'), {'action-select':2})
+  def test_assign_article_to_writer(self):
+    response = self.c.post(reverse('assign_to_writer'), {'action-select':2, 'writer':3})
+  def test_assign_article_to_reviewer(self):
+    response = self.c.post(reverse('assign_to_reviewer'), {'action-select':2, 'reviewer':6})
+  def test_releasing_article_writer_as_writer(self):
+    w=Writer.objects.get(writer=self.me)
+    Article.objects.filter(pk=27).update(writer=w)
+    response = self.c.post(reverse('release_as_writer'), {'action-select':27})
+  def test_releasing_article_writer_as_owner(self):
+    Article.objects.filter(pk=2).update(writer=Writer.objects.get(pk=3))
+    response = self.c.post(reverse('release_as_writer'), {'action-select':2})
+  def test_releasing_article_as_reviewer(self):
+    Article.objects.filter(pk=2).update(reviewer=Reviewer.objects.get(pk=6))
+    response = self.c.post(reverse('release_as_reviewer'), {'action-select':2})
+  def test_claiming_article_as_writer(self):
+    response = self.c.post(reverse('claim_as_writer'), {'action-select':27})
+  def test_claiming_article_as_reviewer(self):
+    response = self.c.post(reverse('claim_as_reviewer'), {'action-select':27})
+  def test_submitting_article(self):
+    Article.objects.filter(pk=27).update(writer=self.me)
+    response = self.c.post(reverse('submit_articles'), {'action-select':27})
+  def test_rejecting_and_returning_article_to_writer(self):
+    w=Writer.objects.get(pk=3)
+    u=w.writer
+    act = ArticleAction.objects.create(user=u, author=u, code=ACT_SUBMIT)
+    Article.objects.filter(pk=2).update(writer=w, submitted=act, body="This is content.",title="This is the title.")
+    reason = "You're ugly."
+    response = self.c.post(reverse('reject_articles'), {'action-select':2,'reason':reason,'return_to_writer':True})
+  def test_rejecting_article_and_making_unavailable(self):
+    w=Writer.objects.get(pk=3)
+    u=w.writer
+    act = ArticleAction.objects.create(user=u, author=u, code=ACT_SUBMIT)
+    Article.objects.filter(pk=2).update(writer=w, submitted=act, body="This is content.",title="This is the title.")
+    reason = "You're ugly."
+    response = self.c.post(reverse('reject_articles'), {'action-select':2,'reason':reason,'return_to_writer':False})
+  def test_approving_article(self):
+    w=Writer.objects.get(pk=3)
+    u=w.writer
+    act = ArticleAction.objects.create(user=u, author=u, code=ACT_SUBMIT)
+    a = Article.objects.filter(pk=2).update(writer=w, submitted=act)
+    response = self.c.post(reverse('approve_articles'), {'action-select':2})
+  def test_marking_article_as_published(self):
+    w=Writer.objects.get(pk=3)
+    u=w.writer
+    sub = ArticleAction.objects.create(user=u, author=u, code=ACT_SUBMIT)
+    act = ArticleAction.objects.create(user=self.me, author=u, code=ACT_APPROVE)
+    a = Article.objects.filter(pk=2).update(writer=w, submitted=sub, approved=act)
+    response = self.c.post(reverse('mark_as_published'), {'action-select':2})

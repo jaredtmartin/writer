@@ -18,3 +18,27 @@ class BaseTestCase(VanillaBaseTestCase):
     messages = [str(msg) for msg in response.context['messages']]
     for msg in messages: self.assertTrue(msg in expected, "context contains unexpected message: '%s'" % msg)
     for msg in expected: self.assertTrue(msg in messages, "context missing message: '%s'" % msg)
+
+class BaseTestCaseAsGuest(BaseTestCase):
+  def setUp(self):
+    settings.DEBUG = True
+    self.c = Client()
+    self.me = User.objects.get(pk=1)
+
+class BaseTestCaseAsWriter(BaseTestCase):
+  def login(self, username='MyWriter', password='pass'):
+    response = self.c.post('/accounts/login/', {'username': username, 'password': password})
+    # print "User.objects.all().count() = %s" % str(User.objects.all().count())
+    self.assertEqual(response.status_code, 302)
+  def setUp(self):
+    settings.DEBUG = True
+    self.c = Client()
+    self.me = User.objects.get(pk=1)
+class BaseTestCaseAsRequester(BaseTestCase):
+  def setUp(self):
+    settings.DEBUG = True
+    self.c = Client()
+class BaseTestCaseAsReviewer(BaseTestCase):
+  def setUp(self):
+    settings.DEBUG = True
+    self.c = Client()

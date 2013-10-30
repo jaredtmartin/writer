@@ -3,6 +3,7 @@ from articles.models import (Article, Writer, Reviewer, User, WriterGroup, Revie
   REQUESTER_MODE, WRITER_MODE, REVIEWER_MODE, STATUS_ASSIGNED, STATUS_SUBMITTED, STATUS_APPROVED,
   STATUS_PUBLISHED)
 from django.db.models import Q
+import slick.views as slick
 
 class FiltersMixin(object):
   extra_context = {

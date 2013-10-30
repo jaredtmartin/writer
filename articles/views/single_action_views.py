@@ -2,6 +2,7 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import FormMixin
 from articles.forms import TagArticleForm
 from articles.models import Article
+import slick.views as slick
 
 class ArticleActionView(slick.LoginRequiredMixin, DetailView):
     template_name = "articles/ajax_article_list_row.html"

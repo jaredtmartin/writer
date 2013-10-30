@@ -3,7 +3,7 @@ from articles.forms import (ReviewerForm, WriterForm)
 from articles.views import (ListAvailableReviewers, ConfirmContact, CreateWriter, CreateReviewer, 
   DeleteContact, ListAvailableReviewers, ListAvailableWriters, ListMyWriters, ListMyReviewers,
   ListPendingWriters, ListPendingReviewers)
-from common import BaseTestCase, InstanceOf
+from common import BaseTestCase, InstanceOf, BaseTestCaseAsGuest
 from django.core.urlresolvers import reverse
 
 class TestContacts(BaseTestCase):
@@ -243,3 +243,53 @@ class TestContacts(BaseTestCase):
       'row_template_name':'articles/worker_row.html',
       'view':InstanceOf(DeleteContact),
     })
+
+
+class TestContactsAsGuest(BaseTestCaseAsGuest):
+  fixtures = ['fixtures/test_contacts_fixture.json']
+  def test_list_available_writers(self):
+    response = self.c.get(reverse('writers avail.'))
+  def test_list_pending_writers(self):
+    response = self.c.get(reverse('writers pending'))
+  def test_list_my_writers(self):
+    response = self.c.get(reverse('my writers'))
+  def test_list_available_reviewers(self):
+    response = self.c.get(reverse('reviewers avail.'))
+  def test_list_pending_reviewers(self):
+    response = self.c.get(reverse('reviewers pending'))
+  def test_list_my_reviewers(self):
+    response = self.c.get(reverse('my reviewers'))
+  def test_create_writer(self):
+    u=User.objects.create(username="New Writer")
+    response = self.c.post(reverse('create_writer'),{'requester':1, 'writer':u.pk})
+  def test_create_reviewer(self):
+    u=User.objects.create(username="New Reviewer")
+    response = self.c.post(reverse('create_reviewer'),{'requester':'1', 'reviewer':u.pk})
+  def test_confirm_writer(self):
+    u=User.objects.create(username="New Writer")
+    c=Writer.objects.create(requester=self.me, writer=u, user_asked=self.me)
+    response = self.c.post(reverse('confirm_contact', kwargs={'pk':c.pk}))
+  def test_confirm_reviewer(self):
+    u=User.objects.create(username="New Reviewer")
+    c=Reviewer.objects.create(requester=self.me, reviewer=u, user_asked=self.me)
+    response = self.c.post(reverse('confirm_contact', kwargs={'pk':c.pk}))
+  def test_delete_writer(self):
+    u=User.objects.create(username="New Writer")
+    c=Writer.objects.create(requester=self.me, writer=u, user_asked=self.me)
+    pk=c.pk
+    response = self.c.post(reverse('delete_contact', kwargs={'pk':c.pk}))
+  def test_delete_reviewer(self):
+    u=User.objects.create(username="New Reviewer")
+    c=Reviewer.objects.create(requester=self.me, reviewer=u, user_asked=self.me)
+    pk=c.pk
+    response = self.c.post(reverse('delete_contact', kwargs={'pk':c.pk}))
+  def test_cancel_contact_request(self):
+    u=User.objects.create(username="New Reviewer")
+    c=Reviewer.objects.create(requester=self.me, reviewer=u, user_asked=self.me)
+    pk=c.pk
+    response = self.c.post(reverse('cancel_contact_request', kwargs={'pk':c.pk}))
+  def test_reject_contact_request(self):
+    u=User.objects.create(username="New Reviewer")
+    c=Reviewer.objects.create(requester=self.me, reviewer=u, user_asked=self.me)
+    pk=c.pk
+    response = self.c.post(reverse('reject_contact_request', kwargs={'pk':c.pk}))
