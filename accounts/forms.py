@@ -140,15 +140,19 @@ class SimpleUserCreationFormWithFullName(SimpleUserCreationForm):
 def get_timezone_choices():
         return [(t,t) for t in pytz.common_timezones]
 class UserForm(ModelForm):
-    class Meta:
-        model = User
-        fields = ('first_name','last_name','email')
+  class Meta:
+    model = User
+    fields = ('first_name','last_name','email')
+  first_name = forms.CharField(widget=widgets.TextInput(attrs={'placeholder':'First', 'class':'form-control'}), required=False)
+  last_name = forms.CharField(widget=widgets.TextInput(attrs={'placeholder':'Last', 'class':'form-control'}), required=False)
+  email = forms.CharField(widget=widgets.TextInput(attrs={'placeholder':'Email', 'class':'form-control'}), required=False)
+
 class UserProfileForm(ModelForm):
-    class Meta:
-        model = UserProfile
-        fields = ('mode','timezone')
-    timezone = ChoiceField(choices=get_timezone_choices(), widget=forms.Select(attrs={'class':'selectpicker primary'}))
-    mode = ChoiceField(choices=USER_MODES, widget=forms.Select(attrs={'class':'selectpicker primary'}))
+  class Meta:
+    model = UserProfile
+    fields = ('mode','timezone')
+  timezone = ChoiceField(choices=get_timezone_choices(), widget=forms.Select(attrs={'class':'selectpicker primary'}))
+  mode = ChoiceField(choices=USER_MODES, widget=forms.Select(attrs={'class':'selectpicker primary'}))
 
 class LoginForm(django_forms.AuthenticationForm):
     username = forms.CharField(label="E-mail", max_length=30, widget=widgets.TextInput(attrs={'placeholder':'E-mail address','class':'form-control'}))
