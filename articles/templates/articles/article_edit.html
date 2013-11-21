@@ -13,181 +13,163 @@
       {{form.ID}}
       <input type="hidden" name="owner" value="{% if article.owner %}{{article.owner.pk}}{% else %}{{user.pk}}{% endif %}">
       {% if user == article.owner and user.mode == 2 or not article.pk %}
-          <div class="row input-row">
-            <div class="col-md-4">{{ form.project }}</div>
-            <div class="col-md-4">{{ form.article_type }}</div>
-            <div class="col-md-4">{{ form.category }}</div>
-          </div>
-          <div class="row input-row">
-            <div class="col-md-4">{{ form.priority }}</div>
-            <div class="col-md-4">
-              <div id="add-details-selector" class="btn-group">
-                <a class="btn dropdown-toggle btn-primary btn-small" style="width:100%;" data-toggle="dropdown"><span class="pull-left"> Add Details </span><span class="caret"></span></a>
-                <ul class="dropdown-menu">
-                  <li class="add-details-option" id="date-option"><a tabindex="-1" onclick="showSection('date');">Date Due</a></li>
-                  <li class="add-details-option" id="tags-option"><a tabindex="-1" onclick="showSection('tags');">Tags</a></li>
-                  <li class="add-details-option" id="purpose-option"><a tabindex="-1" onclick="showSection('purpose');">Purpose</a></li>
-                  <li class="add-details-option" id="referrals-option"><a tabindex="-1" onclick="showSection('referrals');">Referral Links</a></li>
-                  <li class="add-details-option" id="price-option"><a tabindex="-1" onclick="showSection('price');">Price per Item</a></li>
-                  <li class="add-details-option" id="lang-option"><a tabindex="-1" onclick="showSection('lang');">Language</a></li>
-                  <li class="add-details-option" id="style-option"><a tabindex="-1" onclick="showSection('style');">Style</a></li>
-                </ul>
-              </div>
+        <div class="row input-row">
+          <div class="col-md-4">{{ form.project }}</div>
+          <div class="col-md-4">{{ form.article_type }}</div>
+          <div class="col-md-4">{{ form.category }}</div>
+        </div>
+        <div class="row input-row">
+          <div class="col-md-4">{{ form.priority }}</div>
+          <div class="col-md-4">
+            <div id="add-details-selector" class="btn-group">
+              <a class="btn dropdown-toggle btn-primary btn-small" style="width:100%;" data-toggle="dropdown"><span class="pull-left"> Add Details </span><span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li class="add-details-option" id="date-option"><a tabindex="-1" onclick="showSection('date');">Date Due</a></li>
+                <li class="add-details-option" id="tags-option"><a tabindex="-1" onclick="showSection('tags');">Tags</a></li>
+                <li class="add-details-option" id="purpose-option"><a tabindex="-1" onclick="showSection('purpose');">Purpose</a></li>
+                <li class="add-details-option" id="referrals-option"><a tabindex="-1" onclick="showSection('referrals');">Referral Links</a></li>
+                <li class="add-details-option" id="price-option"><a tabindex="-1" onclick="showSection('price');">Price per Item</a></li>
+                <li class="add-details-option" id="lang-option"><a tabindex="-1" onclick="showSection('lang');">Language</a></li>
+                <li class="add-details-option" id="style-option"><a tabindex="-1" onclick="showSection('style');">Style</a></li>
+              </ul>
             </div>
+          </div>
 
-            <div class="col-md-4">{{ form.number_of_articles }}</div>
-          </div>
-          <div class="row input-row" style="display:none;">
-            <div id="tags-cell" class="hidden-cell col-md-12" style="display:none;">{{form.tags}}</div>
-          </div>
-          <div class="row input-row" style="display:none;">
-            <div id="referrals-cell" class="col-md-4" style="display:none;">{{form.referrals}}</div>
-            <div id="lang-cell" class="hidden-cell col-md-4" style="display:none;">{{form.language}}</div>
-            <div id="style-cell" class="hidden-cell col-md-4" style="display:none;">{{form.style}}</div>
-          </div>
-          <div class="row input-row" style="display:none;">
-            <div id="date-cell" class="hidden-cell col-md-4" style="display:none;">{{form.expires}}</div>
-            <div id="purpose-cell" class="hidden-cell col-md-4" style="display:none;">{{form.purpose}}</div>
-            <div id="price-cell" class="hidden-cell col-md-4" style="display:none;">{{form.price}}</div>
-          </div>
-          <div class="row input-row" style="display:none;">
-            <div class="col-md-8">{{form.description}}</div>
-            <div class="col-md-4">{{ form.minimum }}</div>
-          </div>
-            
-          </div>
-          <div class="row input-row">
-            <div class="col-md-12">
-                {% with inlines.0 as inline %}
-                    {% include "articles/edit_article_keywords_form.html" %}
-                {% endwith %}
-            </div>
-          </div>
-          <div class="row input-row">
-            <div class="col-md-12">{{form.article_notes}}</div>
-          </div>
-          <div class="row input-row">
-            <div class="col-md-12">{{form.review_notes}}</div>
-          </div>
+          <div class="col-md-4">{{ form.number_of_articles }}</div>
+        </div>
+        <div class="row input-row" style="display:none;">
+          <div id="tags-cell" class="hidden-cell col-md-12" style="display:none;">{{form.tags}}</div>
+        </div>
+        <div class="row input-row" style="display:none;">
+          <div id="referrals-cell" class="col-md-4" style="display:none;">{{form.referrals}}</div>
+          <div id="lang-cell" class="hidden-cell col-md-4" style="display:none;">{{form.language}}</div>
+          <div id="style-cell" class="hidden-cell col-md-4" style="display:none;">{{form.style}}</div>
+        </div>
+        <div class="row input-row" style="display:none;">
+          <div id="date-cell" class="hidden-cell col-md-4" style="display:none;">{{form.expires}}</div>
+          <div id="purpose-cell" class="hidden-cell col-md-4" style="display:none;">{{form.purpose}}</div>
+          <div id="price-cell" class="hidden-cell col-md-4" style="display:none;">{{form.price}}</div>
+        </div>
+        <div class="row input-row" style="display:none;">
+          <div class="col-md-8">{{form.description}}</div>
+          <div class="col-md-4">{{ form.minimum }}</div>
+        </div>
           
-
+        </div>
+        <div class="row input-row">
+          <div class="col-md-12">
+              {% with inlines.0 as inline %}
+                  {% include "articles/edit_article_keywords_form.html" %}
+              {% endwith %}
+          </div>
+        </div>
+        <div class="row input-row">
+          <div class="col-md-12">{{form.article_notes}}</div>
+        </div>
+        <div class="row input-row">
+          <div class="col-md-12">{{form.review_notes}}</div>
+        </div>
       {% else %}
+        <div class="row input-row">
+          <div class="col-md-1 input-label">Project:</div>
+          <div class="col-md-2">{{ article.project }}</div>
+
+          <div class="col-md-1 input-label">Type:</div>
+          <div class="col-md-3">{{ article.article_type }}</div>
+
+          <div class="col-md-1 input-label">Category:</div>
+          <div class="col-md-3">{{ article.category }}</div>
+        </div>
+
+        <div class="row input-row">
+          <div class="col-md-1 input-label">Writer:</div>
+          {% if article.writer %}
+            <div class="col-md-2">{{ article.writer.full_name }}</div>
+          {% else %}
+            <div class="col-md-2">None</div>
+          {% endif %}
+
+          <div class="col-md-1 input-label">Reviewer:</div>
+          {% if article.reviewer %}
+            <div class="col-md-2">{{ article.reviewer.full_name }}</div>
+          {% else %}
+            <div class="col-md-2">None</div>
+          {% endif %}
+
+          <div class="col-md-1 input-label">Priority:</div>
+          <div class="col-md-2">{{ article.priority }}</div>
+        </div>
+        <div class="row input-row">
+          <div class="col-md-1 input-label">Description</div>
+          <div class="col-md-7">{{article.description}}</div>
+
+          <div class="col-md-1 input-label">Length:</div>
+          <div class="col-md-3">{{ article.minimum }}</div>
+        </div>
+
+        <div class="row input-row">
+          {% with inlines.0 as inline %}
+            {% include "articles/edit_article_keywords_form.html" %}
+          {% endwith %}
+        </div>
+        {% if user == article.writer and article.article_notes%}
           <div class="row input-row">
-            <div class="col-md-1 input-label">Project:</div>
-            <div class="col-md-2">{{ article.project }}</div>
-
-            <div class="col-md-1 input-label">Type:</div>
-            <div class="col-md-3">{{ article.article_type }}</div>
-
-            <div class="col-md-1 input-label">Category:</div>
-            <div class="col-md-3">{{ article.category }}</div>
+            <div class="col-md-1 input-label">Notes to Writer</div>
+            <div class="col-md-11">{{article.article_notes}}</div>
           </div>
-
+        {% endif %}
+        {% if user == ariticle.reviewer and article.review_notes%}
           <div class="row input-row">
-            <div class="col-md-1 input-label">Writer:</div>
-            {% if article.writer %}
-              <div class="col-md-2">{{ article.writer.full_name }}</div>
-            {% else %}
-              <div class="col-md-2">None</div>
-            {% endif %}
-
-            <div class="col-md-1 input-label">Reviewer:</div>
-            {% if article.reviewer %}
-              <div class="col-md-2">{{ article.reviewer.full_name }}</div>
-            {% else %}
-              <div class="col-md-2">None</div>
-            {% endif %}
-
-            <div class="col-md-1 input-label">Priority:</div>
-            <div class="col-md-2">{{ article.priority }}</div>
+            <div class="col-md-1 input-label">Notes to Reviewer</div>
+            <div class="col-md-11">{{article.review_notes}}</div>
           </div>
+        {% endif %}
+        {% if article.expires or article.tags %}
           <div class="row input-row">
-            <div class="col-md-1 input-label">Description</div>
-            <div class="col-md-7">{{article.description}}</div>
-
-            <div class="col-md-1 input-label">Length:</div>
-            <div class="col-md-3">{{ article.minimum }}</div>
+            <div id="date-cell" class="hidden-cell">
+              <div class="col-md-2 input-label">Date Due</div>
+              <div class="col-md-2">{{article.expires}}</div>
+            </div>
+            <div id="tags-cell" class="hidden-cell">
+              <div class="col-md-2 input-label">Tags</div>
+              <div class="col-md-6">{{article.tags}}</div>
+            </div>
           </div>
-
+        {% endif %}
+        {% if article.purpose or article.referrals or article.price %}
           <div class="row input-row">
-            {% with inlines.0 as inline %}
-              {% include "articles/edit_article_keywords_form.html" %}
-            {% endwith %}
+            <div id="purpose-cell" class="hidden-cell">
+              <div class="col-md-2 input-label">Purpose</div>
+              <div class="col-md-2">{{article.purpose}}</div>
+            </div>
+            <div id="referrals-cell" class="hidden-cell">
+              <div class="col-md-2 input-label">Referral Links</div>
+              <div class="col-md-2">{{article.referrals}}</div>
+            </div>
+            <div id="price-cell" class="hidden-cell">
+              <div class="col-md-2 input-label">Price per Item</div>
+              <div class="col-md-2">{{article.price}}</div>
+            </div>
           </div>
-          {% if user == article.writer and article.article_notes%}
-            <div class="row input-row">
-              <div class="col-md-1 input-label">Notes to Writer</div>
-              <div class="col-md-11">{{article.article_notes}}</div>
+        {% endif %}
+        {% if article.language or article.style %}
+          <div class="row input-row">
+            <div id="lang-cell" class="hidden-cell">
+              <div class="col-md-2 input-label">Language</div>
+              <div class="col-md-2">{{article.language}}</div>
             </div>
-          {% endif %}
-          {% if user == ariticle.reviewer and article.review_notes%}
-            <div class="row input-row">
-              <div class="col-md-1 input-label">Notes to Reviewer</div>
-              <div class="col-md-11">{{article.review_notes}}</div>
+            <div id="style-cell" class="hidden-cell">
+              <div class="col-md-2 input-label">Style</div>
+              <div class="col-md-2">{{article.style}}</div>
             </div>
-          {% endif %}
-          {% if article.expires or article.tags %}
-            <div class="row input-row">
-              <div id="date-cell" class="hidden-cell">
-                <div class="col-md-2 input-label">Date Due</div>
-                <div class="col-md-2">{{article.expires}}</div>
-              </div>
-              <div id="tags-cell" class="hidden-cell">
-                <div class="col-md-2 input-label">Tags</div>
-                <div class="col-md-6">{{article.tags}}</div>
-              </div>
-            </div>
-          {% endif %}
-          {% if article.purpose or article.referrals or article.price %}
-            <div class="row input-row">
-              <div id="purpose-cell" class="hidden-cell">
-                <div class="col-md-2 input-label">Purpose</div>
-                <div class="col-md-2">{{article.purpose}}</div>
-              </div>
-              <div id="referrals-cell" class="hidden-cell">
-                <div class="col-md-2 input-label">Referral Links</div>
-                <div class="col-md-2">{{article.referrals}}</div>
-              </div>
-              <div id="price-cell" class="hidden-cell">
-                <div class="col-md-2 input-label">Price per Item</div>
-                <div class="col-md-2">{{article.price}}</div>
-              </div>
-            </div>
-          {% endif %}
-          {% if article.language or article.style %}
-            <div class="row input-row">
-              <div id="lang-cell" class="hidden-cell">
-                <div class="col-md-2 input-label">Language</div>
-                <div class="col-md-2">{{article.language}}</div>
-              </div>
-              <div id="style-cell" class="hidden-cell">
-                <div class="col-md-2 input-label">Style</div>
-                <div class="col-md-2">{{article.style}}</div>
-              </div>
-            </div>
-          {% endif %}
+          </div>
+        {% endif %}
       {% endif %}
       <div class="row input-row">
-        <div class="col-md-12">
-          {% show_edit_page_actions %}
+        <div class="col-md-2">
+          <input type="submit" class="btn btn-primary" name="extra" value="Save">
         </div>
       </div>
-      {% if article.pk and user|can_edit:article %}
-        <div class="row input-row">
-          <div class="col-md-12"><legend>Content:</legend></div>
-        </div>
-        <div class="row input-row">
-          <div class="col-md-2">Title</div>
-          <div class="col-md-9 long-input">{{form.title}}</div>
-        </div>
-        <div class="row input-row">
-          <div class="col-md-12 well">
-            <textarea id="id_body" name="body">
-              {{form.instance.body}}
-            </textarea>
-          </div>
-        </div>
-      {% endif %}
     </form>
   </div>
   <div id="project-modal" class="modal" style="display:none;">
@@ -195,14 +177,12 @@
       <button type="button" class="close fui-cross" data-dismiss="modal" aria-hidden="true"></button>
       <h3>Create a New Project</h3>
     </div>
-
     <div class="modal-body">
       <p>What will your new project be called?</p>
       <form>
         <input id="project-name-input" placeholder="Project Name">
       </form>
     </div>
-
     <div class="modal-footer">
       <a href="#" id="create-project-btn" onclick="createSimpleRelated('project', '{% url new_project %}');" class="btn btn-primary">Create</a>  
       <a href="#" class="btn" data-dismiss="modal">Cancel</a>

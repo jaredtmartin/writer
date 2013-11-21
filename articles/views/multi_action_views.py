@@ -213,16 +213,16 @@ class DeleteArticles(ArticleActionsView):
     action_verb="delete"
     action_property_name="deleted"
     def filter_action_queryset(self, qs):
-        # Make sure user has permission to submit the articles
-        qs=qs.filter(submitted__isnull=True)
+        # Make sure user has permission to delete the articles
+        qs = qs.filter(submitted__isnull=True)
         qs = self.filter_by_owner(qs)
         return qs
     def create_action(self):
         return True
-    def update_articles(self):
-        l=list(qs.values_list('id', flat=True))
-        self.action_qs=Article.all_objects.filter(pk__in=l)
-        super(DeleteArticles, self).update_articles(qs, action)
+    # def update_articles(self):
+    #     # l=list(qs.values_list('id', flat=True))
+    #     self.action_qs=Article.all_objects.filter(pk__in=l)
+    #     super(DeleteArticles, self).update_articles(qs, action)
 
 ############################### Claim Actions ##################################
 class Claim(ArticleActionsView):

@@ -1,7 +1,9 @@
 {% load addparam %}
 {% load url from future %}
 <ul class="nav nav-list">
-  <li class="nav-header"><a href="{% url "article_add" %}" id="new-article-link" title="New Article">New Article</a></li>
+  {% if user.mode == 2 %}
+    <li class="nav-header"><a href="{% url "article_add" %}" id="new-article-link" title="New Article">New Article</a></li>
+  {% endif %}
   <li class="nav-header"><a href="{% url "dashboard" %}">Dashboard</a></li>
   {% for section_label, section in sidebar_links %}
     <li class="nav-header">{{section_label}}</li>

@@ -206,6 +206,21 @@ class ValidationModelMixin(object):
 class Contact(models.Model):
   user_asked = models.ForeignKey(User, related_name='contact_requests', blank=True)
   confirmation = models.NullBooleanField(default=None, blank=True)
+  def __unicode__(self): 
+    try: 
+      r=self.writer.requester
+      w=self.writer.writer
+      v="write"
+    except Writer.DoesNotExist:
+      try:
+        r=self.reviewer.requester
+        w=self.reviewer.reviewer
+        v="review"
+      except: 
+        return "Contact without details"
+    if self.confirmation: return "%s %ss for %s" % (w,v,r)
+    elif self.user_asked == r: return "%s requested to %s for %s" % (w,v,r)
+    return "%s requested that %s %s" % (r,w,v)
 
 class Writer(Contact):
   @property
@@ -239,7 +254,7 @@ class ReviewerGroup(ContactGroup):
   owner = models.ForeignKey(User, related_name='reviewer_groups')
 class ArticleAction(models.Model):
     class Meta:
-        ordering = ["timestamp"]
+      ordering = ["timestamp"]
     articles = models.ManyToManyField('Article', related_name='actions')
     # articles = models.ManyToManyField('Article', through='ArticlesActions')
     author = models.ForeignKey(User, related_name = 'authors', null=True, blank=True)  # This is the writer
@@ -370,6 +385,8 @@ class Category(models.Model):
 
 class Article(ValidationModelMixin, models.Model):
   def __unicode__(self): return self.name
+  _can_write = {}
+  _can_review = {}
   minimum     = models.IntegerField(default=100)
   priority    = models.IntegerField(default=PRIORITY_NORMAL, choices = ARTICLE_PRIORITIES)
   maximum     = models.IntegerField(default=0) # Use zero for no maximum
@@ -432,6 +449,16 @@ class Article(ValidationModelMixin, models.Model):
     elif all_mine: return "Available to all my %ss" % position
     elif everyone: return "Available to all %ss" % position
     # return "XXX"
+  # @property
+  # def can_write(self, user):
+  #   if user.pk in self._can_write: return self._can_write[user.pk]
+  #   self._can_write[user.pk] = self.get_can_write(user)
+  # def get_can_write(self, user):
+  #   if (user.is_staff or user == self.owner): return True
+  #   if self.submitted == None and self.writer:
+  #     if user == self.writer: return True
+  #     if self.writers.filter(writer=user): return True
+  #     if self.writer_groups.filter(writer)
 
   @property
   def can_edit(self, user):
@@ -443,6 +470,19 @@ class Article(ValidationModelMixin, models.Model):
   def writer_status(self): return self.get_assignment_status('writer', self.writer, self.writers.all(), self.writer_groups.all(), self.available_to_all_my_writers, self.available_to_all_writers)
   @property
   def reviewer_status(self): return self.get_assignment_status('reviewer', self.reviewer, self.reviewers.all(), self.reviewer_groups.all(), self.available_to_all_my_reviewers, self.available_to_all_reviewers)
+  def can_write(self, user):
+    return (not self.submitted and ((self.writer and user == self.writer.writer) or user == self.owner))
+  def can_submit(self, user):
+    return (not self.submitted and (self.writer and user == self.writer.writer))
+  def can_review(self, user):
+    if not self.submitted: return False
+    if self.rejected: return False
+    if self.available_to_all_reviewers: return True
+    if user == self.owner: return True
+    if self.reviewer and user == self.reviewer.reviewer: return True
+    if self.reviewers.filter(reviewer=user): return True
+    if self.reviewer_groups.filter(reviewer__reviewer=user): return True
+    if self.available_to_all_my_reviewers and self.owner.reviewers.filter(reviewer=user): return True
 
   @classmethod
   def filter_valid(self, qs, request):
@@ -456,7 +496,7 @@ class Article(ValidationModelMixin, models.Model):
       if not validation.plugin.is_valid(self, request): return False
     return True
   def submit(self, request):
-    if not self.submitted and request.user == self.writer: 
+    if self.can_submit(request.user): 
       if self.is_valid(request):
         action = ArticleAction.objects.create(user=request.user, author=request.user, code=ACT_SUBMIT)
         self.last_action=action
@@ -465,11 +505,20 @@ class Article(ValidationModelMixin, models.Model):
         self.save()
       else: messages.error(request, "We were unable to submit the article due to the errors encountered")
   def approve(self, user):
-    if self.submitted and (user==self.owner or user==self.reviewer) and not self.approved: 
-      action = ArticleAction.objects.create(user=user, author=self.writer, code=ACT_APPROVE)
+    if self.can_review(user): 
+      action = ArticleAction.objects.create(user=user, author=self.writer.writer, code=ACT_APPROVE)
       self.last_action=action
       self.approved = action
       self.status = STATUS_APPROVED
+      self.save()
+  def reject(self, user):
+    if self.can_review(user): 
+      action = ArticleAction.objects.create(user=user, author=self.writer.writer, code=ACT_REJECT)
+      self.last_action=action
+      self.rejected = action
+      self.status = STATUS_RELEASED
+      self.submitted = None
+      self.approved = None
       self.save()
   def get_tags(self):
     return self.tags.split(',')
@@ -486,27 +535,31 @@ class Article(ValidationModelMixin, models.Model):
   class ArticleWorkflowException(Exception): pass
   # ATTRIBUTES={'publish':ACT_PUBLISH,'approved':ACT_APPROVE,'submitted':ACT_SUBMIT,'assigned':ACT_ASSIGN,'rejected':ACT_REJECT,'released':ACT_RELEASE}
   def get_available_actions(self, user):
-      status = self.status
-      actions=[]
-      if not user.is_authenticated(): return []
-      if user.mode == WRITER_MODE:
-        if self.writer == user and not self.submitted: actions += [ACT_REMOVE_WRITER, ACT_SUBMIT]
-        # The following is needed, but is not working:
-        # if self.available_to_contacts.filter(position=user.mode, worker=user) or self.available_to_all_writers or (self.available_to_all_my_writers and self.owner.contacts_as_requester__worker=user and self.owner.contacts_as_requester__position=user.mode)
-        # contact_names = [c.name for c in self.owner.writer_contacts.filter(worker=user)]
-        # elif not self.writer and (self.writer_availability in contact_names or not self.writer_availability):
-        #   actions += [ACT_CLAIM_WRITER]
-      elif user.mode == REQUESTER_MODE and user==self.owner:
-          if   status == STATUS_APPROVED:     actions.append(ACT_PUBLISH)
-          elif status == STATUS_SUBMITTED:    actions += [ACT_REJECT, ACT_APPROVE]
-      elif user.mode == REVIEWER_MODE:
-          contact_names = [c.name for c in self.owner.reviewers.filter(worker=user)]
-          if self.reviewer == user and status == STATUS_SUBMITTED:
-              actions += [ACT_REMOVE_REVIEWER, ACT_REJECT, ACT_APPROVE]
-          elif not self.reviewer and \
-          (self.reviewer_availability in contact_names or not self.reviewer_availability): 
-              actions += [ACT_CLAIM_REVIEWER]
-      return actions
+    status = self.status
+    actions=[]
+    if not user.is_authenticated(): return []
+    if user.mode == WRITER_MODE:
+      if self.writer == user and not self.submitted: actions += [ACT_REMOVE_WRITER, ACT_SUBMIT]
+      # The following is needed, but is not working:
+      # if self.available_to_contacts.filter(position=user.mode, worker=user) or self.available_to_all_writers or (self.available_to_all_my_writers and self.owner.contacts_as_requester__worker=user and self.owner.contacts_as_requester__position=user.mode)
+      # contact_names = [c.name for c in self.owner.writer_contacts.filter(worker=user)]
+      # elif not self.writer and (self.writer_availability in contact_names or not self.writer_availability):
+      #   actions += [ACT_CLAIM_WRITER]
+    elif user.mode == REQUESTER_MODE and user==self.owner:
+      if   status == STATUS_APPROVED:     actions.append(ACT_PUBLISH)
+      elif status == STATUS_SUBMITTED:    actions += [ACT_REJECT, ACT_APPROVE]
+    elif user.mode == REVIEWER_MODE:
+      # See if user was assigned to review
+      if self.reviewer and user == self.reviewer.reviewer: return [ACT_REJECT, ACT_APPROVE]
+      # See if user among reviewers made available to or its available to all
+      if self.reviewers.filter(reviewer=user) or self.available_to_all_reviewers: 
+        return [ACT_REJECT, ACT_APPROVE]
+      # If available to all owners reviewers, check if user is among them
+      if self.owner.reviewers.filter(reviewer=user) and self.available_to_all_my_reviewers:
+        return [ACT_REJECT, ACT_APPROVE]
+      # Check if user is member of any group in self.reviewer_groups
+      if self.reviewer_groups.filter(contacts__reviewer__reviewer=user):
+        return [ACT_REJECT, ACT_APPROVE]
             
   @property
   def klass(self):return self.article_type.name

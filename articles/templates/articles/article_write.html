@@ -1,0 +1,181 @@
+{% extends "design/base.html" %}
+{% load url from future %}
+{% block navbar %}
+  <li><a href="{% url "article_add" %}">Add Article</a></li>
+{% endblock %}
+{% block content %}
+  <div class="row">
+    {% if object.project %}
+      <div class="col-md-3">
+        Project: {{ object.project.name }}
+      </div>
+    {% endif %}
+    {% if object.article_type %}
+      <div class="col-md-3">
+        Article Type: {{ object.article_type }}
+      </div>
+    {% endif %}
+    {% if object.category %}
+      <div class="col-md-3">
+        Category: {{ object.category }}
+      </div>
+    {% endif %}
+    {% if object.priority %}
+      <div class="col-md-3">
+        Priority: {{ object.priority }}
+      </div>
+    {% endif %}
+  </div>
+  {% if object.tags %}
+    <div class="row">
+      <div id="tags-cell" class="col-md-12">Tags: {{object.tags}}</div>
+    </div>
+  {% endif %}
+  <div class="row">
+    {% if object.referrals %}
+      <div id="referrals-cell" class="col-md-3">Referrals: {{object.referrals}}</div>
+    {% endif %}
+    {% if object.language %}
+      <div id="lang-cell" class="col-md-3">Language: {{object.language}}</div>
+    {% endif %}
+    {% if object.style %}
+      <div id="style-cell" class="col-md-3">Style: {{object.style}}</div>
+    {% endif %}
+    {% if object.expires %}
+      <div id="date-cell" class="col-md-3">Expires: {{object.expires}}</div>
+    {% endif %}
+    {% if object.purpose %}
+      <div id="purpose-cell" class="col-md-3">Purpose: {{object.purpose}}</div>
+    {% endif %}
+    {% if object.price %}
+      <div id="price-cell" class="col-md-3">Price: {{object.price}}</div>
+    {% endif %}
+    {% if object.minimum %}
+      <div class="col-md-3">Length: {{ object.minimum }}</div>
+    {% endif %}
+    {% if object.description %}
+      <div class="col-md-9">Description: {{object.description}}</div>
+    {% endif %}
+  </div>
+  {% if object.article_notes %}
+    <div class="row">
+      <div class="col-md-12">{{object.article_notes}}</div>
+    </div>
+  {% endif %}
+  {% if object.review_notes %}
+    <div class="row">
+      <div class="col-md-12">{{object.review_notes}}</div>
+    </div>
+  {% endif %}
+  <div class="row">
+    <div class="col-md-12">{{form.title}}</div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <div data-target="#editor" data-role="editor-toolbar" class="btn-toolbar">
+        <div class="btn-group">
+          <a title="" data-toggle="dropdown" class="btn dropdown-toggle" data-original-title="Font"><i class="icon-font"></i><b class="caret"></b></a>
+          <ul class="dropdown-menu">
+            <li><a style="font-family:'Serif'" data-edit="fontName Serif">Serif</a></li>
+            <li><a style="font-family:'Sans'" data-edit="fontName Sans">Sans</a></li>
+            <li><a style="font-family:'Arial'" data-edit="fontName Arial">Arial</a></li>
+            <li><a style="font-family:'Arial Black'" data-edit="fontName Arial Black">Arial Black</a></li>
+            <li><a style="font-family:'Courier'" data-edit="fontName Courier">Courier</a></li>
+            <li><a style="font-family:'Courier New'" data-edit="fontName Courier New">Courier New</a></li>
+            <li><a style="font-family:'Comic Sans MS'" data-edit="fontName Comic Sans MS">Comic Sans MS</a></li>
+            <li><a style="font-family:'Helvetica'" data-edit="fontName Helvetica">Helvetica</a></li>
+            <li><a style="font-family:'Impact'" data-edit="fontName Impact">Impact</a></li>
+            <li><a style="font-family:'Lucida Grande'" data-edit="fontName Lucida Grande">Lucida Grande</a></li>
+            <li><a style="font-family:'Lucida Sans'" data-edit="fontName Lucida Sans">Lucida Sans</a></li>
+            <li><a style="font-family:'Tahoma'" data-edit="fontName Tahoma">Tahoma</a></li>
+            <li><a style="font-family:'Times'" data-edit="fontName Times">Times</a></li>
+            <li><a style="font-family:'Times New Roman'" data-edit="fontName Times New Roman">Times New Roman</a></li>
+            <li><a style="font-family:'Verdana'" data-edit="fontName Verdana">Verdana</a></li>
+          </ul>
+        </div>
+        <div class="btn-group">
+          <a title="" data-toggle="dropdown" class="btn dropdown-toggle" data-original-title="Font Size"><i class="icon-text-height"></i>&nbsp;<b class="caret"></b></a>
+          <ul class="dropdown-menu">
+            <li><a data-edit="fontSize 5"><font size="5">Huge</font></a></li>
+            <li><a data-edit="fontSize 4"><font size="4">Large</font></a></li>
+            <li><a data-edit="fontSize 3"><font size="3">Normal</font></a></li>
+            <li><a data-edit="fontSize 2"><font size="2">Small</font></a></li>
+            <li><a data-edit="fontSize 1"><font size="1">Tiny</font></a></li>
+          </ul>
+        </div>
+        <div class="btn-group">
+          <a title="" data-edit="bold" class="btn" data-original-title="Bold (Ctrl/Cmd+B)"><i class="icon-bold"></i></a>
+          <a title="" data-edit="italic" class="btn" data-original-title="Italic (Ctrl/Cmd+I)"><i class="icon-italic"></i></a>
+          <a title="" data-edit="strikethrough" class="btn" data-original-title="Strikethrough"><i class="icon-strikethrough"></i></a>
+          <a title="" data-edit="underline" class="btn" data-original-title="Underline (Ctrl/Cmd+U)"><i class="icon-underline"></i></a>
+        </div>
+        <div class="btn-group">
+          <a title="" data-edit="insertunorderedlist" class="btn" data-original-title="Bullet list"><i class="icon-list-ul"></i></a>
+          <a title="" data-edit="insertorderedlist" class="btn" data-original-title="Number list"><i class="icon-list-ol"></i></a>
+          <a title="" data-edit="outdent" class="btn" data-original-title="Reduce indent (Shift+Tab)"><i class="icon-indent-left"></i></a>
+          <a title="" data-edit="indent" class="btn" data-original-title="Indent (Tab)"><i class="icon-indent-right"></i></a>
+        </div>
+        <div class="btn-group">
+          <a title="" data-edit="justifyleft" class="btn btn-info" data-original-title="Align Left (Ctrl/Cmd+L)"><i class="icon-align-left"></i></a>
+          <a title="" data-edit="justifycenter" class="btn" data-original-title="Center (Ctrl/Cmd+E)"><i class="icon-align-center"></i></a>
+          <a title="" data-edit="justifyright" class="btn" data-original-title="Align Right (Ctrl/Cmd+R)"><i class="icon-align-right"></i></a>
+          <a title="" data-edit="justifyfull" class="btn" data-original-title="Justify (Ctrl/Cmd+J)"><i class="icon-align-justify"></i></a>
+        </div>
+        <div class="btn-group">
+          <a title="" data-edit="undo" class="btn" data-original-title="Undo (Ctrl/Cmd+Z)"><i class="icon-undo"></i></a>
+          <a title="" data-edit="redo" class="btn" data-original-title="Redo (Ctrl/Cmd+Y)"><i class="icon-repeat"></i></a>
+        </div>
+        <input type="text" x-webkit-speech="" id="voiceBtn" data-edit="inserttext" style="display: none;">
+      </div>
+      <div id="editor" name="body">{{object.body|safe|default:"Begin writing here..."}}</div>
+    </div>
+  </div>
+  <div class="row input-row">
+    <div class="col-md-12">
+      <button onclick="save_article('done');" class="btn btn-primary">Done</button>
+      {% if not object.submitted and user = object.writer.writer %}
+      <button onclick="save_article('submit');" class="btn btn-primary">Submit</button>
+      {% elif not object.approved and not object.rejected and object.submitted %}
+        {% if user = object.reviewer.reviewer or user = object.owner %}
+          <button onclick="save_article('accept');" class="btn btn-primary">Accept</button>
+          <button onclick="save_article('reject');" class="btn btn-primary">Reject</button>
+        {% endif %}    
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}
+
+{% block css %}
+    <link href="{{STATIC_URL}}css/jquery-te-1.4.0.css" rel="stylesheet">
+    <link href="http://netdna.bootstrapcdn.com/font-awesome/3.0.2/css/font-awesome.css" rel="stylesheet">
+{% endblock %}
+{% block js %}
+    <script type='text/javascript' src='{{STATIC_URL}}js/jquery-te-1.4.0.min.js'></script>
+    <script type='text/javascript' src='{{STATIC_URL}}js/bootstrap-wysiwyg.js'></script>
+    <script type='text/javascript' src="{{STATIC_URL}}js/jquery.hotkeys.js"></script>
+    <script type='text/javascript' src="{{STATIC_URL}}js/google-code-prettify/prettify.js"></script>
+    <script type="text/javascript">  
+      $('#editor').wysiwyg();
+      window.last_save = "";
+      var timer=setInterval(autosave, 60000);
+      function autosave(){
+        save_article('autosave');
+      }
+      function save_article(extra){
+        current = $('#editor').cleanHtml();
+        if (current == window.last_save && extra =='done'){
+          window.location='{{request.session.article_list_view}}';  
+        }else{
+          $.ajax({
+            type: "POST",
+            url: "{% url "article_update" object.pk %}",
+            data: { body: current, title: $('#id_title').val(), extra:extra },
+          });
+          window.last_save = current;
+        }
+        if (extra!='autosave'){
+          window.location='{{request.session.article_list_view}}';  
+        }
+      }
+    </script>
+{% endblock %}

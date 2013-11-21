@@ -62,7 +62,7 @@ class BootstrapDropdown(Select):
     if k != 'attrs':
         self.noscript_widget.__setattr__(k, value)
   def get_label(self):
-    print "self.label = %s" % str(self.label)
+    # print "self.label = %s" % str(self.label)
     if self.label: label = self.label
     elif self.name: label = self.name.title()
     if label:
@@ -87,10 +87,10 @@ class BootstrapDropdown(Select):
       }
   def render(self, name, value, attrs=None, choices=()):
     self.name = name
-    print "attrs = %s" % str(attrs)
+    # print "attrs = %s" % str(attrs)
     attrs = self.add_attrs(attrs)
-    print "self.help_text = %s" % str(self.help_text)
-    print "attrs = %s" % str(attrs)
+    # print "self.help_text = %s" % str(self.help_text)
+    # print "attrs = %s" % str(attrs)
     # print "value = %s" % str(value)
 
     if value is None: value = ''

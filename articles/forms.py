@@ -7,7 +7,16 @@ from django.utils.encoding import smart_unicode
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 
 from titlecase import titlecase
-
+class FormWithUserMixin(object):
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user')
+        super(FormWithUserMixin, self).__init__(*args, **kwargs)
+class ModelFormWithUserMixin(FormWithUserMixin):
+    def save(self, commit=True):
+        model = super(ModelFormWithUserMixin, self).save(commit=False)
+        model.owner = self.user
+        if commit: model.save()
+        return model
 class FormWithLookupsMixin(object):
     lookup_field_names={}
     def auto_create_related_object(self, data, field_name, model):
@@ -28,35 +37,118 @@ class FormWithLookupsMixin(object):
         except model.DoesNotExist: 
             if auto_create: return self.auto_create_related_object(data, name, model)
             else: raise ValidationError('Unable to find %s in the list of %ss.' % (data, title))
-class CreateArticleForm(ModelForm):
+class BaseArticleForm(ModelForm):
     class Meta:
         model = Article
-        fields = ('language', 'style', 'purpose','price','referrals','expires','priority','category','tags', 'minimum','article_type','project','title','body', 'owner','number_of_articles','article_notes','review_notes','description')
+        fields = ('language', 'style', 'purpose','price','referrals','expires','priority','category','tags', 'minimum','article_type','project','number_of_articles','article_notes','review_notes','description')
     # lookup_field_names = {'project':'name'}
     # project = CharField(required=False)
-    article_notes   = CharField(widget=widgets.Textarea(attrs={'class':'notes boxsizingBorder','placeholder':'Notes to writer...','class':'form-control'}), required=False)
-    review_notes    = CharField(widget=widgets.Textarea(attrs={'class':'notes boxsizingBorder','placeholder':'Notes to reviewer...','class':'form-control'}), required=False)
-    description     = CharField(widget=widgets.Textarea(attrs={'class':'notes boxsizingBorder','placeholder':'Add description...','class':'form-control'}), required=False)
-    number_of_articles = IntegerField(required=False, widget=widgets.TextInput(attrs={'placeholder':'Number of Articles: One','class':'form-control'}))
-    project         = ModelChoiceField(queryset=Project.objects.all(), widget=BootstrapDropdownPlus(label="Project", plus_url="www.google.com", help_text='Select a project or start a new one.', attrs={'class':'article-select form-control', 'data-style':"btn-primary"}), required=False)
-    category        = ModelChoiceField(queryset=Category.objects.all(), widget=BootstrapDropdownPlus(label="Category", plus_url="www.google.com", help_text='Select a category for your article(s).', attrs={'data-style':"btn-primary",'class':'form-control'}), required=False)
-    article_type    = ModelChoiceField(queryset=ArticleType.objects.all(), widget=BootstrapDropdown(label="Type", plus_url="www.google.com", help_text='Select the type of content you want written.', attrs={'data-style':"btn-primary",'class':'form-control'}), initial='0')
-    priority        = ChoiceField(choices = ARTICLE_PRIORITIES, widget=BootstrapDropdown(label="Priority", help_text='How urgent is/are the article(s)?', attrs={'data-style':"btn-primary",'class':'form-control'}), required=False)
-    minimum         = CharField(initial="", widget=widgets.TextInput(attrs={'class':'high-input', 'placeholder':'Length:100','class':'form-control'}), required=False)
-    expires         = DateField(initial="", widget=widgets.DateTimeInput(attrs={'placeholder':'Expires: Never','class':'form-control'}), required=False)
-    tags            = CharField(initial="", widget=widgets.TextInput(attrs={'placeholder':'Tags','class':'form-control'}), required=False)
-    referrals       = CharField(initial="", widget=widgets.TextInput(attrs={'placeholder':'Referrals','class':'form-control'}), required=False)
-    language        = CharField(initial="", widget=widgets.TextInput(attrs={'placeholder':'Language','class':'form-control'}), required=False)
-    style           = CharField(initial="", widget=widgets.TextInput(attrs={'placeholder':'Style','class':'form-control'}), required=False)
-    purpose         = CharField(initial="", widget=widgets.TextInput(attrs={'placeholder':'Purpose','class':'form-control'}), required=False)
-    price           = CharField(initial="", widget=widgets.TextInput(attrs={'placeholder':'Price','class':'form-control'}), required=False)
+    article_notes = CharField(
+        widget=widgets.Textarea(
+            attrs={
+                'class':'notes boxsizingBorder',
+                'placeholder':'Notes to writer...',
+                'class':'form-control'
+            }
+        ), 
+        required=False
+    )
+    review_notes = CharField(
+        widget=widgets.Textarea(
+            attrs={
+                'class':'notes boxsizingBorder',
+                'placeholder':'Notes to reviewer...',
+                'class':'form-control'
+            }
+        ), 
+        required=False
+    )
+    description = CharField(
+        widget=widgets.Textarea(
+            attrs={
+                'class':'notes boxsizingBorder',
+                'placeholder':'Add description...',
+                'class':'form-control'
+            }
+        ), 
+        required=False
+    )
+    number_of_articles = IntegerField(
+        required=False, widget=widgets.TextInput(
+        attrs={'placeholder':'Number of Articles: One',
+        'class':'form-control'
+    }
+))
+    project = ModelChoiceField(
+        queryset=Project.objects.all(), 
+        widget=BootstrapDropdownPlus(
+            label="Project", 
+            plus_url="www.google.com", 
+            help_text='Select a project or start a new one.', 
+            attrs={'class':'article-select form-control', 'data-style':"btn-primary"}), 
+        required=False)
+    category = ModelChoiceField(
+        queryset=Category.objects.all(), 
+        widget=BootstrapDropdownPlus(
+            label="Category", 
+            plus_url="www.google.com", 
+            help_text='Select a category for your article(s).', 
+            attrs={'data-style':"btn-primary",'class':'form-control'}), 
+        required=False)
+    article_type = ModelChoiceField(
+        queryset=ArticleType.objects.all(), 
+        widget=BootstrapDropdown(
+            label="Type", 
+            plus_url="www.google.com", 
+            help_text='Select the type of content you want written.', 
+            attrs={'data-style':"btn-primary",'class':'form-control'}), initial='0')
+    priority = ChoiceField(choices = ARTICLE_PRIORITIES, 
+        widget=BootstrapDropdown(
+            label="Priority", 
+            help_text='How urgent is/are the article(s)?', 
+            attrs={'data-style':"btn-primary",'class':'form-control'}), 
+        required=False)
+    minimum = CharField(
+        initial="", 
+        widget=widgets.TextInput(
+        attrs={'class':'high-input', 'placeholder':'Length:100','class':'form-control'}), 
+        required=False)
+    expires = DateField(
+        initial="", 
+        widget=widgets.DateTimeInput(
+        attrs={'placeholder':'Expires: Never','class':'form-control'}), 
+        required=False)
+    tags = CharField(
+        initial="", 
+        widget=widgets.TextInput(
+        attrs={'placeholder':'Tags','class':'form-control'}), 
+        required=False)
+    referrals = CharField(
+        initial="", 
+        widget=widgets.TextInput(
+        attrs={'placeholder':'Referrals','class':'form-control'}), 
+        required=False)
+    language = CharField(
+        initial="", 
+        widget=widgets.TextInput(
+        attrs={'placeholder':'Language','class':'form-control'}), 
+        required=False)
+    style = CharField(
+        initial="", 
+        widget=widgets.TextInput(
+        attrs={'placeholder':'Style','class':'form-control'}), 
+        required=False)
+    purpose = CharField(
+        initial="", 
+        widget=widgets.TextInput(
+        attrs={'placeholder':'Purpose','class':'form-control'}), 
+        required=False)
+    price = CharField(
+        initial="", 
+        widget=widgets.TextInput(
+        attrs={'placeholder':'Price','class':'form-control'}), 
+        required=False)
 
-    # def clean_project(self):
-    #     # Looksup project by name and creates it if it doesnt exist
-    #     return self.clean_lookup('project', Project, auto_create=True)
-    # def auto_create_related_object(self, data, field_name, model):
-    #     # creates the new project with the user as owner
-    #     return Project.objects.create(name=data, owner=self.user)
     def clean_minimum(self):
         if self.cleaned_data.get('minimum'):
             try:
@@ -64,27 +156,39 @@ class CreateArticleForm(ModelForm):
             except ValueError:
                 raise ValidationError("Invalid number")
         return 100
-    def __init__(self, *args, **kwargs):
-        # Recieves user from request
-        self.user = kwargs.pop('user')
-        # print "self.fields['project'] = %s" % str(self.fields['project'])
-        # print "self.fields['article_type'] = %s" % str(self.fields['article_type'])
-        super(CreateArticleForm, self).__init__(*args, **kwargs)
     def clean_title(self):
         data = self.cleaned_data['title']
         return titlecase(data)
-class ArticleForm(CreateArticleForm):
+class CreateArticleForm(ModelFormWithUserMixin, BaseArticleForm): pass
+class UpdateArticleForm(BaseArticleForm):
     class Meta:
         model = Article
-        fields = ('writer','reviewer','language', 'style',  'purpose','price','referrals','expires','priority','category','tags', 'minimum','article_type','project','title','body', 'owner','number_of_articles','article_notes','review_notes','description')
-    title = CharField(initial="", widget=widgets.TextInput(attrs={'placeholder':'Title','class':'form-control'}), required=False)
+        fields = ('writer','reviewer','language', 'style',  'purpose','price','referrals','expires',
+            'priority','category','tags', 'minimum','article_type','project','title','body', 
+            'number_of_articles','article_notes','review_notes','description')
+    title = CharField(
+        initial="", 
+        widget=widgets.TextInput(attrs={'placeholder':'Title','class':'form-control'}), 
+        required=False
+    )
 class WriteArticleForm(ModelForm):
-    class Meta:
-        model = Article
-        fields = ('title','body')    
-    def __init__(self, *args, **kwargs):  
-        self.user = kwargs.pop('user')
-        super(WriteArticleForm, self).__init__(*args, **kwargs)
+  class Meta:
+    model = Article
+    fields = ('title','body')    
+  title = CharField(
+    initial="", 
+    widget=widgets.TextInput(
+    attrs={'placeholder':'Title','class':'form-control'}), 
+    required=False)
+  body = CharField(
+    widget=widgets.Textarea(
+        attrs={
+            'placeholder':'Type article here',
+            'class':'form-control'
+        }
+    ), 
+    required=False
+  )
 
 class KeywordForm(ModelForm):
     class Meta:
@@ -93,12 +197,12 @@ class KeywordForm(ModelForm):
     url = CharField(widget=widgets.TextInput(attrs={'class':'form-control'}), required=False)
     times = CharField(widget=widgets.TextInput(attrs={'class':'form-control'}), required=False)
 
-
 class KeywordInlineFormSet(InlineFormSet):
     # This is old and deprecated
     model = Keyword
     form_class = KeywordForm
     extra = 1
+
 class KeywordInline(InlineFormSet):
     model = Keyword
     form_class = KeywordForm
@@ -162,17 +266,6 @@ class TagArticleForm(ModelForm):
         model = Article
         fields = ('tags',)
 
-class FormWithUserMixin(object):
-    def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop('user')
-        super(FormWithUserMixin, self).__init__(*args, **kwargs)
-class ModelFormWithUser(FormWithUserMixin, ModelForm):
-    def save(self, commit=True):
-        model = super(ModelFormWithUser, self).save(commit=False)
-        model.owner = self.user
-        if commit: model.save()
-        return model
-
 # class ContactForm(FormWithUserMixin, ModelForm):
 #   class Meta:
 #     model = Contact
@@ -219,11 +312,11 @@ class ReviewerForm(ContactForm):
 #         self.instance.confirmation=True
 #         return super(ConfirmContactForm, self).save(commit=True)
 
-class ProjectForm(ModelFormWithUser):
+class ProjectForm(ModelFormWithUserMixin, ModelForm):
     class Meta:
         model = Project
         fields=('name',)
-class CategoryForm(ModelFormWithUser):
+class CategoryForm(ModelFormWithUserMixin, ModelForm):
     class Meta:
         model = Category
         fields=('name',)

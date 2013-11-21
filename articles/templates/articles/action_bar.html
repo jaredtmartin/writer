@@ -50,21 +50,26 @@
       </li>
     {% endif %}
 
-
     {# Make Available for Reviewers #}
     {% if heading = "Submitted Articles" %}
       <li class="dropdown multiaction">
         <a data-toggle="dropdown" id="reviewer-availablity-dropdown" class="dropdown-toggle" href="#">Available To <b class="caret"></b></a>
         <ul class="dropdown-menu">
+          {% for reviewer in user.reviewers.all %}
+            <li><a id="reviewer-available-to-option-{{reviewer.pk}}" onclick="make_available_to('reviewer','{{reviewer.pk}}');return false;">{{reviewer.reviewer.full_name}}</a></li>
+          {% endfor %}
+          {% if user.reviewers %}
+            <li class="divider"></li>
+          {% endif %}
+          {% for group in user.reviewer_groups.all %}
+            <li><a id="available-to-reviewer-group-option-{{group.pk}}" onclick="make_available_to_group('reviewer','{{group.pk}}');return false;">{{group.name}}</a></li>
+          {% endfor %}
+          {% if user.reviewer_groups %}
+            <li class="divider"></li>
+          {% endif %}
           <li><a id="available-option" onclick="make_available('reviewer');return false;">All Reviewers</a></li>
           <li><a id="available-option" onclick="make_available_to_mine('reviewer');return false;">All My Reviewers</a></li>
           <li><a id="unavailable-option" onclick="make_unavailable('reviewer');return false;">Nobody</a></li>
-          {% if reviewer_availability_list %}
-            <li class="divider"></li>
-          {% endif %}
-          {% for reviewer in reviewer_availability_list %}
-            <li><a id="reviewer-available-to-option-{{reviewer.pk}}" onclick="make_available_to('reviewer','{{reviewer.pk}}');return false;">{{reviewer.reviewer.full_name}}</a></li>
-          {% endfor %}
         </ul>
       </li>
     {% endif %}
@@ -81,18 +86,8 @@
       </li>
     {% endif %}
 
-    {# Assign Reviewer #}
-    {% if heading = "Submitted Articles" %}
-      <li class="dropdown multiaction">
-        <a data-toggle="dropdown" id="assign-reviewer-dropdown" class="dropdown-toggle" href="#">Assign Reviewer <b class="caret"></b></a>
-        <ul class="dropdown-menu">
-        {% for reviewer in user.reviewers.all %}
-          <li><a id="assign-reviewer-option-{{reviewer.pk}}" onclick="assign_user('reviewer',{{reviewer.pk}},'{{reviewer.full_name}}');return false;">{{reviewer.reviewer.full_name}}</a></li>
-        {% endfor %}
-        </ul>
-      </li>
-    {% endif %}
-
+  {# Delete #}
+  <li id="delete-button" class="multiaction"><a onclick="doActionOnArticles('{% url delete_articles %}');return false;">Delete</a></li>
   {% elif user.get_profile.is_writer %}
     {# Claim #}
     {% if heading = "Available Articles" %}

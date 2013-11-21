@@ -35,3 +35,9 @@ class TestArticlesAsGuest(BaseTestCaseAsGuest):
   def test_avilable_articles_list(self):
     response = self.c.get('/articles/available/')
     self.assertEqual(response.status_code, 302)
+
+# Test article.writer_status
+# Test requester can delete
+# Test redirects to last list after create or update
+# Test other users can't edit someone elses articles
+# Test right names appear in assign, available dropdowns for writer and reviewer in requester mode

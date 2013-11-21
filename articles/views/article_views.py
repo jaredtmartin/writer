@@ -2,11 +2,12 @@ import slick.views as slick
 from filter_views import FiltersMixin
 from articles.models import Article, REQUESTER_MODE
 from extra_views import UpdateWithInlinesView, CreateWithInlinesView 
-from articles.forms import (CreateArticleForm, KeywordInlineFormSet, KeywordInline, QuantityForm, ArticleForm,
+from articles.forms import (CreateArticleForm, KeywordInlineFormSet, KeywordInline, QuantityForm, UpdateArticleForm,
     WriteArticleForm)
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.views.generic import FormView
 import pickle
+from django.http import HttpResponse
 
 class ArticleListBase(FiltersMixin, slick.LoginRequiredMixin, slick.ListView): 
   model = Article
@@ -87,13 +88,12 @@ class CreateArticle(slick.ExtraContextMixin, FiltersMixin, slick.FormWithUserMix
   context_object_name = 'article'
   extra_context = {'heading':'New Article'}
   inlines = [KeywordInlineFormSet]
-  success_url = reverse_lazy('available')
   def get_context_data(self, **kwargs):
       kwargs['article']=self.object
-      context = super(ArticleCreate, self).get_context_data(**kwargs)
+      context = super(CreateArticle, self).get_context_data(**kwargs)
       return context
   def forms_valid(self, form, inlines):
-      response = super(ArticleCreate, self).forms_valid(form, inlines)
+      response = super(CreateArticle, self).forms_valid(form, inlines)
       # If number_of_articles was specified, clone the model that many times
       if 'number_of_articles' in form.cleaned_data and form.cleaned_data['number_of_articles']:
         form.cleaned_data['number_of_articles']-1
@@ -108,11 +108,7 @@ class CreateArticle(slick.ExtraContextMixin, FiltersMixin, slick.FormWithUserMix
             keyword.save()
       return response
   def get_success_url(self):
-    try:
-      user=self.request.user
-      user_profile=self.request.user.get_profile()
-      return user_profile.article_list_view or reverse_lazy('available')
-    except: return reverse_lazy('available')
+    return self.request.session.get('article_list_view', reverse('available'))
 
 class UpdateArticle(slick.ExtraContextMixin, FiltersMixin, slick.LoginRequiredMixin, UpdateWithInlinesView):
   model = Article
@@ -124,22 +120,23 @@ class UpdateArticle(slick.ExtraContextMixin, FiltersMixin, slick.LoginRequiredMi
   def get_heading(self): return self.object.name
   def get_success_url(self):
     return self.request.session.get('article_list_view', reverse('available'))
-    # try: return reverse(self.request.session['article_list_view'])
-    # except: return reverse('available')
-  def get_form_class(self):
-    if self.request.user == self.object.owner and self.request.user.in_requester_mode: 
-      return ArticleForm
-    else: 
-      self.inlines = []
-      return WriteArticleForm
   def forms_valid(self, form, inlines):
     results = super(UpdateArticle, self).forms_valid(form, inlines)
-    if 'saveandsubmit' in self.request.POST: self.object.submit(self.request)
-    if 'saveandapprove' in self.request.POST: self.object.approve(self.request.user)
-    return results
+    extra = self.request.POST.get('extra','')
+    if extra=='Save': return results
+    if extra=='submit': self.object.submit(self.request)
+    if extra=='approve': self.object.approve(self.request.user)
+    if extra=='reject': self.object.reject(self.request.user)
+    return HttpResponse("AOK.")
   def get_form(self, data=None, files=None, **kwargs):
-      kwargs['user'] = self.request.user
-      return super(UpdateArticle, self).get_form(data=data, files=files, **kwargs)
+    if self.object.writer: 
+      self.inlines = []
+      return WriteArticleForm(data=data, files=files, **kwargs)
+    else:
+      return UpdateArticleForm(data=data, files=files, **kwargs)
+  def get_template_names(self):
+    if self.object.writer: return ['articles/article_write.html']
+    else: return ['articles/article_edit.html']
 
 class ShowTag(ArticleListBase):
   pass
@@ -156,5 +153,3 @@ class AjaxNewKeyword(slick.LoginRequiredMixin, FormView):
         fs=f.get_formset()
         form=fs()._construct_form(id_form.cleaned_data['num'])
         return self.render_to_response(self.get_context_data(form=form))
-
-# Test article.writer_status

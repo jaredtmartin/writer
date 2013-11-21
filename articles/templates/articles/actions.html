@@ -2,11 +2,11 @@
 {% for action in actions %}
   {% if action == "Claimed by Writer" %}
     {% if user|can_claim_to_write:article %}
-      <button class="btn {{btn_size}}" onclick="doActionOnArticles('{% url claim_as_writer %}',{{article.id}});return false;" >Claim</button>
+      <button class="btn {{btn_size}} btn-primary" onclick="doActionOnArticles('{% url claim_as_writer %}',{{article.id}});return false;" >Claim</button>
     {% endif %}
   {% elif action == "Claimed by Reviewer" %}
     {% if user|can_claim_to_review:article %}
-      <button class="btn {{btn_size}}" onclick="doActionOnArticles('{% url claim_as_reviewer %}',{{article.id}});return false;" >Claim</button>
+      <button class="btn {{btn_size}} btn-primary" onclick="doActionOnArticles('{% url claim_as_reviewer %}',{{article.id}});return false;" >Claim</button>
     {% endif %}
   {% elif action == "Assigned to Writer" %}
     <div class="btn-group">

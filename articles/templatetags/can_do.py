@@ -11,6 +11,15 @@ def can_edit(user, article):
 
 register.filter('can_edit', can_edit)
 
+def can_review(article, user):
+    if not article: return False
+    if (user.is_staff or user == article.owner): return True
+    if user == article.writer.writer and not article.submitted: return True
+    if user == article.reviewer.reviewer and article.submitted: return True
+    return False
+
+register.filter('can_edit', can_edit)
+
 def can_claim_to_write(user, article):
     if not article: return False
     if article.writer: return False

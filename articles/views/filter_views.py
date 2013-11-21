@@ -10,34 +10,49 @@ class FiltersMixin(object):
     "sidebar_links":'get_sidebar_links',
   }
   def filter_approved(self, qs, value=True):
-    return qs.filter(status=STATUS_APPROVED)
+    if self.request.user.mode==REQUESTER_MODE: 
+      return qs.filter(status=STATUS_APPROVED, owner=self.request.user)
+    elif self.request.user.mode == REVIEWER_MODE: 
+      return qs.filter(status=STATUS_APPROVED, approved__user=self.request.user)
+    elif self.request.user.mode == WRITER_MODE: 
+      return qs.filter(status=STATUS_APPROVED, writer__writer=self.request.user)
   def filter_assigned(self, qs, value=True):
     if self.request.user.mode==WRITER_MODE:
       return qs.filter(writer__writer=self.request.user, was_claimed=False, status=STATUS_ASSIGNED)
     elif self.request.user.mode==REQUESTER_MODE:
       return qs.filter(writer__isnull=False, was_claimed=False, status=STATUS_ASSIGNED)
+    else: return qs.none()
   def filter_available(self, qs, value=True):
     if self.request.user.mode == REQUESTER_MODE:
       return qs.filter(owner=self.request.user).filter(Q(writers__isnull=False)|Q(writer_groups__isnull=False)|Q(available_to_all_writers=True)|Q(available_to_all_my_writers=True)).exclude(writer__isnull=False).distinct()
     elif self.request.user.mode == WRITER_MODE: return qs.filter(Q(writers__writer=self.request.user)|Q(writer_groups__contacts__writer__writer=self.request.user)|Q(available_to_all_writers=True)|Q(available_to_all_my_writers=True, owner__writers__writer=self.request.user)).exclude(writer__isnull=False).distinct()
-    elif self.request.user.mode == REVIEWER_MODE: return qs.filter(Q(reviewers__reviewer=self.request.user)|Q(reviewer_groups__contacts__reviewer__reviewer=self.request.user)|Q(available_to_all_reviewers=True)|Q(available_to_all_my_reviewers=True, owner__reviewers__reviewers=self.request.user)).exclude(reviewer__isnull=False).distinct()
+    elif self.request.user.mode == REVIEWER_MODE: return qs.filter(Q(reviewers__reviewer=self.request.user)|Q(reviewer__reviewer=self.request.user)|Q(reviewer_groups__contacts__reviewer__reviewer=self.request.user)|Q(available_to_all_reviewers=True)|Q(available_to_all_my_reviewers=True, owner__reviewers__reviewer=self.request.user)).exclude(rejected__isnull=False).exclude(approved__isnull=False).distinct()
   def filter_claimed(self, qs, value=True):
     if self.request.user.mode==WRITER_MODE:
       return qs.filter(writer__writer=self.request.user, was_claimed=True, status=STATUS_ASSIGNED)
     elif self.request.user.mode==REQUESTER_MODE:
       return qs.filter(was_claimed=True, status=STATUS_ASSIGNED)
+    else: return qs.none()
   def filter_rejected(self, qs, value=True):
-    return qs.filter(rejected__isnull=False)
+    if self.request.user.mode==REQUESTER_MODE: 
+      return qs.filter(rejected__isnull=False, owner=self.request.user)
+    elif self.request.user.mode == REVIEWER_MODE: 
+      return qs.filter(rejected__isnull=False, rejected__user=self.request.user)
+    elif self.request.user.mode == WRITER_MODE: 
+      return qs.filter(rejected__author=self.request.user)
   def filter_published(self, qs, value=True):
     if self.request.user.mode==REQUESTER_MODE: return qs.filter(status=STATUS_PUBLISHED)
     else: return qs.none()
   def filter_submitted(self, qs, value=True):
     if self.request.user.mode==WRITER_MODE:
-      return qs.filter(writer__writer=self.request.user, status=STATUS_SUBMITTED,submitted__isnull=False, approved__isnull=True)
+      return qs.filter(writer__writer=self.request.user, status=STATUS_SUBMITTED,submitted__isnull=False, approved__isnull=True, rejected__isnull=True)
     elif self.request.user.mode==REQUESTER_MODE:
       return qs.filter(status=STATUS_SUBMITTED,submitted__isnull=False, approved__isnull=True)
+    else: return qs.none()
   def filter_unavailable(self, qs, value=True):
-    return qs.filter(owner=self.request.user, available_to_all_my_writers=False, available_to_all_writers=False, writers__isnull=True, writer_groups__isnull=True, writer=None)
+    if self.request.user.mode==REQUESTER_MODE:
+      return qs.filter(owner=self.request.user, available_to_all_my_writers=False, available_to_all_writers=False, writers__isnull=True, writer_groups__isnull=True, writer=None)
+    else: return qs.none()
   def filter_my_writers(self, qs, value=True):
     return qs.filter(requester=self.request.user, confirmation = True)
   def filter_writers_pending(self, qs, value=True):

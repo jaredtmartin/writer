@@ -11,10 +11,49 @@
 // .navbar-inverse .nav > li.split-dropdown > a.dropdown-toggle > b.caret{
 //   margin:5px;
 // }
+
+
+// The following section is for the text editor
+.btn-toolbar .btn:hover{
+  background-color:  #2980B9;
+}
+.btn-toolbar .btn.btn-info{
+  background-color:  #2980B9;
+  color: white;
+}
+.btn-toolbar .btn.btn-info.active{
+  background-color:  #2980B9;
+  color: white;
+}
+.btn-toolbar .btn.active{
+  color:  #2980B9;
+}
+#editor {
+    border: 2px solid #BDC3C7;
+    border-radius: 6px;
+    box-shadow: none;
+    color: #34495E;
+    font-family: "Lato",Helvetica,Arial,sans-serif;
+    font-size: 15px;
+    padding: 8px 12px;
+    transition: border 0.25s linear 0s, color 0.25s linear 0s, background-color 0.25s linear 0s;
+    overflow:auto; height:500px
+}
+#editor:focus {
+    border-color: #3498DB;
+    box-shadow: none;
+    outline: 0 none;
+}
+
+
 .waist{
   min-height:500px;
 }
 
+// This is to make block dropdowns fill area
+.select .dropdown-toggle.btn-block {
+    width: 100%;
+}
 // This is for the drag and drop lists
 .drag-drop-list{
   min-height:300px;
@@ -150,8 +189,8 @@ p.lead{text-align:justify;}
   position:relative;
   left:20px;
 }
-li.logo-space{
-  width:235px; //195+20+20
+div.logo-space{
+  width:230px; //195+20+20
 }
 
 // // The following is for checkboxes in submenus

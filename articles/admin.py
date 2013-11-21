@@ -60,7 +60,7 @@ def reject_and_release(modeladmin, request, queryset):
 reject_and_release.short_description = "Reject and release selected articles"
 
 class ContactAdmin(admin.ModelAdmin):
-    list_display = ('requester','worker','user_asked', 'confirmation')
+    list_display = ('pk','user_asked', 'confirmation')
 
 class ArticleAdmin(admin.ModelAdmin):
     list_display = ('name','id','rejected','was_claimed','status','writer','reviewer','submitted','approved')
@@ -80,7 +80,7 @@ admin.site.register(Writer)
 admin.site.register(Reviewer)
 admin.site.register(WriterGroup)
 admin.site.register(ReviewerGroup)
-# admin.site.register(Contact, ContactAdmin)
+admin.site.register(Contact, ContactAdmin)
 admin.site.register(UserProfile)
 admin.site.register(PublishingOutlet)
 admin.site.register(ValidationPlugin)

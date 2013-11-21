@@ -1,3 +1,9 @@
+Checks:
+    models.Article.get_available_actions: returns list of actions user can do on article
+    action_bar.html: Filters some actions out based on view
+
+
+
 Todo:
     New Design:
         Move Filters into the nav menu and remove bar

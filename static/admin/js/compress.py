@@ -28,7 +28,7 @@ Compiler library and Java version 6 or later."""
         if options.verbose:
             sys.stdout.write("No filenames given; defaulting to admin scripts\n")
         args = [os.path.join(here, f) for f in [
-            "thane/actions.js", "collapse.js", "inlines.js", "prepopulate.js"]]
+            "actions.js", "collapse.js", "inlines.js", "prepopulate.js"]]
 
     for arg in args:
         if not arg.endswith(".js"):

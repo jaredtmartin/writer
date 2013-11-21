@@ -5,7 +5,7 @@
 		<label class="checkbox" for="check-{{article.id}}"><input class="action-select" type="checkbox" name="action-select" value="{{article.id}}" id="check-{{article.id}}" data-toggle="checkbox" onChange="toggleRows($('#article-{{article.id}}'));"></label>
 	</td>
 	<td class="project-column">{% if article.project %} <a href="{% url project_detail article.project.pk %}"> {{article.project.name.title}} </a>{% else %}None{% endif %}</td>
-	<td class="keywords-column"><a href="{% url article_update article.pk %}">{{article.keywords}}</a></td>
+	<td class="keywords-column"><a href="{% url article_update article.pk %}">{{article.keywords|default:"No Keywords"}}</a></td>
 	<td id="status-{{article.pk}}" class="writer-column">{% if user.mode = 2 %}{{article.writer_status}}{% else %}{{article|writing_availability:user}}{% endif %}</td>
 	<td class="reviewer-column">{% if user.in_requester_mode %}{{article.reviewer_status}}{% else %}{{article|reviewing_availability:user}}{% endif %}</td>
 	<td class="status-column">{{article.type}}</td>
