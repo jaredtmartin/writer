@@ -7,6 +7,5 @@ class FacebookOutlet(object):
         template = loader.get_template('articles/facebook_button.html')
         for setting in self.data:
         	return template.render(context)
-        
     def get_list_of_settings(self):
         return ['Username','Password']

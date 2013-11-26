@@ -151,8 +151,8 @@ class UserProfileForm(ModelForm):
   class Meta:
     model = UserProfile
     fields = ('mode','timezone')
-  timezone = ChoiceField(choices=get_timezone_choices(), widget=forms.Select(attrs={'class':'selectpicker primary'}))
-  mode = ChoiceField(choices=USER_MODES, widget=forms.Select(attrs={'class':'selectpicker primary'}))
+  timezone = ChoiceField(choices=get_timezone_choices(), widget=forms.Select(attrs={'class':'selectpicker primary btn-block'}))
+  mode = ChoiceField(choices=USER_MODES, widget=forms.Select(attrs={'class':'selectpicker primary btn-block'}))
 
 class LoginForm(django_forms.AuthenticationForm):
     username = forms.CharField(label="E-mail", max_length=30, widget=widgets.TextInput(attrs={'placeholder':'E-mail address','class':'form-control'}))
@@ -171,4 +171,3 @@ class PasswordChangeForm(django_forms.PasswordChangeForm):
                                     widget=forms.PasswordInput(attrs={'placeholder':'Retype Password','class':'form-control'}))
     old_password = forms.CharField(label="Old password",
                                    widget=forms.PasswordInput(attrs={'placeholder':'Old Password','class':'form-control'}))
-

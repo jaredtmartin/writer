@@ -224,7 +224,7 @@ class RejectForm(Form):
     return_to_writer = BooleanField(required=False)
 
 class PublishForm(Form):
-    outlet = ModelChoiceField(queryset=PublishingOutlet.objects.all())
+    outlet = ModelChoiceField(queryset=PublishingOutletConfiguration.objects.all())
 
 class NoteForm(Form):
     note = CharField(max_length=128)
@@ -364,3 +364,7 @@ class LoginForm(AuthenticationForm):
         widget=widgets.TextInput(attrs={'placeholder':'Username','class':'form-control'}))
     password = CharField(label="Password", 
         widget=PasswordInput(attrs={'placeholder':'Password','class':'form-control'}))
+class OutletActivationForm(ModelForm):
+    class Meta:
+        model = PublishingOutletConfiguration
+        fields=('active',)

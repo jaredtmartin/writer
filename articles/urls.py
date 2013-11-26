@@ -27,7 +27,7 @@ urlpatterns = patterns('',
 
     url(r'^article/add/$',                      CreateArticle.as_view(),        name='article_add'),
     url(r'^article/(?P<pk>\d+)/tag/$',          TagArticle.as_view(),           name='tag_article'),
-    url(r'^article/(?P<pk>\d+)/publish/$',      PublishArticle.as_view(),       name='publish_article'),
+    # url(r'^article/(?P<pk>\d+)/publish/(?P<outlet_id>\d+)/$',PublishArticle.as_view(),       name='publish_article'),
     url(r'^article/(?P<pk>\d+)/$',              UpdateArticle.as_view(),        name='article_update'),
     url(r'^keyword/new/$',                      AjaxNewKeyword.as_view(),       name='new_keyword'),
     url(r'^tag/(?P<slug>[-\w]+)/show/$',        ShowTag.as_view(),              name='show_tag'),
@@ -46,7 +46,7 @@ urlpatterns = patterns('',
     url(r'^articles/release-as-reviewer/$',     ReleaseAsReviewer.as_view(),    name='release_as_reviewer'),
 
     url(r'^articles/publish/$',                 PublishArticles.as_view(),      name='publish'),
-    url(r'^articles/mark-as-published/$',       MarkArticlesAsPublished.as_view(), name='mark_as_published'),
+    # url(r'^articles/mark-as-published/$',       MarkArticlesAsPublished.as_view(), name='mark_as_published'),
 
     url(r'^articles/make-available-to-writer/$',  MakeAvailableToWriter.as_view(), name='make_available_to_writer'),
     url(r'^articles/make-available-to-all-writers/$',  MakeAvailableToAllWriters.as_view(), name='make_available_to_all_writers'),

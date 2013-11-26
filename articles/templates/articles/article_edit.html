@@ -209,7 +209,6 @@
 
 {% block js %}
     <script type='text/javascript' src='{{STATIC_URL}}js/thane/ajax.js'></script>
-    <script src="{{STATIC_URL}}js/ckeditor/ckeditor.js"></script>
     <script type="text/javascript">
       {% if user = article.owner or not article.pk%}
         function insertKeywordInlineForm(data, result){
@@ -312,11 +311,6 @@
         {% endif %}
         $().ready(function() {
             $( "#id_expires" ).datepicker();
-            {% if article.pk and user|can_edit:article %}
-                CKEDITOR.replace("id_body", {"filebrowserWindowWidth": 940, "width": 835, "filebrowserWindowHeight": 725, "filebrowserBrowseUrl": "/ckeditor/browse/", "filebrowserUploadUrl": "/ckeditor/upload/", "toolbar": "Full", "height": 291});
-            {% endif %} 
-            // $('.help').tooltip()
-            
         });
         function showSection(section_id){
             $('#'+section_id+'-cell').show();

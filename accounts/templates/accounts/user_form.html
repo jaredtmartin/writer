@@ -1,47 +1,107 @@
 {% extends "accounts/base.html" %}
+{% load url from future %}
 {% block heading %}User Profile Settings{% endblock heading %}
 {% block content %}
-<form action="" method="post">{% csrf_token %}
-	<div class="row input-row">
-		<div class="col-md-3 col-md-offset-3">
-					{{form.first_name}}
+	<form action="" method="post">{% csrf_token %}
+		<div class="row input-row">
+			<div class="col-md-3 col-md-offset-3">
+						{{form.first_name}}
+			</div>
+			<div class="col-md-3">
+						{{form.last_name}}
+			</div>
 		</div>
-		<div class="col-md-3">
-					{{form.last_name}}
+		<div class="row input-row">
+			<div class="col-md-6 col-md-offset-3">
+						{{form.email}}
+			</div>
 		</div>
-	</div>
+		<div class="row input-row">
+			<div class="col-md-3 col-md-offset-3">
+						{{user_profile_form.mode}}
+			</div>
+			<div class="col-md-3">
+						{{user_profile_form.timezone}}
+			</div>
+		</div>
+		<div class="row input-row">
+			<div class="col-md-2 col-md-offset-7">
+				<button type="submit" class="btn btn-block btn-primary">Save</button>
+			</div>
+		</div>
+	</form>
 	<div class="row input-row">
 		<div class="col-md-6 col-md-offset-3">
-					{{form.email}}
+					<p class="lead"><a href="{% url "change_password" %}">Click here to change your password</a></p>
 		</div>
 	</div>
 	<div class="row input-row">
-		<div class="col-md-3 col-md-offset-3">
-					{{user_profile_form.mode}}
-		</div>
-		<div class="col-md-3">
-					{{user_profile_form.timezone}}
-		</div>
+		<div class="col-md-6 col-md-offset-3">Publishing Outlets</div>
 	</div>
-	<div class="row input-row">
-		<div class="col-md-6 col-md-offset-3">
-					<p class="lead"><a href="{% url change_password %}">Click here to change your password</a></p>
-		</div>
-	</div>
-	<div class="row input-row">
-		<div class="col-md-2 col-md-offset-5">
-			<button type="submit" class="btn btn-block btn-primary">
-			  Save Changes
-			</button>
-		</div>
-	</div>
-</form>
+	{% for outlet in outlets %}
+		<form id="outlet-{{outlet.pk}}-form" action="none">
+			<div class="row">
+			  <div class="col-md-6 col-md-offset-3">
+			    <label id="outlet-{{outlet.pk}}-activation-label" class="checkbox{% if outlet.active %} checked{% endif %}" for="outlet-checkbox-{{outlet.pk}}" onclick="toggleOutletActivation('{% url "outlet_activation" outlet.pk %}',{{outlet.pk}});return false">
+			      <input type="checkbox" name="active" value="true" {% if outlet.active %}checked="on" {% endif %}id="outlet-checkbox-{{outlet.pk}}" data-toggle="checkbox">
+			      {{outlet.outlet.title}} <span id="outlet-{{outlet.pk}}-message"></span>
+			    </label>
+			  </div>
+			</div>
+			<div id="outlet-{{outlet.pk}}-setting-row" class="outlet-settings" {% if not outlet.active %}style="display: none;"{% endif %}>
+				{% for key,value in outlet.config.items %}
+				  <div class="row input-row">
+				    <div class="col-md-2 col-md-offset-3">
+				      {{key}}:
+				    </div>
+				    <div class="col-md-4">
+				      <input id="outlet-{{outlet.pk}}-{{key}}" class="form-control outlet-setting" placeholder="{{key}}" name="{{key|lower}}" value="{{value}}">
+				    </div>
+				  </div>
+				{% endfor %}
+				{% if outlet.config %}
+					<div class="row input-row">
+				    <div class="col-md-2 col-md-offset-7">
+				      <button class="btn btn-primary btn-block" onclick="saveConfig('{% url "outlet_config" outlet.pk %}',{{outlet.pk}});return false;">Save</button>
+				    </div>
+				  </div>
+				 {% endif %}
+			</div>
+		</form>
+	{% endfor %}
 {% endblock %}
 {% block js %}
 	<script type="text/javascript">
-
-$(document).ready(function () {
-  $('.selectpicker').selectpicker();
-});
+		function toggleOutletActivation(url, pk){
+			$('#outlet-'+pk+'-setting-row').toggle();
+			// checkbox=$('input#outlet-checkbox-'+pk)
+			// checkbox.attr("checked", !checkbox.attr("checked"));
+			$.ajax({
+        url: url,
+        type: 'post',
+        data: {active:!$('#outlet-'+pk+'-activation-label').hasClass("checked")},
+        dataType: 'json',
+        // success: function (data) {
+        //    $('#outlet-'+pk+'-message').html(data.msg);
+        // }
+      });
+		}
+		function hideSettings(pk){
+			$('.outlet-'+pk+'-setting-row').hide();
+		}
+		$(document).ready(function () {
+		  $('.selectpicker').selectpicker();
+		});
+		function saveConfig(url, pk){
+			$.ajax({
+        url: url,
+        type: 'post',
+        data: $('#outlet-'+pk+'-form').serialize(),
+        dataType: 'json',
+        success: function (data) {
+           $('#outlet-'+pk+'-message').html(data.msg);
+        }
+      });
+		}
 </script>
 {% endblock js %}

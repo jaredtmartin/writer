@@ -30,6 +30,8 @@ urlpatterns = patterns('',
     url(r'^$', RedirectView.as_view(url=reverse_lazy('dashboard'))),
     url(r'^accounts/', include('accounts.urls')),
     url(r'^user/settings/$', UserSettingsView.as_view(), name="user_settings"),
+    url(r'^user/outlet/(?P<pk>\d+)/config/$', OutletConfigUpdate.as_view(), name="outlet_config"),
+    url(r'^user/outlet/(?P<pk>\d+)/activation/$', OutletActivation.as_view(), name="outlet_activation"),
 )
 
 if settings.DEBUG:

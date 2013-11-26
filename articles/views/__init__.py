@@ -22,15 +22,15 @@ from filter_views import UpdateFilters
 from article_views import (AvailableArticles, UnavailableArticles, AssignedArticles, 
   ClaimedArticles, SubmittedArticles, ApprovedArticles, RejectedArticles, PublishedArticles, 
   CreateArticle, UpdateArticle, ShowTag, AjaxNewKeyword)
-from multi_action_views import (RejectArticles, ApproveArticles, MarkArticlesAsPublished, 
+from multi_action_views import (RejectArticles, ApproveArticles, #MarkArticlesAsPublished, 
   PublishArticles, SubmitArticles, DeleteArticles, ClaimAsWriter, ClaimAsReviewer, ReleaseAsWriter, 
   ReleaseAsReviewer, MakeAvailableToWriter, MakeAvailableToAllMyWriters, MakeAvailableToAllWriters, 
   MakeAvailableToReviewer, MakeAvailableToAllMyReviewers, MakeAvailableToAllReviewers, 
   MakeUnavailableToWriters, MakeUnavailableToReviewers, AssignToWriter, AssignToReviewer, 
   MakeAvailableToWriterGroup, MakeAvailableToReviewerGroup)
 from project_views import (CreateProject, ShowProject, ListProjects, DeleteProject, CreateCategory)
-from single_action_views import (PublishArticle, TagArticle)
-from user_views import (ChangeMode, Dashboard, UserSettingsView)
+from single_action_views import (TagArticle)
+from user_views import (ChangeMode, Dashboard, UserSettingsView, OutletConfigUpdate, OutletActivation)
 from contact_views import (ListPendingWriters, ListMyWriters, ListAvailableWriters, ListPendingReviewers, 
   ListMyReviewers, ListAvailableReviewers, ListMyRequesters, ListPendingRequesters, 
   ListAvailableRequesters, CreateWriter, CreateReviewer, ConfirmContact, DeleteContact, 

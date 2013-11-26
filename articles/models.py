@@ -99,12 +99,16 @@ class TestOutlet(PluginModel):
 class PublishingOutlet(PluginModel):
     package_name = "articles.publishing_outlets"
     title = models.CharField(max_length=256)
-    
-    def do_action(self, *args, **kwargs):
-        return self.plugin.do_action(*args, **kwargs)
+
     def get_button_url(self, context=Context()):
-        context.update({'title':self.title})
-        return self.plugin.get_button_url(context)
+      context.update({'title':self.title})
+      return self.plugin.get_button_url(context)
+    @property
+    def settings(self):
+      return self.plugin.settings
+    @property
+    def connected(self):
+      return bool(self.plugin)
     def __unicode__(self): return self.title
 
 class ValidationPlugin(PluginModel):
@@ -117,22 +121,46 @@ class ValidationPlugin(PluginModel):
         context.update({'title':self.title})
         return self.plugin.get_button_url(context)
     def __unicode__(self): return self.title
-
+import json
 class UserConfigBaseModel(PluginBaseMixin, models.Model):
-    class Meta:
-        abstract = True
-    pickled_data = models.CharField(max_length=512, default="", blank=True)
-    def __init__(self, *args, **kwargs):
-        super(UserConfigBaseModel, self).__init__(*args, **kwargs)
-        self.load_plugin()
+  _config = None
+  class Meta:
+    abstract = True
+  json_data = models.CharField(max_length=512, default="", blank=True)
+  def __init__(self, *args, **kwargs):
+    super(UserConfigBaseModel, self).__init__(*args, **kwargs)
+    self.load_plugin()
+  def config():
+      doc = "The config property."
+      def fget(self):
+          if self._config: return self._config
+          print "self.outlet = %s" % str(self.outlet)
+          print "self.outlet.settings = %s" % str(self.outlet.settings)
+          print "{x:"" for x in self.outlet.settings} = %s" % str({x:"" for x in self.outlet.settings})
+          try: self._config = json.loads(self.json_data)
+          except ValueError: self._config={x:"" for x in self.outlet.settings}
+          return self._config
+      def fset(self, value):
+          self._config = value
+          self.json_data = json.dumps(value)
+      return locals()
+  config = property(**config())
         
-import pickle   
+
 class PublishingOutletConfiguration(UserConfigBaseModel):
     plugin_foreign_key_name='outlet'
     user = models.ForeignKey(User, related_name='publishing_outlets')
     outlet = models.ForeignKey(PublishingOutlet, related_name='users')
-
+    active = models.BooleanField(default=False, blank=True)
     def __unicode__(self): return "%s for %s" % (self.outlet.title, self.user.username)
+    # def do_action(self, articles):
+    #   print "XXXX IMHERE"
+    #   print "self = %s" % str(self)
+    #   print "self.outlet.plugin = %s" % str(self.outlet.plugin)
+    #   print "article_qs = %s" % str(article_qs)
+    #   c=self.config
+    #   print "self.config = %s" % str(self.config)
+    #   return self.outlet.plugin.do_action(self.config, article_qs)
     
 class PluginMount(type):
     name="generic"
@@ -631,7 +659,10 @@ class UserProfile(models.Model):
   def is_reviewer(self):return self.mode == REVIEWER_MODE
 
 def create_user_profile(sender, instance, created, **kwargs):
-  if created: UserProfile.objects.create(user=instance, mode=WRITER_MODE)
+  if created: 
+    UserProfile.objects.create(user=instance, mode=WRITER_MODE)
+    for outlet in PublishingOutlet.objects.all():
+      PublishingOutletConfiguration.objects.create(user=instance, outlet=outlet)
 post_save.connect(create_user_profile, sender=User)
 
 

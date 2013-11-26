@@ -4,6 +4,254 @@
 		"selected_items":
 		[
 			[
+				"get_",
+				"get_outlet_configs"
+			],
+			[
+				"asser",
+				"assertFalse"
+			],
+			[
+				"Aser",
+				"assertFalse"
+			],
+			[
+				"can_",
+				"can_review"
+			],
+			[
+				"availa",
+				"available_to_all_reviewers"
+			],
+			[
+				"Contact",
+				"ContactAdmin"
+			],
+			[
+				"_can",
+				"_can_write"
+			],
+			[
+				"STAT",
+				"STATUS_APPROVED"
+			],
+			[
+				"contacts_",
+				"contacts_as_reviewer"
+			],
+			[
+				"btn",
+				"btn-toolbar"
+			],
+			[
+				"backgrou",
+				"background-color"
+			],
+			[
+				"expect",
+				"expected_type"
+			],
+			[
+				"expec",
+				"expected_val"
+			],
+			[
+				"RE",
+				"REQUESTER_MODE"
+			],
+			[
+				"Pub",
+				"PublishedArticles"
+			],
+			[
+				"Reje",
+				"RejectedArticles"
+			],
+			[
+				"Appro",
+				"ApprovedArticles"
+			],
+			[
+				"was",
+				"was_claimed"
+			],
+			[
+				"reviewer",
+				"reviewers"
+			],
+			[
+				"Availab",
+				"AvailableArticles"
+			],
+			[
+				"Writer",
+				"WriterGroup"
+			],
+			[
+				"Rev",
+				"ReviewerGroup"
+			],
+			[
+				"Articl",
+				"ArticleAction"
+			],
+			[
+				"Lisp",
+				"ListPendingReviewers"
+			],
+			[
+				"ListM",
+				"ListMyReviewers"
+			],
+			[
+				"List",
+				"ListAvailableWriters"
+			],
+			[
+				"Creat",
+				"CreateReviewer"
+			],
+			[
+				"Con",
+				"ConfirmContact"
+			],
+			[
+				"Reviewer",
+				"ReviewerForm"
+			],
+			[
+				"rev",
+				"reviewer"
+			],
+			[
+				"Revi",
+				"Reviewer"
+			],
+			[
+				"assert",
+				"assertMessages"
+			],
+			[
+				"Requester",
+				"REQUESTER_MODE"
+			],
+			[
+				"Cate",
+				"Category"
+			],
+			[
+				"Artile",
+				"ArticleType"
+			],
+			[
+				"WR",
+				"WRITER_MODE"
+			],
+			[
+				"Group",
+				"GroupMemberForm"
+			],
+			[
+				"Ren",
+				"RenameGroupForm"
+			],
+			[
+				"Keyword",
+				"KeywordInline"
+			],
+			[
+				"Create",
+				"CreateArticleForm"
+			],
+			[
+				"wor",
+				"worker_label"
+			],
+			[
+				"Review",
+				"ReviewerGroup"
+			],
+			[
+				"Writ",
+				"WriterGroup"
+			],
+			[
+				"available",
+				"available_to_all_writers"
+			],
+			[
+				"REVIEW",
+				"REVIEWER_POSITION"
+			],
+			[
+				"REVI",
+				"REVIEWER_MODE"
+			],
+			[
+				"WRITER",
+				"WRITER_MODE"
+			],
+			[
+				"artic",
+				"article"
+			],
+			[
+				"avaoa",
+				"available_to_all_writers"
+			],
+			[
+				"writer",
+				"writer__isnull"
+			],
+			[
+				"available_to_al",
+				"available_to_all_my_writers"
+			],
+			[
+				"availabl",
+				"available_to_all_writers"
+			],
+			[
+				"WRI",
+				"WRITER_POSITION"
+			],
+			[
+				"Availa",
+				"availability"
+			],
+			[
+				"Man",
+				"ManyToManyField"
+			],
+			[
+				"Contac",
+				"ContactForm"
+			],
+			[
+				"Add",
+				"AddToGroupForm"
+			],
+			[
+				"Conta",
+				"ContactGroup"
+			],
+			[
+				"RV",
+				"REVIEWER_POSITION"
+			],
+			[
+				"succ",
+				"success_message"
+			],
+			[
+				"extra",
+				"extra_context"
+			],
+			[
+				"user",
+				"user_asked"
+			],
+			[
 				"USER",
 				"USER_MODES"
 			],
@@ -22,10 +270,6 @@
 			[
 				"auto_",
 				"auto_login"
-			],
-			[
-				"asser",
-				"assert_see_on_page"
 			],
 			[
 				"new",
@@ -56,10 +300,6 @@
 				"PublishingOutlet"
 			],
 			[
-				"STAT",
-				"STATUS_RELEASED"
-			],
-			[
 				"STATUs",
 				"STATUS_ASSIGNED"
 			],
@@ -88,24 +328,12 @@
 				"padding-right"
 			],
 			[
-				"btn",
-				"btn_size"
-			],
-			[
 				"Arti",
 				"ArticleCategory"
 			],
 			[
 				"P",
 				"PRIORITIES"
-			],
-			[
-				"get_",
-				"get_action_string"
-			],
-			[
-				"user",
-				"user_group"
 			],
 			[
 				"propert",
@@ -244,77 +472,58 @@
 	"buffers":
 	[
 		{
-			"file": "accounts/urls.py",
+			"file": "articles/models.py",
 			"settings":
 			{
-				"buffer_size": 2260,
+				"buffer_size": 30623,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "accounts/views.py",
+			"file": "articles/forms.py",
 			"settings":
 			{
-				"buffer_size": 4185,
+				"buffer_size": 14360,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "accounts/forms.py",
+			"file": "articles/views/user_views.py",
 			"settings":
 			{
-				"buffer_size": 8392,
+				"buffer_size": 3968,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "articles/views.py",
+			"file": "accounts/templates/accounts/user_form.html",
 			"settings":
 			{
-				"buffer_size": 60878,
+				"buffer_size": 3687,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "middleware.py",
+			"file": "articles/views/article_views.py",
 			"settings":
 			{
-				"buffer_size": 6788,
+				"buffer_size": 7160,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"contents": "from django.views.generic.edit import FormView, ModelFormMixin\nfrom django.views.generic.detail import SingleObjectTemplateResponseMixin\nfrom extra_views.formsets import BaseInlineFormSetMixin\nfrom django.http import HttpResponseRedirect\nfrom django.forms.formsets import \n \n\n\nclass InlineFormSet(BaseInlineFormSetMixin):\n\n    def __init__(self, parent_model, request, instance):\n        self.inline_model = self.model        \n        self.model = parent_model\n        self.request = request\n        self.object = instance\n\n\nclass ModelFormWithInlinesMixin(ModelFormMixin):\n    def forms_valid(self, form, inlines):\n        # print \"saving object\"\n        # print \"form.cleaned_data['body']: \" + str(form.cleaned_data['body']) \n        self.object = form.save()\n        # print \"self.object.body: \" + str(self.object.body) \n        for formset in inlines:\n            formset.save()\n        return HttpResponseRedirect(self.get_success_url())\n    \n    def forms_invalid(self, form, inlines):\n        return self.render_to_response(self.get_context_data(form=form, inlines=inlines))\n    \n    def construct_inlines(self):\n        inline_formsets = []\n        for inline_class in self.inlines:\n            inline_instance = inline_class(self.model, self.request, self.object)\n            inline_formset = inline_instance.construct_formset()\n            inline_formsets.append(inline_formset)\n        return inline_formsets\n\n\nclass ProcessFormWithInlinesView(FormView):\n    def get(self, request, *args, **kwargs):\n        # print \"Im here\"\n        form_class = self.get_form_class()\n        form = self.get_form(form_class)\n        inlines = self.construct_inlines()\n        return self.render_to_response(self.get_context_data(form=form, inlines=inlines, request=request))\n\n    def post(self, request, *args, **kwargs):\n        form_class = self.get_form_class()\n        # print \"form_class: \" + str(form_class) \n        form = self.get_form(form_class)\n#        print \"form: \" + str(form) \n#        print \"form.instance: \" + str(form.instance) \n#        print \"form.instance.pk: \" + str(form.instance.pk) \n#        print \"form.instance.body: \" + str(form.instance.body) \n        if form.is_valid():\n            self.object = form.save(commit=False)\n            form_validated = True\n            # print \"form is valid\"\n        else:\n            form_validated = False\n            # print \"form is not valid\"\n        inlines = self.construct_inlines()\n        # print \"all_valid(inlines): \" + str(all_valid(inlines)) \n        # for inline in inlines: print \"inline.errors: \" + str(inline.errors) \n        if all_valid(inlines) and form_validated:\n            return self.forms_valid(form, inlines)\n        return self.forms_invalid(form, inlines)\n\n    def put(self, *args, **kwargs):\n        return self.post(*args, **kwargs)\n\n\nclass BaseCreateWithInlinesView(ModelFormWithInlinesMixin, ProcessFormWithInlinesView):\n    def get(self, request, *args, **kwargs):\n        self.object = None\n        # print \"Super!\"\n        return super(BaseCreateWithInlinesView, self).get(request, *args, **kwargs)\n    \n    def post(self, request, *args, **kwargs):\n        self.object = None\n        return super(BaseCreateWithInlinesView, self).post(request, *args, **kwargs)\n\n\nclass CreateWithInlinesView(SingleObjectTemplateResponseMixin, BaseCreateWithInlinesView):\n    template_name_suffix = '_form'\n\n\nclass BaseUpdateWithInlinesView(ModelFormWithInlinesMixin, ProcessFormWithInlinesView):\n    def get(self, request, *args, **kwargs):\n        self.object = self.get_object()\n        return super(BaseUpdateWithInlinesView, self).get(request, *args, **kwargs)\n    \n    def post(self, request, *args, **kwargs):\n        self.object = self.get_object()\n        return super(BaseUpdateWithInlinesView, self).post(request, *args, **kwargs)\n\n\nclass UpdateWithInlinesView(SingleObjectTemplateResponseMixin, BaseUpdateWithInlinesView):\n    template_name_suffix = '_form'\n\n\nclass NamedFormsetsMixin(object):\n    inlines_names = []\n\n    def get_context_data(self, **kwargs):\n        ctx = super(NamedFormsetsMixin, self).get_context_data(**kwargs)\n        if not self.inlines_names:\n            return ctx\n        # We have formset or inlines in context, but never both\n        ctx.update(zip(self.inlines_names, kwargs.get('inlines',[])))\n        if 'formset' in kwargs:\n            ctx[self.inlines_names[0]] = kwargs['formset']\n        return ctx\n",
-			"file": "src/django-extra-views/extra_views/advanced.py",
-			"file_size": 4434,
-			"file_write_time": 1365051321000000,
+			"file": "articles/templates/articles/article_list_row.html",
 			"settings":
 			{
-				"buffer_size": 4426,
+				"buffer_size": 2007,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "/Users/jaredmartin/Programs/Jade.1/env/lib/python2.7/site-packages/django/forms/formsets.py",
+			"file": "articles/urls.py",
 			"settings":
 			{
-				"buffer_size": 15224,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "classy_auth/views.py",
-			"settings":
-			{
-				"buffer_size": 0,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"contents": "login   									'authentication_form':AuthenticationForm\npassword_reset    				, 'password_reset_form':PasswordResetForm\npassword_reset_confirm   	, 'set_password_form':SetPasswordForm\npassword_change						, 'password_change_form':PasswordChangeForm\n\n\n\n<div class=\"row-fluid\">\n	<div class=\"span6 offset3\">\n		<p class=\"lead\">Your password has been changed successfully.</p>\n	</div>\n</div>",
-			"settings":
-			{
-				"buffer_size": 388,
+				"buffer_size": 9994,
 				"line_ending": "Unix"
 			}
 		}
@@ -326,16 +535,16 @@
 		"selected_items":
 		[
 			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
 				"insta",
 				"Package Control: Install Package"
 			],
 			[
 				"remove",
 				"Package Control: Remove Package"
-			],
-			[
-				"install",
-				"Package Control: Install Package"
 			],
 			[
 				"pack",
@@ -362,11 +571,11 @@
 				"Package Control: Install Package"
 			]
 		],
-		"width": 449.0
+		"width": 575.0
 	},
 	"console":
 	{
-		"height": 59.0
+		"height": 206.0
 	},
 	"distraction_free":
 	{
@@ -379,134 +588,134 @@
 	},
 	"file_history":
 	[
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/project_static/less/writeraxis.less",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/publishing_outlets/wordpress.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/publishing_outlets/mark_only.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/urls.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/views/__init__.py",
+		"/Users/jaredmartin/Programs/schedules/slick/views.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/accounts/forms.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/accounts/templates/accounts/user_form.html",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/publishing_outlets/base.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/dump.json",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/fixtures/initial_data.json",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/outlet_settings.html",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templatetags/outlet_settings.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/accounts/urls.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/accounts/views.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/views/user_views.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/publishing_outlets/twitter.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/publishing_outlets/__init__.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/plugins.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/admin.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/views/article_views.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/tests/test_edit_article.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/article_edit.html",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/publishing_outlets/test_outlet.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/publishing_outlets/facebook.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/views/multi_action_views.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/views/filter_views.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/tests/test_contacts.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/fixtures/test_contacts_fixture.json",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/article_list_row.html",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templatetags/xactions.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/models.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/tests/test_filter_views.py",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/forms.py",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/accounts/templates/accounts/signup_form.html",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/accounts/templates/accounts/signup_done.html",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/accounts/templates/accounts/signup_complete.html",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templatetags/can_do.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/urls.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/article_write.html",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/todo",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/actions.html",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/action_bar.html",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/tests/test_articles.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/fixtures/old_test_articles_fixture.json",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/fixtures/test_articles_fixture.json",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/views/group_views.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/design/templates/design/header.html",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/design/templates/design/sidebar.html",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/design/static/less/writeraxis.less",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/accounts/templates/accounts/password_change_done.html",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/accounts/templates/accounts/password_reset_done.html",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/accounts/templates/accounts/password_reset_form.html",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/accounts/templates/accounts/password_change_form.html",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/design/static/css/writeraxis.css",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/design/static/css/jquery-te-1.4.0.css",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/widgets.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/slick/views.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/tests/common.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/tests/__init__.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/accounts/templates/accounts/base.html",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/design/templates/design/base.html",
+		"/Users/jaredmartin/Programs/YesTags/install.sh",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/tests/test_multi_action_views.py",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/accounts/templates/accounts/logged_out.html",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/accounts/templates/accounts/login.html",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/settings.py",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/accounts/templates/accounts/user_form.html",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/accounts/templates/accounts/password_reset_form.html",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/accounts/templates/accounts/password_reset_confirm.html",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/accounts/templates/accounts/password_reset_complete.html",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/accounts/templates/accounts/password_change_form.html",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/classy_auth/forms.py",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/accounts/templates/accounts/base.html",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/bare.html",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/base.html",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/project_static/less/config.less",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/urls.py",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/accounts/views.py",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/views.py",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/models.py",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/article_edit.html",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/accounts/forms.py",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/accounts/urls.py",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/messages.html",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/urls.py",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/admin.py",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/user_urls.py",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/templates/register.html",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/templates/login.html",
-		"/Users/jaredmartin/Programs/accounts/readme",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/accounts/templates/accounts/signup_email.html",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/accounts/templates/accounts/password_reset_confirm.html",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/accounts/templates/accounts/password_reset_done.html",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/accounts/templates/accounts/password_reset_email.html",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/accounts/templates/accounts/password_signup_form.html",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/tests.py",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/xxxlogin.html",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/project_static/less/flat-ui.less",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/project_static/less/modules/alerts.less",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templatetags/actions.py",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/WriterAxis.sublime-workspace",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/src/django-extra-views/extra_views/formsets.py",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/src/django-extra-views/extra_views/__init__.py",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/actions.html",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/widgets.py",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/edit_article_keywords_form.html",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/action_bar.html",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/sidebar.html",
-		"/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/selenium/webdriver/remote/webdriver.py",
-		"/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/selenium/webdriver/remote/webelement.py",
-		"/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/selenium/webdriver/common/desired_capabilities.py",
-		"/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/selenium/webdriver/support/select.py",
-		"/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/selenium/webdriver/support/expected_conditions.py",
-		"/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/selenium/webdriver/phantomjs/service.py",
-		"/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/selenium/webdriver/firefox/firefox_profile.py",
-		"/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/selenium/webdriver/support/events.py",
-		"/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/selenium/webdriver/support/ui.py",
-		"/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/selenium/webdriver/common/action_chains.py",
-		"/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/selenium/webdriver/common/by.py",
-		"/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/selenium/webdriver/common/keys.py",
-		"/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/selenium/webdriver/remote/utils.py",
-		"/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/selenium/webdriver/firefox/firefox_binary.py",
-		"/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/selenium/webdriver/remote/command.py",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/project_static/js/ajax.js",
-		"/Users/jaredmartin/Library/Application Support/Sublime Text 2/Packages/User/Preferences.sublime-settings",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/article_list.html",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/simple_related_form.html",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/keyword_inline_form.html",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/project_static/js/checkboxes.js",
-		"/Users/jaredmartin/Desktop/skulpt.html",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/project_static/js/actions.js",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/project_static/js/bootstrap-select.js",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/show_more_widget.html",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/src/django-extra-views/extra_views/advanced.py",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/project_static/less/writeraxis.css",
-		"/Users/jaredmartin/Downloads/Flat UI PSD & HTML - Personal License/HTML/UI/Flat-UI-Pro-1.2/template.html",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/accounts/templates/accounts/signup_complete.html",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/accounts/templates/accounts/signup_done.html",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/accounts/templates/accounts/signup_form.html",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/filter_tag_list.html",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/filter_menu.html",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/src/django-extra-views/extra_views/search.py",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/ajax_article_list_row.html",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/article_list.html",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/views/project_views.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/views/contact_views.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/views/single_action_views.py",
+		"/Users/jaredmartin/.virtualenvs/django14/lib/python2.7/site-packages/django/utils/datastructures.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/install.sh",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/big_letters.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/sidebar_filter_list_item.html",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/oldtests.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/newtests/common.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/newtests/test_filter_views.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/newtests/__init__.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templatetags/actions.py",
+		"/Users/jaredmartin/.virtualenvs/django14/lib/python2.7/site-packages/django/template/loader.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/settings.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/fixtures/test_fixture.json",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/views/oldviews.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/tests.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/tests/test_article_views.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/test_article_views.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/slick/contacts.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/slick/groups.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/views/users.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/oldviews.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/views/filters.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/views/projects.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/views/single_actions.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/views/multi_actions.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/plugin_manager.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/contact_list.html",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/user_list.html",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/user_row.html",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/WriterAxis.sublime-project",
+		"/Users/jaredmartin/Library/Application Support/Sublime Text 2/Packages/User/Preferences.sublime-settings",
 		"/Users/jaredmartin/Library/Application Support/Sublime Text 2/Packages/Default/Preferences.sublime-settings",
 		"/Users/jaredmartin/Library/Application Support/Sublime Text 2/Packages/User/JSON.sublime-settings",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/filter.html",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templatetags/addparam.py",
-		"/Users/jaredmartin/Desktop/Checklist",
+		"/Users/jaredmartin/Library/Application Support/Sublime Text 2/Packages/User/Distraction Free.sublime-settings",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/design/templates/design/bare.html",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/views.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/writers_pending_list.html",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/my_writers_list.html",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/project_list.html",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/assignment_widget.html",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/validation_plugins/standard.py",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/dump.json",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templatetags/can_do.py",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/src/django-extra-views/extra_views/models.py",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/testdata backup.json",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templatetags/assignment.py",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/article_list_row.html",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/old base.html",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/fixtures/initial_data.yaml",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templatetags/help_icon.py",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/ajax_user_list_row.html",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/oldstatic/js/bootstrap.js",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/project_static/js/bootstrap.min.js",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/project_static/bootstrap/css/bootstrap-responsive.css",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/actions.py",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/project_static/less/config.css",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/project_static/js/flatui-checkbox.js",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/article_list_filters.html",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templatetags/show_more.py",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/old assignment widget.html",
-		"/Users/jaredmartin/Designs/Flat UI PSD & HTML - Personal License/HTML/UI/template.html",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/project_static/css/writeraxis.css",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/static/bootstrap/css/bootstrap.css",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/project_static/less/modules/navbar.less",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/project_static/less/flat-ui.css",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/static/css/flat-ui.css",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/project_static/css/flat-ui.css",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/templates/base.html",
-		"/Users/jaredmartin/Programs/webservices/articles/templates/articles/article_edit.html",
-		"/Users/jaredmartin/Programs/webservices/articles/plugins.py",
-		"/Users/jaredmartin/Programs/webservices/articles/static/css/stylesheet.css",
-		"/Users/jaredmartin/Programs/webservices/articles/templatetags/can_edit.py",
-		"/Users/jaredmartin/Programs/webservices/articles/admin.py",
-		"/Users/jaredmartin/Programs/webservices/articles/templates/articles/user_actions.html",
-		"/Users/jaredmartin/Programs/webservices/articles/static/js/actions.js",
-		"/Users/jaredmartin/Programs/webservices/articles/urls.py",
-		"/Users/jaredmartin/Programs/webservices/articles/templates/articles/user_list_row.html",
-		"/Users/jaredmartin/Programs/webservices/urls.py",
-		"/Users/jaredmartin/Programs/webservices/articles/forms.py"
+		"/Users/jaredmartin/.virtualenvs/django14/lib/python2.7/site-packages/extra_views/advanced.py",
+		"/Users/jaredmartin/.virtualenvs/django14/src/django-extra-views/extra_views/advanced.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/contact_group_detail.html",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/contact_group_detail_lists.html",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/design/static/js/thane/ajax.js",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/dashboard.html",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/contact_group_list.html",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/design/static/less/variables.less",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/contact_group_form.html",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/contact_group_row.html",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/design/templates/design/messages.html",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/test_super.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/available_writers_list.html",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/worker_row.html",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/design/templates/design/ajax_row.html",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/design/static/js/thane/actions.js"
 	],
 	"find":
 	{
@@ -514,7 +723,7 @@
 	},
 	"find_in_files":
 	{
-		"height": 93.0,
+		"height": 0.0,
 		"where_history":
 		[
 			""
@@ -525,134 +734,134 @@
 		"case_sensitive": false,
 		"find_history":
 		[
-			"timezone",
-			"RequestContext",
-			"RequestSite",
-			"example.",
-			"{{form}}",
-			"widgets",
-			"_(",
-			"=",
-			"UserProfileForm",
-			"UserCreationForm",
-			"SimpleUserCreationForm",
-			"UserCreationForm\nUserCreationForm",
-			"UserCreationForm",
-			"UserProfileForm",
-			"UserForm",
-			".com",
-			"page-header",
-			"user_settings\nuser_settings",
-			"accounts",
-			"picker",
-			"select",
-			"UserForm",
+			"UserSettingsView",
+			"settings",
 			"UserUpdateView",
-			"UpdateView",
-			"updateview",
-			"h5",
-			"email1",
-			"mysite.accounts.views.signup_confirm",
-			"mysite",
-			"csrf",
-			"mysite.",
-			"template_name",
-			"mysite.",
-			"#@csrf_protect",
-			"}),",
-			",\n\n  url",
-			", \n                        {",
-			", \n                        '",
-			"                     (r'^",
-			"EMAIL",
-			"login_form",
-			"Register",
-			"login",
-			"urlparse",
-			"FormView",
-			"UpdateView",
-			"CreateView",
-			"django.views.generic.edit",
-			"login",
-			"h1",
-			"forms.",
-			"forms",
-			"form",
-			"all_valid",
-			"CreateWithInlinesView",
-			"\nCreateWithInlinesView",
-			"CreateWithInlinesView",
-			"article_list_filter",
-			"article_list_filters",
-			"save",
+			"Boolean",
+			"boolean",
+			"bool",
+			"outlet.config",
+			"post_save",
+			"}, {",
+			"pickle",
+			"      \n",
+			"1",
+			"reject",
+			"better",
+			"41",
+			"13",
+			"pk=6",
+			"\":",
+			"\" ",
+			"('Articles', (('Unavailable', 1, False), ('Available', 11, False), ('Assigned', 3, False), ('Claimed', 1, False), ('Submitted', 2, False), ('Approved', 2, False), ('Rejected', 1, False), ('Published', 1, False))), ",
+			"), (",
+			", \n",
+			"('",
 			"\n",
-			"Save",
-			"\"Save\"",
-			"Save",
-			"assert_see_on_page",
-			"login",
-			".pdf",
-			"login",
-			"class Article",
-			"Article",
-			"get_templat",
-			"get_template",
-			"project",
-			"Project",
-			"project",
-			"category",
-			"success__message_template",
-			"get_success__message_template",
-			"project",
-			"category",
-			"placeholder':'Keyw",
-			"target",
-			"label",
-			"name",
-			"value",
-			"{{label}}",
-			"{{name}}",
-			"{{value}}",
-			"%(value)s",
-			"%(label)s",
-			"%(name)s",
-			"AvailabilityForm",
-			"js",
-			"NewBootstrapDropdown",
-			"BootstrapDropdown",
-			"selectpick",
-			"btn-small ",
-			"<div class=\"span4\">",
-			"select()",
-			"BaseInlineFormSet",
-			"get_formset_class",
-			"construct_formset",
-			"ProcessFormSetView",
-			"BaseInlineFormSet",
-			"td",
-			"Th",
-			"th",
-			"BaseInlineFormSet",
-			"BaseInlineFormSetMixin",
-			"hidden-cell",
-			"showSection",
-			"show_section",
-			"span",
-			">\n",
-			"span",
-			"'Keywords',",
-			"['Keywords",
-			"['Keywords'",
+			", ",
+			"(",
+			"), (",
+			"w1",
+			"}, {",
+			">, <",
+			">",
+			">, <",
+			"), (",
+			">, <",
+			"('Articles', (('Unavailable', 0, False), ('Available', 8, True), ('Assigned', 2, False), ('Claimed', 1, False), ('Submitted', 9, False), ('Approved', 3, False), ('Rejected', 1, False), ('Published', 0, False))),",
+			"('Articles', (('Unavailable', 3, False), ('Available', 11, False), ('Assigned', 3, False), ('Claimed', 1, False), ('Submitted', 9, False), ('Approved', 4, False), ('Rejected', 3, False), ('Published', 1, False))),",
+			">, <",
+			"15",
+			"('Articles', (('Unavailable', 0, False), ('Available', 4, True), ('Assigned', 0, False), ('Claimed', 0, False), ('Submitted', 0, False), ('Approved', 1, False), ('Rejected', 1, False), ('Published', 0, False))),",
+			">, <",
+			"\n",
+			" <Ar",
+			", <",
+			"12,13",
+			"('Articles', (('Unavailable', 0, False), ('Available', 8, True), ('Assigned', 2, False), ('Claimed', 1, False), ('Submitted', 9, False), ('Approved', 3, False), ('Rejected', 1, False), ('Published', 0, False))),",
+			"Reviewer",
+			"), ",
+			"), (",
+			"('Articles', (('Unavailable', 0, False), ('Available', 8, True), ('Assigned', 2, False), ('Claimed', 1, False), ('Submitted', 2, False), ('Approved', 2, False), ('Rejected', 1, False), ('Published', 0, False))),",
+			"), ",
+			"), (",
+			"('Articles', (('Unavailable', 1, False), ('Available', 11, False), ('Assigned', 3, False), ('Claimed', 1, False), ('Submitted', 2, False), ('Approved', 2, False), ('Rejected', 1, False), ('Published', 1, False))), ",
+			"),",
+			"), (",
+			"16]",
+			"}, {",
+			"ACT_CLAIM_REVIEWER, ",
+			"Writers",
+			"writer",
+			"reviewer_availability_list",
+			"a",
+			"OK",
+			"HttpResponse",
+			"AOK",
+			"HttpResponse",
+			"}, {",
+			"MyWriter",
+			"row\"",
+			"row\">",
+			"row\"",
+			"row",
+			"CharF",
+			"{% if ",
 			"if",
-			"search",
-			"SidebarContextMixin",
-			"filters",
-			"get_value_from_request",
-			"qs, self.request.user)",
-			"user.mode",
-			"self.request.user.mode",
-			"user.mode",
-			"user"
+			"<div",
+			"md-4",
+			"hidden-cell",
+			"form.",
+			"<div class=\"row\">",
+			"input-row",
+			"style=\"display:none;\"",
+			"  </div>",
+			"row input-row",
+			"-2",
+			"form",
+			"=1",
+			"object.ge",
+			"model.owner",
+			"print",
+			"self.label",
+			"self.label =",
+			"self.help_text",
+			"required=False\n        )",
+			"'})",
+			"','class",
+			",'placeholde",
+			",'placeholder':'N",
+			"'class':'notes boxsi",
+			", required=",
+			"  = ",
+			"           = ",
+			"initial=",
+			"required=",
+			"attrs=",
+			"help_text=",
+			", plus_ur",
+			"label=",
+			"widget=",
+			"widge",
+			"(qu",
+			"(attrs",
+			"(widge",
+			"(widget",
+			"owner",
+			"ArticleForm",
+			"ModelFormWithUser",
+			"CreateArticleForm",
+			"CreateArticleFormCreateArticleForm",
+			"}, {",
+			"class Article",
+			"ModelFormWithUser",
+			"owner",
+			"keyword_formset",
+			"ArticleCreate",
+			"HttpResponse",
+			"OK",
+			"Ok",
+			"USER_MODES"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -660,6 +869,15 @@
 		"regex": false,
 		"replace_history":
 		[
+			"{% block heading %}{{heading}}{% endblock heading %}",
+			"e='remove-from-group'),",
+			"",
+			"btn-lg btn-block",
+			"",
+			" col-md-offset-",
+			" .col-md-offset-",
+			"\"col-md-",
+			"row",
 			"'",
 			"\"",
 			"",
@@ -700,114 +918,113 @@
 	"groups":
 	[
 		{
-			"selected": 3,
+			"selected": 5,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "accounts/urls.py",
+					"file": "articles/models.py",
 					"settings":
 					{
-						"buffer_size": 2260,
+						"buffer_size": 30623,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								374,
-								383
+								5208,
+								5237
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/Djaneiro/Syntaxes/Python Django.tmLanguage",
+							"syntax": "Packages/Python/Python.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 2102.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 1,
-					"file": "accounts/views.py",
+					"file": "articles/forms.py",
 					"settings":
 					{
-						"buffer_size": 4185,
+						"buffer_size": 14360,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								3022,
-								4185
+								14238,
+								14258
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/Djaneiro/Syntaxes/Python Django.tmLanguage",
-							"tab_size": 2,
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1253.0,
+						"translation.y": 5658.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 2,
-					"file": "accounts/forms.py",
+					"file": "articles/views/user_views.py",
 					"settings":
 					{
-						"buffer_size": 8392,
+						"buffer_size": 3968,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								6856,
-								6856
+								3256,
+								3256
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/Djaneiro/Syntaxes/Python Django.tmLanguage",
-							"tab_size": 4,
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
-						"translation.x": 0.0,
-						"translation.y": 2292.0,
+						"translation.x": 22.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 3,
-					"file": "articles/views.py",
+					"file": "accounts/templates/accounts/user_form.html",
 					"settings":
 					{
-						"buffer_size": 60878,
+						"buffer_size": 3687,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								112,
-								112
+								61,
+								35
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/Djaneiro/Syntaxes/Python Django.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
+							"syntax": "Packages/HTML/HTML.tmLanguage",
+							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -817,57 +1034,52 @@
 				},
 				{
 					"buffer": 4,
-					"file": "middleware.py",
+					"file": "articles/views/article_views.py",
 					"settings":
 					{
-						"buffer_size": 6788,
+						"buffer_size": 7160,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								461,
-								461
+								148,
+								148
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/Djaneiro/Syntaxes/Python Django.tmLanguage"
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
-				}
-			]
-		},
-		{
-			"selected": 3,
-			"sheets":
-			[
+				},
 				{
 					"buffer": 5,
-					"file": "src/django-extra-views/extra_views/advanced.py",
+					"file": "articles/templates/articles/article_list_row.html",
 					"settings":
 					{
-						"buffer_size": 4426,
+						"buffer_size": 2007,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1041,
-								1041
+								1919,
+								1919
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/Djaneiro/Syntaxes/Python Django.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
+							"syntax": "Packages/HTML/HTML.tmLanguage",
+							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -877,85 +1089,37 @@
 				},
 				{
 					"buffer": 6,
-					"file": "/Users/jaredmartin/Programs/Jade.1/env/lib/python2.7/site-packages/django/forms/formsets.py",
+					"file": "articles/urls.py",
 					"settings":
 					{
-						"buffer_size": 15224,
+						"buffer_size": 9994,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								15017,
-								15026
+								2247,
+								2228
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/Djaneiro/Syntaxes/Python Django.tmLanguage",
+							"syntax": "Packages/Python/Python.tmLanguage",
 							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 7,
-					"file": "classy_auth/views.py",
-					"settings":
-					{
-						"buffer_size": 0,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Djaneiro/Syntaxes/Python Django.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 892.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 8,
-					"settings":
-					{
-						"buffer_size": 388,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								232,
-								250
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Djaneiro/Syntaxes/Python Django.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 183.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				}
+			]
+		},
+		{
+			"sheets":
+			[
 			]
 		}
 	],
@@ -992,7 +1156,7 @@
 		"rows":
 		[
 			0.0,
-			0.55465244391,
+			0.935897435897,
 			1.0
 		]
 	},
@@ -1030,6 +1194,6 @@
 	"show_open_files": true,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 301.0,
+	"side_bar_width": 215.0,
 	"status_bar_visible": true
 }

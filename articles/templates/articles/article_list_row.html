@@ -1,11 +1,12 @@
 {% load actions %}
 {% load can_do %}
+{% load url from future %}
 <tr id="article-{{article.id}}" {% if article.deleted %}style="display:none;" {% endif %}class="article" onMouseOver="$('#article-{{article.id}}-actions').show();" onMouseOut="$('#article-{{article.id}}-actions').hide();">
 	<td>
 		<label class="checkbox" for="check-{{article.id}}"><input class="action-select" type="checkbox" name="action-select" value="{{article.id}}" id="check-{{article.id}}" data-toggle="checkbox" onChange="toggleRows($('#article-{{article.id}}'));"></label>
 	</td>
-	<td class="project-column">{% if article.project %} <a href="{% url project_detail article.project.pk %}"> {{article.project.name.title}} </a>{% else %}None{% endif %}</td>
-	<td class="keywords-column"><a href="{% url article_update article.pk %}">{{article.keywords|default:"No Keywords"}}</a></td>
+	<td class="project-column">{% if article.project %} <a href="{% url "project_detail" article.project.pk %}"> {{article.project.name.title}} </a>{% else %}None{% endif %}</td>
+	<td class="keywords-column"><a href="{% url "article_update" article.pk %}">{{article.keywords|default:"No Keywords"}}</a></td>
 	<td id="status-{{article.pk}}" class="writer-column">{% if user.mode = 2 %}{{article.writer_status}}{% else %}{{article|writing_availability:user}}{% endif %}</td>
 	<td class="reviewer-column">{% if user.in_requester_mode %}{{article.reviewer_status}}{% else %}{{article|reviewing_availability:user}}{% endif %}</td>
 	<td class="status-column">{{article.type}}</td>
@@ -15,11 +16,18 @@
 	<td class="tags-column" id="tag-cell-{{article.pk}}">
     {% for tag in article.tags_as_list %}
     	{% if tag %}
-			<a class="badge badge-small btn-tag" href="{% url show_tag tag %}" title="Click here to see all articles with this tag">{{tag}}</a>
+			<a class="badge badge-small btn-tag" href="{% url "show_tag" tag %}" title="Click here to see all articles with this tag">{{tag}}</a>
     	{% endif %}
     {% endfor %}
 	</td>
 	{% with btn_size='btn-small' %}
-		<td>{% show_actions %}</td>
+		<td>{% show_actions %}
+			{% if heading == "Approved Articles" or heading == "Published Articles" %}
+				{% for outlet in publishing_outlets %}
+					<button type="button" class="btn btn-primary" onclick="doActionOnArticles('{% url "publish" %}', {{article.pk}}, '&outlet={{outlet.pk}}'); return false;" >{{outlet.outlet.title}}</button>
+				{% endfor %}
+			{% endif %}
+
+		</td>
 	{% endwith %}
 </tr>

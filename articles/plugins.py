@@ -40,7 +40,7 @@ class PluginModel(models.Model):
 
     @property
     def plugin(self):
-        if not self._plugin: self._plugin = self.plugin_class()
+        if not self._plugin and self.plugin_class: self._plugin = self.plugin_class()
         return self._plugin
 
 

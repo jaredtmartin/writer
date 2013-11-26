@@ -59,8 +59,12 @@ def reject_and_release(modeladmin, request, queryset):
         except Article.ArticleWorkflowException, err: messages.add_message(request, messages.ERROR, err)
 reject_and_release.short_description = "Reject and release selected articles"
 
+
 class ContactAdmin(admin.ModelAdmin):
     list_display = ('pk','user_asked', 'confirmation')
+
+class PublishingOutletAdmin(admin.ModelAdmin):
+    list_display = ('title','connected','settings')
 
 class ArticleAdmin(admin.ModelAdmin):
     list_display = ('name','id','rejected','was_claimed','status','writer','reviewer','submitted','approved')
@@ -82,6 +86,6 @@ admin.site.register(WriterGroup)
 admin.site.register(ReviewerGroup)
 admin.site.register(Contact, ContactAdmin)
 admin.site.register(UserProfile)
-admin.site.register(PublishingOutlet)
+admin.site.register(PublishingOutlet, PublishingOutletAdmin)
 admin.site.register(ValidationPlugin)
 admin.site.register(PublishingOutletConfiguration)

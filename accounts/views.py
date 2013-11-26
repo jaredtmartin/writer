@@ -10,7 +10,7 @@ from django.utils.http import urlquote, base36_to_int
 from django.contrib.sites.models import Site
 from django.views.generic.edit import CreateView, UpdateView
 from django.contrib import messages
-
+from articles.models import PublishingOutletConfiguration
 
 from django.views.decorators.csrf import csrf_protect
 

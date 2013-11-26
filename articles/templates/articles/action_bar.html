@@ -11,19 +11,19 @@
     {% endif %}
 
     {# Publish #}
-    {% if heading = "Approved Articles" %}
-      <li class="dropdown multiaction">
-        <a data-toggle="dropdown" id="publish-dropdown" class="dropdown-toggle" href="#">Publish <b class="caret"></b></a>
-        <ul class="dropdown-menu">
-          <li><a id="publish-option-{{outlet.pk}}" onclick="doActionOnArticles('{% url mark_as_published %}');return false;">Mark as Published</a></li>
-          {% if publishing_outlets %}
-            <li class="divider"></li>
-          {% endif %}
-          {% for config in publishing_outlet_configs.all %}
-            <li><a id="publish-to{{config.outlet|slugify}}-option-{{config.outlet.pk}}" onclick="publish_articles({{config.outlet.pk}});return false;">{{config.outlet.title}}</a></li>
-          {% endfor %}
-        </ul>
-      </li>
+    {% if heading == "Approved Articles" or heading == "Published Articles" %}
+      {% if publishing_outlets %}
+        <li class="dropdown multiaction">
+          <a data-toggle="dropdown" id="publish-dropdown" class="dropdown-toggle" href="#">Publish <b class="caret"></b></a>
+          <ul class="dropdown-menu">
+            {% for config in publishing_outlets %}
+              <li><a id="publish-to{{config.outlet|slugify}}-option-{{config.pk}}" onclick="doActionOnArticles('{% url publish %}', null, '&outlet={{config.pk}}'); return false;">{{config.outlet.title}}</a></li>
+            {% endfor %}
+          </ul>
+        </li>
+      {% else %}
+        <li class="dropdown multiaction"><a href="{{user_settings}}">Setup a Publishing Outlet.</a></li>
+      {% endif %}
     {% endif %}
 
     {# Make Available for Writers #}

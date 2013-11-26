@@ -1,6 +1,6 @@
 import slick.views as slick
 from filter_views import FiltersMixin
-from articles.models import Article, REQUESTER_MODE
+from articles.models import Article, REQUESTER_MODE, PublishingOutletConfiguration
 from extra_views import UpdateWithInlinesView, CreateWithInlinesView 
 from articles.forms import (CreateArticleForm, KeywordInlineFormSet, KeywordInline, QuantityForm, UpdateArticleForm,
     WriteArticleForm)
@@ -71,7 +71,9 @@ class SubmittedArticles(ArticleListBase):
 class ApprovedArticles(ArticleListBase):
   search_on = ['tags','project__name','keyword__keyword']
   filter_on = ['approved', 'project','writer']
-  extra_context = {'heading':'Approved Articles'}
+  extra_context = {'heading':'Approved Articles','publishing_outlets':'get_publishing_outlets'}
+  def get_publishing_outlets(self):
+    return PublishingOutletConfiguration.objects.filter(user=self.request.user, active=True)
 class RejectedArticles(ArticleListBase):
   search_on = ['tags','project__name','keyword__keyword']
   filter_on = ['rejected', 'project','writer']
@@ -79,7 +81,9 @@ class RejectedArticles(ArticleListBase):
 class PublishedArticles(ArticleListBase):
   search_on = ['tags','project__name','keyword__keyword']
   filter_on = ['published', 'project','writer']
-  extra_context = {'heading':'Published Articles'}
+  extra_context = {'heading':'Published Articles','publishing_outlets':'get_publishing_outlets'}
+  def get_publishing_outlets(self):
+    return PublishingOutletConfiguration.objects.filter(user=self.request.user, active=True)
 
 class CreateArticle(slick.ExtraContextMixin, FiltersMixin, slick.FormWithUserMixin, slick.LoginRequiredMixin, CreateWithInlinesView):
   template_name = 'articles/article_edit.html'
