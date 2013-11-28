@@ -23,9 +23,17 @@
 	{% with btn_size='btn-small' %}
 		<td>{% show_actions %}
 			{% if heading == "Approved Articles" or heading == "Published Articles" %}
-				{% for outlet in publishing_outlets %}
-					<button type="button" class="btn btn-primary" onclick="doActionOnArticles('{% url "publish" %}', {{article.pk}}, '&outlet={{outlet.pk}}'); return false;" >{{outlet.outlet.title}}</button>
-				{% endfor %}
+			<div id="show-columns-selector" class="btn-group col-md-3">
+		    <button type="button" class="btn btn-primary btn-small dropdown-toggle" data-toggle="dropdown">Publish To<span class="caret"></span></button>
+		    <ul class="dropdown-menu dropdown-inverse">
+		      {% for outlet in publishing_outlets %}
+		        <li class="show-columns-option">
+		          <a onclick="publishArticles('{% url "publish" %}', {{article.pk}}, '&outlet={{outlet.pk}}'); return false;">{{outlet.name|default:outlet.outlet.title}}</a>
+		        </li>
+		      {% endfor %}
+		    </ul>
+		  </div>
+				
 			{% endif %}
 
 		</td>

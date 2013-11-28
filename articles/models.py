@@ -149,6 +149,7 @@ class UserConfigBaseModel(PluginBaseMixin, models.Model):
 
 class PublishingOutletConfiguration(UserConfigBaseModel):
     plugin_foreign_key_name='outlet'
+    name = models.CharField(max_length=32, default="")
     user = models.ForeignKey(User, related_name='publishing_outlets')
     outlet = models.ForeignKey(PublishingOutlet, related_name='users')
     active = models.BooleanField(default=False, blank=True)
@@ -661,8 +662,8 @@ class UserProfile(models.Model):
 def create_user_profile(sender, instance, created, **kwargs):
   if created: 
     UserProfile.objects.create(user=instance, mode=WRITER_MODE)
-    for outlet in PublishingOutlet.objects.all():
-      PublishingOutletConfiguration.objects.create(user=instance, outlet=outlet)
+    # for outlet in PublishingOutlet.objects.all():
+    #   PublishingOutletConfiguration.objects.create(user=instance, outlet=outlet)
 post_save.connect(create_user_profile, sender=User)
 
 

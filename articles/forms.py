@@ -368,3 +368,9 @@ class OutletActivationForm(ModelForm):
     class Meta:
         model = PublishingOutletConfiguration
         fields=('active',)
+class NewOutletConfigForm(Form):
+    outlet = ModelChoiceField(queryset=PublishingOutlet.objects.all())
+class OutletConfigForm(ModelForm):
+  class Meta:
+    model = PublishingOutletConfiguration
+    fields=('name',)

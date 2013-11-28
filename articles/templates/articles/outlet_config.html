@@ -1,0 +1,44 @@
+{% load url from future %}
+<div class="panel outlet-panel" id="outlet-{{outlet.pk}}-panel">
+  <div class="panel-heading form-control">
+    <h4 class="panel-title"> 
+      <span id="outlet-{{outlet.pk}}-activation-label" class="checkbox{% if outlet.active %} checked{% endif %}" for="outlet-checkbox-{{outlet.pk}}"  onclick="toggleOutletActivation('{% url "outlet_activation" outlet.pk %}',{{outlet.pk}});return false">
+        <input type="checkbox" value="" id="outlet-checkbox-{{outlet.pk}}" data-toggle="checkbox">
+        <span class="icons">
+          <span class="first-icon fui-checkbox-unchecked"></span>
+          <span class="second-icon fui-checkbox-checked"></span>
+        </span>
+      </span>
+      <a id="outlet-{{outlet.pk}}-name" data-toggle="collapse" data-parent="#accordion" href="#outlet-{{outlet.pk}}">{{outlet.name|default:outlet.outlet.title}}</a>
+      <span id="outlet-{{outlet.pk}}-message"></span>
+      <button class="close fui-cross" type="button" onclick="deleteOutletConfig('{% url "delete_outlet" outlet.pk %}');"></button>
+    </h4>
+  </div>
+  {% if outlet.config.items %}
+    <div id="outlet-{{outlet.pk}}" class="panel-collapse collapse">
+      <div class="panel-body">
+        <form id="outlet-{{outlet.pk}}-form" action="none">
+          <div class="row input-row">
+              <div class="col-md-8 col-md-offset-2">
+                <input id="outlet-{{outlet.pk}}-name-input" class="form-control" placeholder="Outlet Name" name="name", value="{{outlet.name}}">
+              </div>
+            </div>
+          
+          {% for key,value in outlet.config.items %}
+            <div class="row input-row">
+              <div class="col-md-8 col-md-offset-2">
+                <input id="outlet-{{outlet.pk}}-{{key}}" class="form-control outlet-setting" placeholder="{{key}}" name="{{key|lower}}" value="{{value}}">
+              </div>
+            </div>
+          {% endfor %}
+
+          <div class="row input-row">
+            <div class="col-md-2 col-md-offset-8">
+              <button class="btn btn-primary btn-block" onclick="saveConfig('{% url "outlet_config" outlet.pk %}',{{outlet.pk}});return false;">Save</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  {% endif %}
+</div>

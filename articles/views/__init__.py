@@ -18,7 +18,7 @@
 #   'CancelContactRequest', 'RejectContactRequest', 'ListWriterGroups', 'ListReviewerGroups', 
 #   'AddGroup', 'RenameGroup', 'RemoveGroup', 'AddToGroup', 'RemoveFromGroup', 'ShowGroup')
 
-from filter_views import UpdateFilters
+from filter_views import UpdateFilters, FiltersMixin
 from article_views import (AvailableArticles, UnavailableArticles, AssignedArticles, 
   ClaimedArticles, SubmittedArticles, ApprovedArticles, RejectedArticles, PublishedArticles, 
   CreateArticle, UpdateArticle, ShowTag, AjaxNewKeyword)
@@ -30,7 +30,8 @@ from multi_action_views import (RejectArticles, ApproveArticles, #MarkArticlesAs
   MakeAvailableToWriterGroup, MakeAvailableToReviewerGroup)
 from project_views import (CreateProject, ShowProject, ListProjects, DeleteProject, CreateCategory)
 from single_action_views import (TagArticle)
-from user_views import (ChangeMode, Dashboard, UserSettingsView, OutletConfigUpdate, OutletActivation)
+from user_views import (ChangeMode, Dashboard, UserSettingsView, OutletConfigUpdate, OutletActivation, 
+  OutletSettings, CreateOutletConfig, DeleteOutletConfig)
 from contact_views import (ListPendingWriters, ListMyWriters, ListAvailableWriters, ListPendingReviewers, 
   ListMyReviewers, ListAvailableReviewers, ListMyRequesters, ListPendingRequesters, 
   ListAvailableRequesters, CreateWriter, CreateReviewer, ConfirmContact, DeleteContact, 

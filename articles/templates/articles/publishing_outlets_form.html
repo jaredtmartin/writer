@@ -1,0 +1,85 @@
+{% extends 'design/base.html' %}
+{% load url from future %}
+{% block heading %}Publishing Outlets{% endblock heading %}
+{% block content %}
+<div class="row">
+  <div id="show-columns-selector" class="btn-group col-md-3">
+    <button type="button" class="btn btn-primary btn-small dropdown-toggle" data-toggle="dropdown">Add an Outlet<span class="caret"></span></button>
+    <ul class="dropdown-menu dropdown-inverse">
+      {% for outlet in plugins_available %}
+        <li class="show-columns-option">
+          <a onclick="createOutlet('{% url "new_outlet" outlet.pk %}');return false;">{{outlet}}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+<div class="row">
+  <div class="panel-group input-row col-md-10" id="accordion">
+    {% for outlet in object_list %}
+      {% include "articles/outlet_config.html" %}
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
+
+{% block js %}
+  <script type="text/javascript">
+    function toggleOutletActivation(url, pk){
+      $('#outlet-'+pk+'-setting-row').toggle();
+      // checkbox=$('input#outlet-checkbox-'+pk)
+      // checkbox.attr("checked", !checkbox.attr("checked"));
+      $.ajax({
+        url: url,
+        type: 'post',
+        data: {active:!$('#outlet-'+pk+'-activation-label').hasClass("checked")},
+        dataType: 'json',
+        success: function (data) {
+           $('#outlet-'+pk+'-message').html(data.msg);
+        }
+      });
+    }
+    function hideSettings(pk){
+      $('.outlet-'+pk+'-setting-row').hide();
+    }
+    $(document).ready(function () {
+      $('.selectpicker').selectpicker();
+      // $('[data-toggle="checkbox"]').each(function () {
+      //   $(this).checkbox();
+      // });
+    });
+    function saveConfig(url, pk){
+      if ($('#outlet-'+pk+'-name-input').val()!=""){
+        $('#outlet-'+pk+'-name').html($('#outlet-'+pk+'-name-input').val());
+      }
+      $.ajax({
+        url: url,
+        type: 'post',
+        data: $('#outlet-'+pk+'-form').serialize(),
+        dataType: 'json',
+        success: function (data) {
+           $('#outlet-'+pk+'-message').html(data.msg);
+        }
+      });
+    }
+    function createOutlet(url){
+      $.ajax({
+        url: url,
+        type: 'post',
+        success: function (data) {
+           $('#accordion').append(data);
+        }
+      });
+    }
+    function deleteOutletConfig(url){
+      $.ajax({
+        url: url,
+        type: 'post',
+        dataType: 'json',
+        success: function (data) {
+           $('#outlet-'+data['pk']+'-panel').remove();
+        }
+      });
+    }
+</script>
+{% endblock js %}

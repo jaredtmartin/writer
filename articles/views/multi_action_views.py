@@ -190,7 +190,8 @@ class PublishArticles(ArticleActionsView):
     print "config.config = %s" % str(config.config)
     # config.do_action(self.action_qs)
     print "config.outlet.plugin = %s" % str(config.outlet.plugin)
-    config.outlet.plugin.do_action(config.config, self.action_qs)
+    try: config.outlet.plugin.do_action(config.config, self.action_qs)
+    except: messages.error(self.request,'There was an error publishing your article.')
         
 ############################### Submit Actions ####################################
 

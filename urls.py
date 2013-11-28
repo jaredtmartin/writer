@@ -32,6 +32,12 @@ urlpatterns = patterns('',
     url(r'^user/settings/$', UserSettingsView.as_view(), name="user_settings"),
     url(r'^user/outlet/(?P<pk>\d+)/config/$', OutletConfigUpdate.as_view(), name="outlet_config"),
     url(r'^user/outlet/(?P<pk>\d+)/activation/$', OutletActivation.as_view(), name="outlet_activation"),
+    url(r'^user/outlets/$', OutletSettings.as_view(), name="outlet_settings"),
+    url(r'^user/outlets/(?P<pk>\d+)/new/$', CreateOutletConfig.as_view(), name="new_outlet"),
+    url(r'^user/outlets/(?P<pk>\d+)/delete/$', DeleteOutletConfig.as_view(), name="delete_outlet"),
+    
+    
+    
 )
 
 if settings.DEBUG:

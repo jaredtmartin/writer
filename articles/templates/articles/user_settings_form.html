@@ -1,0 +1,44 @@
+{% extends 'design/base.html' %}
+{% load url from future %}
+{% block heading %}User Profile Settings{% endblock heading %}
+{% block content %}
+  <form action="" method="post">{% csrf_token %}
+    <div class="row input-row">
+      <div class="col-md-4">
+            {{form.first_name}}
+      </div>
+      <div class="col-md-4">
+            {{form.last_name}}
+      </div>
+    </div>
+    <div class="row input-row">
+      <div class="col-md-8">
+            {{form.email}}
+      </div>
+    </div>
+    <div class="row input-row">
+      <div class="col-md-3">
+            {{user_profile_form.mode}}
+      </div>
+      <div class="col-md-3">
+            {{user_profile_form.timezone}}
+      </div>
+
+      <div class="col-md-2">
+        <button type="submit" class="btn btn-block btn-primary">Save</button>
+      </div>
+    </div>
+  </form>
+  <div class="row input-row">
+    <div class="col-md-8">
+          <p class="lead"><a href="{% url "change_password" %}">Click here to change your password</a></p>
+    </div>
+  </div>
+{% endblock %}
+{% block js %}
+  <script type="text/javascript">
+    $(document).ready(function () {
+      $('.selectpicker').selectpicker();
+    });
+</script>
+{% endblock js %}

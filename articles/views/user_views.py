@@ -1,9 +1,9 @@
 import vanilla
-from articles.forms import UserModeForm, OutletActivationForm
+from articles.forms import UserModeForm, OutletActivationForm, NewOutletConfigForm, OutletConfigForm
 from filter_views import FiltersMixin
 import slick.views as slick
 from accounts.views import UserUpdateView
-from articles.models import PublishingOutletConfiguration
+from articles.models import PublishingOutletConfiguration, PublishingOutlet
 from django.contrib.auth.models import User
 import pytz
 from django.http import HttpResponse
@@ -26,10 +26,10 @@ class Dashboard(FiltersMixin, slick.LoginRequiredMixin, slick.TemplateView):
   extra_context = {'heading':'Dashboard'}
   template_name = "articles/dashboard.html"
 
-class UserSettingsView(FiltersMixin, slick.LoginRequiredMixin, UserUpdateView):
+class UserSettingsView(slick.ExtraContextMixin, FiltersMixin, slick.LoginRequiredMixin, UserUpdateView):
   model=User
   success_url="/user/settings/"
-  template_name = "accounts/user_form.html"
+  template_name = "articles/user_settings_form.html"
   def get_context_data(self, **kwargs):
     kwargs.update({
       'outlets':PublishingOutletConfiguration.objects.filter(user=self.request.user),
@@ -39,6 +39,15 @@ class UserSettingsView(FiltersMixin, slick.LoginRequiredMixin, UserUpdateView):
     # self.request.session['tz'] = user_profile_form.cleaned_data['timezone']
     self.request.session['django_timezone'] = pytz.timezone(user_profile_form.cleaned_data['timezone'])
     return super(UserSettingsView, self).form_valid(form, user_profile_form)
+
+class OutletSettings(slick.ExtraContextMixin, FiltersMixin, slick.LoginRequiredMixin, vanilla.TemplateView):
+  template_name = "articles/publishing_outlets_form.html"
+  extra_context={
+      'object_list':'get_objects',
+      'plugins_available':PublishingOutlet.objects.all(),
+  }
+  def get_objects(self):
+    return PublishingOutletConfiguration.objects.filter(user=self.request.user)
 
 class OutletConfigUpdate(vanilla.GenericView):
   lookup_field = 'pk'
@@ -60,12 +69,17 @@ class OutletConfigUpdate(vanilla.GenericView):
     return get_object_or_404(queryset, **lookup)
   def post(self, request, *args, **kwargs):
     self.object = self.get_object()
+    name_form = OutletConfigForm(data=request.POST, files=request.FILES, instance=self.object)
     values = {}
     for setting in self.object.outlet.settings:
       values[setting] = request.POST.get(setting.lower(),"")
     self.object.config=values
     self.object.save()
-    return HttpResponse(json.dumps({'msg':"Configuration saved successfully."}), content_type="application/json")
+    if name_form.is_valid():
+      name_form.save()
+      return HttpResponse(json.dumps({'msg':"Configuration saved successfully."}), content_type="application/json")
+    else:
+      return HttpResponse(json.dumps({'msg':"There were problems saving your configuration."}), content_type="application/json")
 
 class OutletActivation(vanilla.UpdateView):
   model = PublishingOutletConfiguration
@@ -75,14 +89,49 @@ class OutletActivation(vanilla.UpdateView):
     print "self.request.POST['active'] = %s" % str(self.request.POST['active'])
     self.object = form.save()
     print "self.object.active = %s" % str(self.object.active)
-    if self.object.active: msg = ": Outlet Activated Successfully."
-    else: msg = ": Outlet Deactivated Successfully."
+    if self.object.active: msg = "Outlet Activated Successfully."
+    else: msg = "Outlet Deactivated Successfully."
     return HttpResponse(json.dumps({'msg':msg}), content_type="application/json")
   def form_invalid(self, form):
     print "form.errors = %s" % str(form.errors)
     return HttpResponse(json.dumps({'msg':"There was an error activating the outlet."}), content_type="application/json")
 
+# class CreateOutletConfig(vanilla.GenericModelView):
+#   model = PublishingOutletConfiguration
+#   form_class = NewOutletConfigForm
+#   def get(self, request, *args, **kwargs):
+#     form = self.get_form(data=request.POST, files=request.FILES)
+#     if form.is_valid():
+#       return self.form_valid(form)
+#     return self.form_invalid(form)
+#   def form_valid(self, form):
+#     self.object = self.model.objects.create(user=self.request.user, outlet=form.cleaned_data['outlet'])
 
+#     return HttpResponse(json.dumps({
+#       'msg':"Outlet created successfully.",
+#       'fields':self.object.outlet.settings,
+#     }), content_type="application/json")
+
+#   def form_invalid(self, form):
+#     return HttpResponse(json.dumps({'msg':"Unable to find specified outlet."}), content_type="application/json")
+
+
+class CreateOutletConfig(vanilla.GenericModelView):
+  model = PublishingOutlet
+  template_name = "articles/outlet_config.html"
+  def post(self, request, *args, **kwargs):
+      self.object = self.get_object()
+      outlet_config = PublishingOutletConfiguration.objects.create(user=self.request.user, outlet=self.object)
+      context = self.get_context_data(outlet=outlet_config)
+      return self.render_to_response(context)
+
+class DeleteOutletConfig(vanilla.DeleteView):
+  model = PublishingOutletConfiguration
+  def post(self, request, *args, **kwargs):
+    self.object = self.get_object()
+    pk=self.object.pk
+    self.object.delete();
+    return HttpResponse(json.dumps({'msg':"The outlet has been removed.",'pk':pk}), content_type="application/json")
 
   # def form_valid(self, form):
   #   self.object = form.save()

@@ -29,6 +29,10 @@ function ajaxUpdateRow(data){                                               // G
     addRows(d);
     runCode();
 }
+function justUpdateMessages(data){
+    d=saveDataInCache(data);
+    updateMessages(d);
+}
 function updateClasses(data){
     var i, x, cls, results, result;
     for (i = 0; i < window.classesToUpdate.length; ++i) {
