@@ -8,7 +8,7 @@ import sys
 
 FACEBOOK_APP_ID = "1427197910842727"
 FACEBOOK_APP_SECRET = "1ef17254fa1ec1e06ea2418c69d3504c"
-REDIRECT_URL="http://http://writeraxis.pythonanywhere.com/user/outlets/verify_oauth/?oauth_token=%s"
+REDIRECT_URL="http://writeraxis.pythonanywhere.com/user/outlets/verify_oauth/?oauth_token=%s"
 CODE_LENGTH = 64
 import cgi
 class FacebookOutlet(object):
