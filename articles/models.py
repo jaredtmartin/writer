@@ -193,7 +193,7 @@ class PublishingOutletConfiguration(UserConfigBaseModel):
 class OAuthRequestToken(models.Model):
   token = models.CharField(max_length=64)
   secret = models.CharField(max_length=64)
-  url = models.CharField(max_length=256)
+  url = models.CharField(max_length=300)
   config = models.OneToOneField(PublishingOutletConfiguration)
 
 class PluginMount(type):
