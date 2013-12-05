@@ -150,8 +150,8 @@ class PublishingOutletConfiguration(UserConfigBaseModel):
   outlet = models.ForeignKey(PublishingOutlet, related_name='users')
   active = models.BooleanField(default=False, blank=True)
   # The following are for 
-  token = models.CharField(max_length=64, default="")
-  secret = models.CharField(max_length=64, default="")
+  token = models.CharField(max_length=512, default="")
+  secret = models.CharField(max_length=512, default="")
   def __unicode__(self): return "%s for %s" % (self.outlet.title, self.user.username)
   # def fetch_oauth_token(self):
   #   token, secret = self.outlet.plugin.get_oauth_token()
@@ -191,9 +191,9 @@ class PublishingOutletConfiguration(UserConfigBaseModel):
     #   return self.outlet.plugin.do_action(self.config, article_qs)
     
 class OAuthRequestToken(models.Model):
-  token = models.CharField(max_length=64)
-  secret = models.CharField(max_length=64)
-  url = models.CharField(max_length=300)
+  token = models.CharField(max_length=512)
+  secret = models.CharField(max_length=512)
+  url = models.CharField(max_length=512)
   config = models.OneToOneField(PublishingOutletConfiguration)
 
 class PluginMount(type):
