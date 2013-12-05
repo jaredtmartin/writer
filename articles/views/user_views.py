@@ -1,14 +1,18 @@
 import vanilla
-from articles.forms import UserModeForm, OutletActivationForm, NewOutletConfigForm, OutletConfigForm
+from articles.forms import (UserModeForm, OutletActivationForm, NewOutletConfigForm, OutletConfigForm, 
+  OAuthVerificationForm)
 from filter_views import FiltersMixin
 import slick.views as slick
 from accounts.views import UserUpdateView
-from articles.models import PublishingOutletConfiguration, PublishingOutlet
+from articles.models import PublishingOutletConfiguration, PublishingOutlet, OAuthRequestToken
 from django.contrib.auth.models import User
 import pytz
 from django.http import HttpResponse
 import json
 from django.shortcuts import get_object_or_404
+from django.contrib import messages
+from django.http import HttpResponseRedirect
+from django.core.urlresolvers import reverse
 
 class ChangeMode(slick.LoginRequiredMixin, vanilla.FormView):
   form_class=UserModeForm
@@ -44,10 +48,10 @@ class OutletSettings(slick.ExtraContextMixin, FiltersMixin, slick.LoginRequiredM
   template_name = "articles/publishing_outlets_form.html"
   extra_context={
       'object_list':'get_objects',
-      'plugins_available':PublishingOutlet.objects.all(),
+      'plugins_available':'get_plugins_available',
   }
-  def get_objects(self):
-    return PublishingOutletConfiguration.objects.filter(user=self.request.user)
+  def get_plugins_available(self): return PublishingOutlet.objects.all()
+  def get_objects(self): return PublishingOutletConfiguration.objects.filter(user=self.request.user)
 
 class OutletConfigUpdate(vanilla.GenericView):
   lookup_field = 'pk'
@@ -133,6 +137,22 @@ class DeleteOutletConfig(vanilla.DeleteView):
     self.object.delete();
     return HttpResponse(json.dumps({'msg':"The outlet has been removed.",'pk':pk}), content_type="application/json")
 
+class ConfirmOAuthForOutlet(vanilla.GenericView):
+  def get(self, request, *args, **kwargs):
+    form = OAuthVerificationForm(data=request.GET, files=request.FILES)
+    if not form.is_valid(): return self.form_invalid(form)
+    request_token = OAuthRequestToken.objects.get(token=form.cleaned_data['oauth_token'])
+    config = request_token.config
+    config.token, config.secret = config.outlet.plugin.verify_token(request_token, self.request)
+    config.save()
+    messages.success(self.request, "The account has been authorized successfully.")
+    return HttpResponseRedirect(reverse('outlet_settings'))
+  def form_valid(self, form): 
+    verifier = form.cleaned_data['oauth_verifier']
+    
+  def form_invalid(self, form):
+    messages.error(self.request, "There was an error authorizing your account.")
+    return HttpResponseRedirect(reverse('outlet_settings'))
   # def form_valid(self, form):
   #   self.object = form.save()
   #   return HttpResponse(json.dumps({'msg':"Configuration saved successfully."}), content_type="application/json")

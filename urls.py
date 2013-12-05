@@ -35,6 +35,8 @@ urlpatterns = patterns('',
     url(r'^user/outlets/$', OutletSettings.as_view(), name="outlet_settings"),
     url(r'^user/outlets/(?P<pk>\d+)/new/$', CreateOutletConfig.as_view(), name="new_outlet"),
     url(r'^user/outlets/(?P<pk>\d+)/delete/$', DeleteOutletConfig.as_view(), name="delete_outlet"),
+    url(r'^user/outlets/verify_oauth/$', ConfirmOAuthForOutlet.as_view(), name="verify_outlet_oauth"),
+    
     
     
     

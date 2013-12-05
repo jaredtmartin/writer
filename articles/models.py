@@ -134,9 +134,6 @@ class UserConfigBaseModel(PluginBaseMixin, models.Model):
       doc = "The config property."
       def fget(self):
           if self._config: return self._config
-          print "self.outlet = %s" % str(self.outlet)
-          print "self.outlet.settings = %s" % str(self.outlet.settings)
-          print "{x:"" for x in self.outlet.settings} = %s" % str({x:"" for x in self.outlet.settings})
           try: self._config = json.loads(self.json_data)
           except ValueError: self._config={x:"" for x in self.outlet.settings}
           return self._config
@@ -145,15 +142,45 @@ class UserConfigBaseModel(PluginBaseMixin, models.Model):
           self.json_data = json.dumps(value)
       return locals()
   config = property(**config())
-        
 
 class PublishingOutletConfiguration(UserConfigBaseModel):
-    plugin_foreign_key_name='outlet'
-    name = models.CharField(max_length=32, default="")
-    user = models.ForeignKey(User, related_name='publishing_outlets')
-    outlet = models.ForeignKey(PublishingOutlet, related_name='users')
-    active = models.BooleanField(default=False, blank=True)
-    def __unicode__(self): return "%s for %s" % (self.outlet.title, self.user.username)
+  plugin_foreign_key_name='outlet'
+  name = models.CharField(max_length=32, default="")
+  user = models.ForeignKey(User, related_name='publishing_outlets')
+  outlet = models.ForeignKey(PublishingOutlet, related_name='users')
+  active = models.BooleanField(default=False, blank=True)
+  # The following are for 
+  token = models.CharField(max_length=64, default="")
+  secret = models.CharField(max_length=64, default="")
+  def __unicode__(self): return "%s for %s" % (self.outlet.title, self.user.username)
+  # def fetch_oauth_token(self):
+  #   token, secret = self.outlet.plugin.get_oauth_token()
+  #   config = self.config
+  #   config['oauth_token'] = token
+  #   config['oauth_secret'] = secret
+  #   self.config = config
+
+  # @property
+  # def oauth_token(self):
+  #   if 'oauth_token' in self.config and self.config['oauth_token']: return self.config['oauth_token']
+  #   self.fetch_oauth_token()
+  #   return self.config['oauth_token']
+  # @property
+  # def oauth_secret(self):
+  #   if 'oauth_secret' in self.config and self.config['oauth_secret']: return self.config['oauth_secret']
+  #   self.fetch_oauth_token()
+  #   self.config['oauth_secret']
+  @property
+  def oauthrequsttoken(self):
+    try: return OAuthRequestToken.objects.get(config_id=self.id)
+    except OAuthRequestToken.DoesNotExist: return None
+  @property
+  def oauth_url(self):
+    if not self.oauthrequsttoken:
+      token, secret = self.outlet.plugin.get_oauth_request_token()
+      url = self.outlet.plugin.get_oauth_request_url(token)
+      OAuthRequestToken.objects.create(token=token, config=self, secret=secret, url=url)
+    return self.oauthrequsttoken.url
     # def do_action(self, articles):
     #   print "XXXX IMHERE"
     #   print "self = %s" % str(self)
@@ -163,6 +190,12 @@ class PublishingOutletConfiguration(UserConfigBaseModel):
     #   print "self.config = %s" % str(self.config)
     #   return self.outlet.plugin.do_action(self.config, article_qs)
     
+class OAuthRequestToken(models.Model):
+  token = models.CharField(max_length=64)
+  secret = models.CharField(max_length=64)
+  url = models.CharField(max_length=256)
+  config = models.OneToOneField(PublishingOutletConfiguration)
+
 class PluginMount(type):
     name="generic"
     def __init__(cls, name, bases, attrs):

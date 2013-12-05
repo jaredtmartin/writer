@@ -83,6 +83,7 @@ class PublishedArticles(ArticleListBase):
   filter_on = ['published', 'project','writer']
   extra_context = {'heading':'Published Articles','publishing_outlets':'get_publishing_outlets'}
   def get_publishing_outlets(self):
+    print "PublishingOutletConfiguration.objects.filter(user=self.request.user, active=True) = %s" % str(PublishingOutletConfiguration.objects.filter(user=self.request.user, active=True))
     return PublishingOutletConfiguration.objects.filter(user=self.request.user, active=True)
 
 class CreateArticle(slick.ExtraContextMixin, FiltersMixin, slick.FormWithUserMixin, slick.LoginRequiredMixin, CreateWithInlinesView):

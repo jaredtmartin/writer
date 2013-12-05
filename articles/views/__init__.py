@@ -31,7 +31,7 @@ from multi_action_views import (RejectArticles, ApproveArticles, #MarkArticlesAs
 from project_views import (CreateProject, ShowProject, ListProjects, DeleteProject, CreateCategory)
 from single_action_views import (TagArticle)
 from user_views import (ChangeMode, Dashboard, UserSettingsView, OutletConfigUpdate, OutletActivation, 
-  OutletSettings, CreateOutletConfig, DeleteOutletConfig)
+  OutletSettings, CreateOutletConfig, DeleteOutletConfig, ConfirmOAuthForOutlet)
 from contact_views import (ListPendingWriters, ListMyWriters, ListAvailableWriters, ListPendingReviewers, 
   ListMyReviewers, ListAvailableReviewers, ListMyRequesters, ListPendingRequesters, 
   ListAvailableRequesters, CreateWriter, CreateReviewer, ConfirmContact, DeleteContact, 

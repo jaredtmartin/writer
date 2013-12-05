@@ -169,14 +169,6 @@ class ApproveArticles(ArticleActionsView):
             code=ACT_APPROVE
         )
 ############################### Publish Articles ####################################
-# class MarkArticlesAsPublished(ArticleActionsView):
-#     next_status = STATUS_PUBLISHED
-#     action_verb="mark as published"
-#     past_tense_action_verb="marked as published"
-#     def filter_action_queryset(self, qs):
-#         qs=qs.filter(approved__isnull=False)
-#         return self.filter_by_owner(qs)
-
 class PublishArticles(ArticleActionsView):
   def filter_action_queryset(self, qs):
     qs=qs.filter(approved__isnull=False)
@@ -186,13 +178,10 @@ class PublishArticles(ArticleActionsView):
   next_status = STATUS_PUBLISHED
   def create_action(self):
     config = self.action_form.cleaned_data['outlet']
-    print "config = %s" % str(config)
-    print "config.config = %s" % str(config.config)
-    # config.do_action(self.action_qs)
-    print "config.outlet.plugin = %s" % str(config.outlet.plugin)
-    try: config.outlet.plugin.do_action(config.config, self.action_qs)
-    except: messages.error(self.request,'There was an error publishing your article.')
-        
+    result = config.outlet.plugin.do_action(config.config, self.action_qs, config.token, config.secret)
+    for msg in result: messages.add_message(self.request, msg[0], msg[1])
+  # The plugins are responsible for returning messages
+  def send_result_messages(self):pass
 ############################### Submit Actions ####################################
 
 class SubmitArticles(ArticleActionsView):

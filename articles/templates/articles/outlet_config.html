@@ -14,7 +14,7 @@
       <button class="close fui-cross" type="button" onclick="deleteOutletConfig('{% url "delete_outlet" outlet.pk %}');"></button>
     </h4>
   </div>
-  {% if outlet.config.items %}
+  {% if outlet.config.items or outlet.uses_oauth %}
     <div id="outlet-{{outlet.pk}}" class="panel-collapse collapse">
       <div class="panel-body">
         <form id="outlet-{{outlet.pk}}-form" action="none">
@@ -23,15 +23,24 @@
                 <input id="outlet-{{outlet.pk}}-name-input" class="form-control" placeholder="Outlet Name" name="name", value="{{outlet.name}}">
               </div>
             </div>
-          
-          {% for key,value in outlet.config.items %}
+          {% if outlet.uses_oauth %}
             <div class="row input-row">
               <div class="col-md-8 col-md-offset-2">
-                <input id="outlet-{{outlet.pk}}-{{key}}" class="form-control outlet-setting" placeholder="{{key}}" name="{{key|lower}}" value="{{value}}">
+                <a href="{{outlet.oauth_url}}">Click on this link to authorize WriterAxis to publish for you.</a>
               </div>
             </div>
-          {% endfor %}
-
+          {% endif %}
+          {% if outlet.config.items %}
+            {% for key,value in outlet.config.items %}
+              {% if key != 'oauth_token' and key != 'oauth_secret' and key != 'oauth_url' %}
+                <div class="row input-row">
+                  <div class="col-md-8 col-md-offset-2">
+                    <input id="outlet-{{outlet.pk}}-{{key}}" class="form-control outlet-setting" placeholder="{{key}}" name="{{key|lower}}" value="{{value}}">
+                  </div>
+                </div>
+              {% endif %}
+            {% endfor %}
+          {% endif %}
           <div class="row input-row">
             <div class="col-md-2 col-md-offset-8">
               <button class="btn btn-primary btn-block" onclick="saveConfig('{% url "outlet_config" outlet.pk %}',{{outlet.pk}});return false;">Save</button>

@@ -1,6 +1,6 @@
 from articles.models import *
 from django.forms import ModelForm, DateField, ValidationError, BooleanField, ChoiceField, IntegerField, Form, \
-    ModelChoiceField, CharField, ModelMultipleChoiceField, widgets, RegexField, PasswordInput
+  ModelChoiceField, CharField, ModelMultipleChoiceField, widgets, RegexField, PasswordInput
 from extra_views import InlineFormSet
 from articles.widgets import BootstrapDropdown, BootstrapDropdownPlus
 from django.utils.encoding import smart_unicode
@@ -8,15 +8,15 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 
 from titlecase import titlecase
 class FormWithUserMixin(object):
-    def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop('user')
-        super(FormWithUserMixin, self).__init__(*args, **kwargs)
+  def __init__(self, *args, **kwargs):
+    self.user = kwargs.pop('user')
+    super(FormWithUserMixin, self).__init__(*args, **kwargs)
 class ModelFormWithUserMixin(FormWithUserMixin):
-    def save(self, commit=True):
-        model = super(ModelFormWithUserMixin, self).save(commit=False)
-        model.owner = self.user
-        if commit: model.save()
-        return model
+  def save(self, commit=True):
+    model = super(ModelFormWithUserMixin, self).save(commit=False)
+    model.owner = self.user
+    if commit: model.save()
+    return model
 class FormWithLookupsMixin(object):
     lookup_field_names={}
     def auto_create_related_object(self, data, field_name, model):
@@ -374,3 +374,5 @@ class OutletConfigForm(ModelForm):
   class Meta:
     model = PublishingOutletConfiguration
     fields=('name',)
+class OAuthVerificationForm(Form):
+  oauth_token = CharField(max_length=64)

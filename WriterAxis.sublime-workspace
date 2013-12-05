@@ -4,6 +4,30 @@
 		"selected_items":
 		[
 			[
+				"temp",
+				"temp_token"
+			],
+			[
+				"success",
+				"successfully"
+			],
+			[
+				"Publishing",
+				"PublishingOutletConfiguration"
+			],
+			[
+				"token",
+				"token_info"
+			],
+			[
+				"is",
+				"is_valid"
+			],
+			[
+				"Outlet",
+				"PublishingOutletConfiguration"
+			],
+			[
 				"get_",
 				"get_outlet_configs"
 			],
@@ -296,10 +320,6 @@
 				"publishing_outlets"
 			],
 			[
-				"Publishing",
-				"PublishingOutlet"
-			],
-			[
 				"STATUs",
 				"STATUS_ASSIGNED"
 			],
@@ -472,42 +492,34 @@
 	"buffers":
 	[
 		{
+			"file": "articles/publishing_outlets/twitter_outlet.py",
+			"settings":
+			{
+				"buffer_size": 2240,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "articles/views/multi_action_views.py",
+			"settings":
+			{
+				"buffer_size": 18179,
+				"line_ending": "Unix"
+			}
+		},
+		{
 			"file": "articles/models.py",
 			"settings":
 			{
-				"buffer_size": 30623,
+				"buffer_size": 32195,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "articles/forms.py",
+			"file": "articles/publishing_outlets/wordpress.py",
 			"settings":
 			{
-				"buffer_size": 14360,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "articles/views/user_views.py",
-			"settings":
-			{
-				"buffer_size": 3968,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "accounts/templates/accounts/user_form.html",
-			"settings":
-			{
-				"buffer_size": 3687,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "articles/views/article_views.py",
-			"settings":
-			{
-				"buffer_size": 7160,
+				"buffer_size": 2082,
 				"line_ending": "Unix"
 			}
 		},
@@ -515,15 +527,7 @@
 			"file": "articles/templates/articles/article_list_row.html",
 			"settings":
 			{
-				"buffer_size": 2007,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "articles/urls.py",
-			"settings":
-			{
-				"buffer_size": 9994,
+				"buffer_size": 2444,
 				"line_ending": "Unix"
 			}
 		}
@@ -588,55 +592,67 @@
 	},
 	"file_history":
 	[
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/publishing_outlets/wordpress.py",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/publishing_outlets/mark_only.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/views/article_views.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/models.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/outlet_config.html",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/views/user_views.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/forms.py",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/urls.py",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/views/__init__.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/publishing_outlets/wordpress.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/views/multi_action_views.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/publishing_outlets_form.html",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/design/static/js/thane/ajax.js",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/design/static/js/thane/actions.js",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/article_list.html",
+		"/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/xmlrpclib.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/article_list_row.html",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/design/static/less/variables.less",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/design/static/less/writeraxis.less",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/accounts/templates/accounts/user_form.html",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/design/templates/design/bare.html",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/design/templates/design/base.html",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/design/templates/design/header.html",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/user_settings_form.html",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/accounts/templates/accounts/password_change_done.html",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/accounts/templates/accounts/password_change_form.html",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/accounts/urls.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/urls.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/accounts/views.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/action_bar.html",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/publishing_outlets/mark_only.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/plugins.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/settings.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/publishing_outlets/__init__.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/views/single_action_views.py",
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/actions.html",
 		"/Users/jaredmartin/Programs/schedules/slick/views.py",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/accounts/forms.py",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/accounts/templates/accounts/user_form.html",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/publishing_outlets/base.py",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/dump.json",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/fixtures/initial_data.json",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/outlet_settings.html",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templatetags/outlet_settings.py",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/accounts/urls.py",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/accounts/views.py",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/views/user_views.py",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/publishing_outlets/twitter.py",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/publishing_outlets/__init__.py",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/plugins.py",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/admin.py",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/views/article_views.py",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/tests/test_edit_article.py",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/article_edit.html",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/publishing_outlets/test_outlet.py",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/publishing_outlets/facebook.py",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/views/multi_action_views.py",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/views/filter_views.py",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/tests/test_contacts.py",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/fixtures/test_contacts_fixture.json",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/article_list_row.html",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templatetags/xactions.py",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/models.py",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/tests/test_filter_views.py",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/forms.py",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templatetags/can_do.py",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/urls.py",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/article_write.html",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/todo",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/actions.html",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/action_bar.html",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/tests/test_articles.py",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/fixtures/old_test_articles_fixture.json",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/fixtures/test_articles_fixture.json",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/views/group_views.py",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/design/templates/design/header.html",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/design/templates/design/sidebar.html",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/design/static/less/writeraxis.less",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/accounts/templates/accounts/password_change_done.html",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/accounts/templates/accounts/password_reset_form.html",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/accounts/templates/accounts/password_change_form.html",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/design/static/css/writeraxis.css",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/design/static/css/jquery-te-1.4.0.css",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/widgets.py",
@@ -644,7 +660,6 @@
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/tests/common.py",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/tests/__init__.py",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/accounts/templates/accounts/base.html",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/design/templates/design/base.html",
 		"/Users/jaredmartin/Programs/YesTags/install.sh",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/tests/test_multi_action_views.py",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/accounts/templates/accounts/logged_out.html",
@@ -658,10 +673,8 @@
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/accounts/templates/accounts/signup_form.html",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/filter_tag_list.html",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/filter_menu.html",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/article_list.html",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/views/project_views.py",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/views/contact_views.py",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/views/single_action_views.py",
 		"/Users/jaredmartin/.virtualenvs/django14/lib/python2.7/site-packages/django/utils/datastructures.py",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/install.sh",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/big_letters.py",
@@ -672,7 +685,6 @@
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/newtests/__init__.py",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templatetags/actions.py",
 		"/Users/jaredmartin/.virtualenvs/django14/lib/python2.7/site-packages/django/template/loader.py",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/settings.py",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/fixtures/test_fixture.json",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/views/oldviews.py",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/tests.py",
@@ -695,7 +707,6 @@
 		"/Users/jaredmartin/Library/Application Support/Sublime Text 2/Packages/Default/Preferences.sublime-settings",
 		"/Users/jaredmartin/Library/Application Support/Sublime Text 2/Packages/User/JSON.sublime-settings",
 		"/Users/jaredmartin/Library/Application Support/Sublime Text 2/Packages/User/Distraction Free.sublime-settings",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/design/templates/design/bare.html",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/views.py",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/writers_pending_list.html",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/my_writers_list.html",
@@ -704,18 +715,11 @@
 		"/Users/jaredmartin/.virtualenvs/django14/src/django-extra-views/extra_views/advanced.py",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/contact_group_detail.html",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/contact_group_detail_lists.html",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/design/static/js/thane/ajax.js",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/dashboard.html",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/contact_group_list.html",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/design/static/less/variables.less",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/contact_group_form.html",
 		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/contact_group_row.html",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/design/templates/design/messages.html",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/test_super.py",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/available_writers_list.html",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/articles/templates/articles/worker_row.html",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/design/templates/design/ajax_row.html",
-		"/Users/jaredmartin/Programs/writeraxis/writeraxis/design/static/js/thane/actions.js"
+		"/Users/jaredmartin/Programs/writeraxis/writeraxis/design/templates/design/messages.html"
 	],
 	"find":
 	{
@@ -731,9 +735,54 @@
 	},
 	"find_state":
 	{
-		"case_sensitive": false,
+		"case_sensitive": true,
 		"find_history":
 		[
+			"messages",
+			"Publish",
+			"UserConfigBaseModel",
+			"messages",
+			"oauthrequsttoken",
+			"oauth_",
+			"oauth",
+			"token",
+			"Token",
+			"token",
+			"oauth_secret",
+			"ht",
+			" htt",
+			"URL",
+			"Consumer",
+			"Publish",
+			"ProtocolError",
+			"@wet-asphalt",
+			"OutletConfigForm",
+			"\n\n\n",
+			"\n\n",
+			"maya",
+			"Outlet",
+			"collapseOne",
+			"div",
+			"column",
+			"Column",
+			"column",
+			"-offset-3",
+			"col-md-6",
+			" col-md-offset-2",
+			"col-md-offset-4",
+			"Extra",
+			" col-md-offset-2",
+			"col-md-6",
+			"col-md-3",
+			"col-md-offset-3",
+			"Publish",
+			"PluginBaseMixin",
+			"UserConfigBaseModel",
+			"Publishing",
+			"ModelWithPlugin",
+			"Mark",
+			"publish",
+			"PublishArticle",
 			"UserSettingsView",
 			"settings",
 			"UserUpdateView",
@@ -816,52 +865,7 @@
 			"input-row",
 			"style=\"display:none;\"",
 			"  </div>",
-			"row input-row",
-			"-2",
-			"form",
-			"=1",
-			"object.ge",
-			"model.owner",
-			"print",
-			"self.label",
-			"self.label =",
-			"self.help_text",
-			"required=False\n        )",
-			"'})",
-			"','class",
-			",'placeholde",
-			",'placeholder':'N",
-			"'class':'notes boxsi",
-			", required=",
-			"  = ",
-			"           = ",
-			"initial=",
-			"required=",
-			"attrs=",
-			"help_text=",
-			", plus_ur",
-			"label=",
-			"widget=",
-			"widge",
-			"(qu",
-			"(attrs",
-			"(widge",
-			"(widget",
-			"owner",
-			"ArticleForm",
-			"ModelFormWithUser",
-			"CreateArticleForm",
-			"CreateArticleFormCreateArticleForm",
-			"}, {",
-			"class Article",
-			"ModelFormWithUser",
-			"owner",
-			"keyword_formset",
-			"ArticleCreate",
-			"HttpResponse",
-			"OK",
-			"Ok",
-			"USER_MODES"
+			"row input-row"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -918,79 +922,49 @@
 	"groups":
 	[
 		{
-			"selected": 5,
+			"selected": 1,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "articles/models.py",
+					"file": "articles/publishing_outlets/twitter_outlet.py",
 					"settings":
 					{
-						"buffer_size": 30623,
+						"buffer_size": 2240,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								5208,
-								5237
+								1718,
+								1729
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/Python/Python.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
+							"syntax": "Packages/Python/Python.tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 2102.0,
+						"translation.y": 184.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 1,
-					"file": "articles/forms.py",
+					"file": "articles/views/multi_action_views.py",
 					"settings":
 					{
-						"buffer_size": 14360,
+						"buffer_size": 18179,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								14238,
-								14258
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Python/Python.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 5658.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "articles/views/user_views.py",
-					"settings":
-					{
-						"buffer_size": 3968,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								3256,
-								3256
+								9079,
+								9079
 							]
 						],
 						"settings":
@@ -999,7 +973,35 @@
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
-						"translation.x": 22.0,
+						"translation.x": 0.0,
+						"translation.y": 2688.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "articles/models.py",
+					"settings":
+					{
+						"buffer_size": 32195,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								139,
+								139
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
@@ -1007,24 +1009,25 @@
 				},
 				{
 					"buffer": 3,
-					"file": "accounts/templates/accounts/user_form.html",
+					"file": "articles/publishing_outlets/wordpress.py",
 					"settings":
 					{
-						"buffer_size": 3687,
+						"buffer_size": 2082,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								61,
-								35
+								643,
+								643
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/HTML/HTML.tmLanguage",
-							"translate_tabs_to_spaces": false
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -1034,46 +1037,18 @@
 				},
 				{
 					"buffer": 4,
-					"file": "articles/views/article_views.py",
-					"settings":
-					{
-						"buffer_size": 7160,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								148,
-								148
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Python/Python.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 5,
 					"file": "articles/templates/articles/article_list_row.html",
 					"settings":
 					{
-						"buffer_size": 2007,
+						"buffer_size": 2444,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1919,
-								1919
+								2370,
+								2370
 							]
 						],
 						"settings":
@@ -1082,35 +1057,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 6,
-					"file": "articles/urls.py",
-					"settings":
-					{
-						"buffer_size": 9994,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2247,
-								2228
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Python/Python.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 183.0,
+						"translation.y": 82.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
