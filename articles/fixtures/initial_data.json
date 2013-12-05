@@ -1,5 +1,6 @@
 [{"pk": 1, "model": "articles.publishingoutlet", "fields": {"class_name": "WordPressOutlet", "module_name": "wordpress", "title": "Wordpress"}}, 
 {"pk": 2, "model": "articles.publishingoutlet", "fields": {"class_name": "MarkAsPublishedOutlet", "module_name": "mark_only", "title": "Mark as Published"}},
 {"pk": 3, "model": "articles.publishingoutlet", "fields": {"class_name": "TwitterOutlet", "module_name": "twitter_outlet", "title": "Facebook"}},
-{"pk": 4, "model": "articles.publishingoutlet", "fields": {"class_name": "FacebookOutlet", "module_name": "facebook_outlet", "title": "Twitter"}}
+{"pk": 4, "model": "articles.publishingoutlet", "fields": {"class_name": "FacebookOutlet", "module_name": "facebook_outlet", "title": "Twitter"}},
+{"pk": 1, "model": "sites.site", "fields": {"domain": "writeraxis.pythonanywhere.com", "name": "WriterAxis"}}
 ]
