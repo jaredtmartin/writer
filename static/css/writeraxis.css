@@ -1,3 +1,25 @@
+h4.panel-title .checkbox {
+  display: inline;
+  padding-left: 30px;
+}
+h4.panel-title a {
+  margin-top: 3px;
+}
+.panel > .panel-heading {
+  color: #3498db;
+  box-shadow: none;
+  transition: border 0.25s linear 0s, color 0.25s linear 0s, background-color 0.25s linear 0s;
+  border: 2px solid #bdc3c7;
+}
+.panel-group .panel .panel-collapse {
+  border-color: #bdc3c7;
+  border-radius: 6px;
+  box-shadow: none;
+  color: #34495E;
+  border-style: none solid solid;
+  border-width: medium 2px 2px;
+  transition: border 0.25s linear 0s, color 0.25s linear 0s, background-color 0.25s linear 0s;
+}
 .btn-toolbar .btn:hover {
   background-color: #2980B9;
 }
